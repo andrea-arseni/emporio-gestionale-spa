@@ -1,25 +1,19 @@
-import { Redirect, Route } from "react-router-dom";
 import axios from "axios";
 import {
     IonApp,
-    IonIcon,
-    IonLabel,
+    IonButton,
+    IonContent,
+    IonHeader,
+    IonItem,
+    IonList,
+    IonMenu,
+    IonMenuToggle,
+    IonPage,
     IonRouterOutlet,
-    IonTabBar,
-    IonTabButton,
-    IonTabs,
+    IonTitle,
+    IonToolbar,
     setupIonicReact,
 } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
-import { ellipse, square, triangle } from "ionicons/icons";
-import Tab1 from "./pages/Tab1";
-import Tab2 from "./pages/Tab2";
-import Tab3 from "./pages/Tab3";
-import {
-    CognitoUserPool,
-    CognitoUser,
-    AuthenticationDetails,
-} from "amazon-cognito-identity-js";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -41,95 +35,92 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import { useEffect } from "react";
 
-setupIonicReact();
+import { Amplify, Auth } from "aws-amplify";
 
-let idToken: string = "";
+Amplify.configure({
+    Auth: {
+        // REQUIRED - Amazon Cognito Region
+        region: "eu-central-1",
 
-const authenticationData = {
-    Username: "andrea",
-    Password: "Andrea2022!",
-};
-const authenticationDetails = new AuthenticationDetails(authenticationData);
-const poolData = {
-    UserPoolId: "eu-central-1_Gdqd6f47B",
-    ClientId: "7dpqde9g9q9rao2cst7g9re6i6",
-};
-const userPool = new CognitoUserPool(poolData);
-const userData = {
-    Username: "andrea",
-    Pool: userPool,
-};
-const cognitoUser = new CognitoUser(userData);
+        // OPTIONAL - Amazon Cognito User Pool ID
+        userPoolId: "eu-central-1_Gdqd6f47B",
 
-cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess: function (result) {
-        console.log(result);
-        idToken = result.getIdToken().getJwtToken();
-    },
-    onFailure: function (err) {
-        console.log(err.message || JSON.stringify(err));
+        // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
+        userPoolWebClientId: "1pmqp2gpdgjshv36ejemsslonn",
+
+        // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
+        mandatorySignIn: false,
+
+        // OPTIONAL - Configuration for cookie storage
+        // Note: if the secure flag is set to true, then the cookie transmission requires a secure protocol
+        cookieStorage: {
+            // REQUIRED - Cookie domain (only required if cookieStorage is provided)
+            domain: "arsecasa.link",
+            // OPTIONAL - Cookie path
+            path: "/",
+            // OPTIONAL - Cookie expiration in days
+            expires: 365,
+            // OPTIONAL - See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+            sameSite: "lax",
+            // OPTIONAL - Cookie secure flag
+            // Either true or false, indicating if the cookie transmission requires a secure protocol (https).
+            secure: false,
+        },
+
+        // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
+        authenticationFlowType: "USER_PASSWORD_AUTH",
+
+        // OPTIONAL - Hosted UI configuration
+        oauth: {
+            domain: "https://emporiocaseloginsystem.auth.eu-central-1.amazoncognito.com",
+            scope: [
+                "phone",
+                "email",
+                "profile",
+                "openid",
+                "aws.cognito.signin.user.admin",
+            ],
+            redirectSignIn: "http://localhost:3000/",
+            redirectSignOut: "http://localhost:3000/",
+            responseType: "code", // or 'token', note that REFRESH token will only be generated when the responseType is code
+        },
     },
 });
 
+// You can get the current config object
+const currentConfig = Auth.configure();
+
+setupIonicReact();
+
 const App: React.FC = () => {
     useEffect(() => {
-        const fetchRes = async () => {
+        // define async function
+        async function startApp() {
             try {
-                const url = `${process.env.REACT_APP_PROXY_URL!}/immobili`;
-                console.log(url);
-                console.log(idToken);
-                const res = await axios.get(url, {
-                    headers: {
-                        Authorization: idToken,
-                    },
-                });
-                console.log(res);
-            } catch (e: any) {
+                const user = await Auth.signIn(
+                    "andrea.arseni87@gmail.com",
+                    "Andrea2022!"
+                );
+                console.log(user);
+            } catch (e) {
                 console.log(e);
             }
-        };
+            try {
+                const res = await axios.get("https://arsecasa.link/ping");
+                console.log(res);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        // invoke
+        startApp();
+    });
 
-        setTimeout(() => {
-            fetchRes();
-        }, 3000);
-    }, []);
-
-    return (
-        <IonApp>
-            <IonReactRouter>
-                <IonTabs>
-                    <IonRouterOutlet>
-                        <Route exact path="/tab1">
-                            <Tab1 />
-                        </Route>
-                        <Route exact path="/tab2">
-                            <Tab2 />
-                        </Route>
-                        <Route path="/tab3">
-                            <Tab3 />
-                        </Route>
-                        <Route exact path="/">
-                            <Redirect to="/tab1" />
-                        </Route>
-                    </IonRouterOutlet>
-                    <IonTabBar slot="bottom">
-                        <IonTabButton tab="tab1" href="/tab1">
-                            <IonIcon icon={triangle} />
-                            <IonLabel>Tab 1</IonLabel>
-                        </IonTabButton>
-                        <IonTabButton tab="tab2" href="/tab2">
-                            <IonIcon icon={ellipse} />
-                            <IonLabel>Tab 2</IonLabel>
-                        </IonTabButton>
-                        <IonTabButton tab="tab3" href="/tab3">
-                            <IonIcon icon={square} />
-                            <IonLabel>Tab 3</IonLabel>
-                        </IonTabButton>
-                    </IonTabBar>
-                </IonTabs>
-            </IonReactRouter>
-        </IonApp>
-    );
+    return <IonApp></IonApp>;
 };
 
 export default App;
+
+// 1. Fare una chiamata alla API path ping
+// 2. If call ok si vola
+// 3. If call 401 redirect login
