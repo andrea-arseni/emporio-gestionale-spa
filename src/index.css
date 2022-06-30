@@ -1,0 +1,8 @@
+.selected {
+    color: var(--ion-color-light) !important;
+}
+
+ion-split-pane {
+    --side-max-width: 200px;
+    --side-min-width: 200px;
+}

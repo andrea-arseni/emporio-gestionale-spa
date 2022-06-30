@@ -1,0 +1,4 @@
+.header {
+    background-color: var(--ion-color-light);
+    z-index: -1;
+}
