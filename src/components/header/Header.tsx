@@ -9,13 +9,23 @@ import {
 import { reorderFourOutline } from "ionicons/icons";
 import { useLocation } from "react-router";
 
-const Header: React.FC<{}> = () => {
+const Header: React.FC<{ token: string | null }> = (props) => {
     const location = useLocation();
 
-    const nome =
-        location.pathname === "/"
-            ? "Gestionale Emporio Case"
-            : location.pathname.split("/")[1].toLowerCase();
+    const routes = props.token
+        ? [
+              "/appuntamenti",
+              "/immobili",
+              "/persone",
+              "/lavori",
+              "/operazioni",
+              "/documenti",
+          ]
+        : ["/login", "/primo-accesso", "/rinnova-password"];
+
+    const nome = routes.find((el) => el === location.pathname)
+        ? location.pathname.split("/")[1].toLowerCase().replace("-", " ")
+        : "Gestionale Emporio Case";
 
     return (
         <IonHeader collapse="fade" translucent={true} color="light">

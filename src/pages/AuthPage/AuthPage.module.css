@@ -1,0 +1,49 @@
+.form {
+    margin: 0 auto;
+    width: 60%;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 6px;
+    padding: 10px;
+    flex-flow: column;
+}
+
+.form * {
+    width: 80%;
+}
+
+.logo {
+    max-width: 280px;
+    width: 100%;
+    margin: 20px auto;
+}
+
+.inputWrapper {
+    padding: 0 10px 10px 10px;
+    margin: 10px;
+}
+
+.button {
+    margin: 10px;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.mainButton {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .form {
+        margin: 0;
+        width: 80%;
+    }
+}
+
+@media (max-width: 400px) {
+    .form {
+        width: 96%;
+    }
+}
