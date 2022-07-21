@@ -9,13 +9,13 @@ import {
     useIonAlert,
 } from "@ionic/react";
 import React, { FormEvent, Fragment, useState } from "react";
-import axios from "axios";
 import styles from "./AuthPage.module.css";
 import logo from "../../assets/logo.png";
 import useInput from "../../hooks/use-input";
 import { login } from "../../store/auth-slice";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
+import axiosInstance from "../../utils/axiosInstance";
 
 const AuthPage: React.FC<{}> = () => {
     const history = useHistory();
@@ -117,13 +117,10 @@ const AuthPage: React.FC<{}> = () => {
     };
 
     const submitLoginCall = async () => {
-        const res = await axios.post(
-            `${process.env.REACT_APP_API_URL}/users/login`,
-            {
-                nameOrEmail: inputNameValue,
-                password: inputPasswordValue,
-            }
-        );
+        const res = await axiosInstance.post(`users/login`, {
+            nameOrEmail: inputNameValue,
+            password: inputPasswordValue,
+        });
         setShowLoading(false);
         const token = res.data.token;
         // salva il token in global state
@@ -134,13 +131,10 @@ const AuthPage: React.FC<{}> = () => {
     };
 
     const submitForgotPasswordCall = async () => {
-        await axios.post(
-            `${process.env.REACT_APP_API_URL}/users/forgot-password`,
-            {
-                name: "",
-                email: inputEmailValue,
-            }
-        );
+        await axiosInstance.post(`users/forgot-password`, {
+            name: "",
+            email: inputEmailValue,
+        });
         setShowLoading(false);
         // call successfull, check email
         presentAlert({

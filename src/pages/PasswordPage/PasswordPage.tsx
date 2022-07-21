@@ -8,13 +8,13 @@ import {
     IonNote,
     useIonAlert,
 } from "@ionic/react";
-import axios from "axios";
 import { FormEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import useInput from "../../hooks/use-input";
 import { login } from "../../store/auth-slice";
+import axiosInstance from "../../utils/axiosInstance";
 import capitalize from "../../utils/capitalize";
 import styles from "./PasswordPage.module.css";
 
@@ -82,8 +82,8 @@ const PasswordPage: React.FC<{}> = () => {
         // success - login e redirect su appuntamenti
         setShowLoading(true);
         try {
-            const res = await axios.post(
-                `${process.env.REACT_APP_API_URL}/users/${
+            const res = await axiosInstance.post(
+                `users/${
                     mode === "rinnova password"
                         ? "reset-password"
                         : "first-access"

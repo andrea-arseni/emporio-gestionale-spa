@@ -4,7 +4,11 @@ interface AuthState {
     authToken: string | null;
 }
 
-const initialState = { authToken: "" } as AuthState;
+const initialState = {
+    authToken: localStorage.getItem("authToken")
+        ? localStorage.getItem("authToken")
+        : "",
+} as AuthState;
 
 const authSlice = createSlice({
     name: "auth",
@@ -17,7 +21,6 @@ const authSlice = createSlice({
         logout(state) {
             localStorage.removeItem("authToken");
             state.authToken = null;
-            console.log("Sono qui");
         },
         /* incrementByAmount(state, action: PayloadAction<number>) {
             state.value += action.payload;

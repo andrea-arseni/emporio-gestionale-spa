@@ -1,0 +1,18 @@
+.grid {
+    height: calc(100% - 45px - 62px - 66px);
+    overflow: scroll;
+}
+
+.item {
+    border-bottom: 1px solid lightgray;
+}
+
+.list {
+    border-right: 1px solid lightgray;
+}
+
+.item.now {
+    border: 1px solid rgb(213, 7, 7);
+    position: relative;
+    top: -1px;
+}

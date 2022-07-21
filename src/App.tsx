@@ -23,98 +23,82 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import Header from "./components/header/Header";
 import Menu from "./components/menu/Menu";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "./store";
 import AuthPage from "./pages/AuthPage/AuthPage";
-import { useEffect } from "react";
-import { login } from "./store/auth-slice";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import Logout from "./components/logout/Logout";
-import axios from "axios";
 import PasswordPage from "./pages/PasswordPage/PasswordPage";
+import AppuntamentiPage from "./pages/AppuntamentiPage/AppuntamentiPage";
 
 setupIonicReact();
 
 const App: React.FC = () => {
     const token = useSelector((state: RootState) => state.auth.authToken);
 
-    axios.interceptors.request.use(
-        (config) => {
-            config.headers!.authorization = token ? token : false;
-            return config;
-        },
-        (error) => Promise.reject(error)
-    );
-
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const token = localStorage.getItem("authToken");
-        if (token) dispatch(login(token));
-    }, [dispatch]);
-
     return (
         <IonApp>
             <Header token={token} />
-            {token && (
-                <IonSplitPane contentId="main">
-                    <Menu />
-                    <IonRouterOutlet id="main"></IonRouterOutlet>
-                </IonSplitPane>
-            )}
-            <Switch>
-                {!token && (
-                    <Route path="/login">
-                        <AuthPage />
-                    </Route>
-                )}
-                {!token && (
-                    <Route path="/primo-accesso">
-                        <PasswordPage />
-                    </Route>
-                )}
-                {!token && (
-                    <Route path="/rinnova-password">
-                        <PasswordPage />
-                    </Route>
-                )}
-                {token && (
-                    <Route path="/appuntamenti">
-                        <div>Appuntamenti</div>
-                    </Route>
-                )}
-                {token && (
-                    <Route path="/immobili">
-                        <div>Immobili</div>
-                    </Route>
-                )}
-                {token && (
-                    <Route path="/persone">
-                        <div>persone</div>
-                    </Route>
-                )}
-                {token && (
-                    <Route path="/lavori">
-                        <div>lavori</div>
-                    </Route>
-                )}
-                {token && (
-                    <Route path="/operazioni">
-                        <div>operazioni</div>
-                    </Route>
-                )}
-                {token && (
-                    <Route path="/documenti">
-                        <div>documenti</div>
-                    </Route>
-                )}
-                {token && (
-                    <Route path="/logout">
-                        <Logout />
-                    </Route>
-                )}
-                <Route path="*">Not Found</Route>
-            </Switch>
+            <IonSplitPane contentId="main">
+                {token && <Menu />}
+                <IonRouterOutlet id="main">
+                    <Switch>
+                        {!token && (
+                            <Route path="/login">
+                                <AuthPage />
+                            </Route>
+                        )}
+                        {!token && (
+                            <Route path="/primo-accesso">
+                                <PasswordPage />
+                            </Route>
+                        )}
+                        {!token && (
+                            <Route path="/rinnova-password">
+                                <PasswordPage />
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/appuntamenti">
+                                <AppuntamentiPage />
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/immobili">
+                                <div>Immobili</div>
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/persone">
+                                <div>persone</div>
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/lavori">
+                                <div>lavori</div>
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/operazioni">
+                                <div>operazioni</div>
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/documenti">
+                                <div>documenti</div>
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/logout">
+                                <Logout />
+                            </Route>
+                        )}
+                        <Route path="*">
+                            <Redirect to={token ? "appuntamenti" : "login"} />
+                        </Route>
+                    </Switch>
+                </IonRouterOutlet>
+            </IonSplitPane>
         </IonApp>
     );
 };

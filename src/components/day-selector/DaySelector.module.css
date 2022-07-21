@@ -1,0 +1,19 @@
+.spaces {
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+.spaces * {
+    margin: 6px;
+}
+
+.modalContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent ion-datetime {
+    position: relative;
+    top: 30px;
+}
