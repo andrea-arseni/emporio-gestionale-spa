@@ -27,17 +27,38 @@
     height: calc(100vh - 44px);
 }
 
-.backdrop {
-    z-index: 9999;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+.itemOption {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: calc(100%-62px);
-    position: absolute;
-    bottom: 0;
+    flex-flow: column;
+}
+
+.itemOption * {
+    margin: 5px auto;
+}
+
+.spaces {
+    margin-top: 4px;
+    margin-bottom: 0;
+    background-color: white;
+}
+
+.spaces * {
+    margin: 6px;
+}
+
+.form {
+    height: calc(100% - 56px);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+}
+
+.list {
+    width: 90%;
 }
 
 ion-grid,
@@ -64,8 +85,9 @@ ion-segment-button {
     --color-checked: var(--ion-color-primary);
 }
 
-ion-segment {
-    position: absolute;
+ion-segment,
+ion-footer {
+    position: fixed;
     bottom: 0;
     --background: var(--ion-color-light);
 }

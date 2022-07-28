@@ -16,6 +16,7 @@ import { login } from "../../store/auth-slice";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import axiosInstance from "../../utils/axiosInstance";
+import errorHandler from "../../utils/errorHandler";
 
 const AuthPage: React.FC<{}> = () => {
     const history = useHistory();
@@ -86,33 +87,14 @@ const AuthPage: React.FC<{}> = () => {
                 : submitForgotPasswordCall());
         } catch (e: any) {
             setShowLoading(false);
-            presentAlert({
-                header: "Errore",
-                subHeader: `${
-                    e.response
-                        ? `${
-                              mode === "login"
-                                  ? "Login"
-                                  : "Richiesta recupero passowrd"
-                          } non riuscita`
-                        : ""
-                }`,
-                message: `${
-                    e.response
-                        ? e.response.data.message
-                        : `${
-                              mode === "login"
-                                  ? "Login"
-                                  : "Richiesta recupero passowrd"
-                          } non riuscita`
-                }`,
-                buttons: [
-                    {
-                        text: "OK",
-                        handler: () => resetForm(),
-                    },
-                ],
-            });
+            errorHandler(
+                e,
+                () => resetForm(),
+                `${
+                    mode === "login" ? "Login" : "Richiesta recupero password"
+                } non riuscita`,
+                presentAlert
+            );
         }
     };
 

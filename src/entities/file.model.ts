@@ -1,8 +1,8 @@
 export class File {
     constructor(
-        public id: number,
-        public codiceBucket: string,
-        public nome: string,
-        public tipologia: string
+        public id: number | null,
+        public codiceBucket: string | null,
+        public nome: string | null,
+        public tipologia: string | null
     ) {}
 }

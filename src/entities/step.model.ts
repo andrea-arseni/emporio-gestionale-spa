@@ -2,9 +2,9 @@ import { User } from "./user.model";
 
 export class Step {
     constructor(
-        public id: number,
-        public descrizione: string,
-        public data: Date,
-        public user: User
+        public id: number | null,
+        public descrizione: string | null,
+        public data: string | null,
+        public user: User | null
     ) {}
 }

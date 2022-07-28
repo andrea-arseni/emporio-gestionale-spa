@@ -30,6 +30,8 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import Logout from "./components/logout/Logout";
 import PasswordPage from "./pages/PasswordPage/PasswordPage";
 import AppuntamentiPage from "./pages/AppuntamentiPage/AppuntamentiPage";
+import ImmobiliPage from "./pages/ImmobiliPage/ImmobiliPage";
+import OperazioniPage from "./pages/OperazioniPage/OperazioniPage";
 
 setupIonicReact();
 
@@ -65,7 +67,7 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route path="/immobili">
-                                <div>Immobili</div>
+                                <ImmobiliPage />
                             </Route>
                         )}
                         {token && (
@@ -80,7 +82,7 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route path="/operazioni">
-                                <div>operazioni</div>
+                                <OperazioniPage />
                             </Route>
                         )}
                         {token && (
@@ -104,3 +106,9 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+/* 
+- studio sort - vinto
+- action sheet 
+- testing
+*/

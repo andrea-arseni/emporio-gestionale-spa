@@ -6,15 +6,19 @@ import {
     IonLabel,
     IonList,
 } from "@ionic/react";
+import { Visit } from "../../entities/visit.model";
 import useSize from "../../hooks/use-size";
-import { Giorno } from "../../utils/timeUtils";
+import { areDateEquals, Giorno } from "../../utils/timeUtils";
 import styles from "./Calendar.module.css";
 
-const Calendar: React.FC<{ currentWeek: Giorno[]; currentDay: Date }> = (
-    props
-) => {
+const Calendar: React.FC<{
+    currentWeek: Giorno[];
+    currentDay: Date;
+    visits: Visit[];
+    openVisitForm: (date: Date, time: string, visit: Visit | null) => void;
+}> = (props) => {
     const isToday = (dayProposed: Date) =>
-        new Date().toDateString() === dayProposed.toDateString();
+        areDateEquals(new Date(), dayProposed);
 
     const isNow = (dayProposed: Date, time: string) => {
         return (
@@ -28,13 +32,46 @@ const Calendar: React.FC<{ currentWeek: Giorno[]; currentDay: Date }> = (
 
     const [widthScreen] = useSize();
 
+    const handleClick = (
+        e: any,
+        date: Date,
+        time: string,
+        visit: Visit | null
+    ) => {
+        if (e.detail === 2) props.openVisitForm(date, time, visit);
+    };
+
     const getWeekGrid = () => props.currentWeek.map((el) => getGrid(el));
 
     const getDayGrid = () => {
-        const selectedDay = props.currentWeek.find(
-            (el) => el.date.toDateString() === props.currentDay.toDateString()
+        const selectedDay = props.currentWeek.find((el) =>
+            areDateEquals(el.date, props.currentDay)
         );
         return getGrid(selectedDay!);
+    };
+
+    const getMeetings = (dataAgenda: Date, oraAgenda: string) => {
+        // ritorna tutte quelle visite che sono nello stesso giorno alla stessa ora
+        return props.visits
+            .filter((visit: Visit) => {
+                const dataVisita = new Date(visit.quando!);
+                return (
+                    dataAgenda.getDate() === dataVisita.getDate() &&
+                    dataVisita.getHours() ===
+                        Number.parseInt(oraAgenda.split(":")[0]) &&
+                    dataVisita.getMinutes() -
+                        Number.parseInt(oraAgenda.split(":")[1]) <
+                        15 &&
+                    dataVisita.getMinutes() -
+                        Number.parseInt(oraAgenda.split(":")[1]) >=
+                        0
+                );
+            })
+            .map((el) => (
+                <div className={styles.app} key={el.id! + Math.random() * 1000}>
+                    App
+                </div>
+            ));
     };
 
     const getGrid = (day: Giorno) => {
@@ -48,22 +85,31 @@ const Calendar: React.FC<{ currentWeek: Giorno[]; currentDay: Date }> = (
         return (
             <IonCol key={Date.now() + Math.random() * 1000}>
                 <IonList className={styles.list}>
+                    {widthScreen >= 700 && (
+                        <IonItem color="primary">
+                            <IonLabel>{day.giornoSettimana}</IonLabel>
+                        </IonItem>
+                    )}
                     {grid.map((el) => (
-                        <IonItem
+                        <div
                             className={`${styles.item} ${
                                 isNow(day.date, el) ? styles.now : ""
-                            }`}
-                            lines="none"
-                            color={
-                                !isNow(day.date, el) && isToday(day.date)
-                                    ? `light`
-                                    : ``
-                            }
+                            } ${!isToday(day.date) ? `gray` : ``}`}
                             key={Date.now() + Math.random() * 1000}
                         >
-                            <IonLabel>{el}</IonLabel>
-                            <IonLabel>Ciao</IonLabel>
-                        </IonItem>
+                            <div
+                                onClick={(e) =>
+                                    handleClick(e, day.date, el, null)
+                                }
+                                className={styles.app}
+                                slot="start"
+                            >
+                                {el}
+                            </div>
+                            <div className={styles.appFrame}>
+                                {getMeetings(day.date, el)}
+                            </div>
+                        </div>
                     ))}
                 </IonList>
             </IonCol>

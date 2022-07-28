@@ -1,3 +1,5 @@
+import { Visit } from "../entities/visit.model";
+
 export type GIORNO_DELLA_SETTIMANA =
     | "Domenica"
     | "Lunedì"
@@ -35,7 +37,6 @@ const MONTH_OF_THE_YEAR = [
 export interface Giorno {
     giornoSettimana: GIORNO_DELLA_SETTIMANA;
     date: Date;
-    visite: any[];
 }
 
 export const setWeek = (referenceDay: Date) => {
@@ -48,7 +49,6 @@ export const setWeek = (referenceDay: Date) => {
     const today: Giorno = {
         giornoSettimana: GIORNI_DELLA_SETTIMANA[referenceDay.getDay()],
         date: referenceDay,
-        visite: [],
     };
     week.push(today);
     // unshift fino a giorno = 1
@@ -74,7 +74,6 @@ const addDays = (
         const day: Giorno = {
             giornoSettimana: GIORNI_DELLA_SETTIMANA[currentDay.getDay()],
             date: currentDay,
-            visite: [],
         };
         week.push(day);
     }
@@ -95,7 +94,13 @@ export const getDayName = (input: Date, mode: "short" | "long" = "short") => {
     );
 };
 
+export const getTwoDigitString = (input: number) =>
+    input < 10 ? "0" + input : input.toString();
+
 export const getDateAsString = (input: Date) =>
-    `${input.getFullYear()}-${
-        input.getMonth() < 10 ? `0` : ``
-    }${input.getMonth()}-${input.getDate()}`;
+    `${input.getFullYear()}-${getTwoDigitString(
+        input.getMonth() + 1
+    )}-${getTwoDigitString(input.getDate())}`;
+
+export const areDateEquals = (inputOne: Date, inputTwo: Date) =>
+    getDateAsString(inputOne) === getDateAsString(inputTwo);

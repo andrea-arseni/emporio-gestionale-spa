@@ -1,83 +1,60 @@
 import {
     DatetimeChangeEventDetail,
     IonButton,
-    IonButtons,
-    IonContent,
     IonDatetime,
     IonIcon,
     IonLabel,
-    IonModal,
-    IonTitle,
-    IonToolbar,
 } from "@ionic/react";
-import { calendarOutline, closeOutline } from "ionicons/icons";
-import { Dispatch, SetStateAction, useRef } from "react";
-import styles from "./DaySelector.module.css";
+import { calendarOutline } from "ionicons/icons";
+import { Dispatch, SetStateAction, useState } from "react";
+import Modal from "../modal/Modal";
 
 const DaySelector: React.FC<{
     currentDay: Date;
     setCurrentDay: Dispatch<SetStateAction<Date>>;
 }> = (props) => {
-    const isNotSunday = (dateString: string) => {
-        const date = new Date(dateString);
-        const utcDay = date.getUTCDay();
-        return utcDay !== 0;
-    };
+    const isNotSunday = (dateString: string) =>
+        new Date(dateString).getDay() !== 0;
 
-    const modal = useRef<HTMLIonModalElement>(null);
-
-    const dismiss = () => modal.current?.dismiss();
+    const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const setNewDate = (e: CustomEvent<DatetimeChangeEventDetail>) => {
         const date = new Date(e.detail.value!.toString());
         props.setCurrentDay(date);
-        dismiss();
+        setIsOpen(false);
     };
 
     return (
         <>
             <IonButton
-                className={styles.spaces}
+                className="spaces"
                 expand="full"
                 mode="ios"
                 color="dark"
                 fill="outline"
-                id="open-modal"
+                onClick={() => setIsOpen(true)}
             >
                 <IonIcon icon={calendarOutline} />
                 <IonLabel>Cambia Giorno</IonLabel>
             </IonButton>
-            <IonModal
-                id="date-picker"
-                ref={modal}
-                trigger="open-modal"
-                showBackdrop
+            <Modal
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                title="Seleziona un altro giorno"
+                handler={() => setIsOpen(false)}
             >
-                <IonContent className={styles.modalContent}>
-                    <IonToolbar>
-                        <IonTitle>Seleziona un altro giorno</IonTitle>
-                        <IonButtons slot="end">
-                            <IonButton color="dark" onClick={() => dismiss()}>
-                                <IonIcon
-                                    slot="icon-only"
-                                    icon={closeOutline}
-                                ></IonIcon>
-                            </IonButton>
-                        </IonButtons>
-                    </IonToolbar>
-                    <IonDatetime
-                        value={props.currentDay.toISOString()}
-                        mode="ios"
-                        min="2019-01-01T00:00:00"
-                        max="2040-05-31T23:59:59"
-                        isDateEnabled={isNotSunday}
-                        locale="it-IT"
-                        firstDayOfWeek={1}
-                        presentation="date"
-                        onIonChange={setNewDate}
-                    ></IonDatetime>
-                </IonContent>
-            </IonModal>
+                <IonDatetime
+                    value={props.currentDay.toISOString()}
+                    mode="ios"
+                    min="2019-01-01T00:00:00"
+                    max="2040-05-31T23:59:59"
+                    isDateEnabled={isNotSunday}
+                    locale="it-IT"
+                    firstDayOfWeek={1}
+                    presentation="date"
+                    onIonChange={setNewDate}
+                ></IonDatetime>
+            </Modal>
         </>
     );
 };

@@ -1,0 +1,8 @@
+.list {
+    height: calc(100% - 44px - 44px - 44px - 44px);
+    overflow: scroll;
+}
+
+.filterButton {
+    margin: 0;
+}

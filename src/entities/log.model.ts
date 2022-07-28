@@ -1,3 +1,7 @@
 export class Log {
-    constructor(public id: number, public azione: string, public data: Date) {}
+    constructor(
+        public id: number | null,
+        public azione: string | null,
+        public data: string | null
+    ) {}
 }
