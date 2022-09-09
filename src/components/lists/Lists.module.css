@@ -1,0 +1,32 @@
+.ref {
+    border: 1px solid gray;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 10px;
+    margin: 10px;
+    color: gray;
+    margin-right: 20px;
+}
+
+.active {
+    color: green;
+    border: 1px solid green;
+    background-color: rgb(228, 251, 224);
+}
+
+.inactive {
+    color: rgb(155, 1, 1);
+    border: 1px solid rgb(155, 1, 1);
+    background-color: rgb(251, 217, 217);
+}
+
+.note {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+}

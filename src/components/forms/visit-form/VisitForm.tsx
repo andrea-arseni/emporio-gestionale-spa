@@ -7,10 +7,10 @@ import {
     IonInput,
     IonTextarea,
 } from "@ionic/react";
-import { Immobile } from "../../entities/immobile.model";
-import { Persona } from "../../entities/persona.model";
-import { User } from "../../entities/user.model";
-import { Visit } from "../../entities/visit.model";
+import { Immobile } from "../../../entities/immobile.model";
+import { Persona } from "../../../entities/persona.model";
+import { User } from "../../../entities/user.model";
+import { Visit } from "../../../entities/visit.model";
 
 const FormVisit: React.FC<{ visit: Visit }> = (props) => {
     const inputDoveChangedHandler = (e: any) => console.log(e.detail.value);

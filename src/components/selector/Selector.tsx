@@ -1,28 +1,18 @@
 import {
-    IonActionSheet,
     IonButton,
     IonIcon,
-    IonItem,
-    IonItemOption,
-    IonItemOptions,
-    IonItemSliding,
     IonLabel,
     IonList,
     IonLoading,
-    IonNote,
-    IonText,
+    IonTitle,
+    IonToolbar,
     useIonAlert,
 } from "@ionic/react";
 import {
-    calendarOutline,
-    cardOutline,
     closeOutline,
-    createOutline,
-    documentTextOutline,
     filterOutline,
     layersOutline,
     listOutline,
-    trashOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useHistory } from "react-router";
@@ -30,14 +20,19 @@ import { entitiesType, Entity } from "../../entities/entity";
 import { Immobile } from "../../entities/immobile.model";
 import { Operazione } from "../../entities/operazione.model";
 import axiosInstance from "../../utils/axiosInstance";
+import capitalize from "../../utils/capitalize";
 import errorHandler from "../../utils/errorHandler";
 import { numberAsPrice } from "../../utils/numberAsPrice";
 import { getDayName } from "../../utils/timeUtils";
+import FilterActionSheet from "../filter-action-sheet/FilterActionSheet";
 import DateFilter from "../filters/date-filter/DateFilter";
 import NumberFilter from "../filters/number-filter/NumberFilter";
 import StringFilter from "../filters/string-filter/StringFilter";
+import ListImmobili from "../lists/ListImmobili";
+import ListOperazioni from "../lists/ListOperazioni";
 import NoResults from "../no-results/NoResults";
 import PageFooter from "../page-footer/PageFooter";
+import SortActionSheet from "../sort-action-sheet/SortActionSheet";
 import styles from "./Selector.module.css";
 
 const Selector: React.FC<{
@@ -45,28 +40,20 @@ const Selector: React.FC<{
     setCurrentEntity: Dispatch<SetStateAction<Entity | null>>;
     setMode: Dispatch<SetStateAction<"list" | "form">>;
 }> = (props) => {
+    const getInitialSorting = () => {
+        switch (props.entitiesType) {
+            case "operazioni":
+                return "data";
+            case "immobili":
+                return "ref";
+            default:
+                return "";
+        }
+    };
+
     const [filterMode, setFilterMode] = useState<
         "default" | "stringFilter" | "dataFilter" | "numberFilter"
     >("default");
-
-    const titleFilter = (
-        <IonButton
-            className={styles.filterButton}
-            expand="full"
-            mode="ios"
-            fill="outline"
-            color="dark"
-            onClick={() => {
-                setFilterMode("default");
-                setFilter({ filter: undefined });
-            }}
-        >
-            <IonIcon icon={listOutline} />
-            <IonLabel style={{ paddingLeft: "16px" }}>
-                Torna alla Lista
-            </IonLabel>
-        </IonButton>
-    );
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
@@ -82,7 +69,9 @@ const Selector: React.FC<{
 
     const [numberOfResults, setNumberOfResults] = useState<number>(0);
 
-    const [sort, setSort] = useState<string>("data");
+    const [sort, setSort] = useState<string>(getInitialSorting());
+
+    const [negativeForbidden, setNegativeForbidden] = useState<boolean>(false);
 
     const [filter, setFilter] = useState<{
         filter: string | undefined;
@@ -138,7 +127,26 @@ const Selector: React.FC<{
         fetchEntities();
     }, [history, presentAlert, page, props.entitiesType, filter, sort]);
 
-    const deleteEntity = async (entityName: string, id: string) => {
+    const titleFilter = (
+        <IonButton
+            className={styles.filterButton}
+            expand="full"
+            mode="ios"
+            fill="outline"
+            color="dark"
+            onClick={() => {
+                setFilterMode("default");
+                setFilter({ filter: undefined });
+            }}
+        >
+            <IonIcon icon={listOutline} />
+            <IonLabel style={{ paddingLeft: "16px" }}>
+                Torna alla Lista
+            </IonLabel>
+        </IonButton>
+    );
+
+    const confirmDeleteEntity = async (entityName: string, id: string) => {
         try {
             setShowLoading(true);
             await axiosInstance.delete(entityName + "/" + id);
@@ -157,108 +165,74 @@ const Selector: React.FC<{
         }
     };
 
-    const getImmobili = (entities: Immobile[]) =>
-        entities.map((immobile: Immobile) => (
-            <IonItemSliding key={immobile.id!} id={immobile.id?.toString()}>
-                <IonItem detail>
-                    <IonLabel>
-                        <h2>{immobile.titolo}</h2>
-                        <p>{`${immobile.indirizzo} (${immobile.comune})`}</p>
-                        <p>{numberAsPrice(immobile.prezzo!)}</p>
-                    </IonLabel>
-                    <IonNote slot="end">{immobile.status}</IonNote>
-                </IonItem>
-                <IonItemOptions side="end">
-                    <IonItemOption color="warning">
-                        <div className="itemOption">
-                            <IonIcon icon={createOutline} size="large" />
-                            <IonText>Modifica</IonText>
-                        </div>
-                    </IonItemOption>
-                    <IonItemOption color="danger">
-                        <div className="itemOption">
-                            <IonIcon icon={trashOutline} size="large" />
-                            <IonText>Elimina</IonText>
-                        </div>
-                    </IonItemOption>
-                </IonItemOptions>
-            </IonItemSliding>
-        ));
-
-    const getOperazioni = (entities: Operazione[]) => {
-        const operazioni = entities.map((operazione: Operazione) => (
-            <IonItemSliding key={operazione.id!} id={operazione.id?.toString()}>
-                <IonItem detail>
-                    <IonLabel
-                        color={operazione.importo! > 0 ? "primary" : "danger"}
-                    >
-                        <h2>{`${operazione.descrizione} ( ${numberAsPrice(
-                            operazione.importo!
-                        )} )`}</h2>
-                        <p>{`${getDayName(
-                            new Date(operazione.data!),
-                            "long"
-                        )}`}</p>
-                        <p>{operazione.user?.name}</p>
-                    </IonLabel>
-                </IonItem>
-                <IonItemOptions side="end">
-                    <IonItemOption
-                        color="warning"
-                        onClick={() => {
-                            props.setCurrentEntity(operazione);
-                            props.setMode("form");
-                        }}
-                    >
-                        <div className="itemOption">
-                            <IonIcon icon={createOutline} size="large" />
-                            <IonText>Modifica</IonText>
-                        </div>
-                    </IonItemOption>
-                    <IonItemOption
-                        color="danger"
-                        onClick={() =>
-                            deleteEntity(
-                                "operazioni",
-                                operazione.id!.toString()
-                            )
-                        }
-                    >
-                        <div className="itemOption">
-                            <IonIcon icon={trashOutline} size="large" />
-                            <IonText>Elimina</IonText>
-                        </div>
-                    </IonItemOption>
-                </IonItemOptions>
-            </IonItemSliding>
-        ));
-        const saldo = entities
-            .map((el) => el.importo!)
-            .reduce(
-                (previousValue, currentValue) => previousValue + currentValue,
-                0
-            );
-        return (
-            <>
-                {operazioni}
-                <IonItem detail color={saldo! > 0 ? "primary" : "danger"}>
-                    <IonLabel>
-                        <h2>{`Il Saldo complessivo per questa lista è ${numberAsPrice(
-                            saldo
-                        )}`}</h2>
-                    </IonLabel>
-                </IonItem>
-            </>
-        );
+    const deleteEntity = (entityName: string, id: string) => {
+        presentAlert({
+            header: "Attenzione!",
+            subHeader: "La cancellazione è irreversibile.",
+            buttons: [
+                {
+                    text: "Conferma",
+                    handler: () => confirmDeleteEntity(entityName, id),
+                },
+                {
+                    text: "Indietro",
+                    role: "cancel",
+                },
+            ],
+        });
     };
 
     const getEntities = () => {
         switch (props.entitiesType) {
             case "immobili":
-                return getImmobili(entities as Immobile[]);
+                return <ListImmobili immobili={entities as Immobile[]} />;
             case "operazioni":
-                return getOperazioni(entities as Operazione[]);
+                return (
+                    <ListOperazioni
+                        operazioni={entities as Operazione[]}
+                        setMode={props.setMode}
+                        setCurrentEntity={props.setCurrentEntity}
+                        deleteEntity={deleteEntity}
+                    />
+                );
         }
+    };
+
+    const getFilterTitle = () => {
+        let output = "Risultati ";
+        if (filter.startDate || filter.endDate) {
+            if (filter.startDate)
+                output =
+                    output + `dal ${getDayName(new Date(filter.startDate))}`;
+            if (filter.endDate)
+                output =
+                    output + `fino al ${getDayName(new Date(filter.endDate))}`;
+            return output;
+        }
+        if (filter.min || filter.max) {
+            output = output + `con ${capitalize(filter.filter!)} `;
+            if (filter.min)
+                output =
+                    output +
+                    `da ${
+                        filter.filter === "prezzo"
+                            ? numberAsPrice(filter.min)
+                            : filter.min
+                    } `;
+            if (filter.max)
+                output =
+                    output +
+                    `fino a ${
+                        filter.filter === "prezzo"
+                            ? numberAsPrice(filter.max)
+                            : filter.max
+                    }`;
+            return output;
+        }
+
+        output =
+            output + `con "${filter.value}" in ${capitalize(filter.filter!)}`;
+        return output;
     };
 
     if (filterMode === "dataFilter")
@@ -278,6 +252,7 @@ const Selector: React.FC<{
             <>
                 {titleFilter}
                 <NumberFilter
+                    negativeForbidden={negativeForbidden}
                     filter={filter}
                     setFilter={setFilter}
                     setFilterMode={setFilterMode}
@@ -300,29 +275,46 @@ const Selector: React.FC<{
     return (
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            <IonButton
-                className={styles.filterButton}
-                expand="full"
-                mode="ios"
-                fill="outline"
-                onClick={() => {
-                    filter.filter
-                        ? setFilter({
-                              filter: undefined,
-                              value: undefined,
-                              startDate: undefined,
-                              endDate: undefined,
-                              max: undefined,
-                              min: undefined,
-                          })
-                        : setShowFilterActionSheet(true);
-                }}
-            >
-                <IonIcon icon={filter.filter ? closeOutline : filterOutline} />
-                <IonLabel style={{ paddingLeft: "16px" }}>
-                    {filter.filter ? "Visualizza tutti" : "Filtra la Lista"}
-                </IonLabel>
-            </IonButton>
+            {filter.filter && (
+                <IonToolbar className={styles.filterToolbar} mode="ios">
+                    <IonTitle>{getFilterTitle()}</IonTitle>
+                    <IonButton
+                        slot="end"
+                        size="small"
+                        color="dark"
+                        mode="ios"
+                        onClick={() => {
+                            setFilter({
+                                filter: undefined,
+                                value: undefined,
+                                startDate: undefined,
+                                endDate: undefined,
+                                max: undefined,
+                                min: undefined,
+                            });
+                            setPage(1);
+                            setNegativeForbidden(false);
+                        }}
+                    >
+                        <IonIcon icon={closeOutline} color="light"></IonIcon>
+                        Annulla Filtro
+                    </IonButton>
+                </IonToolbar>
+            )}
+            {!filter.filter && (
+                <IonButton
+                    className={styles.filterButton}
+                    expand="full"
+                    mode="ios"
+                    fill="outline"
+                    onClick={() => setShowFilterActionSheet(true)}
+                >
+                    <IonIcon icon={filterOutline} />
+                    <IonLabel style={{ paddingLeft: "16px" }}>
+                        Filtra la Lista
+                    </IonLabel>
+                </IonButton>
+            )}
             {entities.length > 1 && (
                 <IonButton
                     className={styles.filterButton}
@@ -341,80 +333,28 @@ const Selector: React.FC<{
             {entities.length > 0 && (
                 <IonList className={styles.list}>{getEntities()}</IonList>
             )}
-            {entities.length === 0 && <NoResults />}
+            {entities.length === 0 && !showLoading && <NoResults />}
             <PageFooter
                 page={page}
                 setPage={setPage}
                 numberOfResults={numberOfResults}
             />
-            <IonActionSheet
-                isOpen={showFilterActionSheet}
-                onDidDismiss={() => setShowFilterActionSheet(false)}
-                header="Filtra per:"
-                buttons={[
-                    {
-                        text: "Importo",
-                        icon: cardOutline,
-                        handler: () => {
-                            setFilterMode("numberFilter");
-                            setFilter({ filter: "importo" });
-                        },
-                    },
-                    {
-                        text: "Data",
-                        icon: calendarOutline,
-                        handler: () => {
-                            setFilterMode("dataFilter");
-                            setFilter({ filter: "data" });
-                        },
-                    },
-                    {
-                        text: "Descrizione",
-                        icon: documentTextOutline,
-                        handler: () => {
-                            setFilter({ filter: "descrizione" });
-                            setFilterMode("stringFilter");
-                        },
-                    },
-                    {
-                        text: "Annulla",
-                        icon: closeOutline,
-                        role: "cancel",
-                    },
-                ]}
-            ></IonActionSheet>
-            <IonActionSheet
-                isOpen={showSortingActionSheet}
-                onDidDismiss={() => setShowSortingActionSheet(false)}
-                header="Ordina per:"
-                buttons={[
-                    {
-                        text: "Importo Crescente",
-                        icon: cardOutline,
-                        handler: () => setSort("importo"),
-                    },
-                    {
-                        text: "Importo Decrescente",
-                        icon: cardOutline,
-                        handler: () => setSort("importo-desc"),
-                    },
-                    {
-                        text: "Data Crescente",
-                        icon: calendarOutline,
-                        handler: () => setSort("data"),
-                    },
-                    {
-                        text: "Data Decrescente",
-                        icon: calendarOutline,
-                        handler: () => setSort("data-desc"),
-                    },
-                    {
-                        text: "Annulla",
-                        icon: closeOutline,
-                        role: "cancel",
-                    },
-                ]}
-            ></IonActionSheet>
+            <FilterActionSheet
+                showFilterActionSheet={showFilterActionSheet}
+                setShowFilterActionSheet={setShowFilterActionSheet}
+                setFilterMode={setFilterMode}
+                setFilter={setFilter}
+                setPage={setPage}
+                setNegativeForbidden={setNegativeForbidden}
+                entity={props.entitiesType}
+            />
+            <SortActionSheet
+                showSortingActionSheet={showSortingActionSheet}
+                setShowSortingActionSheet={setShowSortingActionSheet}
+                setSort={setSort}
+                setPage={setPage}
+                entity={props.entitiesType}
+            />
         </>
     );
 };

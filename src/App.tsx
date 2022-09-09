@@ -106,9 +106,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-/* 
-- studio sort - vinto
-- action sheet 
-- testing
-*/

@@ -21,7 +21,7 @@ import {
 import axiosInstance from "../../utils/axiosInstance";
 import { Visit } from "../../entities/visit.model";
 import Modal from "../../components/modal/Modal";
-import FormVisit from "../../components/visit-form/VisitForm";
+import FormVisit from "../../components/forms/visit-form/VisitForm";
 import errorHandler from "../../utils/errorHandler";
 
 const AppuntamentiPage: React.FC<{}> = () => {

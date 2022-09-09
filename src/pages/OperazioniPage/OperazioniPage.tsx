@@ -1,9 +1,9 @@
 import { IonContent } from "@ionic/react";
 import { cardOutline } from "ionicons/icons";
 import { useState } from "react";
-import FormTitle from "../../components/form-title/FormTitle";
+import FormTitle from "../../components/form-components/form-title/FormTitle";
 import List from "../../components/list/List";
-import FormOperation from "../../components/operation-form/OperationForm";
+import FormOperation from "../../components/forms/operation-form/OperationForm";
 import { Entity } from "../../entities/entity";
 import { Operazione } from "../../entities/operazione.model";
 

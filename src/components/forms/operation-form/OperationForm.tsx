@@ -11,10 +11,10 @@ import {
     IonLoading,
 } from "@ionic/react";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
-import { Operazione } from "../../entities/operazione.model";
-import axiosInstance from "../../utils/axiosInstance";
-import errorHandler from "../../utils/errorHandler";
-import { getDayName } from "../../utils/timeUtils";
+import { Operazione } from "../../../entities/operazione.model";
+import axiosInstance from "../../../utils/axiosInstance";
+import errorHandler from "../../../utils/errorHandler";
+import { getDayName } from "../../../utils/timeUtils";
 import styles from "./OperationForm.module.css";
 
 const FormOperation: React.FC<{

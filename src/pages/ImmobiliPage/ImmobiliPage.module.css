@@ -1,0 +1,10 @@
+.fixed {
+    position: fixed;
+    width: 100%;
+    z-index: 9999;
+}
+
+.spaceDown {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}

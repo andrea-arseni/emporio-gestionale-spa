@@ -57,14 +57,60 @@
     padding-top: 20px;
 }
 
+.checkbox {
+    margin-right: 12px;
+}
+
 .list {
     width: 90%;
+}
+
+.toggleButton {
+    margin: 12px 12px 12px 0;
+    width: 100px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid gray;
+}
+
+.toggleButton * {
+    padding: 10px 0;
+    font-size: larger;
+    height: 100%;
+    width: 50px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.toggleButton *:first-child {
+    border-right: 1px solid gray;
+}
+
+.toggleButton .active {
+    background-color: #3880ff;
+    color: white;
+    transition: all 0.25s;
+}
+
+.toggleButton .inactive {
+    background-color: white;
+    color: gray;
+    transition: all 0.25s;
 }
 
 ion-grid,
 ion-row,
 ion-col {
     padding: 0;
+}
+
+ion-item-group {
+    border: 1px solid gray;
 }
 
 ion-datetime {
@@ -90,4 +136,10 @@ ion-footer {
     position: fixed;
     bottom: 0;
     --background: var(--ion-color-light);
+}
+
+ion-select {
+    --placeholder-opacity: 1;
+    width: 100%;
+    justify-content: center;
 }

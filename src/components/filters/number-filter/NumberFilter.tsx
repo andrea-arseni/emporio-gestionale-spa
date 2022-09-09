@@ -26,6 +26,7 @@ const NumberFilter: React.FC<{
             "default" | "stringFilter" | "dataFilter" | "numberFilter"
         >
     >;
+    negativeForbidden?: boolean;
 }> = (props) => {
     const [minValue, setMinValue] = useState<string | null>(null);
 
@@ -50,6 +51,7 @@ const NumberFilter: React.FC<{
                         lang="it-IT"
                         type="number"
                         value={minValue}
+                        min={props.negativeForbidden ? 0 : undefined}
                         max={maxValue ? maxValue : undefined}
                         onIonChange={(e) => setMinValue(e.detail.value!)}
                     ></IonInput>

@@ -1,6 +1,6 @@
 import { IonContent, IonModal } from "@ionic/react";
 import { Dispatch, SetStateAction } from "react";
-import Title from "../form-title/FormTitle";
+import Title from "../form-components/form-title/FormTitle";
 import styles from "./Modal.module.css";
 
 const Modal: React.FC<{

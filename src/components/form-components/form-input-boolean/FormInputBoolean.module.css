@@ -1,0 +1,12 @@
+.formInputBoolean {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+}
+
+.label {
+    position: relative;
+    top: -9px;
+    text-align: center;
+}

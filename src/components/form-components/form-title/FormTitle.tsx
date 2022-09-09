@@ -6,16 +6,19 @@ import {
     IonIcon,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
+import useSize from "../../../hooks/use-size";
 
 const FormTitle: React.FC<{
     title: string;
     handler: () => void;
     backToList?: boolean;
 }> = (props) => {
+    const [widthScreen] = useSize();
+
     return (
         <IonToolbar mode="ios">
             <IonButtons slot="end">
-                {props.backToList && (
+                {widthScreen >= 500 && props.backToList && (
                     <IonButton
                         color="medium"
                         fill="solid"
@@ -24,7 +27,7 @@ const FormTitle: React.FC<{
                         Torna alla Lista
                     </IonButton>
                 )}
-                {!props.backToList && (
+                {(widthScreen < 500 || !props.backToList) && (
                     <IonButton onClick={props.handler}>
                         <IonIcon slot="icon-only" icon={closeOutline} />
                     </IonButton>
