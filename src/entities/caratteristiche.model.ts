@@ -49,7 +49,6 @@ export class Caratteristiche {
         public cablato: string | null,
         public tipoContratto: string | null,
         public cauzione: string | null,
-        public reception: string | null,
         public altezza: string | null,
         public totalePiani: number | null
     ) {}

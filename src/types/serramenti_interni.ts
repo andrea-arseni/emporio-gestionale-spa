@@ -1,22 +1,22 @@
 export type serramentiInterni =
-    | "Alluminio e vetro"
-    | "Alluminio e doppi vetri"
-    | "Alluminio e tripli vetri"
-    | "PVC e vetro"
-    | "PVC e doppi vetri"
-    | "PVC e tripli vetri"
-    | "Legno e vetro"
-    | "Legno e doppi vetri"
-    | "Legno e tripli vetri";
+    | "Alluminio vetro"
+    | "Alluminio doppi vetri"
+    | "Alluminio tripli vetri"
+    | "PVC vetro"
+    | "PVC doppi vetri"
+    | "PVC tripli vetri"
+    | "Legno vetro"
+    | "Legno doppi vetri"
+    | "Legno tripli vetri";
 
 export const possibleSerramentiInterni = [
-    "Alluminio e vetro",
-    "Alluminio e doppi vetri",
-    "Alluminio e tripli vetri",
-    "PVC e vetro",
-    "PVC e doppi vetri",
-    "PVC e tripli vetri",
-    "Legno e vetro",
-    "Legno e doppi vetri",
-    "Legno e tripli vetri",
+    "Alluminio vetro",
+    "Alluminio doppi vetri",
+    "Alluminio tripli vetri",
+    "PVC vetro",
+    "PVC doppi vetri",
+    "PVC tripli vetri",
+    "Legno vetro",
+    "Legno doppi vetri",
+    "Legno tripli vetri",
 ];

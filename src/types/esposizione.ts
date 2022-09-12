@@ -11,6 +11,8 @@ export type esposizione =
     | "Doppia - Sud Ovest"
     | "Doppia - Nord Ovest"
     | "Doppia - Nord Est"
+    | "Doppia - Sud Nord"
+    | "Doppia - Est Ovest"
     | "Tripla - Sud Nord Est"
     | "Tripla - Sud Nord Ovest"
     | "Tripla - Nord Est Ovest"
@@ -30,6 +32,8 @@ export const possibiliEsposizioni = [
     "Doppia - Sud Ovest",
     "Doppia - Nord Ovest",
     "Doppia - Nord Est",
+    "Doppia - Sud Nord",
+    "Doppia - Est Ovest",
     "Tripla - Sud Nord Est",
     "Tripla - Sud Nord Ovest",
     "Tripla - Nord Est Ovest",

@@ -9,7 +9,8 @@ export type classeEnergetica =
     | "D"
     | "E"
     | "F"
-    | "G";
+    | "G"
+    | "Esente";
 
 export const possibleEnergeticClasses = [
     "A4",
@@ -23,4 +24,5 @@ export const possibleEnergeticClasses = [
     "E",
     "F",
     "G",
+    "Esente",
 ];

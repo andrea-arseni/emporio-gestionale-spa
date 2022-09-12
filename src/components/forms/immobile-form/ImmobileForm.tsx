@@ -13,7 +13,7 @@ import {
     useIonAlert,
     IonLoading,
 } from "@ionic/react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Caratteristiche } from "../../../entities/caratteristiche.model";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
@@ -78,9 +78,16 @@ const ImmobileForm: React.FC<{
     immobile: Immobile | null;
     backToList: () => void;
 }> = (props) => {
-    const [isAutomaticRef, setIsAutomaticRef] = useState<boolean | null>(true);
+    const [isAutomaticRef, setIsAutomaticRef] = useState<boolean | null>(
+        !!!props.immobile
+    );
 
-    const [isManualTown, setIsManualTown] = useState<boolean>(false);
+    const [isManualTown, setIsManualTown] = useState<boolean>(
+        !!props.immobile &&
+            !!props.immobile.comune &&
+            possibleComuni.find((el) => el === props.immobile!.comune) ===
+                undefined
+    );
 
     const [refValue, setRefValue] = useState<number | null>(
         props.immobile ? props.immobile.ref : null
@@ -131,7 +138,9 @@ const ImmobileForm: React.FC<{
     >(props.immobile ? props.immobile.riscaldamento : null);
 
     const [classeEnergeticaValue, setClasseEnergeticaValue] =
-        useState<classeEnergetica | null>(null);
+        useState<classeEnergetica | null>(
+            props.immobile ? props.immobile.classeEnergetica : null
+        );
 
     const [consumoValue, setConsumoValue] = useState<number | null>(
         props.immobile ? props.immobile.consumo : null
@@ -164,249 +173,180 @@ const ImmobileForm: React.FC<{
     );
 
     const [totalePianiValue, setTotalePianiValue] = useState<number | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.totalePiani
-            : null
+        null
     );
 
     const [proprietarioValue, setProprietarioValue] = useState<Persona | null>(
-        props.immobile ? props.immobile.proprietario : null
+        null
     );
 
     const [descrizioneValue, setDescrizioneValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.descrizione
-            : null
+        null
     );
 
-    const [isDescrizioneVirgin, setIsDescrizioneVirgin] = useState<boolean>(
-        !props.immobile ||
-            props.immobile.caratteristiche?.descrizione === genericaDescrizione
-    );
+    const [isDescrizioneVirgin, setIsDescrizioneVirgin] =
+        useState<boolean>(true);
 
     const [esposizioneValue, setEsposizioneValue] =
-        useState<esposizione | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.esposizione
-                : null
-        );
+        useState<esposizione | null>(null);
 
     const [speseCondominialiValue, setSpeseCondominialiValue] = useState<
         number | null
-    >(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.speseCondominiali
-            : null
-    );
+    >(null);
 
     const [isSpeseCondominialiValid, setIsSpeseCondominialiValid] =
         useState<boolean>(true);
 
-    const [speseExtraValue, setSpeseExtraValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.speseExtraNote
-            : null
-    );
+    const [speseExtraValue, setSpeseExtraValue] = useState<string | null>(null);
 
-    const [ascensoreValue, setAscensoreValue] = useState<boolean | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.ascensore
-            : null
-    );
+    const [ascensoreValue, setAscensoreValue] = useState<boolean | null>(null);
 
     const [arredamentoValue, setArredamentoValue] =
-        useState<arredamento | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.arredamento
-                : null
-        );
+        useState<arredamento | null>(null);
 
     const [balconiValue, setBalconiValue] = useState<balconi_terrazzi | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.balconi
-            : null
+        null
     );
 
     const [terrazziValue, setTerrazziValue] = useState<balconi_terrazzi | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.terrazzi
-            : null
+        null
     );
 
-    const [boxValue, setBoxValue] = useState<box | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.box
-            : null
-    );
+    const [boxValue, setBoxValue] = useState<box | null>(null);
 
-    const [giardinoValue, setGiardinoValue] = useState<giardino | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.giardino
-            : null
-    );
+    const [giardinoValue, setGiardinoValue] = useState<giardino | null>(null);
 
-    const [tavernaValue, setTavernaValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.taverna
-            : null
-    );
+    const [tavernaValue, setTavernaValue] = useState<string | null>(null);
 
-    const [mansardaValue, setMansardaValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.mansarda
-            : null
-    );
+    const [mansardaValue, setMansardaValue] = useState<string | null>(null);
 
-    const [cantinaValue, setCantinaValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.cantina
-            : null
-    );
+    const [cantinaValue, setCantinaValue] = useState<string | null>(null);
 
     const [speseRiscaldamentoValue, setSpeseRiscaldamentoValue] = useState<
         number | null
-    >(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.speseRiscaldamento
-            : null
-    );
+    >(null);
 
     const [isSpeseRiscaldamentoValid, setIsSpeseRiscaldamentoValid] =
         useState<boolean>(true);
 
     const [ariaCondizionataValue, setAriaCondizionataValue] =
-        useState<ariaCondizionata | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.ariaCondizionata
-                : null
-        );
+        useState<ariaCondizionata | null>(null);
 
     const [proprietaValue, setProprietaValue] = useState<proprieta | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.proprieta
-            : null
+        null
     );
 
     const [categoriaCatastaleValue, setCategoriaCatastaleValue] =
-        useState<categoriaCatastale | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.categoriaCatastale
-                : null
-        );
+        useState<categoriaCatastale | null>(null);
 
-    const [renditaValue, setRenditaValue] = useState<number | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.rendita
-            : null
-    );
+    const [renditaValue, setRenditaValue] = useState<number | null>(null);
 
     const [isRenditaValid, setIsRenditaValid] = useState<boolean>(true);
 
     const [impiantoElettricoValue, setImpiantoElettricoValue] =
-        useState<impianto | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.impiantoElettrico
-                : null
-        );
+        useState<impianto | null>(null);
 
     const [impiantoIdraulicoValue, setImpiantoIdraulicoValue] =
-        useState<impianto | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.impiantoIdraulico
-                : null
-        );
+        useState<impianto | null>(null);
 
-    const [livelliValue, setLivelliValue] = useState<livelli | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.livelli
-            : null
-    );
+    const [livelliValue, setLivelliValue] = useState<livelli | null>(null);
 
     const [serramentiInterniValue, setSerramentiInterniValue] =
-        useState<serramentiInterni | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.serramentiInterni
-                : null
-        );
+        useState<serramentiInterni | null>(null);
 
     const [serramentiEsterniValue, setSerramentiEsterniValue] =
-        useState<serramentiEsterni | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.serramentiEsterni
-                : null
-        );
+        useState<serramentiEsterni | null>(null);
 
     const [portaBlindataValue, setPortaBlindataValue] = useState<
         boolean | null
-    >(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.portaBlindata
-            : null
-    );
+    >(null);
 
-    const [antifurtoValue, setAntifurtoValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.antifurto
-            : null
-    );
+    const [antifurtoValue, setAntifurtoValue] = useState<string | null>(null);
 
-    const [citofonoValue, setCitofonoValue] = useState<citofono | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.citofono
-            : null
-    );
+    const [citofonoValue, setCitofonoValue] = useState<citofono | null>(null);
 
     const [annoCostruzioneValue, setAnnoCostruzioneValue] = useState<
         number | null
-    >(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.annoCostruzione
-            : null
-    );
+    >(null);
 
     const [isAnnoCostruzioneValid, setIsAnnoCostruzioneValid] =
         useState<boolean>(true);
 
     const [portineriaValue, setPortineriaValue] = useState<portineria | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.portineria
-            : null
+        null
     );
 
     const [combustibileValue, setCombustibileValue] =
-        useState<combustibile | null>(
-            props.immobile && props.immobile.caratteristiche
-                ? props.immobile.caratteristiche.combustibile
-                : null
-        );
+        useState<combustibile | null>(null);
 
-    const [cablatoValue, setCablatoValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.cablato
-            : null
-    );
+    const [cablatoValue, setCablatoValue] = useState<string | null>(null);
 
     const [tipoContrattoValue, setTipoContrattoValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.tipoContratto
-            : null
+        null
     );
 
-    const [cauzioneValue, setCauzioneValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.cauzione
-            : null
-    );
+    const [cauzioneValue, setCauzioneValue] = useState<string | null>(null);
 
-    const [altezzaValue, setAltezzaValue] = useState<string | null>(
-        props.immobile && props.immobile.caratteristiche
-            ? props.immobile.caratteristiche.altezza
-            : null
-    );
+    const [altezzaValue, setAltezzaValue] = useState<string | null>(null);
 
-    const [showLoading, setShowLoading] = useState<boolean>(false);
+    const [showLoading, setShowLoading] = useState<boolean>(true);
 
     const [presentAlert] = useIonAlert();
+
+    useEffect(() => {
+        const fetchCaratteristiche = async () => {
+            try {
+                const res = await axiosInstance.get(
+                    `/immobili/${props.immobile!.id}`
+                );
+                const caratteristiche = res.data.caratteristicheImmobile;
+                setShowLoading(false);
+                setDescrizioneValue(caratteristiche.descrizione);
+                setEsposizioneValue(caratteristiche.esposizione);
+                setSpeseCondominialiValue(caratteristiche.speseCondominiali);
+                setSpeseExtraValue(caratteristiche.speseExtraNote);
+                setAscensoreValue(caratteristiche.ascensore);
+                setArredamentoValue(caratteristiche.arredamento);
+                setBalconiValue(caratteristiche.balconi);
+                setTerrazziValue(caratteristiche.terrazzi);
+                setBoxValue(caratteristiche.box);
+                setGiardinoValue(caratteristiche.giardino);
+                setTavernaValue(caratteristiche.taverna);
+                setMansardaValue(caratteristiche.mansarda);
+                setCantinaValue(caratteristiche.cantina);
+                setSpeseRiscaldamentoValue(caratteristiche.speseRiscaldamento);
+                setAriaCondizionataValue(caratteristiche.ariaCondizionata);
+                setProprietaValue(caratteristiche.proprieta);
+                setCategoriaCatastaleValue(caratteristiche.categoriaCatastale);
+                setRenditaValue(caratteristiche.rendita);
+                setImpiantoElettricoValue(caratteristiche.impiantoElettrico);
+                setImpiantoIdraulicoValue(caratteristiche.impiantoIdraulico);
+                setLivelliValue(caratteristiche.livelli);
+                setSerramentiInterniValue(caratteristiche.serramentiInterni);
+                setSerramentiEsterniValue(caratteristiche.serramentiEsterni);
+                setPortaBlindataValue(caratteristiche.portaBlindata);
+                setAntifurtoValue(caratteristiche.antifurto);
+                setCitofonoValue(caratteristiche.citofono);
+                setAnnoCostruzioneValue(caratteristiche.annoCostruzione);
+                setPortineriaValue(caratteristiche.portineria);
+                setCombustibileValue(caratteristiche.combustibile);
+                setCablatoValue(caratteristiche.cablato);
+                setTipoContrattoValue(caratteristiche.tipoContratto);
+                setCauzioneValue(caratteristiche.cauzione);
+                setAltezzaValue(caratteristiche.altezza);
+                setTotalePianiValue(caratteristiche.totalePiani);
+            } catch (e) {
+                setShowLoading(false);
+                errorHandler(
+                    e,
+                    () => {},
+                    "Immobile impossibile da aprire",
+                    presentAlert
+                );
+            }
+        };
+        props.immobile ? fetchCaratteristiche() : setShowLoading(false);
+    }, [props.immobile, presentAlert]);
 
     const isFormValid =
         titleValue &&
@@ -456,7 +396,9 @@ const ImmobileForm: React.FC<{
             categoriaValue,
             statoValue,
             liberoValue,
-            statusValue,
+            statusValue
+                ? (capitalize(statusValue.toLowerCase()) as status)
+                : null,
             pianoValue,
             null,
             null,
@@ -499,17 +441,22 @@ const ImmobileForm: React.FC<{
             cablatoValue,
             tipoContrattoValue,
             cauzioneValue,
-            null,
             altezzaValue,
             totalePianiValue
         );
         setShowLoading(true);
+        const reqBody = {
+            immobile,
+            proprietario: { id: 626 },
+            caratteristicheImmobile,
+        };
         try {
-            const res = await axiosInstance.post(`immobili`, {
-                immobile,
-                proprietario: { id: 626 },
-                caratteristicheImmobile,
-            });
+            const res = props.immobile
+                ? await axiosInstance.patch(
+                      `immobili/${props.immobile!.id}`,
+                      reqBody
+                  )
+                : await axiosInstance.post(`immobili`, reqBody);
             setShowLoading(false);
             presentAlert({
                 header: "Ottimo",
@@ -526,6 +473,7 @@ const ImmobileForm: React.FC<{
             });
         } catch (error: any) {
             setShowLoading(false);
+            console.log(error);
             errorHandler(
                 error,
                 () => {},
@@ -567,6 +515,7 @@ const ImmobileForm: React.FC<{
                 }
                 break;
             case "zona":
+                if (e.detail.value === null) return;
                 setZonaValue(
                     possibleZona.find((el) => el.id === e.detail.value)!.id
                 );
@@ -586,7 +535,7 @@ const ImmobileForm: React.FC<{
                 break;
             case "consumo":
                 setConsumoValue(e.detail.value);
-                setIsConsumoValid(e.detail.value > 0 && e.detail.value <= 175);
+                setIsConsumoValid(e.detail.value > 0);
                 break;
             case "contratto":
                 setContrattoValue(e.detail.value);
@@ -882,7 +831,7 @@ const ImmobileForm: React.FC<{
                         value={consumoValue}
                         changeHandler={changeImmobileValue}
                         invalidCondition={!isConsumoValid}
-                        invalidNote="Il consumo deve essere compreso tra 0 e 175 KWh/m³a"
+                        invalidNote="Il consumo deve essere maggiore di 0 KWh/m³a"
                     />
                     <FormSelect
                         title="Contratto"
@@ -936,9 +885,22 @@ const ImmobileForm: React.FC<{
                         invalidCondition={false}
                         invalidNote=""
                     />
-                    <IonButton expand="block" color="primary">
-                        Aggiungi Proprietario
-                    </IonButton>
+                    <IonItem>
+                        <IonLabel position="floating">Descrizione</IonLabel>
+                        <IonTextarea
+                            color={isDescrizioneVirgin ? "danger" : "dark"}
+                            auto-grow
+                            rows={10}
+                            value={
+                                descrizioneValue
+                                    ? descrizioneValue
+                                    : genericaDescrizione
+                            }
+                            onIonChange={(e) =>
+                                changeImmobileValue(e, "descrizione")
+                            }
+                        ></IonTextarea>
+                    </IonItem>
                 </IonItemGroup>
                 <IonItemGroup>
                     <IonItemDivider color="dark">
@@ -1167,22 +1129,9 @@ const ImmobileForm: React.FC<{
                             />
                         </>
                     )}
-                    <IonItem>
-                        <IonLabel position="floating">Descrizione</IonLabel>
-                        <IonTextarea
-                            color={isDescrizioneVirgin ? "danger" : "dark"}
-                            auto-grow
-                            rows={10}
-                            value={
-                                descrizioneValue
-                                    ? descrizioneValue
-                                    : genericaDescrizione
-                            }
-                            onIonChange={(e) =>
-                                changeImmobileValue(e, "descrizione")
-                            }
-                        ></IonTextarea>
-                    </IonItem>
+                    <IonButton expand="block" color="light">
+                        Aggiungi Proprietario
+                    </IonButton>
                 </IonItemGroup>
                 <IonButton
                     expand="block"
@@ -1197,8 +1146,3 @@ const ImmobileForm: React.FC<{
 };
 
 export default ImmobileForm;
-
-/* 
-Fix title per piccoli schermi
-Inserimento completato !!!
-*/

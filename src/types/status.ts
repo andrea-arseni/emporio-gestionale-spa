@@ -1,3 +1,3 @@
-export type status = "ATTIVO" | "DISATTIVO";
+export type status = "Attivo" | "Disattivo";
 
-export const possibleStatus = ["ATTIVO", "DISATTIVO"];
+export const possibleStatus = ["Attivo", "Disattivo"];

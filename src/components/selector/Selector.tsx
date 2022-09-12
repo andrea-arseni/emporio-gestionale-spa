@@ -14,7 +14,7 @@ import {
     layersOutline,
     listOutline,
 } from "ionicons/icons";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { entitiesType, Entity } from "../../entities/entity";
 import { Immobile } from "../../entities/immobile.model";
@@ -88,6 +88,12 @@ const Selector: React.FC<{
 
     const history = useHistory();
 
+    const [update, setUpdate] = useState<number>(0);
+
+    const ionListRef = useRef<any>();
+
+    const closeItems = () => ionListRef.current.closeSlidingItems();
+
     // definisci quale tipologia di entity vuoi cercare
     useEffect(() => {
         const getFilter = () => {
@@ -125,7 +131,7 @@ const Selector: React.FC<{
         };
 
         fetchEntities();
-    }, [history, presentAlert, page, props.entitiesType, filter, sort]);
+    }, [history, presentAlert, page, props.entitiesType, filter, sort, update]);
 
     const titleFilter = (
         <IonButton
@@ -154,6 +160,7 @@ const Selector: React.FC<{
                 prevEntities.filter((el) => el.id?.toString() !== id)
             );
             setShowLoading(false);
+            setUpdate((oldNumber) => ++oldNumber);
         } catch (e) {
             setShowLoading(false);
             errorHandler(
@@ -165,10 +172,10 @@ const Selector: React.FC<{
         }
     };
 
-    const deleteEntity = (entityName: string, id: string) => {
+    const deleteEntity = (entityName: string, id: string, message?: string) => {
         presentAlert({
             header: "Attenzione!",
-            subHeader: "La cancellazione è irreversibile.",
+            subHeader: message ? message : "La cancellazione è irreversibile.",
             buttons: [
                 {
                     text: "Conferma",
@@ -185,7 +192,18 @@ const Selector: React.FC<{
     const getEntities = () => {
         switch (props.entitiesType) {
             case "immobili":
-                return <ListImmobili immobili={entities as Immobile[]} />;
+                return (
+                    <ListImmobili
+                        immobili={entities as Immobile[]}
+                        setMode={props.setMode}
+                        setCurrentEntity={props.setCurrentEntity}
+                        deleteEntity={deleteEntity}
+                        showLoading={showLoading}
+                        setShowLoading={setShowLoading}
+                        setUpdate={setUpdate}
+                        closeItems={closeItems}
+                    />
+                );
             case "operazioni":
                 return (
                     <ListOperazioni
@@ -331,7 +349,9 @@ const Selector: React.FC<{
                 </IonButton>
             )}
             {entities.length > 0 && (
-                <IonList className={styles.list}>{getEntities()}</IonList>
+                <IonList ref={ionListRef} className={styles.list}>
+                    {getEntities()}
+                </IonList>
             )}
             {entities.length === 0 && !showLoading && <NoResults />}
             <PageFooter

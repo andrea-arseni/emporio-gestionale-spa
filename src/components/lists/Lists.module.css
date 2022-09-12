@@ -1,12 +1,12 @@
 .ref {
     border: 1px solid gray;
-    width: 50px;
+    width: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    padding: 10px;
-    margin: 10px;
+    padding: 16px;
+    margin: 16px;
     color: gray;
     margin-right: 20px;
 }

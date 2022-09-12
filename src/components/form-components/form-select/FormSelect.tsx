@@ -16,11 +16,14 @@ const FormSelect: React.FC<{
                 cancelText="Torna Indietro"
                 mode="ios"
                 interface="action-sheet"
-                value={props.value}
+                value={props.value?.toString().toLowerCase()}
                 onIonChange={(e) => props.function(e, props.type)}
             >
                 {props.possibleValues.map((el) => (
-                    <IonSelectOption key={el} value={el}>
+                    <IonSelectOption
+                        key={el}
+                        value={el.toString().toLowerCase()}
+                    >
                         {typeof el === "string" ? capitalize(el) : el}
                     </IonSelectOption>
                 ))}

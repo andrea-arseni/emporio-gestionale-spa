@@ -4,7 +4,7 @@ import styles from "./FormInputBoolean.module.css";
 
 const FormInputBoolean: React.FC<{
     condition: boolean | null;
-    setCondition: Dispatch<SetStateAction<boolean | null>>;
+    setCondition: Dispatch<SetStateAction<boolean | null>> | any;
     sentence: string;
 }> = (props) => {
     return (
