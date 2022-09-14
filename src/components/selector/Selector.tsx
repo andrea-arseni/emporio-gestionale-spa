@@ -18,6 +18,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { entitiesType, Entity } from "../../entities/entity";
 import { Immobile } from "../../entities/immobile.model";
+import { Log } from "../../entities/log.model";
 import { Operazione } from "../../entities/operazione.model";
 import axiosInstance from "../../utils/axiosInstance";
 import capitalize from "../../utils/capitalize";
@@ -29,6 +30,7 @@ import DateFilter from "../filters/date-filter/DateFilter";
 import NumberFilter from "../filters/number-filter/NumberFilter";
 import StringFilter from "../filters/string-filter/StringFilter";
 import ListImmobili from "../lists/ListImmobili";
+import ListLogs from "../lists/ListLogs";
 import ListOperazioni from "../lists/ListOperazioni";
 import NoResults from "../no-results/NoResults";
 import PageFooter from "../page-footer/PageFooter";
@@ -36,9 +38,11 @@ import SortActionSheet from "../sort-action-sheet/SortActionSheet";
 import styles from "./Selector.module.css";
 
 const Selector: React.FC<{
+    baseUrl?: string;
     entitiesType: entitiesType;
-    setCurrentEntity: Dispatch<SetStateAction<Entity | null>>;
-    setMode: Dispatch<SetStateAction<"list" | "form">>;
+    setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
+    setMode?: Dispatch<SetStateAction<"list" | "form">>;
+    static?: boolean;
 }> = (props) => {
     const getInitialSorting = () => {
         switch (props.entitiesType) {
@@ -111,9 +115,9 @@ const Selector: React.FC<{
         const fetchEntities = async () => {
             try {
                 setShowLoading(true);
-                const url = `${props.entitiesType}?page=${page}${
-                    filter.filter ? getFilter() : ""
-                }&sort=${sort}`;
+                const url = `${
+                    props.baseUrl ? props.baseUrl : props.entitiesType
+                }?page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
                 const res = await axiosInstance.get(url);
                 await new Promise((r) => setTimeout(r, 300));
                 setShowLoading(false);
@@ -131,7 +135,16 @@ const Selector: React.FC<{
         };
 
         fetchEntities();
-    }, [history, presentAlert, page, props.entitiesType, filter, sort, update]);
+    }, [
+        history,
+        presentAlert,
+        page,
+        props.entitiesType,
+        filter,
+        sort,
+        update,
+        props.baseUrl,
+    ]);
 
     const titleFilter = (
         <IonButton
@@ -195,8 +208,8 @@ const Selector: React.FC<{
                 return (
                     <ListImmobili
                         immobili={entities as Immobile[]}
-                        setMode={props.setMode}
-                        setCurrentEntity={props.setCurrentEntity}
+                        setMode={props.setMode!}
+                        setCurrentEntity={props.setCurrentEntity!}
                         deleteEntity={deleteEntity}
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
@@ -208,11 +221,13 @@ const Selector: React.FC<{
                 return (
                     <ListOperazioni
                         operazioni={entities as Operazione[]}
-                        setMode={props.setMode}
-                        setCurrentEntity={props.setCurrentEntity}
+                        setMode={props.setMode!}
+                        setCurrentEntity={props.setCurrentEntity!}
                         deleteEntity={deleteEntity}
                     />
                 );
+            case "logs":
+                return <ListLogs logs={entities as Log[]} />;
         }
     };
 
@@ -293,7 +308,7 @@ const Selector: React.FC<{
     return (
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            {filter.filter && (
+            {!props.static && filter.filter && (
                 <IonToolbar className={styles.filterToolbar} mode="ios">
                     <IonTitle>{getFilterTitle()}</IonTitle>
                     <IonButton
@@ -319,7 +334,7 @@ const Selector: React.FC<{
                     </IonButton>
                 </IonToolbar>
             )}
-            {!filter.filter && (
+            {!props.static && !filter.filter && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
@@ -333,7 +348,7 @@ const Selector: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
-            {entities.length > 1 && (
+            {!props.static && entities.length > 1 && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
@@ -349,7 +364,12 @@ const Selector: React.FC<{
                 </IonButton>
             )}
             {entities.length > 0 && (
-                <IonList ref={ionListRef} className={styles.list}>
+                <IonList
+                    ref={ionListRef}
+                    className={`${styles.list} ${
+                        props.static ? styles.simple : styles.fullOption
+                    }`}
+                >
                     {getEntities()}
                 </IonList>
             )}

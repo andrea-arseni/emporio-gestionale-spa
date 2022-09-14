@@ -1,5 +1,3 @@
-import { Visit } from "../entities/visit.model";
-
 export type GIORNO_DELLA_SETTIMANA =
     | "Domenica"
     | "Lunedì"
@@ -80,7 +78,11 @@ const addDays = (
     return week;
 };
 
+export const getCorrectDate = (input: Date) =>
+    new Date(input.getTime() - input.getTimezoneOffset() * 60000);
+
 export const getDayName = (input: Date, mode: "short" | "long" = "short") => {
+    input = getCorrectDate(input);
     let output = "";
     if (mode === "long")
         output = output + GIORNI_DELLA_SETTIMANA[input.getDay()] + " ";
@@ -97,10 +99,17 @@ export const getDayName = (input: Date, mode: "short" | "long" = "short") => {
 export const getTwoDigitString = (input: number) =>
     input < 10 ? "0" + input : input.toString();
 
-export const getDateAsString = (input: Date) =>
-    `${input.getFullYear()}-${getTwoDigitString(
+export const getHours = (input: Date) =>
+    `${getTwoDigitString(input.getHours())}:${getTwoDigitString(
+        input.getMinutes()
+    )}`;
+
+export const getDateAsString = (input: Date) => {
+    input = getCorrectDate(input);
+    return `${input.getFullYear()}-${getTwoDigitString(
         input.getMonth() + 1
     )}-${getTwoDigitString(input.getDate())}`;
+};
 
 export const areDateEquals = (inputOne: Date, inputTwo: Date) =>
     getDateAsString(inputOne) === getDateAsString(inputTwo);

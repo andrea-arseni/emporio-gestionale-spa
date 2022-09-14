@@ -32,6 +32,8 @@ import PasswordPage from "./pages/PasswordPage/PasswordPage";
 import AppuntamentiPage from "./pages/AppuntamentiPage/AppuntamentiPage";
 import ImmobiliPage from "./pages/ImmobiliPage/ImmobiliPage";
 import OperazioniPage from "./pages/OperazioniPage/OperazioniPage";
+import ImmobileDataPage from "./pages/ImmobileDataPage/ImmobileDataPage";
+import LogsPage from "./pages/LogsPage/LogsPage";
 
 setupIonicReact();
 
@@ -66,8 +68,18 @@ const App: React.FC = () => {
                             </Route>
                         )}
                         {token && (
-                            <Route path="/immobili">
+                            <Route path="/immobili" exact>
                                 <ImmobiliPage />
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/immobili/:id" exact>
+                                <ImmobileDataPage />
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/immobili/:id/storia">
+                                <LogsPage />
                             </Route>
                         )}
                         {token && (
@@ -106,3 +118,8 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+/* 
+- brutto bug anonimo
+- elimina inquilini
+*/

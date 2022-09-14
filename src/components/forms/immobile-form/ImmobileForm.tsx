@@ -12,8 +12,12 @@ import {
     IonItemGroup,
     useIonAlert,
     IonLoading,
+    IonItemOption,
+    IonItemOptions,
+    IonItemSliding,
+    IonText,
 } from "@ionic/react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Caratteristiche } from "../../../entities/caratteristiche.model";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
@@ -69,10 +73,12 @@ import axiosInstance from "../../../utils/axiosInstance";
 import capitalize from "../../../utils/capitalize";
 import errorHandler from "../../../utils/errorHandler";
 import { genericaDescrizione } from "../../../utils/genericaDescrizione";
+import Card from "../../card/Card";
 import FormInputBoolean from "../../form-components/form-input-boolean/FormInputBoolean";
 import FormInputNumber from "../../form-components/form-input-number/form-input-number";
 import FormInputText from "../../form-components/form-input-text/FormInputText";
 import FormSelect from "../../form-components/form-select/FormSelect";
+import Modal from "../../modal/Modal";
 
 const ImmobileForm: React.FC<{
     immobile: Immobile | null;
@@ -173,10 +179,6 @@ const ImmobileForm: React.FC<{
     );
 
     const [totalePianiValue, setTotalePianiValue] = useState<number | null>(
-        null
-    );
-
-    const [proprietarioValue, setProprietarioValue] = useState<Persona | null>(
         null
     );
 
@@ -293,12 +295,40 @@ const ImmobileForm: React.FC<{
 
     const [presentAlert] = useIonAlert();
 
+    const [proprietarioValue, setProprietarioValue] = useState<Persona | null>(
+        null
+    );
+
+    const [inquiliniValue, setInquiliniValue] = useState<Persona[]>([]);
+
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+
+    const [modalData, setModalData] = useState<{
+        type: "proprietario" | "inquilino";
+        person: Persona;
+    } | null>(null);
+
+    const ionListRef = useRef<any>();
+
+    const closeItems = () => ionListRef.current.closeSlidingItems();
+
+    const showPerson = (
+        type: "proprietario" | "inquilino",
+        person: Persona
+    ) => {
+        setModalData({ type, person });
+        setIsOpen(true);
+        closeItems();
+    };
+
     useEffect(() => {
         const fetchCaratteristiche = async () => {
             try {
                 const res = await axiosInstance.get(
                     `/immobili/${props.immobile!.id}`
                 );
+                setProprietarioValue(res.data.proprietario);
+                setInquiliniValue(res.data.inquilini);
                 const caratteristiche = res.data.caratteristicheImmobile;
                 setShowLoading(false);
                 setDescrizioneValue(caratteristiche.descrizione);
@@ -447,7 +477,7 @@ const ImmobileForm: React.FC<{
         setShowLoading(true);
         const reqBody = {
             immobile,
-            proprietario: { id: 626 },
+            proprietario: proprietarioValue,
             caratteristicheImmobile,
         };
         try {
@@ -481,6 +511,78 @@ const ImmobileForm: React.FC<{
                 presentAlert
             );
         }
+    };
+
+    const cancellaInquilino = async (id: number) => {
+        setShowLoading(true);
+        try {
+            await axiosInstance.patch(`/persone/${id}`, {
+                immobileAffitto: null,
+            });
+            setShowLoading(false);
+        } catch (e) {
+            setShowLoading(false);
+            errorHandler(
+                e,
+                () => {},
+                "Impossibile cancellare l'inquilino",
+                presentAlert
+            );
+        }
+    };
+
+    const confirmDeletePersona = (
+        entityType: "proprietario" | "inquilino",
+        id: number
+    ) => {
+        if (entityType === "proprietario") {
+            if (!proprietarioValue || proprietarioValue.id !== id)
+                errorHandler(
+                    null,
+                    () => {},
+                    "Errore nella cancellazione della persona",
+                    presentAlert
+                );
+            setProprietarioValue(null);
+        } else {
+            if (
+                !inquiliniValue ||
+                inquiliniValue.length === 0 ||
+                inquiliniValue.find((el) => el.id === id) === undefined
+            )
+                errorHandler(
+                    null,
+                    () => {},
+                    "Errore nella cancellazione della persona",
+                    presentAlert
+                );
+            setInquiliniValue((prevInquiliniValue) =>
+                prevInquiliniValue.filter((el) => el.id !== id)
+            );
+            cancellaInquilino(id);
+        }
+    };
+
+    const deletePersona = (
+        entityType: "proprietario" | "inquilino",
+        persona: Persona
+    ) => {
+        presentAlert({
+            header: `Cancellazione ${entityType}`,
+            subHeader: `Hai selezionato la cancellazione di ${persona.nome} come ${entityType} di questo immobile. 
+            Sei sicuro?`,
+            buttons: [
+                {
+                    text: "Conferma",
+                    handler: () =>
+                        confirmDeletePersona(entityType, persona.id!),
+                },
+                {
+                    text: "Indietro",
+                    handler: () => closeItems(),
+                },
+            ],
+        });
     };
 
     const changeImmobileValue = (e: any, type: immobileAttribute) => {
@@ -554,9 +656,6 @@ const ImmobileForm: React.FC<{
                 break;
             case "piano":
                 setPianoValue(e.detail.value);
-                break;
-            case "proprietario":
-                setProprietarioValue(e.detail.value);
                 break;
             case "descrizione":
                 setDescrizioneValue(e.detail.value);
@@ -674,10 +773,34 @@ const ImmobileForm: React.FC<{
         }
     };
 
+    const getInquiliniItems = inquiliniValue.map((el) => (
+        <IonItemSliding key={el.id} id={el.id?.toString()}>
+            <IonItem detail>
+                <IonLabel text-wrap>
+                    <h2>{el.nome}</h2>
+                </IonLabel>
+            </IonItem>
+            <IonItemOptions side="end">
+                <IonItemOption
+                    color="primary"
+                    onClick={() => showPerson("inquilino", el)}
+                >
+                    <IonText>Visualizza</IonText>
+                </IonItemOption>
+                <IonItemOption
+                    color="danger"
+                    onClick={() => deletePersona("inquilino", el)}
+                >
+                    <IonText>Elimina</IonText>
+                </IonItemOption>
+            </IonItemOptions>
+        </IonItemSliding>
+    ));
+
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            <IonList className="list">
+            <IonList className="list" ref={ionListRef}>
                 <IonItemGroup>
                     <IonItemDivider color="dark">
                         <IonLabel color="light">
@@ -1129,8 +1252,75 @@ const ImmobileForm: React.FC<{
                             />
                         </>
                     )}
+                </IonItemGroup>
+                <IonItemGroup>
+                    <IonItemDivider color="dark">
+                        <IonLabel color="light">
+                            <h2>{`Proprietario ${
+                                proprietarioValue ? "presente" : "mancante"
+                            }`}</h2>
+                        </IonLabel>
+                    </IonItemDivider>
+                    {!proprietarioValue && (
+                        <IonButton expand="block" color="light">
+                            Aggiungi Proprietario
+                        </IonButton>
+                    )}
+                    {proprietarioValue && (
+                        <IonItemSliding id={proprietarioValue.id?.toString()}>
+                            <IonItem detail>
+                                <IonLabel text-wrap>
+                                    <h2>{proprietarioValue.nome}</h2>
+                                </IonLabel>
+                            </IonItem>
+                            <IonItemOptions side="end">
+                                <IonItemOption
+                                    color="primary"
+                                    onClick={() =>
+                                        showPerson(
+                                            "proprietario",
+                                            proprietarioValue
+                                        )
+                                    }
+                                >
+                                    <IonText>Visualizza</IonText>
+                                </IonItemOption>
+                                <IonItemOption
+                                    color="warning"
+                                    onClick={() => {}}
+                                >
+                                    <IonText>Cambia</IonText>
+                                </IonItemOption>
+                                <IonItemOption
+                                    color="danger"
+                                    onClick={() =>
+                                        deletePersona(
+                                            "proprietario",
+                                            proprietarioValue
+                                        )
+                                    }
+                                >
+                                    <IonText>Elimina</IonText>
+                                </IonItemOption>
+                            </IonItemOptions>
+                        </IonItemSliding>
+                    )}
+                </IonItemGroup>
+                <IonItemGroup>
+                    <IonItemDivider color="dark">
+                        <IonLabel color="light">
+                            <h2>{`Inquilini ${
+                                inquiliniValue && inquiliniValue.length > 0
+                                    ? "presenti"
+                                    : "mancanti"
+                            }`}</h2>
+                        </IonLabel>
+                    </IonItemDivider>
+
+                    {getInquiliniItems}
+
                     <IonButton expand="block" color="light">
-                        Aggiungi Proprietario
+                        Aggiungi Inquilino
                     </IonButton>
                 </IonItemGroup>
                 <IonButton
@@ -1141,6 +1331,34 @@ const ImmobileForm: React.FC<{
                     {props.immobile ? "Modifica" : "Aggiungi"} immobile
                 </IonButton>
             </IonList>
+
+            {modalData && (
+                <Modal
+                    setIsOpen={setIsOpen}
+                    isOpen={isOpen}
+                    title={`Dati ${modalData.type}`}
+                    handler={() => setIsOpen(false)}
+                >
+                    <Card
+                        subTitle={""}
+                        title={
+                            modalData.person.nome
+                                ? modalData.person.nome
+                                : "Nome non presente"
+                        }
+                        phone={
+                            modalData.person.telefono
+                                ? modalData.person.telefono
+                                : "Telefono non presente"
+                        }
+                        email={
+                            modalData.person.email
+                                ? modalData.person.email
+                                : "Email non presente"
+                        }
+                    />
+                </Modal>
+            )}
         </form>
     );
 };

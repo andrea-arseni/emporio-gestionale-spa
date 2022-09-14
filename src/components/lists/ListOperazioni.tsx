@@ -24,6 +24,7 @@ const ListOperazioni: React.FC<{
         <IonItemSliding key={operazione.id!} id={operazione.id?.toString()}>
             <IonItem detail>
                 <IonLabel
+                    text-wrap
                     color={operazione.importo! > 0 ? "primary" : "danger"}
                 >
                     <h2>{`${operazione.descrizione} ( ${numberAsPrice(

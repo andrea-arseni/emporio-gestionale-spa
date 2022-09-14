@@ -1,6 +1,13 @@
 .list {
-    height: calc(100% - 44px - 44px - 44px - 44px);
     overflow: scroll;
+}
+
+.fullOption {
+    height: calc(100% - 45px - 45px - 45px - 61px);
+}
+
+.simple {
+    height: calc(100% - 45px - 61px);
 }
 
 .filterButton {

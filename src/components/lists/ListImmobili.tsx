@@ -23,6 +23,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
 import { numberAsPrice } from "../../utils/numberAsPrice";
 import styles from "./Lists.module.css";
+import { useHistory } from "react-router";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -34,9 +35,15 @@ const ListImmobili: React.FC<{
     setUpdate: Dispatch<SetStateAction<number>>;
     closeItems: () => void;
 }> = (props) => {
+    const history = useHistory();
+
     const [width] = useWindowSize();
 
     const [presentAlert] = useIonAlert();
+
+    const goToData = (id: number) => {
+        history.push(`/immobili/${id.toString()}`);
+    };
 
     const copyImmobile = async (id: number) => {
         // loader
@@ -94,7 +101,7 @@ const ListImmobili: React.FC<{
                         >
                             {immobile.ref}
                         </h3>
-                        <IonLabel>
+                        <IonLabel text-wrap>
                             <h2>{immobile.titolo} </h2>
                             <p>{`${immobile.indirizzo} (${immobile.comune})`}</p>
                             <p>
@@ -120,9 +127,12 @@ const ListImmobili: React.FC<{
                     </IonItem>
                     <IonItemOptions side="end">
                         <IonItemOption color="success">
-                            <div className="itemOption">
+                            <div
+                                className="itemOption"
+                                onClick={() => goToData(immobile.id!)}
+                            >
                                 <IonIcon icon={newspaperOutline} size="large" />
-                                <IonText>Storia</IonText>
+                                <IonText>Dati</IonText>
                             </div>
                         </IonItemOption>
                         <IonItemOption color="primary">

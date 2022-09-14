@@ -50,6 +50,12 @@
     margin: 6px;
 }
 
+.arrowBack {
+    cursor: pointer;
+    padding: 10px;
+    font-size: x-large;
+}
+
 .form {
     height: calc(100% - 56px);
     width: 100%;
