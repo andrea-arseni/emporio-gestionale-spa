@@ -42,12 +42,40 @@ const SortActionSheet: React.FC<{
                         handler: () => buttonHandler("importo-desc"),
                     },
                     {
-                        text: "Data Crescente",
+                        text: "Dal più vecchio al più recente",
                         icon: calendarOutline,
                         handler: () => buttonHandler("data"),
                     },
                     {
-                        text: "Data Decrescente",
+                        text: "Dal più recente al più vecchio",
+                        icon: calendarOutline,
+                        handler: () => buttonHandler("data-desc"),
+                    },
+                ];
+                break;
+            case "logs":
+                buttons = [
+                    {
+                        text: "Dal più vecchio al più recente",
+                        icon: calendarOutline,
+                        handler: () => buttonHandler("data"),
+                    },
+                    {
+                        text: "Dal più recente al più vecchio",
+                        icon: calendarOutline,
+                        handler: () => buttonHandler("data-desc"),
+                    },
+                ];
+                break;
+            case "steps":
+                buttons = [
+                    {
+                        text: "Dal più vecchio al più recente",
+                        icon: calendarOutline,
+                        handler: () => buttonHandler("data"),
+                    },
+                    {
+                        text: "Dal più recente al più vecchio",
                         icon: calendarOutline,
                         handler: () => buttonHandler("data-desc"),
                     },
@@ -116,7 +144,33 @@ const SortActionSheet: React.FC<{
                         handler: () => buttonHandler("status-desc"),
                     },
                 ];
+                break;
+            case "lavori":
+                buttons = [
+                    {
+                        text: "Alfabetico Crescente",
+                        icon: cardOutline,
+                        handler: () => buttonHandler("titolo"),
+                    },
+                    {
+                        text: "Alfabetico Decrescente",
+                        icon: cardOutline,
+                        handler: () => buttonHandler("titolo-desc"),
+                    },
+                    {
+                        text: "Status Crescente",
+                        icon: calendarOutline,
+                        handler: () => buttonHandler("status"),
+                    },
+                    {
+                        text: "Status Decrescente",
+                        icon: calendarOutline,
+                        handler: () => buttonHandler("status-desc"),
+                    },
+                ];
+                break;
         }
+
         buttons!.push({
             text: "Annulla",
             icon: closeOutline,

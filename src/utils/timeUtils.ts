@@ -92,17 +92,22 @@ export const getDayName = (input: Date, mode: "short" | "long" = "short") => {
             mode === "short"
                 ? `/${input.getMonth() + 1}/`
                 : ` ${MONTH_OF_THE_YEAR[input.getMonth()]} `
-        }${input.getFullYear()}`
+        }${input.getFullYear().toString().substring(2)}`
     );
 };
 
 export const getTwoDigitString = (input: number) =>
     input < 10 ? "0" + input : input.toString();
 
-export const getHours = (input: Date) =>
-    `${getTwoDigitString(input.getHours())}:${getTwoDigitString(
+export const getHours = (input: Date) => {
+    input = getCorrectDate(input);
+    return `${getTwoDigitString(input.getHours())}:${getTwoDigitString(
         input.getMinutes()
     )}`;
+};
+
+export const getDateAndTime = (input: string) =>
+    `${getDayName(new Date(input), "long")} - ${getHours(new Date(input))}`;
 
 export const getDateAsString = (input: Date) => {
     input = getCorrectDate(input);

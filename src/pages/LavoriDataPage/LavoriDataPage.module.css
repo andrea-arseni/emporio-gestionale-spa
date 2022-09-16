@@ -1,0 +1,17 @@
+.toolbar {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.smallTitle {
+    position: relative;
+    top: 10px;
+}
+
+.title {
+    position: relative;
+    top: -10px;
+    font-size: medium;
+}

@@ -1,5 +1,10 @@
 .list {
     overflow: scroll;
+    padding: 0;
+}
+
+.heightSteps {
+    height: calc(100% - 45px - 45px - 45px - 61px - 50px);
 }
 
 .fullOption {

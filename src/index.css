@@ -13,6 +13,10 @@
     height: 100%;
 }
 
+.alignedCenter {
+    text-align: center;
+}
+
 .bordered {
     border: 4px solid blue;
 }

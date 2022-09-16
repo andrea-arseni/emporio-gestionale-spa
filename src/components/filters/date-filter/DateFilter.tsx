@@ -5,7 +5,9 @@ import {
     IonDatetime,
     IonButton,
     DatetimeChangeEventDetail,
+    IonIcon,
 } from "@ionic/react";
+import { closeOutline } from "ionicons/icons";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { getDayName } from "../../../utils/timeUtils";
 import styles from "../Filter.module.css";
@@ -64,67 +66,111 @@ const DateFilter: React.FC<{
     };
 
     return (
-        <form onSubmit={submitForm} className={styles.form}>
+        <>
             {(selectingStartDate || selectingEndDate) && (
-                <IonDatetime
-                    mode="ios"
-                    min={
-                        selectingEndDate && startDate
-                            ? startDate
-                            : "2019-01-01T00:00:00"
-                    }
-                    max={
-                        selectingStartDate && endDate
-                            ? endDate
-                            : "2040-05-31T23:59:59"
-                    }
-                    locale="it-IT"
-                    firstDayOfWeek={1}
-                    presentation="date"
-                    onIonChange={(e) => setNewDate(e)}
-                    size="fixed"
-                />
+                <div className={styles.background}>
+                    <div
+                        className={styles.backdrop}
+                        onClick={() => {
+                            setSelectingStartDate(false);
+                            setSelectingEndDate(false);
+                        }}
+                    ></div>
+                    <IonDatetime
+                        className={styles.datapicker}
+                        onClick={() => console.log("bu")}
+                        mode="ios"
+                        min={
+                            selectingEndDate && startDate
+                                ? startDate
+                                : "2019-01-01T00:00:00"
+                        }
+                        max={
+                            selectingStartDate && endDate
+                                ? endDate
+                                : "2040-05-31T23:59:59"
+                        }
+                        locale="it-IT"
+                        firstDayOfWeek={1}
+                        presentation="date"
+                        onIonChange={(e) => setNewDate(e)}
+                        size="fixed"
+                    />
+                </div>
             )}
             {!selectingStartDate && !selectingEndDate && (
-                <IonList className={styles.list}>
-                    <IonItem lines="none">
-                        <IonButton onClick={() => setSelectingStartDate(true)}>
-                            {`${
-                                startDate ? "Cambia" : "Seleziona"
-                            } la data iniziale`}
-                        </IonButton>
-                        {startDate && (
-                            <IonLabel slot="end">
-                                {getDayName(new Date(startDate), "long")}
-                            </IonLabel>
-                        )}
-                    </IonItem>
-                    <IonItem lines="none">
-                        <IonButton onClick={() => setSelectingEndDate(true)}>
-                            {`${
-                                endDate ? "Cambia" : "Seleziona"
-                            } la data finale`}
-                        </IonButton>
-                        {endDate && (
-                            <IonLabel slot="end">
-                                {getDayName(new Date(endDate), "long")}
-                            </IonLabel>
-                        )}
-                    </IonItem>
+                <form onSubmit={submitForm} className={styles.form}>
+                    <IonList className={styles.list}>
+                        <IonItem lines="none">
+                            <IonButton
+                                onClick={() => setSelectingStartDate(true)}
+                            >
+                                {`Data iniziale`}
+                            </IonButton>
+                            {startDate && (
+                                <>
+                                    <IonLabel slot="end">
+                                        {getDayName(
+                                            new Date(startDate),
+                                            "short"
+                                        )}
+                                    </IonLabel>
+                                    <IonButton
+                                        slot="end"
+                                        fill="clear"
+                                        color="light"
+                                        onClick={() => setStartDate(null)}
+                                    >
+                                        <IonIcon
+                                            color="dark"
+                                            slot="icon-only"
+                                            icon={closeOutline}
+                                        ></IonIcon>
+                                    </IonButton>
+                                </>
+                            )}
+                        </IonItem>
+                        <IonItem lines="none">
+                            <IonButton
+                                onClick={() => setSelectingEndDate(true)}
+                            >
+                                {`Data finale`}
+                            </IonButton>
+                            {endDate && (
+                                <>
+                                    <IonLabel slot="end">
+                                        {getDayName(new Date(endDate), "short")}
+                                    </IonLabel>
+                                    <IonButton
+                                        slot="end"
+                                        fill="clear"
+                                        color="light"
+                                        onClick={() => setEndDate(null)}
+                                    >
+                                        <IonIcon
+                                            color="dark"
+                                            slot="icon-only"
+                                            icon={closeOutline}
+                                        ></IonIcon>
+                                    </IonButton>
+                                </>
+                            )}
+                        </IonItem>
 
-                    <IonButton
-                        className={styles.button}
-                        expand="full"
-                        mode="ios"
-                        color="primary"
-                        type="submit"
-                        disabled={!startDate && !endDate}
-                    >
-                        Applica filtro
-                    </IonButton>
-                </IonList>
+                        <IonButton
+                            className={styles.button}
+                            expand="full"
+                            mode="ios"
+                            color="primary"
+                            type="submit"
+                            disabled={!startDate && !endDate}
+                        >
+                            Applica filtro
+                        </IonButton>
+                    </IonList>
+                </form>
             )}
-        </form>
+        </>
     );
 };
 

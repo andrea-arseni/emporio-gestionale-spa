@@ -4,7 +4,6 @@ import {
     IonLabel,
     IonList,
     IonLoading,
-    IonTitle,
     IonToolbar,
     useIonAlert,
 } from "@ionic/react";
@@ -18,23 +17,29 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { entitiesType, Entity } from "../../entities/entity";
 import { Immobile } from "../../entities/immobile.model";
+import { Lavoro } from "../../entities/lavoro.model";
 import { Log } from "../../entities/log.model";
 import { Operazione } from "../../entities/operazione.model";
+import { Step } from "../../entities/step.model";
+import useWindowSize from "../../hooks/use-size";
 import axiosInstance from "../../utils/axiosInstance";
 import capitalize from "../../utils/capitalize";
 import errorHandler from "../../utils/errorHandler";
 import { numberAsPrice } from "../../utils/numberAsPrice";
 import { getDayName } from "../../utils/timeUtils";
+import Card from "../card/Card";
 import FilterActionSheet from "../filter-action-sheet/FilterActionSheet";
 import DateFilter from "../filters/date-filter/DateFilter";
 import NumberFilter from "../filters/number-filter/NumberFilter";
 import StringFilter from "../filters/string-filter/StringFilter";
 import ListImmobili from "../lists/ListImmobili";
+import ListLavori from "../lists/ListLavori";
 import ListLogs from "../lists/ListLogs";
 import ListOperazioni from "../lists/ListOperazioni";
-import NoResults from "../no-results/NoResults";
+import ListSteps from "../lists/ListSteps";
 import PageFooter from "../page-footer/PageFooter";
 import SortActionSheet from "../sort-action-sheet/SortActionSheet";
+import Title from "../title/Title";
 import styles from "./Selector.module.css";
 
 const Selector: React.FC<{
@@ -44,10 +49,14 @@ const Selector: React.FC<{
     setMode?: Dispatch<SetStateAction<"list" | "form">>;
     static?: boolean;
 }> = (props) => {
+    const [width] = useWindowSize();
+
     const getInitialSorting = () => {
         switch (props.entitiesType) {
             case "operazioni":
                 return "data";
+            case "lavori":
+                return "status";
             case "immobili":
                 return "ref";
             default:
@@ -146,7 +155,7 @@ const Selector: React.FC<{
         props.baseUrl,
     ]);
 
-    const titleFilter = (
+    const filterBar = (
         <IonButton
             className={styles.filterButton}
             expand="full"
@@ -166,9 +175,10 @@ const Selector: React.FC<{
     );
 
     const confirmDeleteEntity = async (entityName: string, id: string) => {
+        const url = (props.baseUrl ? props.baseUrl : entityName) + "/" + id;
         try {
             setShowLoading(true);
-            await axiosInstance.delete(entityName + "/" + id);
+            await axiosInstance.delete(url);
             setEntities((prevEntities) =>
                 prevEntities.filter((el) => el.id?.toString() !== id)
             );
@@ -196,7 +206,7 @@ const Selector: React.FC<{
                 },
                 {
                     text: "Indietro",
-                    role: "cancel",
+                    handler: () => closeItems(),
                 },
             ],
         });
@@ -228,6 +238,30 @@ const Selector: React.FC<{
                 );
             case "logs":
                 return <ListLogs logs={entities as Log[]} />;
+            case "lavori":
+                return (
+                    <ListLavori
+                        lavori={entities as Lavoro[]}
+                        setMode={props.setMode!}
+                        setCurrentEntity={props.setCurrentEntity!}
+                        deleteEntity={deleteEntity}
+                        showLoading={showLoading}
+                        setShowLoading={setShowLoading}
+                        setUpdate={setUpdate}
+                    />
+                );
+            case "steps":
+                return (
+                    <ListSteps
+                        steps={entities as Step[]}
+                        setMode={props.setMode!}
+                        setCurrentEntity={props.setCurrentEntity!}
+                        deleteEntity={deleteEntity}
+                        showLoading={showLoading}
+                        setShowLoading={setShowLoading}
+                        setUpdate={setUpdate}
+                    />
+                );
         }
     };
 
@@ -237,9 +271,10 @@ const Selector: React.FC<{
             if (filter.startDate)
                 output =
                     output + `dal ${getDayName(new Date(filter.startDate))}`;
+            if (!filter.endDate) output = output + " in poi";
             if (filter.endDate)
                 output =
-                    output + `fino al ${getDayName(new Date(filter.endDate))}`;
+                    output + ` fino al ${getDayName(new Date(filter.endDate))}`;
             return output;
         }
         if (filter.min || filter.max) {
@@ -262,16 +297,26 @@ const Selector: React.FC<{
                     }`;
             return output;
         }
+        if (props.entitiesType === "lavori" && filter.filter === "status")
+            return `Obiettivi con Status: ${capitalize(
+                filter.value!.replace("_", " ")
+            )}`;
 
         output =
             output + `con "${filter.value}" in ${capitalize(filter.filter!)}`;
         return output;
     };
 
+    const getListHeight = () => {
+        if (props.entitiesType === "steps") return styles.heightSteps;
+        if (props.static) return styles.simple;
+        return styles.fullOption;
+    };
+
     if (filterMode === "dataFilter")
         return (
             <>
-                {titleFilter}
+                {filterBar}
                 <DateFilter
                     filter={filter}
                     setFilter={setFilter}
@@ -283,7 +328,7 @@ const Selector: React.FC<{
     if (filterMode === "numberFilter")
         return (
             <>
-                {titleFilter}
+                {filterBar}
                 <NumberFilter
                     negativeForbidden={negativeForbidden}
                     filter={filter}
@@ -296,7 +341,7 @@ const Selector: React.FC<{
     if (filterMode === "stringFilter")
         return (
             <>
-                {titleFilter}
+                {filterBar}
                 <StringFilter
                     filter={filter}
                     setFilter={setFilter}
@@ -310,7 +355,8 @@ const Selector: React.FC<{
             <IonLoading cssClass="loader" isOpen={showLoading} />
             {!props.static && filter.filter && (
                 <IonToolbar className={styles.filterToolbar} mode="ios">
-                    <IonTitle>{getFilterTitle()}</IonTitle>
+                    <Title>{getFilterTitle()}</Title>
+
                     <IonButton
                         slot="end"
                         size="small"
@@ -330,11 +376,11 @@ const Selector: React.FC<{
                         }}
                     >
                         <IonIcon icon={closeOutline} color="light"></IonIcon>
-                        Annulla Filtro
+                        {width >= 450 ? "Annulla Filtro" : ""}
                     </IonButton>
                 </IonToolbar>
             )}
-            {!props.static && !filter.filter && (
+            {!props.static && !filter.filter && entities.length > 1 && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
@@ -366,14 +412,23 @@ const Selector: React.FC<{
             {entities.length > 0 && (
                 <IonList
                     ref={ionListRef}
-                    className={`${styles.list} ${
-                        props.static ? styles.simple : styles.fullOption
-                    }`}
+                    className={`${styles.list} ${getListHeight()}`}
                 >
                     {getEntities()}
                 </IonList>
             )}
-            {entities.length === 0 && !showLoading && <NoResults />}
+            {entities.length === 0 && !showLoading && (
+                <div className={`${getListHeight()} centered`}>
+                    <Card
+                        subTitle={`Non sono presenti ${props.entitiesType}`}
+                        title={
+                            "Non sono stati trovati risultati per la ricerca effettuata"
+                        }
+                        phone={null}
+                        email={null}
+                    />
+                </div>
+            )}
             <PageFooter
                 page={page}
                 setPage={setPage}

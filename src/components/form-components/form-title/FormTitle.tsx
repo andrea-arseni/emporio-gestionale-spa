@@ -1,12 +1,7 @@
-import {
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonButton,
-    IonIcon,
-} from "@ionic/react";
+import { IonToolbar, IonButtons, IonButton, IonIcon } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
 import useSize from "../../../hooks/use-size";
+import Title from "../../title/Title";
 
 const FormTitle: React.FC<{
     title: string;
@@ -33,7 +28,7 @@ const FormTitle: React.FC<{
                     </IonButton>
                 )}
             </IonButtons>
-            <IonTitle>{props.title}</IonTitle>
+            <Title>{props.title}</Title>
         </IonToolbar>
     );
 };

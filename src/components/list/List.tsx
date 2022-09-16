@@ -4,7 +4,6 @@ import {
     IonContent,
     IonIcon,
     IonLabel,
-    IonTitle,
     IonToolbar,
 } from "@ionic/react";
 import { Dispatch, SetStateAction } from "react";
@@ -12,6 +11,7 @@ import { entitiesType, Entity } from "../../entities/entity";
 import Selector from "../selector/Selector";
 import { arrowBackOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
+import Title from "../title/Title";
 
 const List: React.FC<{
     setMode?: Dispatch<SetStateAction<"form" | "list">>;
@@ -28,6 +28,8 @@ const List: React.FC<{
         <IonContent>
             {!props.static && (
                 <IonButton
+                    disabled={props.entitiesType === "logs"}
+                    color="dark"
                     expand="full"
                     mode="ios"
                     fill="solid"
@@ -49,12 +51,12 @@ const List: React.FC<{
                         className="arrowBack"
                         onClick={() => history.goBack()}
                     />
-                    <IonTitle>
+                    <Title>
                         <IonIcon icon={props.icon} className={styles.icon} />
                         <IonLabel style={{ paddingLeft: "16px" }}>
                             {props.title}
                         </IonLabel>
-                    </IonTitle>
+                    </Title>
                 </IonToolbar>
             )}
             <Selector

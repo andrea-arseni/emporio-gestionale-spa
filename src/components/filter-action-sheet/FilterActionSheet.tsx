@@ -1,5 +1,6 @@
 import { IonActionSheet } from "@ionic/react";
 import {
+    alertCircleOutline,
     businessOutline,
     calendarNumberOutline,
     calendarOutline,
@@ -8,10 +9,14 @@ import {
     closeCircleOutline,
     closeOutline,
     documentTextOutline,
+    folderOpenOutline,
+    folderOutline,
     homeOutline,
     logoEuro,
     squareOutline,
     textOutline,
+    trashBinOutline,
+    trashOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { entitiesType } from "../../entities/entity";
@@ -206,6 +211,111 @@ const FilterActionSheet: React.FC<{
                             buttonHandler("default", {
                                 filter: "status",
                                 value: "disattivo",
+                            });
+                        },
+                    },
+                ];
+                break;
+            case "logs":
+                buttons = [
+                    {
+                        text: "Data",
+                        icon: calendarOutline,
+                        handler: () =>
+                            buttonHandler("dataFilter", {
+                                filter: "data",
+                            }),
+                    },
+                    {
+                        text: "Testo",
+                        icon: documentTextOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "azione",
+                            });
+                        },
+                    },
+                ];
+                break;
+            case "steps":
+                buttons = [
+                    {
+                        text: "Data",
+                        icon: calendarOutline,
+                        handler: () =>
+                            buttonHandler("dataFilter", {
+                                filter: "data",
+                            }),
+                    },
+                    {
+                        text: "Testo",
+                        icon: documentTextOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "descrizione",
+                            });
+                        },
+                    },
+                ];
+                break;
+            case "lavori":
+                buttons = [
+                    {
+                        text: "Filtra per Titolo",
+                        icon: textOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "titolo",
+                            });
+                        },
+                    },
+                    {
+                        text: "Lavori Aperti",
+                        icon: folderOpenOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "aperto",
+                            });
+                        },
+                    },
+                    {
+                        text: "Lavori In Corso",
+                        icon: folderOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "in_corso",
+                            });
+                        },
+                    },
+                    {
+                        text: "Lavori In Pausa",
+                        icon: alertCircleOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "aspetta",
+                            });
+                        },
+                    },
+                    {
+                        text: "Lavori Annullati",
+                        icon: trashOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "annullato",
+                            });
+                        },
+                    },
+                    {
+                        text: "Lavori Conclusi",
+                        icon: trashBinOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "concluso",
                             });
                         },
                     },

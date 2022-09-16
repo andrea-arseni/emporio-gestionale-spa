@@ -1,8 +1,9 @@
-import { IonButton, IonIcon, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonIcon, IonToolbar } from "@ionic/react";
 import { arrowBackOutline, arrowForwardOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import useSize from "../../hooks/use-size";
 import { getDayName, setWeek } from "../../utils/timeUtils";
+import Title from "../title/Title";
 import styles from "./CalendarNavigator.module.css";
 
 const CalendarNavigator: React.FC<{
@@ -54,7 +55,7 @@ const CalendarNavigator: React.FC<{
                     icon={arrowBackOutline}
                 ></IonIcon>
             </IonButton>
-            <IonTitle>{getTitolo()}</IonTitle>
+            <Title>{getTitolo()}</Title>
             <IonButton
                 slot="end"
                 fill="clear"

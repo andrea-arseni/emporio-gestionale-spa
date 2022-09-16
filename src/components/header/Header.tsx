@@ -1,10 +1,10 @@
 import {
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonMenuButton,
     IonIcon,
     IonButtons,
+    IonTitle,
 } from "@ionic/react";
 import { reorderFourOutline } from "ionicons/icons";
 import { useLocation } from "react-router";
@@ -17,13 +17,15 @@ const Header: React.FC<{ token: string | null }> = (props) => {
               "/appuntamenti",
               "/immobili",
               "/persone",
-              "/lavori",
+              "/obiettivi",
               "/operazioni",
               "/documenti",
           ]
         : ["/login", "/primo-accesso", "/rinnova-password"];
 
-    const nome = routes.find((el) => el === location.pathname)
+    const nome = routes.find((el) =>
+        el.includes(location.pathname.split("/")[1].toLowerCase())
+    )
         ? location.pathname.split("/")[1].toLowerCase().replace("-", " ")
         : "Gestionale Emporio Case";
 

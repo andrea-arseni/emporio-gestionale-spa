@@ -24,7 +24,9 @@ const FormSelect: React.FC<{
                         key={el}
                         value={el.toString().toLowerCase()}
                     >
-                        {typeof el === "string" ? capitalize(el) : el}
+                        {typeof el === "string"
+                            ? capitalize(el.toLowerCase().replace("_", " "))
+                            : el}
                     </IonSelectOption>
                 ))}
             </IonSelect>

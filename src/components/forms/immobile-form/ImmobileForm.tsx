@@ -503,7 +503,6 @@ const ImmobileForm: React.FC<{
             });
         } catch (error: any) {
             setShowLoading(false);
-            console.log(error);
             errorHandler(
                 error,
                 () => {},
@@ -768,7 +767,6 @@ const ImmobileForm: React.FC<{
                 setTotalePianiValue(e.detail.value);
                 break;
             default:
-                console.log("Error!");
                 break;
         }
     };

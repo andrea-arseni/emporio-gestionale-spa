@@ -13,7 +13,6 @@ const LogsPage: React.FC<{}> = () => {
                 entitiesType={"logs"}
                 icon={bookOutline}
                 title={"Storia dell'immobile"}
-                static
                 baseUrl={baseUrl}
             />
         </div>

@@ -34,6 +34,8 @@ import ImmobiliPage from "./pages/ImmobiliPage/ImmobiliPage";
 import OperazioniPage from "./pages/OperazioniPage/OperazioniPage";
 import ImmobileDataPage from "./pages/ImmobileDataPage/ImmobileDataPage";
 import LogsPage from "./pages/LogsPage/LogsPage";
+import LavoriPage from "./pages/LavoriPage/LavoriPage";
+import LavoriDataPage from "./pages/LavoriDataPage/LavoriDataPage";
 
 setupIonicReact();
 
@@ -88,8 +90,13 @@ const App: React.FC = () => {
                             </Route>
                         )}
                         {token && (
-                            <Route path="/lavori">
-                                <div>lavori</div>
+                            <Route path="/obiettivi" exact>
+                                <LavoriPage />
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/obiettivi/:id">
+                                <LavoriDataPage />
                             </Route>
                         )}
                         {token && (
@@ -120,6 +127,5 @@ const App: React.FC = () => {
 export default App;
 
 /* 
-- brutto bug anonimo
-- elimina inquilini
+- bug filtro data su data
 */

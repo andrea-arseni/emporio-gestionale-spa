@@ -11,10 +11,10 @@ import {
     calendarOutline,
     peopleOutline,
     homeOutline,
-    constructOutline,
     cardOutline,
     documentsOutline,
     logOutOutline,
+    golfOutline,
 } from "ionicons/icons";
 import { useLocation } from "react-router";
 import style from "./Menu.module.css";
@@ -42,9 +42,9 @@ const appPages: AppPage[] = [
         icon: peopleOutline,
     },
     {
-        title: "Lavori",
-        url: "/lavori",
-        icon: constructOutline,
+        title: "Obiettivi",
+        url: "/obiettivi",
+        icon: golfOutline,
     },
     {
         title: "Operazioni",
