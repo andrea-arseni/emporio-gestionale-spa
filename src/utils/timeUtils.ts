@@ -50,14 +50,14 @@ export const setWeek = (referenceDay: Date) => {
     };
     week.push(today);
     // unshift fino a giorno = 1
-    week = addDays(referenceDay, week, "before");
+    week = completeWeek(referenceDay, week, "before");
     // push fino a giorno = 0
-    week = addDays(referenceDay, week, "after");
+    week = completeWeek(referenceDay, week, "after");
     week.sort((a: Giorno, b: Giorno) => a.date.getTime() - b.date.getTime());
     return week;
 };
 
-const addDays = (
+const completeWeek = (
     referenceDay: Date,
     week: Giorno[],
     mode: "before" | "after"
@@ -118,3 +118,11 @@ export const getDateAsString = (input: Date) => {
 
 export const areDateEquals = (inputOne: Date, inputTwo: Date) =>
     getDateAsString(inputOne) === getDateAsString(inputTwo);
+
+export const addDays = (input: Date, numberOfDays: number) => {
+    const correctedDate = getCorrectDate(input);
+    const output = new Date(
+        correctedDate.getTime() + 1000 * 60 * 60 * 24 * numberOfDays
+    );
+    return output;
+};

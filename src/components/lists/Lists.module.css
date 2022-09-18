@@ -34,3 +34,15 @@
 .large {
     padding: 27px 0;
 }
+
+.little {
+    font-size: 75%;
+}
+
+.normalWidth {
+    width: 70px;
+}
+
+.littleWidth {
+    width: 50px;
+}

@@ -36,6 +36,7 @@ import ImmobileDataPage from "./pages/ImmobileDataPage/ImmobileDataPage";
 import LogsPage from "./pages/LogsPage/LogsPage";
 import LavoriPage from "./pages/LavoriPage/LavoriPage";
 import LavoriDataPage from "./pages/LavoriDataPage/LavoriDataPage";
+import PersonaPage from "./pages/PersonaPage/PersonaPage";
 
 setupIonicReact();
 
@@ -86,7 +87,7 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route path="/persone">
-                                <div>persone</div>
+                                <PersonaPage />
                             </Route>
                         )}
                         {token && (
@@ -126,6 +127,5 @@ const App: React.FC = () => {
 
 export default App;
 
-/* 
-- bug filtro data su data
-*/
+/*
+ */

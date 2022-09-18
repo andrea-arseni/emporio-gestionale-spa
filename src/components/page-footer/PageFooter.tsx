@@ -14,8 +14,8 @@ const PageFooter: React.FC<{
     )} ( ${props.numberOfResults} risultati )`;
 
     return (
-        <IonFooter className={styles.height}>
-            <IonToolbar mode="ios">
+        <IonFooter className={styles.footer}>
+            <IonToolbar mode="ios" className={styles.footer}>
                 {props.page > 1 && (
                     <IonButton
                         slot="start"

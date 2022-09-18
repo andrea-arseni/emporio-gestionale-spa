@@ -18,7 +18,7 @@ import { Lavoro } from "../../entities/lavoro.model";
 import { Step } from "../../entities/step.model";
 import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
-import { getLavoroTitleColor } from "../../utils/getLavoroTitleColor";
+import { getLavoroTitleColor } from "../../utils/statusHandler";
 import styles from "./LavoriDataPage.module.css";
 
 const LavoriDataPage: React.FC<{}> = () => {

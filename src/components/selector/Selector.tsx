@@ -20,13 +20,15 @@ import { Immobile } from "../../entities/immobile.model";
 import { Lavoro } from "../../entities/lavoro.model";
 import { Log } from "../../entities/log.model";
 import { Operazione } from "../../entities/operazione.model";
+import { Persona } from "../../entities/persona.model";
 import { Step } from "../../entities/step.model";
 import useWindowSize from "../../hooks/use-size";
 import axiosInstance from "../../utils/axiosInstance";
 import capitalize from "../../utils/capitalize";
 import errorHandler from "../../utils/errorHandler";
 import { numberAsPrice } from "../../utils/numberAsPrice";
-import { getDayName } from "../../utils/timeUtils";
+import { getStatusText } from "../../utils/statusHandler";
+import { addDays, getDateAsString, getDayName } from "../../utils/timeUtils";
 import Card from "../card/Card";
 import FilterActionSheet from "../filter-action-sheet/FilterActionSheet";
 import DateFilter from "../filters/date-filter/DateFilter";
@@ -36,6 +38,7 @@ import ListImmobili from "../lists/ListImmobili";
 import ListLavori from "../lists/ListLavori";
 import ListLogs from "../lists/ListLogs";
 import ListOperazioni from "../lists/ListOperazioni";
+import ListPersone from "../lists/ListPersone";
 import ListSteps from "../lists/ListSteps";
 import PageFooter from "../page-footer/PageFooter";
 import SortActionSheet from "../sort-action-sheet/SortActionSheet";
@@ -59,6 +62,8 @@ const Selector: React.FC<{
                 return "status";
             case "immobili":
                 return "ref";
+            case "persone":
+                return "status";
             default:
                 return "";
         }
@@ -112,7 +117,10 @@ const Selector: React.FC<{
         const getFilter = () => {
             let res = `&filter=${filter.filter}`;
             if (filter.startDate) res = `${res}&startDate=${filter.startDate}`;
-            if (filter.endDate) res = `${res}&endDate=${filter.endDate}`;
+            if (filter.endDate)
+                res = `${res}&endDate=${getDateAsString(
+                    addDays(new Date(filter.endDate), 1)
+                )}`;
             if (filter.min || filter.min === 0)
                 res = `${res}&min=${filter.min}`;
             if (filter.max || filter.max === 0)
@@ -262,6 +270,19 @@ const Selector: React.FC<{
                         setUpdate={setUpdate}
                     />
                 );
+            case "persone":
+                return (
+                    <ListPersone
+                        persone={entities as Persona[]}
+                        setMode={props.setMode!}
+                        setCurrentEntity={props.setCurrentEntity!}
+                        deleteEntity={deleteEntity}
+                        showLoading={showLoading}
+                        setShowLoading={setShowLoading}
+                        setUpdate={setUpdate}
+                        closeItems={closeItems}
+                    />
+                );
         }
     };
 
@@ -297,10 +318,14 @@ const Selector: React.FC<{
                     }`;
             return output;
         }
-        if (props.entitiesType === "lavori" && filter.filter === "status")
-            return `Obiettivi con Status: ${capitalize(
-                filter.value!.replace("_", " ")
-            )}`;
+        if (filter.filter === "status")
+            return `${capitalize(
+                props.entitiesType
+            )} con status: "${getStatusText(filter.value!)}"`;
+
+        if (filter.filter === "isProprietario") return "Lista Proprietari";
+
+        if (filter.filter === "isInquilino") return "Lista Inquilini";
 
         output =
             output + `con "${filter.value}" in ${capitalize(filter.filter!)}`;

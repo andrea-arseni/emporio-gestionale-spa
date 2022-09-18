@@ -29,7 +29,7 @@ const List: React.FC<{
             {!props.static && (
                 <IonButton
                     disabled={props.entitiesType === "logs"}
-                    color="dark"
+                    color={props.entitiesType === "steps" ? "dark" : "primary"}
                     expand="full"
                     mode="ios"
                     fill="solid"

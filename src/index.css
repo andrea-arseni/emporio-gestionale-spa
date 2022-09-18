@@ -36,7 +36,6 @@
     align-items: center;
     justify-content: center;
     flex-flow: column;
-    width: 70px;
 }
 
 .itemOption * {

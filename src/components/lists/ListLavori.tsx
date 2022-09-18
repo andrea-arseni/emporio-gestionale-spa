@@ -14,7 +14,7 @@ import useWindowSize from "../../hooks/use-size";
 import styles from "./Lists.module.css";
 import { useHistory } from "react-router";
 import { Lavoro } from "../../entities/lavoro.model";
-import { getLavoroTitleColor } from "../../utils/getLavoroTitleColor";
+import { getLavoroTitleColor } from "../../utils/statusHandler";
 
 const ListLavori: React.FC<{
     lavori: Lavoro[];

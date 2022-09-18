@@ -78,7 +78,6 @@ const DateFilter: React.FC<{
                     ></div>
                     <IonDatetime
                         className={styles.datapicker}
-                        onClick={() => console.log("bu")}
                         mode="ios"
                         min={
                             selectingEndDate && startDate

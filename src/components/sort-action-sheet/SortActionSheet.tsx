@@ -9,7 +9,9 @@ import {
     documentsOutline,
     layersOutline,
     logoEuro,
+    ribbonOutline,
     squareOutline,
+    textOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { entitiesType } from "../../entities/entity";
@@ -149,22 +151,46 @@ const SortActionSheet: React.FC<{
                 buttons = [
                     {
                         text: "Alfabetico Crescente",
-                        icon: cardOutline,
+                        icon: textOutline,
                         handler: () => buttonHandler("titolo"),
                     },
                     {
                         text: "Alfabetico Decrescente",
-                        icon: cardOutline,
+                        icon: textOutline,
                         handler: () => buttonHandler("titolo-desc"),
                     },
                     {
                         text: "Status Crescente",
-                        icon: calendarOutline,
+                        icon: ribbonOutline,
                         handler: () => buttonHandler("status"),
                     },
                     {
                         text: "Status Decrescente",
-                        icon: calendarOutline,
+                        icon: ribbonOutline,
+                        handler: () => buttonHandler("status-desc"),
+                    },
+                ];
+                break;
+            case "persone":
+                buttons = [
+                    {
+                        text: "Alfabetico Crescente",
+                        icon: textOutline,
+                        handler: () => buttonHandler("nome"),
+                    },
+                    {
+                        text: "Alfabetico Decrescente",
+                        icon: textOutline,
+                        handler: () => buttonHandler("nome-desc"),
+                    },
+                    {
+                        text: "Status Crescente",
+                        icon: ribbonOutline,
+                        handler: () => buttonHandler("status"),
+                    },
+                    {
+                        text: "Status Decrescente",
+                        icon: ribbonOutline,
                         handler: () => buttonHandler("status-desc"),
                     },
                 ];

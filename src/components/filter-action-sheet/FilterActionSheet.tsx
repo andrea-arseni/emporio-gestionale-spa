@@ -1,6 +1,7 @@
 import { IonActionSheet } from "@ionic/react";
 import {
     alertCircleOutline,
+    buildOutline,
     businessOutline,
     calendarNumberOutline,
     calendarOutline,
@@ -13,7 +14,12 @@ import {
     folderOutline,
     homeOutline,
     logoEuro,
+    mailOutline,
+    peopleCircleOutline,
+    peopleOutline,
+    phonePortraitOutline,
     squareOutline,
+    stopOutline,
     textOutline,
     trashBinOutline,
     trashOutline,
@@ -211,6 +217,125 @@ const FilterActionSheet: React.FC<{
                             buttonHandler("default", {
                                 filter: "status",
                                 value: "disattivo",
+                            });
+                        },
+                    },
+                ];
+                break;
+            case "persone":
+                buttons = [
+                    {
+                        text: "Persone Da Sentire",
+                        icon: peopleOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "attiva",
+                            });
+                        },
+                    },
+                    {
+                        text: "Persone Da Aspettare",
+                        icon: stopOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "aspetta",
+                            });
+                        },
+                    },
+                    {
+                        text: "Persone che Richiamano Loro",
+                        icon: alertCircleOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "richiama_lei",
+                            });
+                        },
+                    },
+                    {
+                        text: "Persone Disattive",
+                        icon: peopleCircleOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "riposo",
+                            });
+                        },
+                    },
+                    {
+                        text: "Persone da Evitare",
+                        icon: trashBinOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "non_richiamare",
+                            });
+                        },
+                    },
+                    {
+                        text: "Nome",
+                        icon: textOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "nome",
+                            });
+                        },
+                    },
+                    {
+                        text: "Telefono",
+                        icon: phonePortraitOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "telefono",
+                            });
+                        },
+                    },
+                    {
+                        text: "Email",
+                        icon: mailOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "email",
+                            });
+                        },
+                    },
+                    {
+                        text: "Ruolo",
+                        icon: buildOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "ruolo",
+                            });
+                        },
+                    },
+                    {
+                        text: "Provenienza",
+                        icon: homeOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "provenienza",
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo Proprietari",
+                        icon: homeOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "isProprietario",
+                                value: "true",
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo Inquilini",
+                        icon: businessOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "isInquilino",
+                                value: "true",
                             });
                         },
                     },
