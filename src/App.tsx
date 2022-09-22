@@ -128,4 +128,12 @@ const App: React.FC = () => {
 export default App;
 
 /*
+- inizio pagina di apertura del contatto
+- lista eventi con textwrap, data e ora
+- itemOption modifica ed elimina
+- form aggiungi evento con status persona immobile interesse e note
+- modifica evento con solo note 
+- elimina evento con avviso che non cambia status
+- visita un immobile button
+- link ai dati della persona in questione
  */

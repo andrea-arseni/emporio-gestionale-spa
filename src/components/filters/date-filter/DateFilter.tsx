@@ -8,7 +8,7 @@ import {
     IonIcon,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { getDayName } from "../../../utils/timeUtils";
 import styles from "../Filter.module.css";
 
@@ -53,8 +53,7 @@ const DateFilter: React.FC<{
         setSelectingEndDate(false);
     };
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const submitForm = async () => {
         props.setFilter((filter) => {
             return {
                 filter: filter.filter,
@@ -98,7 +97,7 @@ const DateFilter: React.FC<{
                 </div>
             )}
             {!selectingStartDate && !selectingEndDate && (
-                <form onSubmit={submitForm} className={styles.form}>
+                <div className={styles.form}>
                     <IonList className={styles.list}>
                         <IonItem lines="none">
                             <IonButton
@@ -157,6 +156,7 @@ const DateFilter: React.FC<{
                         </IonItem>
 
                         <IonButton
+                            onClick={() => submitForm()}
                             className={styles.button}
                             expand="full"
                             mode="ios"
@@ -167,7 +167,7 @@ const DateFilter: React.FC<{
                             Applica filtro
                         </IonButton>
                     </IonList>
-                </form>
+                </div>
             )}
         </>
     );

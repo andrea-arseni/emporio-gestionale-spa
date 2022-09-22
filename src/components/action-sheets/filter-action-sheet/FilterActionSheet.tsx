@@ -9,6 +9,7 @@ import {
     checkmarkCircleOutline,
     closeCircleOutline,
     closeOutline,
+    discOutline,
     documentTextOutline,
     folderOpenOutline,
     folderOutline,
@@ -25,7 +26,7 @@ import {
     trashOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
-import { entitiesType } from "../../entities/entity";
+import { entitiesType } from "../../../entities/entity";
 
 const FilterActionSheet: React.FC<{
     showFilterActionSheet: boolean;
@@ -312,7 +313,7 @@ const FilterActionSheet: React.FC<{
                     },
                     {
                         text: "Provenienza",
-                        icon: homeOutline,
+                        icon: discOutline,
                         handler: () => {
                             buttonHandler("stringFilter", {
                                 filter: "provenienza",
@@ -324,7 +325,7 @@ const FilterActionSheet: React.FC<{
                         icon: homeOutline,
                         handler: () => {
                             buttonHandler("default", {
-                                filter: "isProprietario",
+                                filter: "immobili",
                                 value: "true",
                             });
                         },
@@ -334,8 +335,8 @@ const FilterActionSheet: React.FC<{
                         icon: businessOutline,
                         handler: () => {
                             buttonHandler("default", {
-                                filter: "isInquilino",
-                                value: "true",
+                                filter: "immobileInquilino",
+                                value: null,
                             });
                         },
                     },

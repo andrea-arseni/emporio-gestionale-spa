@@ -1,5 +1,5 @@
 import { IonList, IonItem, IonLabel, IonButton, IonInput } from "@ionic/react";
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import styles from "../Filter.module.css";
 
 const NumberFilter: React.FC<{
@@ -32,8 +32,7 @@ const NumberFilter: React.FC<{
 
     const [maxValue, setMaxValue] = useState<string | null>(null);
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const submitForm = async () => {
         props.setFilter({
             filter: props.filter.filter,
             min: minValue ? +minValue : undefined,
@@ -43,7 +42,7 @@ const NumberFilter: React.FC<{
     };
 
     return (
-        <form onSubmit={submitForm} className={styles.form}>
+        <div className={styles.form}>
             <IonList className={styles.list}>
                 <IonItem>
                     <IonLabel position="floating">Valore minimo</IonLabel>
@@ -68,6 +67,7 @@ const NumberFilter: React.FC<{
                 </IonItem>
 
                 <IonButton
+                    onClick={() => submitForm()}
                     className={styles.button}
                     expand="full"
                     mode="ios"
@@ -78,7 +78,7 @@ const NumberFilter: React.FC<{
                     Applica filtro
                 </IonButton>
             </IonList>
-        </form>
+        </div>
     );
 };
 

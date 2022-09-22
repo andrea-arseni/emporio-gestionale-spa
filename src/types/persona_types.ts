@@ -6,9 +6,9 @@ export type personaType =
     | "ASPETTA";
 
 export const possibiliPersoneTypes = [
-    "ATTIVA",
-    "RIPOSO",
-    "RICHIAMA_LEI",
-    "NON_RICHIAMARE",
-    "ASPETTA",
+    { value: "ATTIVA", text: "Da Sentire" },
+    { value: "RIPOSO", text: "Disattiva" },
+    { value: "RICHIAMA_LEI", text: "Richiama Lei" },
+    { value: "NON_RICHIAMARE", text: "Da Non Richiamare" },
+    { value: "ASPETTA", text: "Da Aspettare" },
 ];

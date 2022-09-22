@@ -16,6 +16,7 @@ import {
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { entitiesType, Entity } from "../../entities/entity";
+import { Filtro } from "../../entities/filtro.model";
 import { Immobile } from "../../entities/immobile.model";
 import { Lavoro } from "../../entities/lavoro.model";
 import { Log } from "../../entities/log.model";
@@ -30,7 +31,7 @@ import { numberAsPrice } from "../../utils/numberAsPrice";
 import { getStatusText } from "../../utils/statusHandler";
 import { addDays, getDateAsString, getDayName } from "../../utils/timeUtils";
 import Card from "../card/Card";
-import FilterActionSheet from "../filter-action-sheet/FilterActionSheet";
+import FilterActionSheet from "../action-sheets/filter-action-sheet/FilterActionSheet";
 import DateFilter from "../filters/date-filter/DateFilter";
 import NumberFilter from "../filters/number-filter/NumberFilter";
 import StringFilter from "../filters/string-filter/StringFilter";
@@ -41,33 +42,24 @@ import ListOperazioni from "../lists/ListOperazioni";
 import ListPersone from "../lists/ListPersone";
 import ListSteps from "../lists/ListSteps";
 import PageFooter from "../page-footer/PageFooter";
-import SortActionSheet from "../sort-action-sheet/SortActionSheet";
+import SortActionSheet from "../action-sheets/sort-action-sheet/SortActionSheet";
 import Title from "../title/Title";
 import styles from "./Selector.module.css";
 
 const Selector: React.FC<{
-    baseUrl?: string;
     entitiesType: entitiesType;
+    filter: Filtro;
+    setFilter: Dispatch<SetStateAction<Filtro>>;
+    sort: string;
+    setSort: Dispatch<SetStateAction<string>>;
+    page: number;
+    setPage: Dispatch<SetStateAction<number>>;
     setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
     setMode?: Dispatch<SetStateAction<"list" | "form">>;
-    static?: boolean;
+    baseUrl?: string;
+    selectMode?: boolean;
 }> = (props) => {
     const [width] = useWindowSize();
-
-    const getInitialSorting = () => {
-        switch (props.entitiesType) {
-            case "operazioni":
-                return "data";
-            case "lavori":
-                return "status";
-            case "immobili":
-                return "ref";
-            case "persone":
-                return "status";
-            default:
-                return "";
-        }
-    };
 
     const [filterMode, setFilterMode] = useState<
         "default" | "stringFilter" | "dataFilter" | "numberFilter"
@@ -83,24 +75,9 @@ const Selector: React.FC<{
 
     const [entities, setEntities] = useState<Entity[]>([]);
 
-    const [page, setPage] = useState<number>(1);
-
     const [numberOfResults, setNumberOfResults] = useState<number>(0);
 
-    const [sort, setSort] = useState<string>(getInitialSorting());
-
     const [negativeForbidden, setNegativeForbidden] = useState<boolean>(false);
-
-    const [filter, setFilter] = useState<{
-        filter: string | undefined;
-        value?: string | undefined;
-        min?: number | undefined;
-        max?: number | undefined;
-        startDate?: string | undefined;
-        endDate?: string | undefined;
-    }>({
-        filter: undefined,
-    });
 
     const [presentAlert] = useIonAlert();
 
@@ -115,17 +92,18 @@ const Selector: React.FC<{
     // definisci quale tipologia di entity vuoi cercare
     useEffect(() => {
         const getFilter = () => {
-            let res = `&filter=${filter.filter}`;
-            if (filter.startDate) res = `${res}&startDate=${filter.startDate}`;
-            if (filter.endDate)
+            let res = `&filter=${props.filter.filter}`;
+            if (props.filter.startDate)
+                res = `${res}&startDate=${props.filter.startDate}`;
+            if (props.filter.endDate)
                 res = `${res}&endDate=${getDateAsString(
-                    addDays(new Date(filter.endDate), 1)
+                    addDays(new Date(props.filter.endDate), 1)
                 )}`;
-            if (filter.min || filter.min === 0)
-                res = `${res}&min=${filter.min}`;
-            if (filter.max || filter.max === 0)
-                res = `${res}&max=${filter.max}`;
-            if (filter.value) res = `${res}&value=${filter.value}`;
+            if (props.filter.min || props.filter.min === 0)
+                res = `${res}&min=${props.filter.min}`;
+            if (props.filter.max || props.filter.max === 0)
+                res = `${res}&max=${props.filter.max}`;
+            if (props.filter.value) res = `${res}&value=${props.filter.value}`;
             return res;
         };
 
@@ -134,7 +112,9 @@ const Selector: React.FC<{
                 setShowLoading(true);
                 const url = `${
                     props.baseUrl ? props.baseUrl : props.entitiesType
-                }?page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
+                }?page=${props.page}${
+                    props.filter.filter ? getFilter() : ""
+                }&sort=${props.sort}`;
                 const res = await axiosInstance.get(url);
                 await new Promise((r) => setTimeout(r, 300));
                 setShowLoading(false);
@@ -155,10 +135,10 @@ const Selector: React.FC<{
     }, [
         history,
         presentAlert,
-        page,
+        props.page,
         props.entitiesType,
-        filter,
-        sort,
+        props.filter,
+        props.sort,
         update,
         props.baseUrl,
     ]);
@@ -172,7 +152,7 @@ const Selector: React.FC<{
             color="dark"
             onClick={() => {
                 setFilterMode("default");
-                setFilter({ filter: undefined });
+                props.setFilter({ filter: undefined });
             }}
         >
             <IonIcon icon={listOutline} />
@@ -233,6 +213,7 @@ const Selector: React.FC<{
                         setShowLoading={setShowLoading}
                         setUpdate={setUpdate}
                         closeItems={closeItems}
+                        selectMode={!!props.selectMode}
                     />
                 );
             case "operazioni":
@@ -281,6 +262,7 @@ const Selector: React.FC<{
                         setShowLoading={setShowLoading}
                         setUpdate={setUpdate}
                         closeItems={closeItems}
+                        selectMode={!!props.selectMode}
                     />
                 );
         }
@@ -288,53 +270,58 @@ const Selector: React.FC<{
 
     const getFilterTitle = () => {
         let output = "Risultati ";
-        if (filter.startDate || filter.endDate) {
-            if (filter.startDate)
+        if (props.filter.startDate || props.filter.endDate) {
+            if (props.filter.startDate)
                 output =
-                    output + `dal ${getDayName(new Date(filter.startDate))}`;
-            if (!filter.endDate) output = output + " in poi";
-            if (filter.endDate)
+                    output +
+                    `dal ${getDayName(new Date(props.filter.startDate))}`;
+            if (!props.filter.endDate) output = output + " in poi";
+            if (props.filter.endDate)
                 output =
-                    output + ` fino al ${getDayName(new Date(filter.endDate))}`;
+                    output +
+                    ` fino al ${getDayName(new Date(props.filter.endDate))}`;
             return output;
         }
-        if (filter.min || filter.max) {
-            output = output + `con ${capitalize(filter.filter!)} `;
-            if (filter.min)
+        if (props.filter.min || props.filter.max) {
+            output = output + `con ${capitalize(props.filter.filter!)} `;
+            if (props.filter.min)
                 output =
                     output +
                     `da ${
-                        filter.filter === "prezzo"
-                            ? numberAsPrice(filter.min)
-                            : filter.min
+                        props.filter.filter === "prezzo"
+                            ? numberAsPrice(props.filter.min)
+                            : props.filter.min
                     } `;
-            if (filter.max)
+            if (props.filter.max)
                 output =
                     output +
                     `fino a ${
-                        filter.filter === "prezzo"
-                            ? numberAsPrice(filter.max)
-                            : filter.max
+                        props.filter.filter === "prezzo"
+                            ? numberAsPrice(props.filter.max)
+                            : props.filter.max
                     }`;
             return output;
         }
-        if (filter.filter === "status")
+        if (props.filter.filter === "status")
             return `${capitalize(
                 props.entitiesType
-            )} con status: "${getStatusText(filter.value!)}"`;
+            )} con status: "${getStatusText(props.filter.value!)}"`;
 
-        if (filter.filter === "isProprietario") return "Lista Proprietari";
+        if (props.filter.filter === "immobili") return "Lista Proprietari";
 
-        if (filter.filter === "isInquilino") return "Lista Inquilini";
+        if (props.filter.filter === "immobileInquilino")
+            return "Lista Inquilini";
 
         output =
-            output + `con "${filter.value}" in ${capitalize(filter.filter!)}`;
+            output +
+            `con "${props.filter.value}" in ${capitalize(
+                props.filter.filter!
+            )}`;
         return output;
     };
 
     const getListHeight = () => {
         if (props.entitiesType === "steps") return styles.heightSteps;
-        if (props.static) return styles.simple;
         return styles.fullOption;
     };
 
@@ -343,8 +330,8 @@ const Selector: React.FC<{
             <>
                 {filterBar}
                 <DateFilter
-                    filter={filter}
-                    setFilter={setFilter}
+                    filter={props.filter}
+                    setFilter={props.setFilter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -356,8 +343,8 @@ const Selector: React.FC<{
                 {filterBar}
                 <NumberFilter
                     negativeForbidden={negativeForbidden}
-                    filter={filter}
-                    setFilter={setFilter}
+                    filter={props.filter}
+                    setFilter={props.setFilter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -368,8 +355,8 @@ const Selector: React.FC<{
             <>
                 {filterBar}
                 <StringFilter
-                    filter={filter}
-                    setFilter={setFilter}
+                    filter={props.filter}
+                    setFilter={props.setFilter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -378,7 +365,7 @@ const Selector: React.FC<{
     return (
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            {!props.static && filter.filter && (
+            {props.filter.filter && (
                 <IonToolbar className={styles.filterToolbar} mode="ios">
                     <Title>{getFilterTitle()}</Title>
 
@@ -388,7 +375,7 @@ const Selector: React.FC<{
                         color="dark"
                         mode="ios"
                         onClick={() => {
-                            setFilter({
+                            props.setFilter({
                                 filter: undefined,
                                 value: undefined,
                                 startDate: undefined,
@@ -396,7 +383,7 @@ const Selector: React.FC<{
                                 max: undefined,
                                 min: undefined,
                             });
-                            setPage(1);
+                            props.setPage(1);
                             setNegativeForbidden(false);
                         }}
                     >
@@ -405,7 +392,7 @@ const Selector: React.FC<{
                     </IonButton>
                 </IonToolbar>
             )}
-            {!props.static && !filter.filter && entities.length > 1 && (
+            {!props.filter.filter && entities.length > 1 && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
@@ -419,7 +406,7 @@ const Selector: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
-            {!props.static && entities.length > 1 && (
+            {entities.length > 1 && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
@@ -455,24 +442,24 @@ const Selector: React.FC<{
                 </div>
             )}
             <PageFooter
-                page={page}
-                setPage={setPage}
+                page={props.page}
+                setPage={props.setPage}
                 numberOfResults={numberOfResults}
             />
             <FilterActionSheet
                 showFilterActionSheet={showFilterActionSheet}
                 setShowFilterActionSheet={setShowFilterActionSheet}
                 setFilterMode={setFilterMode}
-                setFilter={setFilter}
-                setPage={setPage}
+                setFilter={props.setFilter}
+                setPage={props.setPage}
                 setNegativeForbidden={setNegativeForbidden}
                 entity={props.entitiesType}
             />
             <SortActionSheet
                 showSortingActionSheet={showSortingActionSheet}
                 setShowSortingActionSheet={setShowSortingActionSheet}
-                setSort={setSort}
-                setPage={setPage}
+                setSort={props.setSort}
+                setPage={props.setPage}
                 entity={props.entitiesType}
             />
         </>

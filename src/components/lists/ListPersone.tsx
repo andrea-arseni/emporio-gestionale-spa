@@ -9,10 +9,8 @@ import {
     IonText,
 } from "@ionic/react";
 import {
-    business,
     createOutline,
     folderOutline,
-    homeOutline,
     openOutline,
     trashOutline,
 } from "ionicons/icons";
@@ -23,7 +21,6 @@ import { useHistory } from "react-router";
 import { Persona } from "../../entities/persona.model";
 import { getPersonaNameColor } from "../../utils/statusHandler";
 import useWindowSize from "../../hooks/use-size";
-import capitalize from "../../utils/capitalize";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -34,6 +31,7 @@ const ListPersone: React.FC<{
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
     closeItems: () => void;
+    selectMode: boolean;
 }> = (props) => {
     const history = useHistory();
 
@@ -43,66 +41,78 @@ const ListPersone: React.FC<{
         history.push(`/persone/${id.toString()}`);
     };
 
+    const getPersona = (persona: Persona) => {
+        return (
+            <IonItem
+                key={persona.id}
+                detail={!props.selectMode}
+                color={
+                    !props.selectMode
+                        ? getPersonaNameColor(persona.status!.toLowerCase())
+                        : undefined
+                }
+            >
+                <IonLabel text-wrap>
+                    <h2>{persona.nome} </h2>
+                    <p>
+                        Tel:{" "}
+                        {persona.telefono ? (
+                            <a href={`tel:${persona.telefono}`}>
+                                {persona.telefono}
+                            </a>
+                        ) : (
+                            "Mancante"
+                        )}
+                    </p>
+                    <p>
+                        Email:{" "}
+                        {persona.email ? (
+                            <a href={`mailto:${persona.email}`}>
+                                {width >= 450 ? persona.email : "Email"}
+                            </a>
+                        ) : (
+                            "Mancante"
+                        )}
+                    </p>
+                </IonLabel>
+                {width > 500 &&
+                    (persona.ruolo ||
+                        persona.immobili ||
+                        persona.immobileInquilino) && (
+                        <IonLabel>
+                            {persona.ruolo && (
+                                <p>{`Ruolo: ${persona.ruolo.toUpperCase()}`}</p>
+                            )}
+                            {persona.immobili && <p>{`Proprietario`}</p>}
+                            {persona.immobileInquilino && <p>{`Inquilino`}</p>}
+                        </IonLabel>
+                    )}
+                <IonNote
+                    slot="end"
+                    className={styles.note}
+                    color={
+                        persona.status === "NON_RICHIAMARE" ||
+                        persona.status === "RIPOSO"
+                            ? "light"
+                            : "dark"
+                    }
+                >
+                    {persona.status === "RIPOSO"
+                        ? "DISATTIVA"
+                        : persona.status!.toUpperCase().replace("_", " ")}
+                    <br />
+                    {persona.provenienza &&
+                        persona.provenienza.toUpperCase().replace("_", " ")}
+                </IonNote>
+            </IonItem>
+        );
+    };
+
     return (
         <>
             {props.persone.map((persona: Persona) => (
                 <IonItemSliding key={persona.id!} id={persona.id?.toString()}>
-                    <IonItem
-                        detail
-                        color={getPersonaNameColor(
-                            persona.status!.toLowerCase()
-                        )}
-                    >
-                        <IonLabel text-wrap>
-                            <h2>{persona.nome} </h2>
-                            <p>
-                                Tel:{" "}
-                                {persona.telefono ? (
-                                    <a href={`tel:${persona.telefono}`}>
-                                        {persona.telefono}
-                                    </a>
-                                ) : (
-                                    "Mancante"
-                                )}
-                            </p>
-                            <p>
-                                Email:{" "}
-                                {persona.email ? (
-                                    <a href={`mailto:${persona.email}`}>
-                                        {persona.email}
-                                    </a>
-                                ) : (
-                                    "Mancante"
-                                )}
-                            </p>
-                        </IonLabel>
-                        {width > 500 &&
-                            (persona.ruolo ||
-                                persona.proprietario ||
-                                persona.inquilino) && (
-                                <IonLabel>
-                                    {persona.ruolo && (
-                                        <p>{`Ruolo: ${persona.ruolo.toUpperCase()}`}</p>
-                                    )}
-                                    {persona.proprietario && (
-                                        <p>{`Proprietario`}</p>
-                                    )}
-                                    {persona.inquilino && <p>{`Inquilino`}</p>}
-                                </IonLabel>
-                            )}
-                        <IonNote slot="end" className={styles.note}>
-                            <div>
-                                {persona.status!.toUpperCase()}
-                                {persona.provenienza && (
-                                    <p>
-                                        {capitalize(
-                                            persona.provenienza.toLowerCase()
-                                        )}
-                                    </p>
-                                )}
-                            </div>
-                        </IonNote>
-                    </IonItem>
+                    {getPersona(persona)}
                     <IonItemOptions side="end">
                         <IonItemOption color="primary">
                             <div
@@ -144,52 +154,6 @@ const ListPersone: React.FC<{
                                 )}
                             </div>
                         </IonItemOption>
-                        {persona.proprietario && (
-                            <IonItemOption color="secondary">
-                                <div
-                                    className={`itemOption ${
-                                        width > 500
-                                            ? styles.normalWidth
-                                            : styles.littleWidth
-                                    }`}
-                                    onClick={() => {}}
-                                >
-                                    <IonIcon
-                                        icon={homeOutline}
-                                        size={width > 500 ? "large" : "small"}
-                                    />
-                                    {width > 500 ? (
-                                        <IonText>Case</IonText>
-                                    ) : (
-                                        <p className={styles.little}>Case</p>
-                                    )}
-                                </div>
-                            </IonItemOption>
-                        )}
-                        {persona.inquilino && (
-                            <IonItemOption color="warning">
-                                <div
-                                    className={`itemOption ${
-                                        width > 500
-                                            ? styles.normalWidth
-                                            : styles.littleWidth
-                                    }`}
-                                    onClick={() => {}}
-                                >
-                                    <IonIcon
-                                        icon={business}
-                                        size={width > 500 ? "large" : "small"}
-                                    />
-                                    {width > 500 ? (
-                                        <IonText>Casa Locata</IonText>
-                                    ) : (
-                                        <p className={styles.little}>
-                                            Casa Locata
-                                        </p>
-                                    )}
-                                </div>
-                            </IonItemOption>
-                        )}
                         <IonItemOption color="link">
                             <div
                                 className={`itemOption ${
@@ -222,7 +186,7 @@ const ListPersone: React.FC<{
                                 }`}
                                 onClick={() =>
                                     props.deleteEntity(
-                                        "immobili",
+                                        "persone",
                                         persona.id!.toString(),
                                         `Hai selezionato la cancellazione della persona selezionata. Si tratta di un processo irreversibile.`
                                     )

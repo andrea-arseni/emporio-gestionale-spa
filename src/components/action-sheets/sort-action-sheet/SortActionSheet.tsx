@@ -14,7 +14,7 @@ import {
     textOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
-import { entitiesType } from "../../entities/entity";
+import { entitiesType } from "../../../entities/entity";
 
 const SortActionSheet: React.FC<{
     showSortingActionSheet: boolean;

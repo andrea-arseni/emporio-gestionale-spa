@@ -1,17 +1,22 @@
 import { IonContent } from "@ionic/react";
 import { golfOutline } from "ionicons/icons";
 import { useState } from "react";
+import NewEntityBar from "../../components/bars/new-entity-bar/NewEntityBar";
 import FormTitle from "../../components/form-components/form-title/FormTitle";
 import LavoroForm from "../../components/forms/lavoro-form/Lavoro-form";
-import List from "../../components/list/List";
+import Selector from "../../components/selector/Selector";
 import { Entity } from "../../entities/entity";
 import { Lavoro } from "../../entities/lavoro.model";
+import useFilterAndSort from "../../hooks/use-query-data";
 import styles from "./LavoriPage.module.css";
 
 const LavoriPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const [currentLavoro, setCurrentLavoro] = useState<Entity | null>(null);
+
+    const { filter, setFilter, sort, setSort, page, setPage } =
+        useFilterAndSort("lavori");
 
     const backToList = () => {
         setMode("list");
@@ -21,13 +26,25 @@ const LavoriPage: React.FC<{}> = () => {
     return (
         <div className="page">
             {mode === "list" && (
-                <List
-                    setMode={setMode}
-                    setCurrentEntity={setCurrentLavoro}
-                    entitiesType="lavori"
-                    icon={golfOutline}
-                    title="Nuovo Obiettivo"
-                />
+                <IonContent>
+                    <NewEntityBar
+                        entitiesType="lavori"
+                        setMode={setMode}
+                        icon={golfOutline}
+                        title="Nuovo Obiettivo"
+                    />
+                    <Selector
+                        setMode={setMode}
+                        entitiesType="lavori"
+                        setCurrentEntity={setCurrentLavoro}
+                        filter={filter}
+                        setFilter={setFilter}
+                        sort={sort}
+                        setSort={setSort}
+                        page={page}
+                        setPage={setPage}
+                    />
+                </IonContent>
             )}
             {mode === "form" && (
                 <IonContent>

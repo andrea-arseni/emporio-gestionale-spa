@@ -24,6 +24,7 @@ import errorHandler from "../../utils/errorHandler";
 import { numberAsPrice } from "../../utils/numberAsPrice";
 import styles from "./Lists.module.css";
 import { useHistory } from "react-router";
+import useSelection from "../../hooks/use-selection";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -34,6 +35,7 @@ const ListImmobili: React.FC<{
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
     closeItems: () => void;
+    selectMode: boolean;
 }> = (props) => {
     const history = useHistory();
 
@@ -84,47 +86,66 @@ const ListImmobili: React.FC<{
                 presentAlert
             );
         }
-        // testing
     };
+
+    const { selectEntity, entitySelected } = useSelection(
+        props.setCurrentEntity
+    );
+
+    const getImmobile = (immobile: Immobile) => {
+        return (
+            <IonItem
+                key={immobile.id}
+                detail={!props.selectMode}
+                onClick={() =>
+                    props.selectMode ? selectEntity(immobile) : null
+                }
+                color={entitySelected === immobile.id ? "secondary" : undefined}
+            >
+                <h3
+                    className={`${styles.ref} ${
+                        immobile.status?.toLowerCase() === "attivo"
+                            ? styles.active
+                            : styles.inactive
+                    }`}
+                >
+                    {immobile.ref}
+                </h3>
+                <IonLabel text-wrap>
+                    <h2>{immobile.titolo} </h2>
+                    <p>{`${immobile.indirizzo} (${immobile.comune})`}</p>
+                    <p>
+                        <span
+                            style={{
+                                color: "#4C8CFF",
+                                marginRight: "10px",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            {numberAsPrice(immobile.prezzo!)}
+                        </span>
+                        {immobile.superficie} mq
+                    </p>
+                </IonLabel>
+                {width >= 600 && (
+                    <IonNote slot="end" className={styles.note}>
+                        {immobile.contratto?.toUpperCase()}
+                        <br />
+                        {immobile.categoria?.toUpperCase()}
+                    </IonNote>
+                )}
+            </IonItem>
+        );
+    };
+
+    if (props.selectMode)
+        return <>{props.immobili.map((el) => getImmobile(el))}</>;
 
     return (
         <>
             {props.immobili.map((immobile: Immobile) => (
                 <IonItemSliding key={immobile.id!} id={immobile.id?.toString()}>
-                    <IonItem detail>
-                        <h3
-                            className={`${styles.ref} ${
-                                immobile.status?.toLowerCase() === "attivo"
-                                    ? styles.active
-                                    : styles.inactive
-                            }`}
-                        >
-                            {immobile.ref}
-                        </h3>
-                        <IonLabel text-wrap>
-                            <h2>{immobile.titolo} </h2>
-                            <p>{`${immobile.indirizzo} (${immobile.comune})`}</p>
-                            <p>
-                                <span
-                                    style={{
-                                        color: "#4C8CFF",
-                                        marginRight: "10px",
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    {numberAsPrice(immobile.prezzo!)}
-                                </span>
-                                {immobile.superficie} mq
-                            </p>
-                        </IonLabel>
-                        {width >= 600 && (
-                            <IonNote slot="end" className={styles.note}>
-                                {immobile.contratto?.toUpperCase()}
-                                <br />
-                                {immobile.categoria?.toUpperCase()}
-                            </IonNote>
-                        )}
-                    </IonItem>
+                    {getImmobile(immobile)}
                     <IonItemOptions side="end">
                         <IonItemOption color="success">
                             <div

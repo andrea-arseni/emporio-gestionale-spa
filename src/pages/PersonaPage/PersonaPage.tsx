@@ -1,15 +1,22 @@
 import { IonContent } from "@ionic/react";
 import { peopleOutline } from "ionicons/icons";
 import { useState } from "react";
+import NewEntityBar from "../../components/bars/new-entity-bar/NewEntityBar";
 import FormTitle from "../../components/form-components/form-title/FormTitle";
-import List from "../../components/list/List";
+import PersoneForm from "../../components/forms/persone-form/PersoneForm";
+import Selector from "../../components/selector/Selector";
 import { Entity } from "../../entities/entity";
+import { Persona } from "../../entities/persona.model";
+import useFilterAndSort from "../../hooks/use-query-data";
 import styles from "./PersonaPage.module.css";
 
 const PersonaPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const [currentPersona, setCurrentPersona] = useState<Entity | null>(null);
+
+    const { filter, setFilter, sort, setSort, page, setPage } =
+        useFilterAndSort("persone");
 
     const backToList = () => {
         setMode("list");
@@ -19,13 +26,26 @@ const PersonaPage: React.FC<{}> = () => {
     return (
         <div className="page">
             {mode === "list" && (
-                <List
-                    setMode={setMode}
-                    setCurrentEntity={setCurrentPersona}
-                    entitiesType="persone"
-                    icon={peopleOutline}
-                    title="Nuova Persona"
-                />
+                <IonContent>
+                    <NewEntityBar
+                        entitiesType="persone"
+                        setMode={setMode}
+                        icon={peopleOutline}
+                        title="Nuova Persona"
+                    />
+
+                    <Selector
+                        setMode={setMode}
+                        entitiesType="persone"
+                        setCurrentEntity={setCurrentPersona}
+                        filter={filter}
+                        setFilter={setFilter}
+                        sort={sort}
+                        setSort={setSort}
+                        page={page}
+                        setPage={setPage}
+                    />
+                </IonContent>
             )}
             {mode === "form" && (
                 <IonContent>
@@ -41,15 +61,10 @@ const PersonaPage: React.FC<{}> = () => {
                         />
                     </div>
                     <div className={styles.spaceDown}>
-                        PERSONA FORM
-                        {/* <ImmobileForm
-                            immobile={
-                                currentPersona
-                                    ? (currentPersona as Immobile)
-                                    : null
-                            }
+                        <PersoneForm
+                            persona={currentPersona as Persona}
                             backToList={backToList}
-                        /> */}
+                        />
                     </div>
                 </IonContent>
             )}

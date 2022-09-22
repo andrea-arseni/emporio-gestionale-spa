@@ -3,7 +3,10 @@ export type provenienzaPersona =
     | "Immobiliare"
     | "Idealista"
     | "Acquisizioni"
-    | "Presentato da conoscenze comuni"
+    | "Conoscenze comuni"
+    | "Sito"
+    | "Pubblicita"
+    | "Cartello"
     | "Altro";
 
 export const possibiliProvenienzePersona = [
@@ -11,6 +14,9 @@ export const possibiliProvenienzePersona = [
     "Immobiliare",
     "Idealista",
     "Acquisizioni",
-    "Presentato da conoscenze comuni",
+    "Conoscenze comuni",
+    "Sito",
+    "Pubblicita",
+    "Cartello",
     "Altro",
 ];

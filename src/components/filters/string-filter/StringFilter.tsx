@@ -1,5 +1,5 @@
 import { IonList, IonItem, IonLabel, IonInput, IonButton } from "@ionic/react";
-import { Dispatch, SetStateAction, useState, FormEvent } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import styles from "../Filter.module.css";
 
 const StringFilter: React.FC<{
@@ -29,8 +29,7 @@ const StringFilter: React.FC<{
 }> = (props) => {
     const [value, setValue] = useState<string | null>(null);
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const submitForm = async () => {
         props.setFilter({
             filter: props.filter.filter,
             value: value!,
@@ -39,7 +38,7 @@ const StringFilter: React.FC<{
     };
 
     return (
-        <form onSubmit={submitForm} className={styles.form}>
+        <div className={styles.form}>
             <IonList className={styles.list}>
                 <IonItem>
                     <IonLabel position="floating">{`Testo in "${props.filter.filter}"`}</IonLabel>
@@ -51,6 +50,7 @@ const StringFilter: React.FC<{
                     ></IonInput>
                 </IonItem>
                 <IonButton
+                    onClick={() => submitForm()}
                     className={styles.button}
                     expand="full"
                     mode="ios"
@@ -61,7 +61,7 @@ const StringFilter: React.FC<{
                     Applica filtro
                 </IonButton>
             </IonList>
-        </form>
+        </div>
     );
 };
 

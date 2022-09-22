@@ -8,14 +8,11 @@ export class Persona {
         public nome: string | null,
         public telefono: string | null,
         public email: string | null,
-        public proprietario: boolean | null,
-        public inquilino: boolean | null,
-        public importante: boolean | null,
         public ruolo: string | null,
-        public immobili: Immobile[] | null,
+        public immobili: Immobile[] | number[] | null,
+        public immobileInquilino: Immobile | number | null,
         public eventi: Evento[] | null,
         public files: File[] | null,
-        public dataUscita: string | null,
         public provenienza: string | null,
         public status: string | null
     ) {}

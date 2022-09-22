@@ -10,18 +10,37 @@ const errorHandler = (
         (options: AlertOptions & HookOverlayOptions): Promise<any>;
     }
 ) => {
-    presentAlert({
-        header: "Errore",
-        subHeader: `${e.response.data.message ? `${message}` : ""}`,
-        message: `${
-            e.response.data.message ? e.response.data.message : `${message}`
-        }`,
-        buttons: [
+    const subHeader = e.response.data.message ? message : "";
+
+    let id: string | null = null;
+
+    let text = e.response.data.message ? e.response.data.message : message;
+
+    if (text.includes("E' già presente a sistema una persona")) {
+        id = text.split(" id ")[1];
+        text = text.split("E' la persona")[0];
+    }
+
+    const getButtons = () => {
+        let buttons = [
             {
-                text: "OK",
+                text: "Chiudi",
                 handler: handler,
             },
-        ],
+        ];
+        if (id)
+            buttons.push({
+                text: "Vai alla persona in questione",
+                handler: () => console.log(id),
+            });
+        return buttons;
+    };
+
+    presentAlert({
+        header: "Errore",
+        subHeader,
+        message: text,
+        buttons: getButtons(),
         backdropDismiss: true,
     });
 };

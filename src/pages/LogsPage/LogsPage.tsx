@@ -1,20 +1,33 @@
+import { IonContent } from "@ionic/react";
 import { bookOutline } from "ionicons/icons";
 import { useLocation } from "react-router";
-import List from "../../components/list/List";
+import StaticBar from "../../components/bars/static-bar/StaticBar";
+import Selector from "../../components/selector/Selector";
+import useFilterAndSort from "../../hooks/use-query-data";
 
 const LogsPage: React.FC<{}> = () => {
     const location = useLocation();
     const id = location.pathname.split("/")[2];
     const baseUrl = `/immobili/${id}/logs`;
 
+    const { filter, setFilter, sort, setSort, page, setPage } =
+        useFilterAndSort("logs");
+
     return (
         <div className="page">
-            <List
-                entitiesType={"logs"}
-                icon={bookOutline}
-                title={"Storia dell'immobile"}
-                baseUrl={baseUrl}
-            />
+            <IonContent>
+                <StaticBar icon={bookOutline} title={"Storia dell'immobile"} />
+                <Selector
+                    entitiesType={"logs"}
+                    baseUrl={baseUrl}
+                    filter={filter}
+                    setFilter={setFilter}
+                    sort={sort}
+                    setSort={setSort}
+                    page={page}
+                    setPage={setPage}
+                />
+            </IonContent>
         </div>
     );
 };
