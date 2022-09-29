@@ -1,9 +1,9 @@
 import { IonContent } from "@ionic/react";
 import { bookOutline } from "ionicons/icons";
 import { useLocation } from "react-router";
-import StaticBar from "../../components/bars/static-bar/StaticBar";
-import Selector from "../../components/selector/Selector";
-import useFilterAndSort from "../../hooks/use-query-data";
+import StaticBar from "../../../components/bars/static-bar/StaticBar";
+import Selector from "../../../components/selector/Selector";
+import useFilterAndSort from "../../../hooks/use-query-data";
 
 const LogsPage: React.FC<{}> = () => {
     const location = useLocation();

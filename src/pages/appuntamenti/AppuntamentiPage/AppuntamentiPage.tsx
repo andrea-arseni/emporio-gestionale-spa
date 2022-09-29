@@ -9,20 +9,20 @@ import {
 } from "@ionic/react";
 import { calendarOutline, listOutline } from "ionicons/icons";
 import { useCallback, useEffect, useState } from "react";
-import CalendarNavigator from "../../components/calendar-navigator/CalendarNavigator";
-import Calendar from "../../components/calendar/Calendar";
-import DaySelector from "../../components/day-selector/DaySelector";
+import CalendarNavigator from "../../../components/calendar-navigator/CalendarNavigator";
+import Calendar from "../../../components/calendar/Calendar";
+import DaySelector from "../../../components/day-selector/DaySelector";
 import {
     areDateEquals,
     getDateAsString,
     Giorno,
     setWeek,
-} from "../../utils/timeUtils";
-import axiosInstance from "../../utils/axiosInstance";
-import { Visit } from "../../entities/visit.model";
-import Modal from "../../components/modal/Modal";
-import FormVisit from "../../components/forms/visit-form/VisitForm";
-import errorHandler from "../../utils/errorHandler";
+} from "../../../utils/timeUtils";
+import axiosInstance from "../../../utils/axiosInstance";
+import { Visit } from "../../../entities/visit.model";
+import Modal from "../../../components/modal/Modal";
+import FormVisit from "../../../components/forms/visit-form/VisitForm";
+import errorHandler from "../../../utils/errorHandler";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();

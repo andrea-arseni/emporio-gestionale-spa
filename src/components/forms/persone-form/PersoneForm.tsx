@@ -83,17 +83,9 @@ const PersoneForm: React.FC<{
             : null
     );
 
-    const setCasaLocata = (immobile: Immobile) => {
-        setImmobileLocato(immobile);
-    };
-
     const [immobileInteresse, setImmobileInteresse] = useState<Immobile | null>(
         null
     );
-
-    const setCasaInteresse = (immobile: Immobile) => {
-        setImmobileInteresse(immobile);
-    };
 
     useEffect(() => {
         const addHouse = (immobile: Immobile) => {
@@ -108,10 +100,10 @@ const PersoneForm: React.FC<{
 
         setTimeout(() => {
             if (choiceMode === "interesse" && currentImmobile) {
-                setCasaInteresse(currentImmobile as Immobile);
+                setImmobileInteresse(currentImmobile as Immobile);
                 setModalIsOpen(false);
             } else if (choiceMode === "locazione" && currentImmobile) {
-                setCasaLocata(currentImmobile as Immobile);
+                setImmobileLocato(currentImmobile as Immobile);
                 setModalIsOpen(false);
             } else if (choiceMode === "proprietà" && currentImmobile) {
                 addHouse(currentImmobile as Immobile);
@@ -393,7 +385,7 @@ const PersoneForm: React.FC<{
                             >
                                 {possibiliPersoneTypes.map((el) => (
                                     <IonSelectOption
-                                        key={el.value}
+                                        key={el.value.toLowerCase()}
                                         value={el.value}
                                     >
                                         {el.text}

@@ -15,7 +15,7 @@ const PageFooter: React.FC<{
 
     return (
         <IonFooter className={styles.footer}>
-            <IonToolbar mode="ios" className={styles.footer}>
+            <IonToolbar mode="ios" className={styles.toolbar}>
                 {props.page > 1 && (
                     <IonButton
                         slot="start"

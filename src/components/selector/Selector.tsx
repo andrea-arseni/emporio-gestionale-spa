@@ -45,6 +45,8 @@ import PageFooter from "../page-footer/PageFooter";
 import SortActionSheet from "../action-sheets/sort-action-sheet/SortActionSheet";
 import Title from "../title/Title";
 import styles from "./Selector.module.css";
+import ListEventi from "../lists/ListEventi";
+import { Evento } from "../../entities/evento.model";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
@@ -265,6 +267,18 @@ const Selector: React.FC<{
                         selectMode={!!props.selectMode}
                     />
                 );
+            case "eventi":
+                return (
+                    <ListEventi
+                        eventi={entities as Evento[]}
+                        setMode={props.setMode!}
+                        setCurrentEntity={props.setCurrentEntity!}
+                        deleteEntity={deleteEntity}
+                        showLoading={showLoading}
+                        setShowLoading={setShowLoading}
+                        setUpdate={setUpdate}
+                    />
+                );
         }
     };
 
@@ -321,7 +335,8 @@ const Selector: React.FC<{
     };
 
     const getListHeight = () => {
-        if (props.entitiesType === "steps") return styles.heightSteps;
+        if (props.entitiesType === "steps" || props.entitiesType === "eventi")
+            return styles.high;
         return styles.fullOption;
     };
 

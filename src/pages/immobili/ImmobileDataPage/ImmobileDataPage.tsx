@@ -8,10 +8,10 @@ import {
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
-import { Immobile } from "../../entities/immobile.model";
-import axiosInstance from "../../utils/axiosInstance";
-import errorHandler from "../../utils/errorHandler";
-import Card from "../../components/card/Card";
+import { Immobile } from "../../../entities/immobile.model";
+import axiosInstance from "../../../utils/axiosInstance";
+import errorHandler from "../../../utils/errorHandler";
+import Card from "../../../components/card/Card";
 import { arrowBackOutline, bookOutline, cameraOutline } from "ionicons/icons";
 
 const ImmobileDataPage: React.FC<{}> = () => {

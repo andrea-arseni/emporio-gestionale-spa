@@ -1,26 +1,26 @@
 import { IonContent } from "@ionic/react";
-import { golfOutline } from "ionicons/icons";
+import { peopleOutline } from "ionicons/icons";
 import { useState } from "react";
-import NewEntityBar from "../../components/bars/new-entity-bar/NewEntityBar";
-import FormTitle from "../../components/form-components/form-title/FormTitle";
-import LavoroForm from "../../components/forms/lavoro-form/Lavoro-form";
-import Selector from "../../components/selector/Selector";
-import { Entity } from "../../entities/entity";
-import { Lavoro } from "../../entities/lavoro.model";
-import useFilterAndSort from "../../hooks/use-query-data";
-import styles from "./LavoriPage.module.css";
+import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
+import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import PersoneForm from "../../../components/forms/persone-form/PersoneForm";
+import Selector from "../../../components/selector/Selector";
+import { Entity } from "../../../entities/entity";
+import { Persona } from "../../../entities/persona.model";
+import useQueryData from "../../../hooks/use-query-data";
+import styles from "./PersonaPage.module.css";
 
-const LavoriPage: React.FC<{}> = () => {
+const PersonaPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
-    const [currentLavoro, setCurrentLavoro] = useState<Entity | null>(null);
+    const [currentPersona, setCurrentPersona] = useState<Entity | null>(null);
 
     const { filter, setFilter, sort, setSort, page, setPage } =
-        useFilterAndSort("lavori");
+        useQueryData("persone");
 
     const backToList = () => {
         setMode("list");
-        setCurrentLavoro(null);
+        setCurrentPersona(null);
     };
 
     return (
@@ -28,15 +28,16 @@ const LavoriPage: React.FC<{}> = () => {
             {mode === "list" && (
                 <IonContent>
                     <NewEntityBar
-                        entitiesType="lavori"
+                        entitiesType="persone"
                         setMode={setMode}
-                        icon={golfOutline}
-                        title="Nuovo Obiettivo"
+                        icon={peopleOutline}
+                        title="Nuova Persona"
                     />
+
                     <Selector
                         setMode={setMode}
-                        entitiesType="lavori"
-                        setCurrentEntity={setCurrentLavoro}
+                        entitiesType="persone"
+                        setCurrentEntity={setCurrentPersona}
                         filter={filter}
                         setFilter={setFilter}
                         sort={sort}
@@ -51,20 +52,17 @@ const LavoriPage: React.FC<{}> = () => {
                     <div className={styles.fixed}>
                         <FormTitle
                             title={
-                                currentLavoro?.id
-                                    ? "Modifica Obiettivo"
-                                    : "Nuovo Obiettivo"
+                                currentPersona?.id
+                                    ? "Modifica Persona"
+                                    : "Nuova Persona"
                             }
                             handler={backToList}
                             backToList
                         />
                     </div>
-
                     <div className={styles.spaceDown}>
-                        <LavoroForm
-                            lavoro={
-                                currentLavoro ? (currentLavoro as Lavoro) : null
-                            }
+                        <PersoneForm
+                            persona={currentPersona as Persona}
                             backToList={backToList}
                         />
                     </div>
@@ -74,4 +72,4 @@ const LavoriPage: React.FC<{}> = () => {
     );
 };
 
-export default LavoriPage;
+export default PersonaPage;

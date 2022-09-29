@@ -11,11 +11,11 @@ import {
 import { FormEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import logo from "../../assets/logo.png";
-import useInput from "../../hooks/use-input";
-import { login } from "../../store/auth-slice";
-import axiosInstance from "../../utils/axiosInstance";
-import capitalize from "../../utils/capitalize";
+import logo from "../../../assets/logo.png";
+import useInput from "../../../hooks/use-input";
+import { login } from "../../../store/auth-slice";
+import axiosInstance from "../../../utils/axiosInstance";
+import capitalize from "../../../utils/capitalize";
 import styles from "./PasswordPage.module.css";
 
 const PasswordPage: React.FC<{}> = () => {

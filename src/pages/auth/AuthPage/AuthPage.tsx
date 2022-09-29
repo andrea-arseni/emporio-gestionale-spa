@@ -10,13 +10,13 @@ import {
 } from "@ionic/react";
 import React, { FormEvent, Fragment, useState } from "react";
 import styles from "./AuthPage.module.css";
-import logo from "../../assets/logo.png";
-import useInput from "../../hooks/use-input";
-import { login } from "../../store/auth-slice";
+import logo from "../../../assets/logo.png";
+import useInput from "../../../hooks/use-input";
+import { login } from "../../../store/auth-slice";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
-import axiosInstance from "../../utils/axiosInstance";
-import errorHandler from "../../utils/errorHandler";
+import axiosInstance from "../../../utils/axiosInstance";
+import errorHandler from "../../../utils/errorHandler";
 
 const AuthPage: React.FC<{}> = () => {
     const history = useHistory();

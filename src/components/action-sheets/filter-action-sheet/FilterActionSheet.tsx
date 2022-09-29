@@ -61,6 +61,29 @@ const FilterActionSheet: React.FC<{
         if (negativeForbidden) props.setNegativeForbidden(true);
     };
 
+    const getDataButton = () => {
+        return {
+            text: "Data",
+            icon: calendarOutline,
+            handler: () =>
+                buttonHandler("dataFilter", {
+                    filter: "data",
+                }),
+        };
+    };
+
+    const getTestoButton = () => {
+        return {
+            text: "Testo",
+            icon: documentTextOutline,
+            handler: () => {
+                buttonHandler("stringFilter", {
+                    filter: "descrizione",
+                });
+            },
+        };
+    };
+
     const getButtons = () => {
         let buttons: any[] = [];
         switch (props.entity) {
@@ -74,23 +97,8 @@ const FilterActionSheet: React.FC<{
                                 filter: "importo",
                             }),
                     },
-                    {
-                        text: "Data",
-                        icon: calendarOutline,
-                        handler: () =>
-                            buttonHandler("dataFilter", {
-                                filter: "data",
-                            }),
-                    },
-                    {
-                        text: "Descrizione",
-                        icon: documentTextOutline,
-                        handler: () => {
-                            buttonHandler("stringFilter", {
-                                filter: "descrizione",
-                            });
-                        },
-                    },
+                    getDataButton(),
+                    getTestoButton(),
                 ];
                 break;
             case "immobili":
@@ -344,14 +352,7 @@ const FilterActionSheet: React.FC<{
                 break;
             case "logs":
                 buttons = [
-                    {
-                        text: "Data",
-                        icon: calendarOutline,
-                        handler: () =>
-                            buttonHandler("dataFilter", {
-                                filter: "data",
-                            }),
-                    },
+                    getDataButton(),
                     {
                         text: "Testo",
                         icon: documentTextOutline,
@@ -364,25 +365,10 @@ const FilterActionSheet: React.FC<{
                 ];
                 break;
             case "steps":
-                buttons = [
-                    {
-                        text: "Data",
-                        icon: calendarOutline,
-                        handler: () =>
-                            buttonHandler("dataFilter", {
-                                filter: "data",
-                            }),
-                    },
-                    {
-                        text: "Testo",
-                        icon: documentTextOutline,
-                        handler: () => {
-                            buttonHandler("stringFilter", {
-                                filter: "descrizione",
-                            });
-                        },
-                    },
-                ];
+                buttons = [getDataButton(), getTestoButton()];
+                break;
+            case "eventi":
+                buttons = [getDataButton(), getTestoButton()];
                 break;
             case "lavori":
                 buttons = [

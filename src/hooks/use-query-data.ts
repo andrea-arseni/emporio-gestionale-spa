@@ -13,8 +13,14 @@ const useQueryData = (entitiesType: entitiesType) => {
                 return "ref";
             case "persone":
                 return "status";
+            case "eventi":
+                return "data";
+            case "logs":
+                return "data";
+            case "steps":
+                return "data";
             default:
-                return "";
+                return "data";
         }
     };
 

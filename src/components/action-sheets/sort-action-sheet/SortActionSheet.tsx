@@ -28,6 +28,21 @@ const SortActionSheet: React.FC<{
         props.setSort(sortType);
     };
 
+    const getSortingTemporale = () => {
+        return [
+            {
+                text: "Dal più vecchio al più recente",
+                icon: calendarOutline,
+                handler: () => buttonHandler("data"),
+            },
+            {
+                text: "Dal più recente al più vecchio",
+                icon: calendarOutline,
+                handler: () => buttonHandler("data-desc"),
+            },
+        ];
+    };
+
     const getButtons = () => {
         let buttons: any[] = [];
         switch (props.entity) {
@@ -43,45 +58,17 @@ const SortActionSheet: React.FC<{
                         icon: cardOutline,
                         handler: () => buttonHandler("importo-desc"),
                     },
-                    {
-                        text: "Dal più vecchio al più recente",
-                        icon: calendarOutline,
-                        handler: () => buttonHandler("data"),
-                    },
-                    {
-                        text: "Dal più recente al più vecchio",
-                        icon: calendarOutline,
-                        handler: () => buttonHandler("data-desc"),
-                    },
+                    ...getSortingTemporale(),
                 ];
                 break;
             case "logs":
-                buttons = [
-                    {
-                        text: "Dal più vecchio al più recente",
-                        icon: calendarOutline,
-                        handler: () => buttonHandler("data"),
-                    },
-                    {
-                        text: "Dal più recente al più vecchio",
-                        icon: calendarOutline,
-                        handler: () => buttonHandler("data-desc"),
-                    },
-                ];
+                buttons = getSortingTemporale();
                 break;
             case "steps":
-                buttons = [
-                    {
-                        text: "Dal più vecchio al più recente",
-                        icon: calendarOutline,
-                        handler: () => buttonHandler("data"),
-                    },
-                    {
-                        text: "Dal più recente al più vecchio",
-                        icon: calendarOutline,
-                        handler: () => buttonHandler("data-desc"),
-                    },
-                ];
+                buttons = getSortingTemporale();
+                break;
+            case "eventi":
+                buttons = getSortingTemporale();
                 break;
             case "immobili":
                 buttons = [

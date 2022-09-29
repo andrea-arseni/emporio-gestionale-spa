@@ -25,18 +25,19 @@ import Header from "./components/header/Header";
 import Menu from "./components/menu/Menu";
 import { useSelector } from "react-redux";
 import { RootState } from "./store";
-import AuthPage from "./pages/AuthPage/AuthPage";
+import AuthPage from "./pages/auth/AuthPage/AuthPage";
 import { Redirect, Route, Switch } from "react-router-dom";
 import Logout from "./components/logout/Logout";
-import PasswordPage from "./pages/PasswordPage/PasswordPage";
-import AppuntamentiPage from "./pages/AppuntamentiPage/AppuntamentiPage";
-import ImmobiliPage from "./pages/ImmobiliPage/ImmobiliPage";
-import OperazioniPage from "./pages/OperazioniPage/OperazioniPage";
-import ImmobileDataPage from "./pages/ImmobileDataPage/ImmobileDataPage";
-import LogsPage from "./pages/LogsPage/LogsPage";
-import LavoriPage from "./pages/LavoriPage/LavoriPage";
-import LavoriDataPage from "./pages/LavoriDataPage/LavoriDataPage";
-import PersonaPage from "./pages/PersonaPage/PersonaPage";
+import PasswordPage from "./pages/auth/PasswordPage/PasswordPage";
+import AppuntamentiPage from "./pages/appuntamenti/AppuntamentiPage/AppuntamentiPage";
+import ImmobiliPage from "./pages/immobili/ImmobiliPage/ImmobiliPage";
+import OperazioniPage from "./pages/operazioni/OperazioniPage/OperazioniPage";
+import ImmobileDataPage from "./pages/immobili/ImmobileDataPage/ImmobileDataPage";
+import LogsPage from "./pages/immobili/LogsPage/LogsPage";
+import LavoriPage from "./pages/lavori/LavoriPage/LavoriPage";
+import LavoriDataPage from "./pages/lavori/LavoriDataPage/LavoriDataPage";
+import PersonaPage from "./pages/persone/PersonaPage/PersonaPage";
+import EventsPage from "./pages/persone/EventsPage/EventsPage";
 
 setupIonicReact();
 
@@ -86,8 +87,13 @@ const App: React.FC = () => {
                             </Route>
                         )}
                         {token && (
-                            <Route path="/persone">
+                            <Route path="/persone" exact>
                                 <PersonaPage />
+                            </Route>
+                        )}
+                        {token && (
+                            <Route path="/persone/:id" exact>
+                                <EventsPage />
                             </Route>
                         )}
                         {token && (
@@ -126,14 +132,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-/*
-- inizio pagina di apertura del contatto
-- lista eventi con textwrap, data e ora
-- itemOption modifica ed elimina
-- form aggiungi evento con status persona immobile interesse e note
-- modifica evento con solo note 
-- elimina evento con avviso che non cambia status
-- visita un immobile button
-- link ai dati della persona in questione
- */

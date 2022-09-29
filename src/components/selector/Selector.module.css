@@ -3,7 +3,7 @@
     padding: 0;
 }
 
-.heightSteps {
+.high {
     height: calc(100% - 45px - 45px - 45px - 61px - 50px);
 }
 

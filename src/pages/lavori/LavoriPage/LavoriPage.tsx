@@ -1,26 +1,26 @@
 import { IonContent } from "@ionic/react";
-import { homeOutline } from "ionicons/icons";
+import { golfOutline } from "ionicons/icons";
 import { useState } from "react";
-import NewEntityBar from "../../components/bars/new-entity-bar/NewEntityBar";
-import FormTitle from "../../components/form-components/form-title/FormTitle";
-import ImmobileForm from "../../components/forms/immobile-form/ImmobileForm";
-import Selector from "../../components/selector/Selector";
-import { Entity } from "../../entities/entity";
-import { Immobile } from "../../entities/immobile.model";
-import useFilterAndSort from "../../hooks/use-query-data";
-import styles from "./ImmobiliPage.module.css";
+import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
+import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import LavoroForm from "../../../components/forms/lavoro-form/Lavoro-form";
+import Selector from "../../../components/selector/Selector";
+import { Entity } from "../../../entities/entity";
+import { Lavoro } from "../../../entities/lavoro.model";
+import useFilterAndSort from "../../../hooks/use-query-data";
+import styles from "./LavoriPage.module.css";
 
-const ImmobiliPage: React.FC<{}> = () => {
+const LavoriPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
-    const [currentImmobile, setCurrentImmobile] = useState<Entity | null>(null);
+    const [currentLavoro, setCurrentLavoro] = useState<Entity | null>(null);
 
     const { filter, setFilter, sort, setSort, page, setPage } =
-        useFilterAndSort("immobili");
+        useFilterAndSort("lavori");
 
     const backToList = () => {
         setMode("list");
-        setCurrentImmobile(null);
+        setCurrentLavoro(null);
     };
 
     return (
@@ -28,15 +28,15 @@ const ImmobiliPage: React.FC<{}> = () => {
             {mode === "list" && (
                 <IonContent>
                     <NewEntityBar
-                        entitiesType="immobili"
+                        entitiesType="lavori"
                         setMode={setMode}
-                        icon={homeOutline}
-                        title="Nuovo Immobile"
+                        icon={golfOutline}
+                        title="Nuovo Obiettivo"
                     />
                     <Selector
                         setMode={setMode}
-                        entitiesType="immobili"
-                        setCurrentEntity={setCurrentImmobile}
+                        entitiesType="lavori"
+                        setCurrentEntity={setCurrentLavoro}
                         filter={filter}
                         setFilter={setFilter}
                         sort={sort}
@@ -51,20 +51,19 @@ const ImmobiliPage: React.FC<{}> = () => {
                     <div className={styles.fixed}>
                         <FormTitle
                             title={
-                                currentImmobile?.id
-                                    ? "Modifica Immobile"
-                                    : "Nuovo Immobile"
+                                currentLavoro?.id
+                                    ? "Modifica Obiettivo"
+                                    : "Nuovo Obiettivo"
                             }
                             handler={backToList}
                             backToList
                         />
                     </div>
+
                     <div className={styles.spaceDown}>
-                        <ImmobileForm
-                            immobile={
-                                currentImmobile
-                                    ? (currentImmobile as Immobile)
-                                    : null
+                        <LavoroForm
+                            lavoro={
+                                currentLavoro ? (currentLavoro as Lavoro) : null
                             }
                             backToList={backToList}
                         />
@@ -75,4 +74,4 @@ const ImmobiliPage: React.FC<{}> = () => {
     );
 };
 
-export default ImmobiliPage;
+export default LavoriPage;

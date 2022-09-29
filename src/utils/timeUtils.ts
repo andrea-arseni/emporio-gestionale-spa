@@ -92,7 +92,11 @@ export const getDayName = (input: Date, mode: "short" | "long" = "short") => {
             mode === "short"
                 ? `/${input.getMonth() + 1}/`
                 : ` ${MONTH_OF_THE_YEAR[input.getMonth()]} `
-        }${input.getFullYear().toString().substring(2)}`
+        }${
+            mode === "short"
+                ? input.getFullYear().toString().substring(2)
+                : input.getFullYear()
+        }`
     );
 };
 
@@ -125,4 +129,47 @@ export const addDays = (input: Date, numberOfDays: number) => {
         correctedDate.getTime() + 1000 * 60 * 60 * 24 * numberOfDays
     );
     return output;
+};
+
+export const isNotSunday = (dateString: string) =>
+    new Date(dateString).getDay() !== 0;
+
+export const openTimePicker = (
+    handler: (input: string) => void,
+    present: any
+) => {
+    const options: { text: string; value: string }[] = [];
+
+    const minutes = ["00", "15", "30", "45"];
+
+    for (let hours = 8; hours < 22; hours++) {
+        minutes.forEach((min) =>
+            options.push({
+                text: `${getTwoDigitString(hours)}:${min}`,
+                value: `${getTwoDigitString(hours)}:${min}`,
+            })
+        );
+    }
+
+    present({
+        mode: "ios",
+        columns: [
+            {
+                name: "orari",
+                options: options,
+            },
+        ],
+        buttons: [
+            {
+                text: "Indietro",
+                role: "cancel",
+            },
+            {
+                text: "Conferma",
+                handler: (value: any) => {
+                    handler(value.orari.value);
+                },
+            },
+        ],
+    });
 };

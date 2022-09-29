@@ -1,13 +1,13 @@
 import { IonContent } from "@ionic/react";
 import { cardOutline } from "ionicons/icons";
 import { useState } from "react";
-import FormTitle from "../../components/form-components/form-title/FormTitle";
-import FormOperation from "../../components/forms/operation-form/OperationForm";
-import { Entity } from "../../entities/entity";
-import { Operazione } from "../../entities/operazione.model";
-import Selector from "../../components/selector/Selector";
-import NewEntityBar from "../../components/bars/new-entity-bar/NewEntityBar";
-import useFilterAndSort from "../../hooks/use-query-data";
+import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import FormOperation from "../../../components/forms/operation-form/OperationForm";
+import { Entity } from "../../../entities/entity";
+import { Operazione } from "../../../entities/operazione.model";
+import Selector from "../../../components/selector/Selector";
+import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
+import useFilterAndSort from "../../../hooks/use-query-data";
 
 const OperazioniPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");

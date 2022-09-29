@@ -1,35 +1,23 @@
-import {
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonIcon,
-    IonLoading,
-    IonTitle,
-    IonToolbar,
-    useIonAlert,
-} from "@ionic/react";
-import { arrowBackOutline, constructOutline } from "ionicons/icons";
+import { IonContent, IonLoading, useIonAlert } from "@ionic/react";
+import { constructOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router";
-import NewEntityBar from "../../components/bars/new-entity-bar/NewEntityBar";
-import FormTitle from "../../components/form-components/form-title/FormTitle";
-import StepForm from "../../components/forms/step-form/StepForm";
-import Selector from "../../components/selector/Selector";
-import { Entity } from "../../entities/entity";
-import { Lavoro } from "../../entities/lavoro.model";
-import { Step } from "../../entities/step.model";
-import useFilterAndSort from "../../hooks/use-query-data";
-import axiosInstance from "../../utils/axiosInstance";
-import errorHandler from "../../utils/errorHandler";
-import { getLavoroTitleColor } from "../../utils/statusHandler";
-import styles from "./LavoriDataPage.module.css";
+import { useLocation } from "react-router";
+import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
+import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
+import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import StepForm from "../../../components/forms/step-form/StepForm";
+import Selector from "../../../components/selector/Selector";
+import { Entity } from "../../../entities/entity";
+import { Lavoro } from "../../../entities/lavoro.model";
+import { Step } from "../../../entities/step.model";
+import useFilterAndSort from "../../../hooks/use-query-data";
+import axiosInstance from "../../../utils/axiosInstance";
+import errorHandler from "../../../utils/errorHandler";
 
 const LavoriDataPage: React.FC<{}> = () => {
     const [showLoading, setShowLoading] = useState<boolean>(true);
 
     const location = useLocation();
-
-    const history = useHistory();
 
     const id = location.pathname.split("/")[2];
     const baseUrl = `/lavori/${id}/steps`;
@@ -76,31 +64,10 @@ const LavoriDataPage: React.FC<{}> = () => {
                     <IonLoading cssClass="loader" isOpen={showLoading} />
                     {currentLavoro && (
                         <>
-                            <IonToolbar
-                                mode="ios"
-                                className={styles.toolbar}
-                                color={getLavoroTitleColor(
-                                    currentLavoro!.status!
-                                )}
-                            >
-                                <IonButtons slot="start">
-                                    <IonButton onClick={() => history.goBack()}>
-                                        <IonIcon
-                                            slot="icon-only"
-                                            icon={arrowBackOutline}
-                                        />
-                                    </IonButton>
-                                </IonButtons>
-                                <IonTitle
-                                    size="small"
-                                    className={styles.smallTitle}
-                                >
-                                    {currentLavoro!.status?.replace("_", " ")}
-                                </IonTitle>
-                                <IonTitle className={styles.title}>
-                                    {currentLavoro!.titolo}
-                                </IonTitle>
-                            </IonToolbar>
+                            <RiepilogoBar
+                                currentEntity={currentLavoro}
+                                tipologia={"lavoro"}
+                            />
 
                             <NewEntityBar
                                 entitiesType="steps"
@@ -127,7 +94,7 @@ const LavoriDataPage: React.FC<{}> = () => {
             )}
             {mode === "form" && (
                 <IonContent>
-                    <div className={styles.fixed}>
+                    <div>
                         <FormTitle
                             title={
                                 currentStep?.id
@@ -138,7 +105,7 @@ const LavoriDataPage: React.FC<{}> = () => {
                             backToList
                         />
                     </div>
-                    <div className={styles.spaceDown}>
+                    <div>
                         <StepForm
                             lavoro={currentLavoro as Lavoro}
                             setCurrentLavoro={setCurrentLavoro}

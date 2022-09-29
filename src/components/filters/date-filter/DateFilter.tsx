@@ -2,7 +2,6 @@ import {
     IonList,
     IonItem,
     IonLabel,
-    IonDatetime,
     IonButton,
     DatetimeChangeEventDetail,
     IonIcon,
@@ -10,6 +9,7 @@ import {
 import { closeOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import { getDayName } from "../../../utils/timeUtils";
+import DatePicker from "../../date-picker/DatePicker";
 import styles from "../Filter.module.css";
 
 const DateFilter: React.FC<{
@@ -64,37 +64,28 @@ const DateFilter: React.FC<{
         props.setFilterMode("default");
     };
 
+    const closePicker = () => {
+        setSelectingStartDate(false);
+        setSelectingEndDate(false);
+    };
+
     return (
         <>
             {(selectingStartDate || selectingEndDate) && (
-                <div className={styles.background}>
-                    <div
-                        className={styles.backdrop}
-                        onClick={() => {
-                            setSelectingStartDate(false);
-                            setSelectingEndDate(false);
-                        }}
-                    ></div>
-                    <IonDatetime
-                        className={styles.datapicker}
-                        mode="ios"
-                        min={
-                            selectingEndDate && startDate
-                                ? startDate
-                                : "2019-01-01T00:00:00"
-                        }
-                        max={
-                            selectingStartDate && endDate
-                                ? endDate
-                                : "2040-05-31T23:59:59"
-                        }
-                        locale="it-IT"
-                        firstDayOfWeek={1}
-                        presentation="date"
-                        onIonChange={(e) => setNewDate(e)}
-                        size="fixed"
-                    />
-                </div>
+                <DatePicker
+                    closePicker={closePicker}
+                    minValue={
+                        selectingEndDate && startDate
+                            ? startDate
+                            : "2019-01-01T00:00:00"
+                    }
+                    maxValue={
+                        selectingStartDate && endDate
+                            ? endDate
+                            : "2040-05-31T23:59:59"
+                    }
+                    changeHandler={setNewDate}
+                />
             )}
             {!selectingStartDate && !selectingEndDate && (
                 <div className={styles.form}>

@@ -1,0 +1,22 @@
+.background {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.backdrop {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 200;
+}
+
+.datapicker {
+    z-index: 1000;
+    color: black;
+}
