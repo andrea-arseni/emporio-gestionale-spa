@@ -3,7 +3,9 @@ import { documentsOutline } from "ionicons/icons";
 import { useState } from "react";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import DocumentoForm from "../../../components/forms/documento-form/DocumentoForm";
 import Selector from "../../../components/selector/Selector";
+import { Documento } from "../../../entities/documento.model";
 import { Entity } from "../../../entities/entity";
 import useQueryData from "../../../hooks/use-query-data";
 
@@ -16,6 +18,11 @@ const DocumentiPage: React.FC<{}> = () => {
     const [currentDocumento, setCurrentDocumento] = useState<Entity | null>(
         null
     );
+
+    const backToList = () => {
+        setMode("list");
+        setCurrentDocumento(null);
+    };
 
     return (
         <div className="page">
@@ -48,11 +55,10 @@ const DocumentiPage: React.FC<{}> = () => {
                         handler={() => setMode("list")}
                         backToList
                     />
-                    FORM DI MODIFICA FILE
-                    {/* <FormOperation
-                        setMode={setMode}
-                        operation={currentOperation as Operazione}
-                    /> */}
+                    <DocumentoForm
+                        documento={currentDocumento as Documento}
+                        backToList={backToList}
+                    />
                 </IonContent>
             )}
         </div>

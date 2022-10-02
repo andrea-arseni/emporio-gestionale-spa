@@ -91,3 +91,11 @@ export const shareFile = async (
         console.log(error);
     }
 };
+
+export const getFileNameWithoutExtension = (nome: string) => {
+    const parti = nome.split(".");
+    parti.pop();
+    return parti.join(".");
+};
+
+export const getFileExtension = (nome: string) => nome.split(".").pop();

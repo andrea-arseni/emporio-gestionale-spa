@@ -156,6 +156,7 @@ const Selector: React.FC<{
 
     const confirmDeleteEntity = async (entityName: string, id: string) => {
         const url = (props.baseUrl ? props.baseUrl : entityName) + "/" + id;
+        console.log(url);
         try {
             setShowLoading(true);
             await axiosInstance.delete(url);
@@ -165,6 +166,7 @@ const Selector: React.FC<{
             setShowLoading(false);
             setUpdate((oldNumber) => ++oldNumber);
         } catch (e) {
+            console.log(e);
             setShowLoading(false);
             errorHandler(
                 e,

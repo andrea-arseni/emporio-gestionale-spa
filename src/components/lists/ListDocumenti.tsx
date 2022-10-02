@@ -20,7 +20,12 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Documento } from "../../entities/documento.model";
 import { Entity } from "../../entities/entity";
 import useWindowSize from "../../hooks/use-size";
-import { downloadFile, getFileType, shareFile } from "../../utils/fileUtils";
+import {
+    downloadFile,
+    getFileNameWithoutExtension,
+    getFileType,
+    shareFile,
+} from "../../utils/fileUtils";
 import styles from "./Lists.module.css";
 import word from "../../assets/word.png";
 import excel from "../../assets/excel.png";
@@ -107,7 +112,7 @@ const ListDocumenti: React.FC<{
                     <img alt={type} src={getThumbnail(type)} />
                 </IonThumbnail>
                 <IonLabel text-wrap>
-                    <h2>{documento.nome} </h2>
+                    <h2>{getFileNameWithoutExtension(documento.nome!)} </h2>
                 </IonLabel>
             </IonItem>
         );
@@ -220,7 +225,7 @@ const ListDocumenti: React.FC<{
                                 }`}
                                 onClick={() =>
                                     props.deleteEntity(
-                                        "persone",
+                                        "documenti",
                                         documento.id!.toString(),
                                         `Hai selezionato la cancellazione del documento selezionato. Si tratta di un processo irreversibile.`
                                     )

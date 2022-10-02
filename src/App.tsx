@@ -136,8 +136,6 @@ export default App;
 
 /*
 
-- Nome con form di Rinomina 
-- Delete documento
 - Add documento
 - Conversione HEIC PNG
 
