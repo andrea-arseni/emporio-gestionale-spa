@@ -182,6 +182,19 @@ const SortActionSheet: React.FC<{
                     },
                 ];
                 break;
+            case "documenti":
+                buttons = [
+                    {
+                        text: "Alfabetico Crescente",
+                        icon: textOutline,
+                        handler: () => buttonHandler("nome"),
+                    },
+                    {
+                        text: "Alfabetico Decrescente",
+                        icon: textOutline,
+                        handler: () => buttonHandler("nome-desc"),
+                    },
+                ];
         }
 
         buttons!.push({

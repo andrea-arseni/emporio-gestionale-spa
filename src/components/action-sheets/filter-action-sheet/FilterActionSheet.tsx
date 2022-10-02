@@ -14,12 +14,16 @@ import {
     folderOpenOutline,
     folderOutline,
     homeOutline,
+    imagesOutline,
     logoEuro,
     mailOutline,
+    pencilOutline,
     peopleCircleOutline,
     peopleOutline,
     phonePortraitOutline,
+    readerOutline,
     squareOutline,
+    statsChartOutline,
     stopOutline,
     textOutline,
     trashBinOutline,
@@ -433,7 +437,70 @@ const FilterActionSheet: React.FC<{
                     },
                 ];
                 break;
+            case "documenti":
+                buttons = [
+                    {
+                        text: "Filtra per Nome",
+                        icon: textOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "nome",
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo PDF",
+                        icon: readerOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "tipologia",
+                                value: "pdf",
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo Immagini",
+                        icon: imagesOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "tipologia",
+                                value: "jpeg",
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo Word",
+                        icon: pencilOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "tipologia",
+                                value: "doc",
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo Excel",
+                        icon: statsChartOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "tipologia",
+                                value: "csv",
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo TXT",
+                        icon: textOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "tipologia",
+                                value: "txt",
+                            });
+                        },
+                    },
+                ];
         }
+
         buttons!.push({
             text: "Annulla",
             icon: closeOutline,

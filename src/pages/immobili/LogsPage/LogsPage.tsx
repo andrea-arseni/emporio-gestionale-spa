@@ -3,7 +3,7 @@ import { bookOutline } from "ionicons/icons";
 import { useLocation } from "react-router";
 import StaticBar from "../../../components/bars/static-bar/StaticBar";
 import Selector from "../../../components/selector/Selector";
-import useFilterAndSort from "../../../hooks/use-query-data";
+import useQueryData from "../../../hooks/use-query-data";
 
 const LogsPage: React.FC<{}> = () => {
     const location = useLocation();
@@ -11,7 +11,7 @@ const LogsPage: React.FC<{}> = () => {
     const baseUrl = `/immobili/${id}/logs`;
 
     const { filter, setFilter, sort, setSort, page, setPage } =
-        useFilterAndSort("logs");
+        useQueryData("logs");
 
     return (
         <div className="page">

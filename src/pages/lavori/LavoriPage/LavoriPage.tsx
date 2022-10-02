@@ -7,7 +7,7 @@ import LavoroForm from "../../../components/forms/lavoro-form/Lavoro-form";
 import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Lavoro } from "../../../entities/lavoro.model";
-import useFilterAndSort from "../../../hooks/use-query-data";
+import useQueryData from "../../../hooks/use-query-data";
 import styles from "./LavoriPage.module.css";
 
 const LavoriPage: React.FC<{}> = () => {
@@ -16,7 +16,7 @@ const LavoriPage: React.FC<{}> = () => {
     const [currentLavoro, setCurrentLavoro] = useState<Entity | null>(null);
 
     const { filter, setFilter, sort, setSort, page, setPage } =
-        useFilterAndSort("lavori");
+        useQueryData("lavori");
 
     const backToList = () => {
         setMode("list");

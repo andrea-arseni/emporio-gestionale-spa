@@ -5,20 +5,14 @@ import { Filtro } from "../entities/filtro.model";
 const useQueryData = (entitiesType: entitiesType) => {
     const getInitialSorting = () => {
         switch (entitiesType) {
-            case "operazioni":
-                return "data";
             case "lavori":
                 return "status";
             case "immobili":
                 return "ref";
+            case "documenti":
+                return "nome";
             case "persone":
                 return "status";
-            case "eventi":
-                return "data";
-            case "logs":
-                return "data";
-            case "steps":
-                return "data";
             default:
                 return "data";
         }

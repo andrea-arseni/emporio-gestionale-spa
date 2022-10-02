@@ -1,39 +1,37 @@
 import { IonContent } from "@ionic/react";
-import { cardOutline } from "ionicons/icons";
+import { documentsOutline } from "ionicons/icons";
 import { useState } from "react";
-import FormTitle from "../../../components/form-components/form-title/FormTitle";
-import FormOperation from "../../../components/forms/operation-form/OperationForm";
-import { Entity } from "../../../entities/entity";
-import { Operazione } from "../../../entities/operazione.model";
-import Selector from "../../../components/selector/Selector";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
+import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import Selector from "../../../components/selector/Selector";
+import { Entity } from "../../../entities/entity";
 import useQueryData from "../../../hooks/use-query-data";
 
-const OperazioniPage: React.FC<{}> = () => {
+const DocumentiPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
-    const [currentOperation, setCurrentOperation] = useState<Entity | null>(
+    const { filter, setFilter, sort, setSort, page, setPage } =
+        useQueryData("documenti");
+
+    const [currentDocumento, setCurrentDocumento] = useState<Entity | null>(
         null
     );
-
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("operazioni");
 
     return (
         <div className="page">
             {mode === "list" && (
                 <IonContent>
                     <NewEntityBar
-                        entitiesType="operazioni"
+                        entitiesType="documenti"
                         setMode={setMode}
-                        icon={cardOutline}
-                        title="Nuova Operazione"
+                        icon={documentsOutline}
+                        title="Nuovo Documento"
                     />
 
                     <Selector
                         setMode={setMode}
-                        entitiesType="operazioni"
-                        setCurrentEntity={setCurrentOperation}
+                        entitiesType="documenti"
+                        setCurrentEntity={setCurrentDocumento}
                         filter={filter}
                         setFilter={setFilter}
                         sort={sort}
@@ -46,22 +44,19 @@ const OperazioniPage: React.FC<{}> = () => {
             {mode === "form" && (
                 <IonContent>
                     <FormTitle
-                        title={
-                            currentOperation?.id
-                                ? "Modifica Operazione"
-                                : "Crea Nuova Operazione"
-                        }
+                        title="Rinomina File"
                         handler={() => setMode("list")}
                         backToList
                     />
-                    <FormOperation
+                    FORM DI MODIFICA FILE
+                    {/* <FormOperation
                         setMode={setMode}
                         operation={currentOperation as Operazione}
-                    />
+                    /> */}
                 </IonContent>
             )}
         </div>
     );
 };
 
-export default OperazioniPage;
+export default DocumentiPage;

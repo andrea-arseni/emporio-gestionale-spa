@@ -1,4 +1,5 @@
 import { Caratteristiche } from "./caratteristiche.model";
+import { Documento } from "./documento.model";
 import { Evento } from "./evento.model";
 import { File } from "./file.model";
 import { Immobile } from "./immobile.model";
@@ -21,7 +22,8 @@ export type entitiesType =
     | "persone"
     | "steps"
     | "users"
-    | "visite";
+    | "visite"
+    | "documenti";
 
 export type Entity =
     | Caratteristiche
@@ -34,4 +36,5 @@ export type Entity =
     | Persona
     | Step
     | User
-    | Visit;
+    | Visit
+    | Documento;

@@ -7,7 +7,7 @@ import ImmobileForm from "../../../components/forms/immobile-form/ImmobileForm";
 import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
-import useFilterAndSort from "../../../hooks/use-query-data";
+import useQueryData from "../../../hooks/use-query-data";
 import styles from "./ImmobiliPage.module.css";
 
 const ImmobiliPage: React.FC<{}> = () => {
@@ -16,7 +16,7 @@ const ImmobiliPage: React.FC<{}> = () => {
     const [currentImmobile, setCurrentImmobile] = useState<Entity | null>(null);
 
     const { filter, setFilter, sort, setSort, page, setPage } =
-        useFilterAndSort("immobili");
+        useQueryData("immobili");
 
     const backToList = () => {
         setMode("list");

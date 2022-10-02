@@ -38,6 +38,7 @@ import LavoriPage from "./pages/lavori/LavoriPage/LavoriPage";
 import LavoriDataPage from "./pages/lavori/LavoriDataPage/LavoriDataPage";
 import PersonaPage from "./pages/persone/PersonaPage/PersonaPage";
 import EventsPage from "./pages/persone/EventsPage/EventsPage";
+import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
 
 setupIonicReact();
 
@@ -113,7 +114,7 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route path="/documenti">
-                                <div>documenti</div>
+                                <DocumentiPage />
                             </Route>
                         )}
                         {token && (
@@ -132,3 +133,15 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+/*
+- Share diretto o pagina che permette il download?
+- Modifica nome documento
+- Delete documento
+- Add documento
+
+****
+
+- Uniforma le liste di entities
+- Riscrivere la parte dei form
+*/

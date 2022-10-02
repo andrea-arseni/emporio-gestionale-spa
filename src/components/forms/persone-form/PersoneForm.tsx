@@ -18,7 +18,7 @@ import { useHistory } from "react-router";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
-import useFilterAndSort from "../../../hooks/use-query-data";
+import useQueryData from "../../../hooks/use-query-data";
 import useInput from "../../../hooks/use-input";
 import useSelection from "../../../hooks/use-selection";
 import { possibiliPersoneTypes } from "../../../types/persona_types";
@@ -184,7 +184,7 @@ const PersoneForm: React.FC<{
     } = useInput(() => true);
 
     const { filter, setFilter, sort, setSort, page, setPage } =
-        useFilterAndSort("immobili");
+        useQueryData("immobili");
 
     const getPhoneValue = () => {
         let phoneValue: string = inputPhoneValue

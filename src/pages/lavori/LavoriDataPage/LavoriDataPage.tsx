@@ -10,7 +10,7 @@ import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
-import useFilterAndSort from "../../../hooks/use-query-data";
+import useQueryData from "../../../hooks/use-query-data";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 
@@ -31,7 +31,7 @@ const LavoriDataPage: React.FC<{}> = () => {
     const [currentStep, setCurrentStep] = useState<Entity | null>(null);
 
     const { filter, setFilter, sort, setSort, page, setPage } =
-        useFilterAndSort("steps");
+        useQueryData("steps");
 
     useEffect(() => {
         const fetchLavoro = async () => {

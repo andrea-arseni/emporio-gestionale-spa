@@ -4,15 +4,9 @@ import {
     IonLabel,
     IonList,
     IonLoading,
-    IonToolbar,
     useIonAlert,
 } from "@ionic/react";
-import {
-    closeOutline,
-    filterOutline,
-    layersOutline,
-    listOutline,
-} from "ionicons/icons";
+import { filterOutline, layersOutline, listOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { entitiesType, Entity } from "../../entities/entity";
@@ -23,13 +17,9 @@ import { Log } from "../../entities/log.model";
 import { Operazione } from "../../entities/operazione.model";
 import { Persona } from "../../entities/persona.model";
 import { Step } from "../../entities/step.model";
-import useWindowSize from "../../hooks/use-size";
 import axiosInstance from "../../utils/axiosInstance";
-import capitalize from "../../utils/capitalize";
 import errorHandler from "../../utils/errorHandler";
-import { numberAsPrice } from "../../utils/numberAsPrice";
-import { getStatusText } from "../../utils/statusHandler";
-import { addDays, getDateAsString, getDayName } from "../../utils/timeUtils";
+import { addDays, getDateAsString } from "../../utils/timeUtils";
 import Card from "../card/Card";
 import FilterActionSheet from "../action-sheets/filter-action-sheet/FilterActionSheet";
 import DateFilter from "../filters/date-filter/DateFilter";
@@ -43,10 +33,12 @@ import ListPersone from "../lists/ListPersone";
 import ListSteps from "../lists/ListSteps";
 import PageFooter from "../page-footer/PageFooter";
 import SortActionSheet from "../action-sheets/sort-action-sheet/SortActionSheet";
-import Title from "../title/Title";
 import styles from "./Selector.module.css";
 import ListEventi from "../lists/ListEventi";
 import { Evento } from "../../entities/evento.model";
+import ListDocumenti from "../lists/ListDocumenti";
+import { Documento } from "../../entities/documento.model";
+import FilterBar from "../bars/filter-bar/FilterBar";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
@@ -61,8 +53,6 @@ const Selector: React.FC<{
     baseUrl?: string;
     selectMode?: boolean;
 }> = (props) => {
-    const [width] = useWindowSize();
-
     const [filterMode, setFilterMode] = useState<
         "default" | "stringFilter" | "dataFilter" | "numberFilter"
     >("default");
@@ -279,59 +269,19 @@ const Selector: React.FC<{
                         setUpdate={setUpdate}
                     />
                 );
+            case "documenti":
+                return (
+                    <ListDocumenti
+                        documenti={entities as Documento[]}
+                        setMode={props.setMode!}
+                        setCurrentEntity={props.setCurrentEntity!}
+                        deleteEntity={deleteEntity}
+                        showLoading={showLoading}
+                        setShowLoading={setShowLoading}
+                        setUpdate={setUpdate}
+                    />
+                );
         }
-    };
-
-    const getFilterTitle = () => {
-        let output = "Risultati ";
-        if (props.filter.startDate || props.filter.endDate) {
-            if (props.filter.startDate)
-                output =
-                    output +
-                    `dal ${getDayName(new Date(props.filter.startDate))}`;
-            if (!props.filter.endDate) output = output + " in poi";
-            if (props.filter.endDate)
-                output =
-                    output +
-                    ` fino al ${getDayName(new Date(props.filter.endDate))}`;
-            return output;
-        }
-        if (props.filter.min || props.filter.max) {
-            output = output + `con ${capitalize(props.filter.filter!)} `;
-            if (props.filter.min)
-                output =
-                    output +
-                    `da ${
-                        props.filter.filter === "prezzo"
-                            ? numberAsPrice(props.filter.min)
-                            : props.filter.min
-                    } `;
-            if (props.filter.max)
-                output =
-                    output +
-                    `fino a ${
-                        props.filter.filter === "prezzo"
-                            ? numberAsPrice(props.filter.max)
-                            : props.filter.max
-                    }`;
-            return output;
-        }
-        if (props.filter.filter === "status")
-            return `${capitalize(
-                props.entitiesType
-            )} con status: "${getStatusText(props.filter.value!)}"`;
-
-        if (props.filter.filter === "immobili") return "Lista Proprietari";
-
-        if (props.filter.filter === "immobileInquilino")
-            return "Lista Inquilini";
-
-        output =
-            output +
-            `con "${props.filter.value}" in ${capitalize(
-                props.filter.filter!
-            )}`;
-        return output;
     };
 
     const getListHeight = () => {
@@ -381,31 +331,13 @@ const Selector: React.FC<{
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
             {props.filter.filter && (
-                <IonToolbar className={styles.filterToolbar} mode="ios">
-                    <Title>{getFilterTitle()}</Title>
-
-                    <IonButton
-                        slot="end"
-                        size="small"
-                        color="dark"
-                        mode="ios"
-                        onClick={() => {
-                            props.setFilter({
-                                filter: undefined,
-                                value: undefined,
-                                startDate: undefined,
-                                endDate: undefined,
-                                max: undefined,
-                                min: undefined,
-                            });
-                            props.setPage(1);
-                            setNegativeForbidden(false);
-                        }}
-                    >
-                        <IonIcon icon={closeOutline} color="light"></IonIcon>
-                        {width >= 450 ? "Annulla Filtro" : ""}
-                    </IonButton>
-                </IonToolbar>
+                <FilterBar
+                    entitiesType={props.entitiesType}
+                    filter={props.filter}
+                    setFilter={props.setFilter}
+                    setPage={props.setPage}
+                    setNegativeForbidden={setNegativeForbidden}
+                />
             )}
             {!props.filter.filter && entities.length > 1 && (
                 <IonButton

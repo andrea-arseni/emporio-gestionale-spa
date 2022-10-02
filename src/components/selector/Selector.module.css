@@ -18,10 +18,3 @@
 .filterButton {
     margin: 0;
 }
-
-.filterToolbar {
-    height: 44.8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
