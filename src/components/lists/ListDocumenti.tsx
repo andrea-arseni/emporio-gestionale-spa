@@ -14,12 +14,13 @@ import {
     createOutline,
     trashOutline,
     shareOutline,
+    checkmarkCircleOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Documento } from "../../entities/documento.model";
 import { Entity } from "../../entities/entity";
 import useWindowSize from "../../hooks/use-size";
-import { downloadFile, getFileType } from "../../utils/fileUtils";
+import { downloadFile, getFileType, shareFile } from "../../utils/fileUtils";
 import styles from "./Lists.module.css";
 import word from "../../assets/word.png";
 import excel from "../../assets/excel.png";
@@ -57,15 +58,7 @@ const ListDocumenti: React.FC<{
         console.log("Errore");
     };
 
-    const getFileAndDownload = async (documento: Documento) => {
-        if (
-            currentFile &&
-            currentFile.documento &&
-            currentFile.documento.id &&
-            currentFile.documento.id === documento.id
-        ) {
-            downloadFile(currentFile.byteArray, currentFile.documento);
-        }
+    const selectFile = async (documento: Documento) => {
         props.setShowLoading(true);
         try {
             const res = await axiosInstance.get(`/documenti/${documento.id!}`);
@@ -74,8 +67,7 @@ const ListDocumenti: React.FC<{
                 documento: res.data.file,
                 byteArray: res.data.byteArray,
             });
-            downloadFile(res.data.byteArray, res.data.file);
-            // catch error
+            return res.data;
         } catch (e) {
             props.setShowLoading(false);
             errorHandler(
@@ -86,6 +78,26 @@ const ListDocumenti: React.FC<{
             );
         }
     };
+
+    const getFileAndDownload = async (documento: Documento) => {
+        if (
+            currentFile &&
+            currentFile.documento &&
+            currentFile.documento.id &&
+            currentFile.documento.id === documento.id
+        ) {
+            downloadFile(currentFile.byteArray, currentFile.documento);
+        } else {
+            const res = await selectFile(documento);
+            downloadFile(res.byteArray, res.file);
+        }
+    };
+
+    const isFileSelected = (id: number) =>
+        currentFile &&
+        currentFile.documento &&
+        currentFile.documento.id &&
+        currentFile.documento.id === id;
 
     const getDocumento = (documento: Documento) => {
         const type = getFileType(documento.nome!);
@@ -130,25 +142,49 @@ const ListDocumenti: React.FC<{
                                 )}
                             </div>
                         </IonItemOption>
-                        <IonItemOption color="success">
+                        <IonItemOption
+                            color={
+                                isFileSelected(documento.id!)
+                                    ? "success"
+                                    : "tertiary"
+                            }
+                        >
                             <div
                                 className={`itemOption ${
                                     width > 500
                                         ? styles.normalWidth
                                         : styles.littleWidth
                                 }`}
-                                onClick={() => {
-                                    console.log("Condividi");
-                                }}
+                                onClick={() =>
+                                    isFileSelected(documento.id!)
+                                        ? shareFile(
+                                              currentFile!.byteArray,
+                                              currentFile!.documento,
+                                              presentAlert
+                                          )
+                                        : selectFile(documento)
+                                }
                             >
                                 <IonIcon
-                                    icon={shareOutline}
+                                    icon={
+                                        isFileSelected(documento.id!)
+                                            ? shareOutline
+                                            : checkmarkCircleOutline
+                                    }
                                     size={width > 500 ? "large" : "small"}
                                 />
                                 {width > 500 ? (
-                                    <IonText>Condividi</IonText>
+                                    <IonText>
+                                        {isFileSelected(documento.id!)
+                                            ? "Condividi"
+                                            : "Seleziona"}
+                                    </IonText>
                                 ) : (
-                                    <p className={styles.little}>Condividi</p>
+                                    <p className={styles.little}>
+                                        {isFileSelected(documento.id!)
+                                            ? "Condividi"
+                                            : "Seleziona"}
+                                    </p>
                                 )}
                             </div>
                         </IonItemOption>

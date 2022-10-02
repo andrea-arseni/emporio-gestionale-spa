@@ -135,10 +135,11 @@ const App: React.FC = () => {
 export default App;
 
 /*
-- Share diretto o pagina che permette il download?
-- Modifica nome documento
+
+- Nome con form di Rinomina 
 - Delete documento
 - Add documento
+- Conversione HEIC PNG
 
 ****
 

@@ -1,5 +1,6 @@
 import FileSaver from "file-saver";
 import { Documento } from "../entities/documento.model";
+import errorHandler from "./errorHandler";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName.split(".")[fileName.split(".").length - 1];
@@ -52,4 +53,41 @@ const getBase64StringFromByteArray = (byteArray: string, nome: string) => {
 export const downloadFile = (byteArray: string, documento: Documento) => {
     const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
     FileSaver.saveAs(base64File, documento.nome!);
+};
+
+export const shareFile = async (
+    byteArray: string,
+    documento: Documento,
+    presentAlert: any
+) => {
+    if (!navigator.canShare) {
+        errorHandler(
+            null,
+            () => {},
+            "Questo Browser non permette la condivisione di file.",
+            presentAlert
+        );
+        return;
+    }
+    const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
+    const blob = await (await fetch(base64File)).blob();
+    const file = new File([blob], documento.nome!, { type: blob.type });
+
+    if (!navigator.canShare({ files: [file] })) {
+        errorHandler(
+            null,
+            () => {},
+            "Il file selezionato non può essere condiviso.",
+            presentAlert
+        );
+        return;
+    }
+
+    try {
+        await navigator.share({
+            files: [file],
+        });
+    } catch (error) {
+        console.log(error);
+    }
 };

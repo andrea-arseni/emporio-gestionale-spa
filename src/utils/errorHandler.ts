@@ -10,11 +10,16 @@ const errorHandler = (
         (options: AlertOptions & HookOverlayOptions): Promise<any>;
     }
 ) => {
-    const subHeader = e.response.data.message ? message : "";
+    const originalErrorMessage =
+        e && e.response && e.response.data && e.response.data.message
+            ? e.response.data.message
+            : null;
+
+    const subHeader = originalErrorMessage ? message : "";
 
     let id: string | null = null;
 
-    let text = e.response.data.message ? e.response.data.message : message;
+    let text = originalErrorMessage ? originalErrorMessage : message;
 
     if (text.includes("E' già presente a sistema una persona")) {
         id = text.split(" id ")[1];
