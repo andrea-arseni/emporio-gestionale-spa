@@ -10,7 +10,6 @@ import { filterOutline, layersOutline, listOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { entitiesType, Entity } from "../../entities/entity";
-import { Filtro } from "../../entities/filtro.model";
 import { Immobile } from "../../entities/immobile.model";
 import { Lavoro } from "../../entities/lavoro.model";
 import { Log } from "../../entities/log.model";
@@ -39,20 +38,27 @@ import { Evento } from "../../entities/evento.model";
 import ListDocumenti from "../lists/ListDocumenti";
 import { Documento } from "../../entities/documento.model";
 import FilterBar from "../bars/filter-bar/FilterBar";
+import { QueryData } from "../../entities/queryData";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
-    filter: Filtro;
-    setFilter: Dispatch<SetStateAction<Filtro>>;
-    sort: string;
-    setSort: Dispatch<SetStateAction<string>>;
-    page: number;
-    setPage: Dispatch<SetStateAction<number>>;
+    queryData: QueryData;
     setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
     setMode?: Dispatch<SetStateAction<"list" | "form">>;
     baseUrl?: string;
     selectMode?: boolean;
 }> = (props) => {
+    const {
+        page,
+        setPage,
+        filter,
+        setFilter,
+        sort,
+        setSort,
+        update,
+        setUpdate,
+    } = props.queryData;
+
     const [filterMode, setFilterMode] = useState<
         "default" | "stringFilter" | "dataFilter" | "numberFilter"
     >("default");
@@ -75,8 +81,6 @@ const Selector: React.FC<{
 
     const history = useHistory();
 
-    const [update, setUpdate] = useState<number>(0);
-
     const ionListRef = useRef<any>();
 
     const closeItems = () => ionListRef.current.closeSlidingItems();
@@ -84,18 +88,17 @@ const Selector: React.FC<{
     // definisci quale tipologia di entity vuoi cercare
     useEffect(() => {
         const getFilter = () => {
-            let res = `&filter=${props.filter.filter}`;
-            if (props.filter.startDate)
-                res = `${res}&startDate=${props.filter.startDate}`;
-            if (props.filter.endDate)
+            let res = `&filter=${filter.filter}`;
+            if (filter.startDate) res = `${res}&startDate=${filter.startDate}`;
+            if (filter.endDate)
                 res = `${res}&endDate=${getDateAsString(
-                    addDays(new Date(props.filter.endDate), 1)
+                    addDays(new Date(filter.endDate), 1)
                 )}`;
-            if (props.filter.min || props.filter.min === 0)
-                res = `${res}&min=${props.filter.min}`;
-            if (props.filter.max || props.filter.max === 0)
-                res = `${res}&max=${props.filter.max}`;
-            if (props.filter.value) res = `${res}&value=${props.filter.value}`;
+            if (filter.min || filter.min === 0)
+                res = `${res}&min=${filter.min}`;
+            if (filter.max || filter.max === 0)
+                res = `${res}&max=${filter.max}`;
+            if (filter.value) res = `${res}&value=${filter.value}`;
             return res;
         };
 
@@ -104,9 +107,7 @@ const Selector: React.FC<{
                 setShowLoading(true);
                 const url = `${
                     props.baseUrl ? props.baseUrl : props.entitiesType
-                }?page=${props.page}${
-                    props.filter.filter ? getFilter() : ""
-                }&sort=${props.sort}`;
+                }?page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
                 const res = await axiosInstance.get(url);
                 await new Promise((r) => setTimeout(r, 300));
                 setShowLoading(false);
@@ -127,10 +128,10 @@ const Selector: React.FC<{
     }, [
         history,
         presentAlert,
-        props.page,
+        page,
         props.entitiesType,
-        props.filter,
-        props.sort,
+        filter,
+        sort,
         update,
         props.baseUrl,
     ]);
@@ -144,7 +145,7 @@ const Selector: React.FC<{
             color="dark"
             onClick={() => {
                 setFilterMode("default");
-                props.setFilter({ filter: undefined });
+                setFilter({ filter: undefined });
             }}
         >
             <IonIcon icon={listOutline} />
@@ -156,7 +157,6 @@ const Selector: React.FC<{
 
     const confirmDeleteEntity = async (entityName: string, id: string) => {
         const url = (props.baseUrl ? props.baseUrl : entityName) + "/" + id;
-        console.log(url);
         try {
             setShowLoading(true);
             await axiosInstance.delete(url);
@@ -166,7 +166,6 @@ const Selector: React.FC<{
             setShowLoading(false);
             setUpdate((oldNumber) => ++oldNumber);
         } catch (e) {
-            console.log(e);
             setShowLoading(false);
             errorHandler(
                 e,
@@ -297,8 +296,8 @@ const Selector: React.FC<{
             <>
                 {filterBar}
                 <DateFilter
-                    filter={props.filter}
-                    setFilter={props.setFilter}
+                    filter={filter}
+                    setFilter={setFilter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -310,8 +309,8 @@ const Selector: React.FC<{
                 {filterBar}
                 <NumberFilter
                     negativeForbidden={negativeForbidden}
-                    filter={props.filter}
-                    setFilter={props.setFilter}
+                    filter={filter}
+                    setFilter={setFilter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -322,8 +321,8 @@ const Selector: React.FC<{
             <>
                 {filterBar}
                 <StringFilter
-                    filter={props.filter}
-                    setFilter={props.setFilter}
+                    filter={filter}
+                    setFilter={setFilter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -332,16 +331,16 @@ const Selector: React.FC<{
     return (
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            {props.filter.filter && (
+            {filter.filter && (
                 <FilterBar
                     entitiesType={props.entitiesType}
-                    filter={props.filter}
-                    setFilter={props.setFilter}
-                    setPage={props.setPage}
+                    filter={filter}
+                    setFilter={setFilter}
+                    setPage={setPage}
                     setNegativeForbidden={setNegativeForbidden}
                 />
             )}
-            {!props.filter.filter && entities.length > 1 && (
+            {!filter.filter && entities.length > 1 && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
@@ -391,24 +390,24 @@ const Selector: React.FC<{
                 </div>
             )}
             <PageFooter
-                page={props.page}
-                setPage={props.setPage}
+                page={page}
+                setPage={setPage}
                 numberOfResults={numberOfResults}
             />
             <FilterActionSheet
                 showFilterActionSheet={showFilterActionSheet}
                 setShowFilterActionSheet={setShowFilterActionSheet}
                 setFilterMode={setFilterMode}
-                setFilter={props.setFilter}
-                setPage={props.setPage}
+                setFilter={setFilter}
+                setPage={setPage}
                 setNegativeForbidden={setNegativeForbidden}
                 entity={props.entitiesType}
             />
             <SortActionSheet
                 showSortingActionSheet={showSortingActionSheet}
                 setShowSortingActionSheet={setShowSortingActionSheet}
-                setSort={props.setSort}
-                setPage={props.setPage}
+                setSort={setSort}
+                setPage={setPage}
                 entity={props.entitiesType}
             />
         </>

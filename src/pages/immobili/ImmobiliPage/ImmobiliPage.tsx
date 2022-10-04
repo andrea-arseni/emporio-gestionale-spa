@@ -15,8 +15,7 @@ const ImmobiliPage: React.FC<{}> = () => {
 
     const [currentImmobile, setCurrentImmobile] = useState<Entity | null>(null);
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("immobili");
+    const queryData = useQueryData("immobili");
 
     const backToList = () => {
         setMode("list");
@@ -37,12 +36,7 @@ const ImmobiliPage: React.FC<{}> = () => {
                         setMode={setMode}
                         entitiesType="immobili"
                         setCurrentEntity={setCurrentImmobile}
-                        filter={filter}
-                        setFilter={setFilter}
-                        sort={sort}
-                        setSort={setSort}
-                        page={page}
-                        setPage={setPage}
+                        queryData={queryData}
                     />
                 </IonContent>
             )}

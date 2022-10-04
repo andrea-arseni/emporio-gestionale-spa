@@ -10,8 +10,7 @@ const LogsPage: React.FC<{}> = () => {
     const id = location.pathname.split("/")[2];
     const baseUrl = `/immobili/${id}/logs`;
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("logs");
+    const queryData = useQueryData("logs");
 
     return (
         <div className="page">
@@ -20,12 +19,7 @@ const LogsPage: React.FC<{}> = () => {
                 <Selector
                     entitiesType={"logs"}
                     baseUrl={baseUrl}
-                    filter={filter}
-                    setFilter={setFilter}
-                    sort={sort}
-                    setSort={setSort}
-                    page={page}
-                    setPage={setPage}
+                    queryData={queryData}
                 />
             </IonContent>
         </div>

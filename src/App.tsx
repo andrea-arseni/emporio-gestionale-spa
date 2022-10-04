@@ -135,12 +135,6 @@ const App: React.FC = () => {
 export default App;
 
 /*
-
-- Add documento
-- Conversione HEIC PNG
-
-****
-
-- Uniforma le liste di entities
-- Riscrivere la parte dei form
+- Riscrivi le liste di entities
+- Riscrivi i forms
 */

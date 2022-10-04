@@ -14,8 +14,12 @@ const DocumentoForm: React.FC<{
     documento: Documento | null;
     backToList: () => void;
 }> = (props) => {
-    const nome = getFileNameWithoutExtension(props.documento!.nome!);
-    const estensione = getFileExtension(props.documento!.nome!);
+    const nome = props.documento
+        ? getFileNameWithoutExtension(props.documento.nome!)
+        : null;
+    const estensione = props.documento
+        ? getFileExtension(props.documento.nome!)
+        : null;
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 

@@ -30,8 +30,7 @@ const LavoriDataPage: React.FC<{}> = () => {
 
     const [currentStep, setCurrentStep] = useState<Entity | null>(null);
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("steps");
+    const queryData = useQueryData("steps");
 
     useEffect(() => {
         const fetchLavoro = async () => {
@@ -81,12 +80,7 @@ const LavoriDataPage: React.FC<{}> = () => {
                                 entitiesType="steps"
                                 setCurrentEntity={setCurrentStep}
                                 baseUrl={baseUrl}
-                                filter={filter}
-                                setFilter={setFilter}
-                                sort={sort}
-                                setSort={setSort}
-                                page={page}
-                                setPage={setPage}
+                                queryData={queryData}
                             />
                         </>
                     )}

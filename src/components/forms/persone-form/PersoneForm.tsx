@@ -183,8 +183,7 @@ const PersoneForm: React.FC<{
         inputChangedHandler: inputNoteChangedHandler,
     } = useInput(() => true);
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("immobili");
+    const queryData = useQueryData("persone");
 
     const getPhoneValue = () => {
         let phoneValue: string = inputPhoneValue
@@ -518,12 +517,7 @@ const PersoneForm: React.FC<{
                     entitiesType="immobili"
                     setCurrentEntity={setCurrentImmobile}
                     selectMode
-                    filter={filter}
-                    setFilter={setFilter}
-                    sort={sort}
-                    setSort={setSort}
-                    page={page}
-                    setPage={setPage}
+                    queryData={queryData}
                 />
             </Modal>
         </form>

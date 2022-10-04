@@ -32,8 +32,7 @@ const EventsPage: React.FC<{}> = () => {
 
     const [update, triggerUpdate] = useState<number>(0);
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("eventi");
+    const queryData = useQueryData("eventi");
 
     const backToList = () => {
         setMode("list");
@@ -80,12 +79,7 @@ const EventsPage: React.FC<{}> = () => {
                         setMode={setMode}
                         entitiesType="eventi"
                         setCurrentEntity={setCurrentEvent}
-                        filter={filter}
-                        setFilter={setFilter}
-                        sort={sort}
-                        setSort={setSort}
-                        page={page}
-                        setPage={setPage}
+                        queryData={queryData}
                         baseUrl={`/persone/${currentPersona.id}/eventi`}
                     />
                 </IonContent>

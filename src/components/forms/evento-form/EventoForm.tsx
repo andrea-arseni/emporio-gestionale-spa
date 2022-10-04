@@ -90,8 +90,7 @@ const EventoForm: React.FC<{
         inputChangedHandler: inputNoteChangedHandler,
     } = useInput(() => true, props.evento ? props.evento.descrizione : null);
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("immobili");
+    const queryData = useQueryData("eventi");
 
     useEffect(() => {
         setTimeout(() => {
@@ -319,12 +318,7 @@ const EventoForm: React.FC<{
                     entitiesType="immobili"
                     setCurrentEntity={setImmobileInteresse}
                     selectMode
-                    filter={filter}
-                    setFilter={setFilter}
-                    sort={sort}
-                    setSort={setSort}
-                    page={page}
-                    setPage={setPage}
+                    queryData={queryData}
                 />
             </Modal>
             {datePickerIsOpen && (

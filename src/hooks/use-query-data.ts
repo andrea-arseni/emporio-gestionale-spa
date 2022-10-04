@@ -26,7 +26,18 @@ const useQueryData = (entitiesType: entitiesType) => {
 
     const [page, setPage] = useState<number>(1);
 
-    return { filter, setFilter, sort, setSort, page, setPage };
+    const [update, setUpdate] = useState<number>(0);
+
+    return {
+        filter,
+        setFilter,
+        sort,
+        setSort,
+        page,
+        setPage,
+        update,
+        setUpdate,
+    };
 };
 
 export default useQueryData;

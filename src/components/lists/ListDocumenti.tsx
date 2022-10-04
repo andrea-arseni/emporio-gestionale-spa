@@ -15,6 +15,7 @@ import {
     trashOutline,
     shareOutline,
     checkmarkCircleOutline,
+    openOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Documento } from "../../entities/documento.model";
@@ -24,6 +25,7 @@ import {
     downloadFile,
     getFileNameWithoutExtension,
     getFileType,
+    openFile,
     shareFile,
 } from "../../utils/fileUtils";
 import styles from "./Lists.module.css";
@@ -84,25 +86,29 @@ const ListDocumenti: React.FC<{
         }
     };
 
-    const getFileAndDownload = async (documento: Documento) => {
-        if (
-            currentFile &&
-            currentFile.documento &&
-            currentFile.documento.id &&
-            currentFile.documento.id === documento.id
-        ) {
-            downloadFile(currentFile.byteArray, currentFile.documento);
-        } else {
-            const res = await selectFile(documento);
-            downloadFile(res.byteArray, res.file);
-        }
-    };
-
     const isFileSelected = (id: number) =>
         currentFile &&
         currentFile.documento &&
         currentFile.documento.id &&
         currentFile.documento.id === id;
+
+    const getFileAndOpen = async (documento: Documento) => {
+        if (isFileSelected(documento.id!)) {
+            openFile(currentFile!.byteArray, currentFile!.documento);
+        } else {
+            const res = await selectFile(documento);
+            openFile(res.byteArray, res.file);
+        }
+    };
+
+    const getFileAndDownload = async (documento: Documento) => {
+        if (isFileSelected(documento.id!)) {
+            downloadFile(currentFile!.byteArray, currentFile!.documento);
+        } else {
+            const res = await selectFile(documento);
+            downloadFile(res.byteArray, res.file);
+        }
+    };
 
     const getDocumento = (documento: Documento) => {
         const type = getFileType(documento.nome!);
@@ -127,6 +133,29 @@ const ListDocumenti: React.FC<{
                 >
                     {getDocumento(documento)}
                     <IonItemOptions side="end">
+                        {(getFileType(documento.nome!) === "image" ||
+                            getFileType(documento.nome!) === "pdf") && (
+                            <IonItemOption color="dark">
+                                <div
+                                    className={`itemOption ${
+                                        width > 500
+                                            ? styles.normalWidth
+                                            : styles.littleWidth
+                                    }`}
+                                    onClick={() => getFileAndOpen(documento)}
+                                >
+                                    <IonIcon
+                                        icon={openOutline}
+                                        size={width > 500 ? "large" : "small"}
+                                    />
+                                    {width > 500 ? (
+                                        <IonText>Leggi</IonText>
+                                    ) : (
+                                        <p className={styles.little}>Leggi</p>
+                                    )}
+                                </div>
+                            </IonItemOption>
+                        )}
                         <IonItemOption color="primary">
                             <div
                                 className={`itemOption ${

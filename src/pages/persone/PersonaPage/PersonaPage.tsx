@@ -15,8 +15,7 @@ const PersonaPage: React.FC<{}> = () => {
 
     const [currentPersona, setCurrentPersona] = useState<Entity | null>(null);
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("persone");
+    const queryData = useQueryData("persone");
 
     const backToList = () => {
         setMode("list");
@@ -38,12 +37,7 @@ const PersonaPage: React.FC<{}> = () => {
                         setMode={setMode}
                         entitiesType="persone"
                         setCurrentEntity={setCurrentPersona}
-                        filter={filter}
-                        setFilter={setFilter}
-                        sort={sort}
-                        setSort={setSort}
-                        page={page}
-                        setPage={setPage}
+                        queryData={queryData}
                     />
                 </IonContent>
             )}

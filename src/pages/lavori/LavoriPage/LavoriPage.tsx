@@ -15,8 +15,7 @@ const LavoriPage: React.FC<{}> = () => {
 
     const [currentLavoro, setCurrentLavoro] = useState<Entity | null>(null);
 
-    const { filter, setFilter, sort, setSort, page, setPage } =
-        useQueryData("lavori");
+    const queryData = useQueryData("lavori");
 
     const backToList = () => {
         setMode("list");
@@ -37,12 +36,7 @@ const LavoriPage: React.FC<{}> = () => {
                         setMode={setMode}
                         entitiesType="lavori"
                         setCurrentEntity={setCurrentLavoro}
-                        filter={filter}
-                        setFilter={setFilter}
-                        sort={sort}
-                        setSort={setSort}
-                        page={page}
-                        setPage={setPage}
+                        queryData={queryData}
                     />
                 </IonContent>
             )}
