@@ -3,9 +3,6 @@ import {
     IonItem,
     IonLabel,
     IonItemOptions,
-    IonItemOption,
-    IonIcon,
-    IonText,
 } from "@ionic/react";
 import { createOutline, trashOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
@@ -13,6 +10,7 @@ import { Entity } from "../../entities/entity";
 import { Operazione } from "../../entities/operazione.model";
 import { numberAsPrice } from "../../utils/numberAsPrice";
 import { getDayName } from "../../utils/timeUtils";
+import ItemOption from "./ItemOption";
 
 const ListOperazioni: React.FC<{
     operazioni: Operazione[];
@@ -35,32 +33,28 @@ const ListOperazioni: React.FC<{
                 </IonLabel>
             </IonItem>
             <IonItemOptions side="end">
-                <IonItemOption
-                    color="warning"
-                    onClick={() => {
-                        props.setCurrentEntity(operazione);
+                <ItemOption
+                    handler={(input: Entity) => {
+                        props.setCurrentEntity(input);
                         props.setMode("form");
                     }}
-                >
-                    <div className="itemOption">
-                        <IonIcon icon={createOutline} size="large" />
-                        <IonText>Modifica</IonText>
-                    </div>
-                </IonItemOption>
-                <IonItemOption
-                    color="danger"
-                    onClick={() =>
+                    entity={operazione}
+                    colorType={"light"}
+                    icon={createOutline}
+                    title={"Modifica"}
+                />
+                <ItemOption
+                    handler={(operazione) =>
                         props.deleteEntity(
                             "operazioni",
                             operazione.id!.toString()
                         )
                     }
-                >
-                    <div className="itemOption">
-                        <IonIcon icon={trashOutline} size="large" />
-                        <IonText>Elimina</IonText>
-                    </div>
-                </IonItemOption>
+                    entity={operazione}
+                    colorType={"danger"}
+                    icon={trashOutline}
+                    title={"Elimina"}
+                />
             </IonItemOptions>
         </IonItemSliding>
     ));

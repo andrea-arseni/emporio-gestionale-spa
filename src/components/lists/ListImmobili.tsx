@@ -4,12 +4,10 @@ import {
     IonLabel,
     IonNote,
     IonItemOptions,
-    IonItemOption,
-    IonIcon,
-    IonText,
     useIonAlert,
 } from "@ionic/react";
 import {
+    cameraOutline,
     copyOutline,
     createOutline,
     newspaperOutline,
@@ -25,6 +23,7 @@ import { numberAsPrice } from "../../utils/numberAsPrice";
 import styles from "./Lists.module.css";
 import { useHistory } from "react-router";
 import useSelection from "../../hooks/use-selection";
+import ItemOption from "./ItemOption";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -147,51 +146,50 @@ const ListImmobili: React.FC<{
                 <IonItemSliding key={immobile.id!} id={immobile.id?.toString()}>
                     {getImmobile(immobile)}
                     <IonItemOptions side="end">
-                        <IonItemOption color="success">
-                            <div
-                                className="itemOption"
-                                onClick={() => goToData(immobile.id!)}
-                            >
-                                <IonIcon icon={newspaperOutline} size="large" />
-                                <IonText>Dati</IonText>
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="primary">
-                            <div
-                                className="itemOption"
-                                onClick={() => copyImmobile(immobile.id!)}
-                            >
-                                <IonIcon icon={copyOutline} size="large" />
-                                <IonText>Copia</IonText>
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="link">
-                            <div
-                                className="itemOption"
-                                onClick={() => {
-                                    props.setCurrentEntity(immobile);
-                                    props.setMode("form");
-                                }}
-                            >
-                                <IonIcon icon={createOutline} size="large" />
-                                <IonText>Modifica</IonText>
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="danger">
-                            <div
-                                className="itemOption"
-                                onClick={() =>
-                                    props.deleteEntity(
-                                        "immobili",
-                                        immobile.id!.toString(),
-                                        `Hai selezionato la cancellazione dell'immobile con riferimento ${immobile.ref}. Si tratta di un processo irreversibile.`
-                                    )
-                                }
-                            >
-                                <IonIcon icon={trashOutline} size="large" />
-                                <IonText>Elimina</IonText>
-                            </div>
-                        </IonItemOption>
+                        <ItemOption
+                            handler={() => console.log("files")}
+                            entity={immobile}
+                            colorType={"primary"}
+                            icon={cameraOutline}
+                            title={"File"}
+                        />
+                        <ItemOption
+                            handler={() => console.log("storia")}
+                            entity={immobile}
+                            colorType={"tertiary"}
+                            icon={newspaperOutline}
+                            title={"Storia"}
+                        />
+                        <ItemOption
+                            handler={(immobile) => copyImmobile(immobile.id!)}
+                            entity={immobile}
+                            colorType={"success"}
+                            icon={copyOutline}
+                            title={"Copia"}
+                        />
+                        <ItemOption
+                            handler={(immobile) => {
+                                props.setCurrentEntity(immobile);
+                                props.setMode("form");
+                            }}
+                            entity={immobile}
+                            colorType={"light"}
+                            icon={createOutline}
+                            title={"Modifica"}
+                        />
+                        <ItemOption
+                            handler={(immobile) => {
+                                props.deleteEntity(
+                                    "immobili",
+                                    immobile.id!.toString(),
+                                    `Hai selezionato la cancellazione dell'immobile con riferimento ${immobile.ref}. Si tratta di un processo irreversibile.`
+                                );
+                            }}
+                            entity={immobile}
+                            colorType={"danger"}
+                            icon={trashOutline}
+                            title={"Elimina"}
+                        />
                     </IonItemOptions>
                 </IonItemSliding>
             ))}

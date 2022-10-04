@@ -3,15 +3,13 @@ import {
     IonItem,
     IonLabel,
     IonItemOptions,
-    IonItemOption,
-    IonIcon,
-    IonText,
 } from "@ionic/react";
 import { createOutline, trashOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { Entity } from "../../entities/entity";
 import { Step } from "../../entities/step.model";
 import { getDateAndTime } from "../../utils/timeUtils";
+import ItemOption from "./ItemOption";
 
 const ListSteps: React.FC<{
     steps: Step[];
@@ -35,36 +33,29 @@ const ListSteps: React.FC<{
                             </IonLabel>
                         </IonItem>
                         <IonItemOptions side="end">
-                            <IonItemOption color="link">
-                                <div
-                                    className="itemOption"
-                                    onClick={() => {
-                                        props.setCurrentEntity(step);
-                                        props.setMode("form");
-                                    }}
-                                >
-                                    <IonIcon
-                                        icon={createOutline}
-                                        size="large"
-                                    />
-                                    <IonText>Modifica</IonText>
-                                </div>
-                            </IonItemOption>
-                            <IonItemOption color="danger">
-                                <div
-                                    className="itemOption"
-                                    onClick={() =>
-                                        props.deleteEntity(
-                                            "steps",
-                                            step.id!.toString(),
-                                            `Hai selezionato la cancellazione dello step. Si tratta di un processo irreversibile. Lo status del lavoro non verrà modificato.`
-                                        )
-                                    }
-                                >
-                                    <IonIcon icon={trashOutline} size="large" />
-                                    <IonText>Elimina</IonText>
-                                </div>
-                            </IonItemOption>
+                            <ItemOption
+                                handler={() => {
+                                    props.setCurrentEntity(step);
+                                    props.setMode("form");
+                                }}
+                                entity={step}
+                                colorType={"light"}
+                                icon={createOutline}
+                                title={"Modifica"}
+                            />
+                            <ItemOption
+                                handler={() => {
+                                    props.deleteEntity(
+                                        "steps",
+                                        step.id!.toString(),
+                                        `Hai selezionato la cancellazione dello step. Si tratta di un processo irreversibile. Lo status del lavoro non verrà modificato.`
+                                    );
+                                }}
+                                entity={step}
+                                colorType={"danger"}
+                                icon={trashOutline}
+                                title={"Elimina"}
+                            />
                         </IonItemOptions>
                     </IonItemSliding>
                 );

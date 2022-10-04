@@ -3,15 +3,13 @@ import {
     IonItem,
     IonLabel,
     IonItemOptions,
-    IonItemOption,
-    IonIcon,
-    IonText,
 } from "@ionic/react";
 import { createOutline, trashOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { Entity } from "../../entities/entity";
 import { Evento } from "../../entities/evento.model";
 import { getDateAndTime } from "../../utils/timeUtils";
+import ItemOption from "./ItemOption";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -57,36 +55,29 @@ const ListEventi: React.FC<{
                             </IonLabel>
                         </IonItem>
                         <IonItemOptions side="end">
-                            <IonItemOption color="link">
-                                <div
-                                    className="itemOption"
-                                    onClick={() => {
-                                        props.setCurrentEntity(evento);
-                                        props.setMode("form");
-                                    }}
-                                >
-                                    <IonIcon
-                                        icon={createOutline}
-                                        size="large"
-                                    />
-                                    <IonText>Modifica</IonText>
-                                </div>
-                            </IonItemOption>
-                            <IonItemOption color="danger">
-                                <div
-                                    className="itemOption"
-                                    onClick={() =>
-                                        props.deleteEntity(
-                                            "eventi",
-                                            evento.id!.toString(),
-                                            `Hai selezionato la cancellazione dell'evento. Si tratta di un processo irreversibile. Lo status della persona non verrà modificato.`
-                                        )
-                                    }
-                                >
-                                    <IonIcon icon={trashOutline} size="large" />
-                                    <IonText>Elimina</IonText>
-                                </div>
-                            </IonItemOption>
+                            <ItemOption
+                                handler={(evento) => {
+                                    props.setCurrentEntity(evento);
+                                    props.setMode("form");
+                                }}
+                                entity={evento}
+                                colorType={"light"}
+                                icon={createOutline}
+                                title={"Modifica"}
+                            />
+                            <ItemOption
+                                handler={(evento) =>
+                                    props.deleteEntity(
+                                        "eventi",
+                                        evento.id!.toString(),
+                                        `Hai selezionato la cancellazione dell'evento. Si tratta di un processo irreversibile. Lo status della persona non verrà modificato.`
+                                    )
+                                }
+                                entity={evento}
+                                colorType={"danger"}
+                                icon={trashOutline}
+                                title={"Elimina"}
+                            />
                         </IonItemOptions>
                     </IonItemSliding>
                 );

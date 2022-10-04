@@ -4,9 +4,6 @@ import {
     IonLabel,
     IonNote,
     IonItemOptions,
-    IonItemOption,
-    IonIcon,
-    IonText,
 } from "@ionic/react";
 import {
     createOutline,
@@ -21,6 +18,7 @@ import { useHistory } from "react-router";
 import { Persona } from "../../entities/persona.model";
 import { getPersonaNameColor } from "../../utils/statusHandler";
 import useWindowSize from "../../hooks/use-size";
+import ItemOption from "./ItemOption";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -114,95 +112,43 @@ const ListPersone: React.FC<{
                 <IonItemSliding key={persona.id!} id={persona.id?.toString()}>
                     {getPersona(persona)}
                     <IonItemOptions side="end">
-                        <IonItemOption color="primary">
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() => goToData(persona.id!)}
-                            >
-                                <IonIcon
-                                    icon={openOutline}
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>Apri</IonText>
-                                ) : (
-                                    <p className={styles.little}>Apri</p>
-                                )}
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="success">
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() => {}}
-                            >
-                                <IonIcon
-                                    icon={folderOutline}
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>Files</IonText>
-                                ) : (
-                                    <p className={styles.little}>Files</p>
-                                )}
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="link">
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() => {
-                                    props.setCurrentEntity(persona);
-                                    props.setMode("form");
-                                }}
-                            >
-                                <IonIcon
-                                    icon={createOutline}
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>Modifica</IonText>
-                                ) : (
-                                    <p className={styles.little}>Modifica</p>
-                                )}
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="danger">
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() =>
-                                    props.deleteEntity(
-                                        "persone",
-                                        persona.id!.toString(),
-                                        `Hai selezionato la cancellazione della persona selezionata. Si tratta di un processo irreversibile.`
-                                    )
-                                }
-                            >
-                                <IonIcon
-                                    icon={trashOutline}
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>Elimina</IonText>
-                                ) : (
-                                    <p className={styles.little}>Elimina</p>
-                                )}
-                            </div>
-                        </IonItemOption>
+                        <ItemOption
+                            handler={(persona) => goToData(persona.id!)}
+                            entity={persona}
+                            colorType={"primary"}
+                            icon={openOutline}
+                            title={"Apri"}
+                        />
+                        <ItemOption
+                            handler={() => console.log("files")}
+                            entity={persona}
+                            colorType={"success"}
+                            icon={folderOutline}
+                            title={"Files"}
+                        />
+                        <ItemOption
+                            handler={() => {
+                                props.setCurrentEntity(persona);
+                                props.setMode("form");
+                            }}
+                            entity={persona}
+                            colorType={"light"}
+                            icon={createOutline}
+                            title={"Modifica"}
+                        />
+                        <ItemOption
+                            handler={() => {
+                                props.deleteEntity(
+                                    "persone",
+                                    persona.id!.toString(),
+                                    `Hai selezionato la cancellazione della persona selezionata. Si tratta di un processo irreversibile.`
+                                );
+                            }}
+                            entity={persona}
+                            colorType={"danger"}
+                            icon={trashOutline}
+                            title={"Elimina"}
+                        />
                     </IonItemOptions>
                 </IonItemSliding>
             ))}

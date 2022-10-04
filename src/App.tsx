@@ -135,6 +135,21 @@ const App: React.FC = () => {
 export default App;
 
 /*
-- Riscrivi le liste di entities
-- Riscrivi i forms
+- Operazioni lista design fatto bene
+- Saldo fixed
+- Filtri solo guadagni 
+- Filtri solo spese
+- Modifica form ottimale - COME DEOCUMENTI
+
+Conquista operazioni completata
+
+- Aggiorna obiettivo valutazioni di design
+- Modifica form ottimale
+
+Conquista step completata
+
+Ricalcolo per conquista obiettivi ed eventi e persona
+
+Riscrittura parte immobili
+
 */

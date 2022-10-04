@@ -3,9 +3,6 @@ import {
     IonLabel,
     IonItemSliding,
     IonItemOptions,
-    IonItemOption,
-    IonIcon,
-    IonText,
     IonThumbnail,
     useIonAlert,
 } from "@ionic/react";
@@ -20,7 +17,6 @@ import {
 import { Dispatch, SetStateAction, useState } from "react";
 import { Documento } from "../../entities/documento.model";
 import { Entity } from "../../entities/entity";
-import useWindowSize from "../../hooks/use-size";
 import {
     downloadFile,
     getFileNameWithoutExtension,
@@ -36,6 +32,7 @@ import image from "../../assets/image.png";
 import pdf from "../../assets/pdf.png";
 import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
+import ItemOption from "./ItemOption";
 
 const ListDocumenti: React.FC<{
     documenti: Documento[];
@@ -46,7 +43,6 @@ const ListDocumenti: React.FC<{
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
 }> = (props) => {
-    const [width] = useWindowSize();
     const [presentAlert] = useIonAlert();
 
     const [currentFile, setCurrentFile] = useState<{
@@ -135,142 +131,75 @@ const ListDocumenti: React.FC<{
                     <IonItemOptions side="end">
                         {(getFileType(documento.nome!) === "image" ||
                             getFileType(documento.nome!) === "pdf") && (
-                            <IonItemOption color="dark">
-                                <div
-                                    className={`itemOption ${
-                                        width > 500
-                                            ? styles.normalWidth
-                                            : styles.littleWidth
-                                    }`}
-                                    onClick={() => getFileAndOpen(documento)}
-                                >
-                                    <IonIcon
-                                        icon={openOutline}
-                                        size={width > 500 ? "large" : "small"}
-                                    />
-                                    {width > 500 ? (
-                                        <IonText>Leggi</IonText>
-                                    ) : (
-                                        <p className={styles.little}>Leggi</p>
-                                    )}
-                                </div>
-                            </IonItemOption>
+                            <ItemOption
+                                handler={(documento) =>
+                                    getFileAndOpen(documento)
+                                }
+                                entity={documento}
+                                colorType={"dark"}
+                                icon={openOutline}
+                                title={"Leggi"}
+                            />
                         )}
-                        <IonItemOption color="primary">
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() => getFileAndDownload(documento)}
-                            >
-                                <IonIcon
-                                    icon={downloadOutline}
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>Scarica</IonText>
-                                ) : (
-                                    <p className={styles.little}>Scarica</p>
-                                )}
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption
-                            color={
+                        <ItemOption
+                            handler={(documento) =>
+                                getFileAndDownload(documento)
+                            }
+                            entity={documento}
+                            colorType={"primary"}
+                            icon={downloadOutline}
+                            title={"Scarica"}
+                        />
+                        <ItemOption
+                            handler={(documento) =>
+                                isFileSelected(documento.id!)
+                                    ? shareFile(
+                                          currentFile!.byteArray,
+                                          currentFile!.documento,
+                                          presentAlert
+                                      )
+                                    : selectFile(documento)
+                            }
+                            entity={documento}
+                            colorType={
                                 isFileSelected(documento.id!)
                                     ? "success"
                                     : "tertiary"
                             }
-                        >
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() =>
-                                    isFileSelected(documento.id!)
-                                        ? shareFile(
-                                              currentFile!.byteArray,
-                                              currentFile!.documento,
-                                              presentAlert
-                                          )
-                                        : selectFile(documento)
-                                }
-                            >
-                                <IonIcon
-                                    icon={
-                                        isFileSelected(documento.id!)
-                                            ? shareOutline
-                                            : checkmarkCircleOutline
-                                    }
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>
-                                        {isFileSelected(documento.id!)
-                                            ? "Condividi"
-                                            : "Seleziona"}
-                                    </IonText>
-                                ) : (
-                                    <p className={styles.little}>
-                                        {isFileSelected(documento.id!)
-                                            ? "Condividi"
-                                            : "Seleziona"}
-                                    </p>
-                                )}
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="link">
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() => {
-                                    props.setCurrentEntity(documento);
-                                    props.setMode("form");
-                                }}
-                            >
-                                <IonIcon
-                                    icon={createOutline}
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>Rinomina</IonText>
-                                ) : (
-                                    <p className={styles.little}>Rinomina</p>
-                                )}
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="danger">
-                            <div
-                                className={`itemOption ${
-                                    width > 500
-                                        ? styles.normalWidth
-                                        : styles.littleWidth
-                                }`}
-                                onClick={() =>
-                                    props.deleteEntity(
-                                        "documenti",
-                                        documento.id!.toString(),
-                                        `Hai selezionato la cancellazione del documento selezionato. Si tratta di un processo irreversibile.`
-                                    )
-                                }
-                            >
-                                <IonIcon
-                                    icon={trashOutline}
-                                    size={width > 500 ? "large" : "small"}
-                                />
-                                {width > 500 ? (
-                                    <IonText>Elimina</IonText>
-                                ) : (
-                                    <p className={styles.little}>Elimina</p>
-                                )}
-                            </div>
-                        </IonItemOption>
+                            icon={
+                                isFileSelected(documento.id!)
+                                    ? shareOutline
+                                    : checkmarkCircleOutline
+                            }
+                            title={
+                                isFileSelected(documento.id!)
+                                    ? "Condividi"
+                                    : "Seleziona"
+                            }
+                        />
+                        <ItemOption
+                            handler={(documento) => {
+                                props.setCurrentEntity(documento);
+                                props.setMode("form");
+                            }}
+                            entity={documento}
+                            colorType={"light"}
+                            icon={createOutline}
+                            title={"Rinomina"}
+                        />
+                        <ItemOption
+                            handler={(documento) =>
+                                props.deleteEntity(
+                                    "documenti",
+                                    documento.id!.toString(),
+                                    `Hai selezionato la cancellazione del documento selezionato. Si tratta di un processo irreversibile.`
+                                )
+                            }
+                            entity={documento}
+                            colorType={"danger"}
+                            icon={trashOutline}
+                            title={"Elimina"}
+                        />
                     </IonItemOptions>
                 </IonItemSliding>
             ))}

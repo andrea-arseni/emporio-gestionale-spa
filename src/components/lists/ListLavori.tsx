@@ -3,8 +3,6 @@ import {
     IonItem,
     IonLabel,
     IonItemOptions,
-    IonItemOption,
-    IonIcon,
     IonText,
 } from "@ionic/react";
 import { createOutline, openOutline, trashOutline } from "ionicons/icons";
@@ -15,6 +13,7 @@ import styles from "./Lists.module.css";
 import { useHistory } from "react-router";
 import { Lavoro } from "../../entities/lavoro.model";
 import { getLavoroTitleColor } from "../../utils/statusHandler";
+import ItemOption from "./ItemOption";
 
 const ListLavori: React.FC<{
     lavori: Lavoro[];
@@ -56,42 +55,36 @@ const ListLavori: React.FC<{
                         )}
                     </IonItem>
                     <IonItemOptions side="end">
-                        <IonItemOption color="primary">
-                            <div
-                                className="itemOption"
-                                onClick={() => goToData(lavoro.id!)}
-                            >
-                                <IonIcon icon={openOutline} size="large" />
-                                <IonText>Apri</IonText>
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="link">
-                            <div
-                                className="itemOption"
-                                onClick={() => {
-                                    props.setCurrentEntity(lavoro);
-                                    props.setMode("form");
-                                }}
-                            >
-                                <IonIcon icon={createOutline} size="large" />
-                                <IonText>Modifica</IonText>
-                            </div>
-                        </IonItemOption>
-                        <IonItemOption color="danger">
-                            <div
-                                className="itemOption"
-                                onClick={() =>
-                                    props.deleteEntity(
-                                        "lavori",
-                                        lavoro.id!.toString(),
-                                        `Hai selezionato la cancellazione del lavoro. Si tratta di un processo irreversibile.`
-                                    )
-                                }
-                            >
-                                <IonIcon icon={trashOutline} size="large" />
-                                <IonText>Elimina</IonText>
-                            </div>
-                        </IonItemOption>
+                        <ItemOption
+                            handler={(lavoro) => goToData(lavoro.id!)}
+                            entity={lavoro}
+                            colorType={"success"}
+                            icon={openOutline}
+                            title={"Apri"}
+                        />
+                        <ItemOption
+                            handler={(lavoro) => {
+                                props.setCurrentEntity(lavoro);
+                                props.setMode("form");
+                            }}
+                            entity={lavoro}
+                            colorType={"light"}
+                            icon={createOutline}
+                            title={"Modifica"}
+                        />
+                        <ItemOption
+                            handler={(lavoro) => {
+                                props.deleteEntity(
+                                    "lavori",
+                                    lavoro.id!.toString(),
+                                    `Hai selezionato la cancellazione del lavoro. Si tratta di un processo irreversibile.`
+                                );
+                            }}
+                            entity={lavoro}
+                            colorType={"danger"}
+                            icon={trashOutline}
+                            title={"Elimina"}
+                        />
                     </IonItemOptions>
                 </IonItemSliding>
             ))}
