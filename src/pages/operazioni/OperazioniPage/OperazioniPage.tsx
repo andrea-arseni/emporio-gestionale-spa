@@ -16,6 +16,11 @@ const OperazioniPage: React.FC<{}> = () => {
         null
     );
 
+    const backToList = () => {
+        setMode("list");
+        setCurrentOperation(null);
+    };
+
     const queryData = useQueryData("operazioni");
 
     return (
@@ -45,7 +50,7 @@ const OperazioniPage: React.FC<{}> = () => {
                                 ? "Modifica Operazione"
                                 : "Crea Nuova Operazione"
                         }
-                        handler={() => setMode("list")}
+                        handler={backToList}
                         backToList
                     />
                     <FormOperation

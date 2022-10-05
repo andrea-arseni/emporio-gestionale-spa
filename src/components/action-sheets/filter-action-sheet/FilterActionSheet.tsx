@@ -1,6 +1,8 @@
 import { IonActionSheet } from "@ionic/react";
 import {
     alertCircleOutline,
+    bagAddOutline,
+    bagRemoveOutline,
     buildOutline,
     businessOutline,
     calendarNumberOutline,
@@ -100,6 +102,26 @@ const FilterActionSheet: React.FC<{
                             buttonHandler("numberFilter", {
                                 filter: "importo",
                             }),
+                    },
+                    {
+                        text: "Solo Ricavi",
+                        icon: bagAddOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "importo",
+                                min: 0,
+                            });
+                        },
+                    },
+                    {
+                        text: "Solo Spese",
+                        icon: bagRemoveOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "importo",
+                                max: 0,
+                            });
+                        },
                     },
                     getDataButton(),
                     getTestoButton(),

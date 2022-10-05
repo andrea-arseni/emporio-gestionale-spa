@@ -1,10 +1,9 @@
-import { IonIcon, IonInput, IonItem, IonLabel, IonNote } from "@ionic/react";
+import { IonIcon, IonItem, IonLabel, IonNote, IonTextarea } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
 
-const TextInput: React.FC<{
+const TextArea: React.FC<{
     title: string;
     inputValue: string;
-    type: "text" | "email" | "number";
     inputIsInvalid: boolean;
     inputChangeHandler: (e: any) => void;
     inputTouchHandler: () => void;
@@ -13,19 +12,14 @@ const TextInput: React.FC<{
 }> = (props) => {
     return (
         <IonItem>
-            <IonLabel
-                position="floating"
-                color={props.inputIsInvalid ? "danger" : "dark"}
-            >
-                {props.title}
-            </IonLabel>
-            <IonInput
-                color={props.inputIsInvalid ? "danger" : "dark"}
-                type={props.type}
+            <IonLabel position="floating">{props.title}</IonLabel>
+            <IonTextarea
+                auto-grow
+                rows={6}
                 value={props.inputValue}
                 onIonChange={props.inputChangeHandler}
                 onIonBlur={props.inputTouchHandler}
-            ></IonInput>
+            ></IonTextarea>
             {props.inputIsInvalid && (
                 <IonNote color="danger">{props.errorMessage}</IonNote>
             )}
@@ -43,4 +37,4 @@ const TextInput: React.FC<{
     );
 };
 
-export default TextInput;
+export default TextArea;

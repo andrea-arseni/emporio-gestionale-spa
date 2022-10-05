@@ -29,6 +29,7 @@ import Modal from "../../modal/Modal";
 import Selector from "../../selector/Selector";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
 import { getDayName, openTimePicker } from "../../../utils/timeUtils";
+import useDateHandler from "../../../hooks/use-date-handler";
 
 const EventoForm: React.FC<{
     persona: Persona | null;
@@ -43,19 +44,15 @@ const EventoForm: React.FC<{
 
     const [isVisit, setIsVisit] = useState<boolean>(false);
 
-    const [datePickerIsOpen, setDatePickerIsOpen] = useState<boolean>(false);
-
     const [present] = useIonPicker();
 
     const {
-        inputValue: inputDateValue,
-        inputChangedHandler: inputDateChangedHandler,
-        reset: inputDateReset,
-    } = useInput((el) => !!el, null);
-
-    useEffect(() => {
-        setDatePickerIsOpen(false);
-    }, [inputDateValue]);
+        datePickerIsOpen,
+        setDatePickerIsOpen,
+        inputDateValue,
+        inputDateChangedHandler,
+        inputDateReset,
+    } = useDateHandler((el) => !!el, null);
 
     const [timeValue, setTimeValue] = useState<string | null>(null);
 

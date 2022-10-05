@@ -11,7 +11,24 @@ const ItemSelector: React.FC<{
     item: any;
     getItem: (data: any) => any;
     openSelector: () => void;
+    simple?: boolean;
 }> = (props) => {
+    if (props.simple)
+        return (
+            <>
+                {props.item && props.getItem(props.item)}
+                {!props.item && (
+                    <IonButton
+                        expand="block"
+                        color="light"
+                        onClick={props.openSelector}
+                    >
+                        {props.titoloBottone}
+                    </IonButton>
+                )}
+            </>
+        );
+
     return (
         <IonItemGroup>
             <IonItemDivider color="dark">

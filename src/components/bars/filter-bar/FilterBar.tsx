@@ -36,7 +36,7 @@ const FilterBar: React.FC<{
     const getFilterTitleWithNumbers = () => {
         let output = "Risultati ";
         output = output + `con ${capitalize(props.filter.filter!)} `;
-        if (props.filter.min)
+        if (props.filter.min !== undefined)
             output =
                 output +
                 `da ${
@@ -44,7 +44,7 @@ const FilterBar: React.FC<{
                         ? numberAsPrice(props.filter.min)
                         : props.filter.min
                 } `;
-        if (props.filter.max)
+        if (props.filter.max !== undefined)
             output =
                 output +
                 `fino a ${
@@ -114,7 +114,7 @@ const FilterBar: React.FC<{
 
         if (props.filter.startDate || props.filter.endDate)
             return getFilterTitleWithDates();
-        if (props.filter.min || props.filter.max)
+        if (props.filter.min !== undefined || props.filter.max !== undefined)
             return getFilterTitleWithNumbers();
         return getFilterTitleWithString();
     };

@@ -135,13 +135,6 @@ const App: React.FC = () => {
 export default App;
 
 /*
-- Operazioni lista design fatto bene
-- Saldo fixed
-- Filtri solo guadagni 
-- Filtri solo spese
-- Modifica form ottimale - COME DEOCUMENTI
-
-Conquista operazioni completata
 
 - Aggiorna obiettivo valutazioni di design
 - Modifica form ottimale

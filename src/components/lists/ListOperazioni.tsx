@@ -20,16 +20,16 @@ const ListOperazioni: React.FC<{
 }> = (props) => {
     const operazioni = props.operazioni.map((operazione: Operazione) => (
         <IonItemSliding key={operazione.id!} id={operazione.id?.toString()}>
-            <IonItem detail>
-                <IonLabel
-                    text-wrap
-                    color={operazione.importo! > 0 ? "primary" : "danger"}
-                >
-                    <h2>{`${operazione.descrizione} ( ${numberAsPrice(
-                        operazione.importo!
-                    )} )`}</h2>
-                    <p>{`${getDayName(new Date(operazione.data!), "long")}`}</p>
-                    <p>{operazione.user?.name}</p>
+            <IonItem
+                detail
+                color={operazione.importo! > 0 ? "secondary" : "dark"}
+            >
+                <IonLabel text-wrap>
+                    <h3>{operazione.descrizione}</h3>
+                    <h2>{numberAsPrice(operazione.importo!)}</h2>
+                    <p>{`${getDayName(new Date(operazione.data!), "long")} da ${
+                        operazione.user?.name
+                    }`}</p>
                 </IonLabel>
             </IonItem>
             <IonItemOptions side="end">
@@ -67,11 +67,11 @@ const ListOperazioni: React.FC<{
     return (
         <>
             {operazioni}
-            <IonItem detail color={saldo! > 0 ? "primary" : "danger"}>
+            <IonItem>
                 <IonLabel>
-                    <h2>{`Il Saldo complessivo per questa lista è ${numberAsPrice(
-                        saldo
-                    )}`}</h2>
+                    <h2
+                        style={{ textAlign: "center" }}
+                    >{`Saldo per questa lista: ${numberAsPrice(saldo)}`}</h2>
                 </IonLabel>
             </IonItem>
         </>

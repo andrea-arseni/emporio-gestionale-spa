@@ -1,62 +1,79 @@
 import {
     IonList,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonTextarea,
-    IonDatetime,
     IonButton,
-    DatetimeChangeEventDetail,
     useIonAlert,
     IonLoading,
+    IonIcon,
+    IonItem,
+    IonLabel,
 } from "@ionic/react";
+import { closeOutline } from "ionicons/icons";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { Operazione } from "../../../entities/operazione.model";
+import useDateHandler from "../../../hooks/use-date-handler";
+import useInput from "../../../hooks/use-input";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import { getDayName } from "../../../utils/timeUtils";
-import styles from "./OperationForm.module.css";
+import DatePicker from "../../date-picker/DatePicker";
+import ItemSelector from "../../form-components/item-selector/ItemSelector";
+import TextArea from "../../form-components/text_area/TextArea";
+import TextInput from "../../form-components/text_input/TextInput";
 
 const FormOperation: React.FC<{
     operation: Operazione | null;
     setMode: Dispatch<SetStateAction<"form" | "list">>;
 }> = (props) => {
-    const [selectingDate, setSelectingDate] = useState<boolean>(false);
-
-    const [operationDate, setOperationDate] = useState<string | null>(
-        props.operation ? props.operation.data : null
+    const {
+        datePickerIsOpen,
+        setDatePickerIsOpen,
+        inputDateValue,
+        inputDateChangedHandler,
+        inputDateReset,
+    } = useDateHandler(
+        (el) => !!el,
+        props.operation && props.operation.data ? props.operation.data : null
     );
 
-    const [operationImporto, setOperationImporto] = useState<number | null>(
-        props.operation ? props.operation.importo : null
+    const {
+        inputValue: inputImportoValue,
+        inputIsInvalid: inputImportoIsInvalid,
+        inputIsTouched: inputImportoIsTouched,
+        inputTouchedHandler: inputImportoTouchedHandler,
+        inputChangedHandler: inputImportoChangedHandler,
+        reset: inputImportoReset,
+    } = useInput(
+        () => true,
+        props.operation && props.operation.importo !== undefined
+            ? props.operation.importo
+            : null
     );
 
-    const [operationDescrizione, setOperationDescrizione] = useState<
-        string | null
-    >(props.operation ? props.operation.descrizione : null);
+    const {
+        inputValue: inputDescrizioneValue,
+        inputIsInvalid: inputDescrizioneIsInvalid,
+        inputIsTouched: inputDescrizioneIsTouched,
+        inputTouchedHandler: inputDescrizioneTouchedHandler,
+        inputChangedHandler: inputDescrizioneChangedHandler,
+        reset: inputDescrizioneReset,
+    } = useInput(
+        () => true,
+        props.operation && props.operation.descrizione !== undefined
+            ? props.operation.descrizione
+            : null
+    );
 
     const [presentAlert] = useIonAlert();
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
-    const inputImportoChangedHandler = (e: any) =>
-        setOperationImporto(e.detail.value);
-
-    const inputDescrizioneChangedHandler = (e: any) =>
-        setOperationDescrizione(e.detail.value);
-
-    const setNewDate = (e: CustomEvent<DatetimeChangeEventDetail>) => {
-        setOperationDate(e.detail.value!.toString().split("T")[0]);
-        setSelectingDate(false);
-    };
-
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
         setShowLoading(true);
         const reqBody = {
-            data: operationDate,
-            importo: operationImporto,
-            descrizione: operationDescrizione,
+            data: inputDateValue.split("T")[0],
+            importo: inputImportoValue,
+            descrizione: inputDescrizioneValue,
         };
         try {
             await (props.operation
@@ -78,74 +95,82 @@ const FormOperation: React.FC<{
         }
     };
 
+    const getDate = () => (
+        <IonItem>
+            <IonLabel text-wrap>
+                {getDayName(new Date(inputDateValue), "long")}
+            </IonLabel>
+            <IonIcon
+                slot="end"
+                icon={closeOutline}
+                onClick={() => inputDateReset()}
+            ></IonIcon>
+        </IonItem>
+    );
+
+    const isFormDisabled =
+        (!props.operation &&
+            (!inputDescrizioneIsTouched ||
+                inputDescrizioneIsInvalid ||
+                !inputDateValue ||
+                !inputImportoIsTouched ||
+                inputImportoIsInvalid)) ||
+        !inputDateValue ||
+        !inputDescrizioneValue ||
+        !inputImportoValue;
+
     return (
-        <form onSubmit={submitForm} className={styles.form}>
+        <form onSubmit={submitForm}>
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            {selectingDate && (
-                <IonDatetime
-                    value={operationDate}
-                    mode="ios"
-                    min="2019-01-01T00:00:00"
-                    max="2040-05-31T23:59:59"
-                    locale="it-IT"
-                    firstDayOfWeek={1}
-                    presentation="date"
-                    onIonChange={setNewDate}
-                    size="fixed"
+
+            <IonList>
+                {datePickerIsOpen && (
+                    <DatePicker
+                        closePicker={() => setDatePickerIsOpen(false)}
+                        minValue="2019-01-01T00:00:00"
+                        maxValue="2040-05-31T23:59:59"
+                        changeHandler={inputDateChangedHandler}
+                        value={inputDateValue}
+                        sundayDisabled
+                    />
+                )}
+                <TextInput
+                    title="Importo in €"
+                    inputValue={inputImportoValue}
+                    type={"number"}
+                    inputIsInvalid={inputImportoIsInvalid}
+                    inputChangeHandler={inputImportoChangedHandler}
+                    inputTouchHandler={inputImportoTouchedHandler}
+                    errorMessage={"Input non valido"}
+                    reset={inputImportoReset}
                 />
-            )}
-            {!selectingDate && (
-                <IonList>
-                    <IonItem lines="none">
-                        <IonButton onClick={() => setSelectingDate(true)}>
-                            {`${
-                                operationDate ? "Cambia" : "Seleziona"
-                            } la data`}
-                        </IonButton>
-                        {operationDate && (
-                            <IonLabel slot="end">
-                                {getDayName(new Date(operationDate), "long")}
-                            </IonLabel>
-                        )}
-                    </IonItem>
-                    <IonItem lines="none">
-                        <IonLabel>Importo in €</IonLabel>
-                        <IonInput
-                            slot="end"
-                            type="number"
-                            value={operationImporto}
-                            onIonChange={(e) => inputImportoChangedHandler(e)}
-                        ></IonInput>
-                    </IonItem>
-                    <IonItem lines="none">
-                        <IonLabel>
-                            <i>Descrizione:</i>
-                        </IonLabel>
-                        <IonTextarea
-                            value={operationDescrizione}
-                            rows={6}
-                            onIonChange={(e) =>
-                                inputDescrizioneChangedHandler(e)
-                            }
-                        ></IonTextarea>
-                    </IonItem>
-                    <IonButton
-                        expand="full"
-                        mode="ios"
-                        color="primary"
-                        type="submit"
-                        disabled={
-                            !operationDescrizione ||
-                            !operationDate ||
-                            !operationImporto
-                        }
-                    >
-                        {`${
-                            props.operation ? "Modifica " : "Crea nuova "
-                        } visita`}
-                    </IonButton>
-                </IonList>
-            )}
+                <ItemSelector
+                    titoloGruppo={"Data"}
+                    titoloBottone={"Seleziona Data"}
+                    item={inputDateValue}
+                    getItem={getDate}
+                    openSelector={() => setDatePickerIsOpen(true)}
+                    simple
+                />
+                <TextArea
+                    title="Descrizione"
+                    inputValue={inputDescrizioneValue}
+                    inputIsInvalid={inputDescrizioneIsInvalid}
+                    inputChangeHandler={inputDescrizioneChangedHandler}
+                    inputTouchHandler={inputDescrizioneTouchedHandler}
+                    errorMessage={"Input non valido"}
+                    reset={inputDescrizioneReset}
+                />
+                <IonButton
+                    expand="full"
+                    mode="ios"
+                    color="primary"
+                    type="submit"
+                    disabled={isFormDisabled}
+                >
+                    {`${props.operation ? "Modifica " : "Crea nuova "} visita`}
+                </IonButton>
+            </IonList>
         </form>
     );
 };
