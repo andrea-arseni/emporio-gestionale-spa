@@ -120,10 +120,10 @@ const FormOperation: React.FC<{
         !inputImportoValue;
 
     return (
-        <form onSubmit={submitForm}>
+        <form onSubmit={submitForm} className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
 
-            <IonList>
+            <IonList className="list">
                 {datePickerIsOpen && (
                     <DatePicker
                         closePicker={() => setDatePickerIsOpen(false)}

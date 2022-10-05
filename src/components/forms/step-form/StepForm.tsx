@@ -1,19 +1,13 @@
-import {
-    useIonAlert,
-    IonLoading,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonTextarea,
-    IonButton,
-} from "@ionic/react";
+import { useIonAlert, IonLoading, IonList, IonButton } from "@ionic/react";
 import { useState, FormEvent, SetStateAction, Dispatch } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
+import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import FormSelect from "../../form-components/form-select/FormSelect";
+import TextArea from "../../form-components/text_area/TextArea";
 
 const StepForm: React.FC<{
     lavoro: Lavoro;
@@ -25,15 +19,24 @@ const StepForm: React.FC<{
 
     const [presentAlert] = useIonAlert();
 
-    const [descrizione, setDescrizione] = useState<string | null>(
-        props.step?.descrizione!
+    const {
+        inputValue: inputDescrizioneValue,
+        inputIsInvalid: inputDescrizioneIsInvalid,
+        inputTouchedHandler: inputDescrizioneTouchedHandler,
+        inputChangedHandler: inputDescrizioneChangedHandler,
+        reset: inputDescrizioneReset,
+    } = useInput(
+        () => true,
+        props.step && props.step.descrizione !== undefined
+            ? props.step.descrizione
+            : null
     );
 
     const [status, setStatus] = useState<lavoroType>(
         props.lavoro.status as lavoroType
     );
 
-    const isFormValid = descrizione && status;
+    const isFormValid = inputDescrizioneValue && status;
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
@@ -41,8 +44,8 @@ const StepForm: React.FC<{
         const url = `lavori/${props.lavoro!.id}/steps`;
         const reqBody = {
             lavoroStatus: status.toUpperCase(),
-            stepMessage: descrizione,
-            descrizione: descrizione,
+            stepMessage: inputDescrizioneValue,
+            descrizione: inputDescrizioneValue,
         };
         try {
             props.step
@@ -98,19 +101,15 @@ const StepForm: React.FC<{
                         possibleValues={getPossibleStatusValues()}
                     />
                 )}
-                <IonItem>
-                    <IonLabel position="floating">
-                        Descrizione Aggiornamento
-                    </IonLabel>
-                    <IonTextarea
-                        auto-grow
-                        rows={4}
-                        value={descrizione}
-                        onIonChange={(e) => {
-                            setDescrizione(e.detail.value!);
-                        }}
-                    ></IonTextarea>
-                </IonItem>
+                <TextArea
+                    title="Descrizione Aggiornamento"
+                    inputValue={inputDescrizioneValue}
+                    inputIsInvalid={inputDescrizioneIsInvalid}
+                    inputChangeHandler={inputDescrizioneChangedHandler}
+                    inputTouchHandler={inputDescrizioneTouchedHandler}
+                    errorMessage={"Input non valido"}
+                    reset={inputDescrizioneReset}
+                />
                 <IonButton
                     expand="block"
                     disabled={!isFormValid}

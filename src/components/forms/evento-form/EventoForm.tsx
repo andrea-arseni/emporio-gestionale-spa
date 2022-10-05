@@ -7,9 +7,10 @@ import {
     IonList,
     IonSelect,
     IonSelectOption,
-    IonTextarea,
     IonButton,
     useIonPicker,
+    IonItemDivider,
+    IonItemGroup,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
 import { useState, useEffect, FormEvent } from "react";
@@ -30,6 +31,7 @@ import Selector from "../../selector/Selector";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
 import { getDayName, openTimePicker } from "../../../utils/timeUtils";
 import useDateHandler from "../../../hooks/use-date-handler";
+import TextArea from "../../form-components/text_area/TextArea";
 
 const EventoForm: React.FC<{
     persona: Persona | null;
@@ -85,9 +87,11 @@ const EventoForm: React.FC<{
         inputIsTouched: inputNoteIsTouched,
         inputTouchedHandler: inputNoteTouchedHandler,
         inputChangedHandler: inputNoteChangedHandler,
+        inputIsInvalid: inputNoteIsInvalid,
+        reset: inputNoteReset,
     } = useInput(() => true, props.evento ? props.evento.descrizione : null);
 
-    const queryData = useQueryData("eventi");
+    const queryData = useQueryData("immobili");
 
     useEffect(() => {
         setTimeout(() => {
@@ -178,7 +182,7 @@ const EventoForm: React.FC<{
         );
     };
 
-    const getData = () => (
+    const getDate = () => (
         <IonItem>
             <IonLabel text-wrap>
                 {getDayName(new Date(inputDateValue), "long")}
@@ -206,42 +210,49 @@ const EventoForm: React.FC<{
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
-                {!isVisit && !props.evento && (
-                    <IonItem>
-                        <IonLabel
-                            position="floating"
-                            color={inputStatusIsInvalid ? "danger" : "dark"}
-                        >
-                            Status Persona
+                <IonItemGroup>
+                    <IonItemDivider color="dark">
+                        <IonLabel color="light">
+                            <h2>Dati base</h2>
                         </IonLabel>
-                        <IonSelect
-                            cancelText="Torna Indietro"
-                            mode="ios"
-                            interface="action-sheet"
-                            value={inputStatusValue}
-                            onIonChange={inputStatusChangedHandler}
-                            onIonBlur={inputStatusTouchedHandler}
-                        >
-                            {possibiliPersoneTypes.map((el) => {
-                                return (
-                                    <IonSelectOption
-                                        key={el.value}
-                                        value={el.value.toUpperCase()}
-                                    >
-                                        {el.text}
-                                    </IonSelectOption>
-                                );
-                            })}
-                        </IonSelect>
-                    </IonItem>
-                )}
-                {!props.evento && (
-                    <FormInputBoolean
-                        condition={isVisit}
-                        setCondition={setIsVisit}
-                        sentence={"E' una visita"}
-                    />
-                )}
+                    </IonItemDivider>
+                    {!isVisit && !props.evento && (
+                        <IonItem>
+                            <IonLabel
+                                position="floating"
+                                color={inputStatusIsInvalid ? "danger" : "dark"}
+                            >
+                                Status Persona
+                            </IonLabel>
+                            <IonSelect
+                                cancelText="Torna Indietro"
+                                mode="ios"
+                                interface="action-sheet"
+                                value={inputStatusValue}
+                                onIonChange={inputStatusChangedHandler}
+                                onIonBlur={inputStatusTouchedHandler}
+                            >
+                                {possibiliPersoneTypes.map((el) => {
+                                    return (
+                                        <IonSelectOption
+                                            key={el.value}
+                                            value={el.value.toUpperCase()}
+                                        >
+                                            {el.text}
+                                        </IonSelectOption>
+                                    );
+                                })}
+                            </IonSelect>
+                        </IonItem>
+                    )}
+                    {!props.evento && (
+                        <FormInputBoolean
+                            condition={isVisit}
+                            setCondition={setIsVisit}
+                            sentence={"E' una visita"}
+                        />
+                    )}
+                </IonItemGroup>
                 {!props.evento && (
                     <ItemSelector
                         titoloGruppo={"Immobile d'Interesse"}
@@ -256,7 +267,7 @@ const EventoForm: React.FC<{
                         titoloGruppo={"Data della Visita"}
                         titoloBottone={"Seleziona Data"}
                         item={inputDateValue}
-                        getItem={getData}
+                        getItem={getDate}
                         openSelector={() => setDatePickerIsOpen(true)}
                     />
                 )}
@@ -271,28 +282,34 @@ const EventoForm: React.FC<{
                         }
                     />
                 )}
-                {isVisit && !props.evento && (
-                    <TextInput
-                        title={"Dove"}
-                        inputValue={inputLuogoValue}
-                        type={"text"}
-                        inputIsInvalid={inputLuogoIsInvalid}
-                        inputChangeHandler={inputLuogoChangedHandler}
-                        inputTouchHandler={inputLuogoTouchedHandler}
-                        errorMessage={"Luogo non valido"}
-                        reset={inputLuogoReset}
+                <IonItemGroup>
+                    <IonItemDivider color="dark">
+                        <IonLabel color="light">
+                            <h2>Dati opzionali</h2>
+                        </IonLabel>
+                    </IonItemDivider>
+                    {isVisit && !props.evento && (
+                        <TextInput
+                            title={"Dove"}
+                            inputValue={inputLuogoValue}
+                            type={"text"}
+                            inputIsInvalid={inputLuogoIsInvalid}
+                            inputChangeHandler={inputLuogoChangedHandler}
+                            inputTouchHandler={inputLuogoTouchedHandler}
+                            errorMessage={"Luogo non valido"}
+                            reset={inputLuogoReset}
+                        />
+                    )}
+                    <TextArea
+                        title="Descrizione"
+                        inputValue={inputNoteValue}
+                        inputIsInvalid={inputNoteIsInvalid}
+                        inputChangeHandler={inputNoteChangedHandler}
+                        inputTouchHandler={inputNoteTouchedHandler}
+                        errorMessage={"Input non valido"}
+                        reset={inputNoteReset}
                     />
-                )}
-                <IonItem>
-                    <IonLabel position="floating">Note</IonLabel>
-                    <IonTextarea
-                        auto-grow
-                        rows={6}
-                        value={inputNoteValue}
-                        onIonChange={(e) => inputNoteChangedHandler(e)}
-                        onIonBlur={() => inputNoteTouchedHandler()}
-                    ></IonTextarea>
-                </IonItem>
+                </IonItemGroup>
                 <IonButton
                     expand="block"
                     disabled={isFormInvalid}

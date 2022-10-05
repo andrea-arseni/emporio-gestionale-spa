@@ -136,13 +136,8 @@ export default App;
 
 /*
 
-- Aggiorna obiettivo valutazioni di design
-- Modifica form ottimale
+- Attacco alle Persone
+- File Persone implemented
 
-Conquista step completata
-
-Ricalcolo per conquista obiettivi ed eventi e persona
-
-Riscrittura parte immobili
-
+- Attacco finale agli immobili
 */

@@ -1,20 +1,13 @@
-import {
-    IonList,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonTextarea,
-    IonNote,
-    useIonAlert,
-    IonLoading,
-    IonButton,
-} from "@ionic/react";
+import { IonList, useIonAlert, IonLoading, IonButton } from "@ionic/react";
 import { FormEvent, useState } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
+import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import FormSelect from "../../form-components/form-select/FormSelect";
+import TextArea from "../../form-components/text_area/TextArea";
+import TextInput from "../../form-components/text_input/TextInput";
 
 const LavoroForm: React.FC<{
     lavoro: Lavoro | null;
@@ -24,34 +17,49 @@ const LavoroForm: React.FC<{
 
     const [presentAlert] = useIonAlert();
 
-    const [titolo, setTitolo] = useState<string | null>(
-        props.lavoro ? props.lavoro.titolo : null
+    const {
+        inputValue: inputTitoloValue,
+        inputIsInvalid: inputTitoloIsInvalid,
+        inputIsTouched: inputTitoloIsTouched,
+        inputTouchedHandler: inputTitoloTouchedHandler,
+        inputChangedHandler: inputTitoloChangedHandler,
+        reset: inputTitoloReset,
+    } = useInput(
+        (titolo) =>
+            titolo.toString().length >= 10 && titolo.toString().length <= 45,
+        props.lavoro && props.lavoro.titolo !== undefined
+            ? props.lavoro.titolo
+            : null
     );
 
-    const isTitleValid =
-        !titolo || (titolo.length >= 10 && titolo.length <= 45);
-
-    const [descrizione, setDescrizione] = useState<string | null>(null);
+    const {
+        inputValue: inputDescrizioneValue,
+        inputIsInvalid: inputDescrizioneIsInvalid,
+        inputTouchedHandler: inputDescrizioneTouchedHandler,
+        inputChangedHandler: inputDescrizioneChangedHandler,
+        reset: inputDescrizioneReset,
+    } = useInput(() => true);
 
     const [status, setStatus] = useState<lavoroType>(
         props.lavoro ? (props.lavoro.status as lavoroType) : "APERTO"
     );
 
     const isFormValid =
-        (titolo &&
-            titolo.length >= 10 &&
-            titolo.length <= 45 &&
-            props.lavoro &&
-            (titolo !== props.lavoro.titolo ||
+        (props.lavoro &&
+            (inputTitoloValue !== props.lavoro.titolo ||
                 status !== props.lavoro.status)) ||
-        (!props.lavoro && titolo && descrizione && status);
+        (!props.lavoro &&
+            !inputTitoloIsInvalid &&
+            inputTitoloIsTouched &&
+            inputDescrizioneValue &&
+            status);
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
         const reqBody = {
-            titolo: titolo,
+            titolo: inputTitoloValue,
             status: status.toUpperCase(),
-            descrizione: descrizione,
+            descrizione: inputDescrizioneValue,
         };
         setShowLoading(true);
         try {
@@ -96,21 +104,16 @@ const LavoroForm: React.FC<{
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
-                <IonItem>
-                    <IonLabel position="floating">
-                        Titolo (tra 10 e 45 lettere)
-                    </IonLabel>
-                    <IonInput
-                        type="text"
-                        value={titolo}
-                        onIonChange={(e) => setTitolo(e.detail.value!)}
-                    ></IonInput>
-                    <IonNote color={isTitleValid ? "primary" : "danger"}>
-                        {`${titolo ? titolo.length : 0} letter${
-                            titolo?.length === 1 ? "a" : "e"
-                        } usat${titolo?.length === 1 ? "a" : "e"}`}
-                    </IonNote>
-                </IonItem>
+                <TextInput
+                    title=" Titolo (tra 10 e 45 lettere)"
+                    inputValue={inputTitoloValue}
+                    type={"text"}
+                    inputIsInvalid={inputTitoloIsInvalid}
+                    inputChangeHandler={inputTitoloChangedHandler}
+                    inputTouchHandler={inputTitoloTouchedHandler}
+                    errorMessage={"Lunghezza non valida"}
+                    reset={inputTitoloReset}
+                />
                 {props.lavoro && (
                     <FormSelect
                         title="Status"
@@ -121,17 +124,15 @@ const LavoroForm: React.FC<{
                     />
                 )}
                 {!props.lavoro && (
-                    <IonItem>
-                        <IonLabel position="floating">Descrizione</IonLabel>
-                        <IonTextarea
-                            auto-grow
-                            rows={4}
-                            value={descrizione}
-                            onIonChange={(e) => {
-                                setDescrizione(e.detail.value!);
-                            }}
-                        ></IonTextarea>
-                    </IonItem>
+                    <TextArea
+                        title="Descrizione"
+                        inputValue={inputDescrizioneValue}
+                        inputIsInvalid={inputDescrizioneIsInvalid}
+                        inputChangeHandler={inputDescrizioneChangedHandler}
+                        inputTouchHandler={inputDescrizioneTouchedHandler}
+                        errorMessage={"Input non valido"}
+                        reset={inputDescrizioneReset}
+                    />
                 )}
                 <IonButton
                     expand="block"

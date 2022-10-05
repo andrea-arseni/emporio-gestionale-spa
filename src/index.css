@@ -59,6 +59,10 @@
     font-size: x-large;
 }
 
+.checkbox {
+    margin-right: 12px;
+}
+
 .form {
     height: calc(100% - 56px);
     width: 100%;
@@ -68,12 +72,14 @@
     padding-top: 20px;
 }
 
-.checkbox {
-    margin-right: 12px;
-}
-
 .list {
     width: 90%;
+}
+
+@media (max-width: 500px) {
+    .list {
+        width: 100%;
+    }
 }
 
 .toggleButton {

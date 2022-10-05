@@ -10,7 +10,7 @@ const NewEntityBar: React.FC<{
 }> = (props) => {
     return (
         <IonButton
-            color={props.entitiesType === "steps" ? "dark" : "primary"}
+            color="primary"
             expand="full"
             mode="ios"
             fill="solid"

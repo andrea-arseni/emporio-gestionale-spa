@@ -1,4 +1,4 @@
-import { IonButton, IonLoading, useIonAlert } from "@ionic/react";
+import { IonButton, IonList, IonLoading, useIonAlert } from "@ionic/react";
 import { FormEvent, useState } from "react";
 import { Documento } from "../../../entities/documento.model";
 import useInput from "../../../hooks/use-input";
@@ -65,25 +65,29 @@ const DocumentoForm: React.FC<{
     };
 
     return (
-        <form>
+        <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            <TextInput
-                title={"Nome File (minimo 5 massimo 40 lettere)"}
-                inputValue={inputValue}
-                type={"text"}
-                inputIsInvalid={inputIsInvalid}
-                inputChangeHandler={inputChangedHandler}
-                inputTouchHandler={inputTouchedHandler}
-                errorMessage={"Lunghezza non valida"}
-                reset={reset}
-            />
-            <IonButton
-                expand="block"
-                disabled={!inputIsTouched || (inputIsInvalid && inputIsTouched)}
-                onClick={(e) => submitForm(e)}
-            >
-                Rinomina File
-            </IonButton>
+            <IonList className="list">
+                <TextInput
+                    title={"Nome File (minimo 5 massimo 40 lettere)"}
+                    inputValue={inputValue}
+                    type={"text"}
+                    inputIsInvalid={inputIsInvalid}
+                    inputChangeHandler={inputChangedHandler}
+                    inputTouchHandler={inputTouchedHandler}
+                    errorMessage={"Lunghezza non valida"}
+                    reset={reset}
+                />
+                <IonButton
+                    expand="block"
+                    disabled={
+                        !inputIsTouched || (inputIsInvalid && inputIsTouched)
+                    }
+                    onClick={(e) => submitForm(e)}
+                >
+                    Rinomina File
+                </IonButton>
+            </IonList>
         </form>
     );
 };
