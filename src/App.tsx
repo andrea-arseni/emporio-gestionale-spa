@@ -39,6 +39,7 @@ import LavoriDataPage from "./pages/lavori/LavoriDataPage/LavoriDataPage";
 import PersonaPage from "./pages/persone/PersonaPage/PersonaPage";
 import EventsPage from "./pages/persone/EventsPage/EventsPage";
 import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
+import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
 
 setupIonicReact();
 
@@ -98,6 +99,11 @@ const App: React.FC = () => {
                             </Route>
                         )}
                         {token && (
+                            <Route path="/persone/:id/files">
+                                <PersonaFilePage />
+                            </Route>
+                        )}{" "}
+                        {token && (
                             <Route path="/obiettivi" exact>
                                 <LavoriPage />
                             </Route>
@@ -135,9 +141,7 @@ const App: React.FC = () => {
 export default App;
 
 /*
-
-- Attacco alle Persone
-- File Persone implemented
-
-- Attacco finale agli immobili
+- Testing di documenti
+- Testing di file persona
+- Attacco agli immobili
 */

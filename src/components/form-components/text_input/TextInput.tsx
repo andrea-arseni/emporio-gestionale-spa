@@ -20,6 +20,7 @@ const TextInput: React.FC<{
                 {props.title}
             </IonLabel>
             <IonInput
+                autocomplete="off"
                 color={props.inputIsInvalid ? "danger" : "dark"}
                 type={props.type}
                 value={props.inputValue}

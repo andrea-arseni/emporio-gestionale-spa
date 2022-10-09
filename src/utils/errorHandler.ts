@@ -8,7 +8,8 @@ const errorHandler = (
     presentAlert: {
         (message: string, buttons?: AlertButton[] | undefined): Promise<void>;
         (options: AlertOptions & HookOverlayOptions): Promise<any>;
-    }
+    },
+    secondHandler?: (id: number) => void
 ) => {
     const originalErrorMessage =
         e && e.response && e.response.data && e.response.data.message
@@ -36,7 +37,7 @@ const errorHandler = (
         if (id)
             buttons.push({
                 text: "Vai alla persona in questione",
-                handler: () => console.log(id),
+                handler: () => (secondHandler ? secondHandler(+id!) : null),
             });
         return buttons;
     };

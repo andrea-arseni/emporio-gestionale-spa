@@ -8,8 +8,6 @@ import {
     IonTextarea,
     IonNote,
     IonButton,
-    IonItemDivider,
-    IonItemGroup,
     useIonAlert,
     IonLoading,
     IonItemOption,
@@ -74,6 +72,7 @@ import capitalize from "../../../utils/capitalize";
 import errorHandler from "../../../utils/errorHandler";
 import { genericaDescrizione } from "../../../utils/genericaDescrizione";
 import Card from "../../card/Card";
+import FormGroup from "../../form-components/form-group/FormGroup";
 import FormInputBoolean from "../../form-components/form-input-boolean/FormInputBoolean";
 import FormInputNumber from "../../form-components/form-input-number/form-input-number";
 import FormInputText from "../../form-components/form-input-text/FormInputText";
@@ -799,12 +798,7 @@ const ImmobileForm: React.FC<{
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list" ref={ionListRef}>
-                <IonItemGroup>
-                    <IonItemDivider color="dark">
-                        <IonLabel color="light">
-                            <h2>Dati base - Obbligatori</h2>
-                        </IonLabel>
-                    </IonItemDivider>
+                <FormGroup title="Dati Base - Obbligatori">
                     {!props.immobile && (
                         <FormInputBoolean
                             condition={isAutomaticRef}
@@ -1022,13 +1016,8 @@ const ImmobileForm: React.FC<{
                             }
                         ></IonTextarea>
                     </IonItem>
-                </IonItemGroup>
-                <IonItemGroup>
-                    <IonItemDivider color="dark">
-                        <IonLabel color="light">
-                            <h2>Caratteristiche - Opzionali</h2>
-                        </IonLabel>
-                    </IonItemDivider>
+                </FormGroup>
+                <FormGroup title="Caratteristiche - Opzionali">
                     <FormInputBoolean
                         condition={ascensoreValue}
                         setCondition={setAscensoreValue}
@@ -1250,15 +1239,12 @@ const ImmobileForm: React.FC<{
                             />
                         </>
                     )}
-                </IonItemGroup>
-                <IonItemGroup>
-                    <IonItemDivider color="dark">
-                        <IonLabel color="light">
-                            <h2>{`Proprietario ${
-                                proprietarioValue ? "presente" : "mancante"
-                            }`}</h2>
-                        </IonLabel>
-                    </IonItemDivider>
+                </FormGroup>
+                <FormGroup
+                    title={`Proprietario ${
+                        proprietarioValue ? "presente" : "mancante"
+                    }`}
+                >
                     {!proprietarioValue && (
                         <IonButton expand="block" color="light">
                             Aggiungi Proprietario
@@ -1303,24 +1289,19 @@ const ImmobileForm: React.FC<{
                             </IonItemOptions>
                         </IonItemSliding>
                     )}
-                </IonItemGroup>
-                <IonItemGroup>
-                    <IonItemDivider color="dark">
-                        <IonLabel color="light">
-                            <h2>{`Inquilini ${
-                                inquiliniValue && inquiliniValue.length > 0
-                                    ? "presenti"
-                                    : "mancanti"
-                            }`}</h2>
-                        </IonLabel>
-                    </IonItemDivider>
-
+                </FormGroup>
+                <FormGroup
+                    title={`Inquilini ${
+                        inquiliniValue && inquiliniValue.length > 0
+                            ? "presenti"
+                            : "mancanti"
+                    }`}
+                >
                     {getInquiliniItems}
-
                     <IonButton expand="block" color="light">
                         Aggiungi Inquilino
                     </IonButton>
-                </IonItemGroup>
+                </FormGroup>
                 <IonButton
                     expand="block"
                     disabled={!isFormValid}

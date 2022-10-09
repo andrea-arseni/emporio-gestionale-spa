@@ -13,6 +13,7 @@ import TextInput from "../../form-components/text_input/TextInput";
 const DocumentoForm: React.FC<{
     documento: Documento | null;
     backToList: () => void;
+    baseUrl: string;
 }> = (props) => {
     const nome = props.documento
         ? getFileNameWithoutExtension(props.documento.nome!)
@@ -44,7 +45,7 @@ const DocumentoForm: React.FC<{
         try {
             let reqBody = { name: nuovoNome };
             await axiosInstance.patch(
-                `/documenti/${props.documento!.id}`,
+                `${props.baseUrl}/${props.documento!.id}`,
                 reqBody
             );
             setShowLoading(false);

@@ -63,11 +63,7 @@ export const openFile = async (byteArray: string, documento: Documento) => {
     const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
     const blob = await getBlobFromBase64String(base64File);
     const url = URL.createObjectURL(blob);
-    window.open(url); /*  const a = document.createElement("a");
-    a.setAttribute("href", blob);
-    a.setAttribute("target", "_blank");
-    a.click();
-    document.removeChild(a);  */
+    window.open(url);
 };
 
 export const shareFile = async (
@@ -119,6 +115,7 @@ export const submitFile = async (
     e: any,
     setShowLoading: any,
     presentAlert: any,
+    url: string,
     setUpdate: Dispatch<SetStateAction<number>>
 ) => {
     setShowLoading(true);
@@ -130,7 +127,7 @@ export const submitFile = async (
     const formData = new FormData();
     formData.append("file", file!);
     try {
-        await axiosInstance.post(`/documenti`, formData);
+        await axiosInstance.post(url, formData);
         setShowLoading(false);
         presentAlert({
             header: "Ottimo",

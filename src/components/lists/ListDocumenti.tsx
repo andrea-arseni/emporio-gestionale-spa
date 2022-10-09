@@ -42,6 +42,7 @@ const ListDocumenti: React.FC<{
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
+    baseUrl: string;
 }> = (props) => {
     const [presentAlert] = useIonAlert();
 
@@ -61,10 +62,11 @@ const ListDocumenti: React.FC<{
         console.log("Errore");
     };
 
-    const selectFile = async (documento: Documento) => {
+    const selectFile = async (id: number) => {
+        const url = `${props.baseUrl}/${id}`;
         props.setShowLoading(true);
         try {
-            const res = await axiosInstance.get(`/documenti/${documento.id!}`);
+            const res = await axiosInstance.get(url);
             props.setShowLoading(false);
             setCurrentFile({
                 documento: res.data.file,
@@ -92,7 +94,7 @@ const ListDocumenti: React.FC<{
         if (isFileSelected(documento.id!)) {
             openFile(currentFile!.byteArray, currentFile!.documento);
         } else {
-            const res = await selectFile(documento);
+            const res = await selectFile(documento.id!);
             openFile(res.byteArray, res.file);
         }
     };
@@ -101,7 +103,7 @@ const ListDocumenti: React.FC<{
         if (isFileSelected(documento.id!)) {
             downloadFile(currentFile!.byteArray, currentFile!.documento);
         } else {
-            const res = await selectFile(documento);
+            const res = await selectFile(documento.id!);
             downloadFile(res.byteArray, res.file);
         }
     };
@@ -158,7 +160,7 @@ const ListDocumenti: React.FC<{
                                           currentFile!.documento,
                                           presentAlert
                                       )
-                                    : selectFile(documento)
+                                    : selectFile(documento.id!)
                             }
                             entity={documento}
                             colorType={

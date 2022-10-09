@@ -15,8 +15,8 @@ import useSize from "../../hooks/use-size";
 const Card: React.FC<{
     subTitle: string;
     title: string;
-    phone: string | null;
-    email: string | null;
+    phone?: string;
+    email?: string;
 }> = (props) => {
     const [widthScreen] = useSize();
 

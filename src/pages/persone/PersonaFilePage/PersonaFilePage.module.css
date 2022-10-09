@@ -1,0 +1,12 @@
+.list {
+    overflow: scroll;
+    padding: 0;
+}
+
+.simple {
+    height: calc(100vh - 44px - 62px - 50px - 44px);
+}
+
+.filterButton {
+    margin: 0;
+}

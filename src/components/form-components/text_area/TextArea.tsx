@@ -4,11 +4,11 @@ import { closeOutline } from "ionicons/icons";
 const TextArea: React.FC<{
     title: string;
     inputValue: string;
-    inputIsInvalid: boolean;
     inputChangeHandler: (e: any) => void;
     inputTouchHandler: () => void;
     reset: () => void;
-    errorMessage: string;
+    inputIsInvalid?: boolean;
+    errorMessage?: string;
 }> = (props) => {
     return (
         <IonItem>

@@ -280,13 +280,18 @@ const Selector: React.FC<{
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
                         setUpdate={setUpdate}
+                        baseUrl="/documenti"
                     />
                 );
         }
     };
 
     const getListHeight = () => {
-        if (props.entitiesType === "steps" || props.entitiesType === "eventi")
+        if (
+            props.entitiesType === "steps" ||
+            props.entitiesType === "eventi" ||
+            props.baseUrl?.includes("files")
+        )
             return styles.high;
         return styles.fullOption;
     };
@@ -384,8 +389,6 @@ const Selector: React.FC<{
                         title={
                             "Non sono stati trovati risultati per la ricerca effettuata"
                         }
-                        phone={null}
-                        email={null}
                     />
                 </div>
             )}

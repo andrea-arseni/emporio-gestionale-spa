@@ -7,13 +7,16 @@ import {
     IonLoading,
     IonSelect,
     IonSelectOption,
-    IonTextarea,
     IonIcon,
-    IonItemGroup,
-    IonItemDivider,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { FormEvent, useEffect, useState } from "react";
+import {
+    Dispatch,
+    FormEvent,
+    SetStateAction,
+    useEffect,
+    useState,
+} from "react";
 import { useHistory } from "react-router";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
@@ -30,10 +33,14 @@ import TextInput from "../../form-components/text_input/TextInput";
 import Modal from "../../modal/Modal";
 import Selector from "../../selector/Selector";
 import styles from "./PersoneForm.module.css";
+import FormGroup from "../../form-components/form-group/FormGroup";
+import TextArea from "../../form-components/text_area/TextArea";
+import ItemSelector from "../../form-components/item-selector/ItemSelector";
 
 const PersoneForm: React.FC<{
     persona: Persona | null;
     backToList: () => void;
+    setCurrentPersona: Dispatch<SetStateAction<Entity | null>>;
 }> = (props) => {
     const history = useHistory();
 
@@ -181,6 +188,8 @@ const PersoneForm: React.FC<{
     const {
         inputValue: inputNoteValue,
         inputChangedHandler: inputNoteChangedHandler,
+        inputTouchedHandler: inputNoteTouchedHandler,
+        reset: inputNoteReset,
     } = useInput(() => true);
 
     const queryData = useQueryData("persone");
@@ -196,7 +205,9 @@ const PersoneForm: React.FC<{
     };
 
     const isFormInvalid =
-        (!props.persona && !inputEmailIsTouched && !inputPhoneIsTouched) ||
+        (!props.persona &&
+            (!inputNameIsTouched ||
+                (!inputEmailIsTouched && !inputPhoneIsTouched))) ||
         (inputEmailValue.trim().length === 0 &&
             (getPhoneValue() === null || getPhoneValue()!.length === 0)) ||
         inputNameIsInvalid ||
@@ -204,8 +215,40 @@ const PersoneForm: React.FC<{
         inputEmailIsInvalid ||
         inputRuoloIsInvalid ||
         inputProvenienzaIsInvalid ||
-        inputStatusIsInvalid ||
-        (!props.persona && !inputNameIsTouched);
+        inputStatusIsInvalid;
+
+    const changePersona = async (id: number) => {
+        setShowLoading(true);
+        try {
+            const res = await axiosInstance.get(`persone/${id}`);
+            const persona = res.data as Persona;
+            props.setCurrentPersona(persona);
+            inputNameChangedHandler(null, persona.nome);
+            inputPhoneChangedHandler(null, persona.telefono);
+            inputEmailChangedHandler(null, persona.email);
+            inputRuoloChangedHandler(null, persona.ruolo);
+            inputProvenienzaChangedHandler(
+                null,
+                persona.provenienza &&
+                    persona.provenienza.toLowerCase().replace("_", " ")
+            );
+            inputStatusChangedHandler(null, persona.status);
+            setImmobileLocato(
+                persona.immobileInquilino
+                    ? (persona.immobileInquilino as Immobile)
+                    : null
+            );
+            setListHouses(
+                persona && persona.immobili
+                    ? (persona.immobili as Immobile[])
+                    : []
+            );
+            setShowLoading(false);
+        } catch (e) {
+            setShowLoading(false);
+            errorHandler(e, () => {}, "Procedura non riuscita", presentAlert);
+        }
+    };
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
@@ -247,7 +290,8 @@ const PersoneForm: React.FC<{
                 error,
                 () => {},
                 "Procedura non riuscita",
-                presentAlert
+                presentAlert,
+                changePersona
             );
         }
     };
@@ -290,16 +334,14 @@ const PersoneForm: React.FC<{
     };
 
     const getImmobili = (mode: "proprietà" | "locazione" | "interesse") => {
-        const list =
-            mode === "proprietà"
-                ? listHouses
-                : mode === "interesse"
-                ? immobileInteresse
-                    ? [immobileInteresse]
-                    : []
-                : immobileLocato
-                ? [immobileLocato]
-                : [];
+        let list: Immobile[] = [];
+        if (mode === "proprietà") {
+            list = listHouses;
+        } else if (mode === "interesse" && immobileInteresse) {
+            list = [immobileInteresse];
+        } else if (mode === "locazione" && immobileLocato) {
+            list = [immobileLocato];
+        }
         return list.map((el) => {
             return (
                 <IonItem
@@ -309,7 +351,7 @@ const PersoneForm: React.FC<{
                             ? "tertiary"
                             : undefined
                     }
-                    onClick={() => selectEntity(el)}
+                    onClick={() => selectEntity(el!)}
                 >
                     <IonLabel text-wrap>
                         <h3>Riferimento {el!.ref}</h3>
@@ -330,12 +372,7 @@ const PersoneForm: React.FC<{
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
-                <IonItemGroup>
-                    <IonItemDivider color="dark">
-                        <IonLabel color="light">
-                            <h2>Dati base</h2>
-                        </IonLabel>
-                    </IonItemDivider>
+                <FormGroup title="Dati base">
                     <TextInput
                         title={"Nome (Obbligatorio - almeno 5 lettere)"}
                         inputValue={inputNameValue}
@@ -431,74 +468,39 @@ const PersoneForm: React.FC<{
                         reset={inputRuoloReset}
                     />
                     {!props.persona && (
-                        <>
-                            <IonItem>
-                                <IonLabel position="floating">Note</IonLabel>
-                                <IonTextarea
-                                    auto-grow
-                                    rows={6}
-                                    value={inputNoteValue}
-                                    onIonChange={(e) =>
-                                        inputNoteChangedHandler(e)
-                                    }
-                                ></IonTextarea>
-                            </IonItem>
-                        </>
+                        <TextArea
+                            title={"Note"}
+                            inputValue={inputNoteValue}
+                            inputChangeHandler={inputNoteChangedHandler}
+                            inputTouchHandler={inputNoteTouchedHandler}
+                            reset={inputNoteReset}
+                        />
                     )}
-                </IonItemGroup>
+                </FormGroup>
                 {!props.persona && (
-                    <IonItemGroup>
-                        <IonItemDivider color="dark">
-                            <IonLabel color="light">
-                                <h2>Immobile d'Interesse</h2>
-                            </IonLabel>
-                        </IonItemDivider>
-                        {!props.persona &&
-                            immobileInteresse &&
-                            getImmobili("interesse")}
-                        {!props.persona && !immobileInteresse && (
-                            <IonButton
-                                expand="block"
-                                color="light"
-                                onClick={() => openModal("interesse")}
-                            >
-                                Aggiungi Casa d'Interesse
-                            </IonButton>
-                        )}
-                    </IonItemGroup>
+                    <ItemSelector
+                        titoloGruppo="Immobile d'Interesse"
+                        titoloBottone="Aggiungi Casa d'Interesse"
+                        item={immobileInteresse}
+                        getItem={() => getImmobili("interesse")}
+                        openSelector={() => openModal("interesse")}
+                    />
                 )}
-                <IonItemGroup>
-                    <IonItemDivider color="dark">
-                        <IonLabel color="light">
-                            <h2>Immobili di Proprietà</h2>
-                        </IonLabel>
-                    </IonItemDivider>
-                    <IonButton
-                        expand="block"
-                        color="light"
-                        onClick={() => openModal("proprietà")}
-                    >
-                        Aggiungi Casa di Proprietà
-                    </IonButton>
-                    {getImmobili("proprietà")}
-                </IonItemGroup>
-                <IonItemGroup>
-                    <IonItemDivider color="dark">
-                        <IonLabel color="light">
-                            <h2>Immobile Locato</h2>
-                        </IonLabel>
-                    </IonItemDivider>
-                    {immobileLocato && getImmobili("locazione")}
-                    {!immobileLocato && (
-                        <IonButton
-                            expand="block"
-                            color="light"
-                            onClick={() => openModal("locazione")}
-                        >
-                            Aggiungi Casa in cui è Inquilino
-                        </IonButton>
-                    )}
-                </IonItemGroup>
+                <ItemSelector
+                    titoloGruppo="Immobili di Proprietà"
+                    titoloBottone="Aggiungi Casa di Proprietà"
+                    item={listHouses}
+                    getItem={() => getImmobili("proprietà")}
+                    openSelector={() => openModal("proprietà")}
+                    multiple
+                />
+                <ItemSelector
+                    titoloGruppo="Immobile Locato"
+                    titoloBottone="Aggiungi Casa in cui è Inquilino"
+                    item={immobileLocato}
+                    getItem={() => getImmobili("locazione")}
+                    openSelector={() => openModal("locazione")}
+                />
                 <IonButton
                     expand="block"
                     disabled={isFormInvalid}

@@ -65,6 +65,7 @@ const DocumentiPage: React.FC<{}> = () => {
                                 e,
                                 setShowLoading,
                                 presentAlert,
+                                `/documenti`,
                                 queryData.setUpdate
                             )
                         }
@@ -90,6 +91,7 @@ const DocumentiPage: React.FC<{}> = () => {
                     <DocumentoForm
                         documento={currentDocumento as Documento}
                         backToList={backToList}
+                        baseUrl={`/documenti`}
                     />
                 </IonContent>
             )}

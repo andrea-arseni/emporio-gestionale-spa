@@ -57,6 +57,7 @@ const PersonaPage: React.FC<{}> = () => {
                     <div className={styles.spaceDown}>
                         <PersoneForm
                             persona={currentPersona as Persona}
+                            setCurrentPersona={setCurrentPersona}
                             backToList={backToList}
                         />
                     </div>

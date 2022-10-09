@@ -55,8 +55,8 @@ const ImmobileDataPage: React.FC<{}> = () => {
                     key={el.id}
                     subTitle={`Inquilino ${++index}`}
                     title={el.nome ? el.nome : "Non indicato"}
-                    phone={el.telefono}
-                    email={el.email}
+                    phone={el.telefono ? el.telefono : undefined}
+                    email={el.email ? el.email : undefined}
                 ></Card>
             ))
         );
@@ -88,13 +88,13 @@ const ImmobileDataPage: React.FC<{}> = () => {
                                 immobile.proprietario &&
                                 immobile.proprietario.telefono
                                     ? immobile.proprietario.telefono
-                                    : null
+                                    : undefined
                             }
                             email={
                                 immobile.proprietario &&
                                 immobile.proprietario.email
                                     ? immobile.proprietario.email
-                                    : null
+                                    : undefined
                             }
                         />
                     </section>

@@ -120,7 +120,9 @@ const ListPersone: React.FC<{
                             title={"Apri"}
                         />
                         <ItemOption
-                            handler={() => console.log("files")}
+                            handler={() =>
+                                history.push(`/persone/${persona.id}/files`)
+                            }
                             entity={persona}
                             colorType={"success"}
                             icon={folderOutline}

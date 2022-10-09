@@ -1,9 +1,5 @@
-import {
-    IonItemGroup,
-    IonItemDivider,
-    IonLabel,
-    IonButton,
-} from "@ionic/react";
+import { IonButton } from "@ionic/react";
+import FormGroup from "../form-group/FormGroup";
 
 const ItemSelector: React.FC<{
     titoloGruppo: string;
@@ -12,7 +8,10 @@ const ItemSelector: React.FC<{
     getItem: (data: any) => any;
     openSelector: () => void;
     simple?: boolean;
+    multiple?: boolean;
 }> = (props) => {
+    console.log(props.item);
+
     if (props.simple)
         return (
             <>
@@ -30,14 +29,8 @@ const ItemSelector: React.FC<{
         );
 
     return (
-        <IonItemGroup>
-            <IonItemDivider color="dark">
-                <IonLabel color="light">
-                    <h2>{props.titoloGruppo}</h2>
-                </IonLabel>
-            </IonItemDivider>
-            {props.item && props.getItem(props.item)}
-            {!props.item && (
+        <FormGroup title={props.titoloGruppo}>
+            {(props.multiple || !props.item) && (
                 <IonButton
                     expand="block"
                     color="light"
@@ -46,7 +39,8 @@ const ItemSelector: React.FC<{
                     {props.titoloBottone}
                 </IonButton>
             )}
-        </IonItemGroup>
+            {props.item && props.getItem(props.item)}
+        </FormGroup>
     );
 };
 
