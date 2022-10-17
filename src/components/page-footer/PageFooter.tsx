@@ -1,6 +1,7 @@
 import { IonFooter, IonToolbar, IonButton, IonIcon } from "@ionic/react";
 import { arrowBackOutline, arrowForwardOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
+import useWindowSize from "../../hooks/use-size";
 import Title from "../title/Title";
 import styles from "./PageFooter.module.css";
 
@@ -10,6 +11,8 @@ const PageFooter: React.FC<{
     numberOfResults: number;
     simple?: boolean;
 }> = (props) => {
+    const [width] = useWindowSize();
+
     if (props.simple) {
         const text = `${props.numberOfResults} risultati`;
         return (
@@ -36,6 +39,7 @@ const PageFooter: React.FC<{
                         onClick={() => props.setPage!((page) => page - 1)}
                     >
                         <IonIcon
+                            size={width < 400 ? "small" : undefined}
                             color="dark"
                             slot="icon-only"
                             icon={arrowBackOutline}
@@ -51,6 +55,7 @@ const PageFooter: React.FC<{
                         onClick={() => props.setPage!((page) => page + 1)}
                     >
                         <IonIcon
+                            size={width < 400 ? "small" : undefined}
                             color="dark"
                             slot="icon-only"
                             icon={arrowForwardOutline}

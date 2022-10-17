@@ -6,8 +6,8 @@ import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import FormSelect from "../../form-components/form-select/FormSelect";
-import TextArea from "../../form-components/text_area/TextArea";
-import TextInput from "../../form-components/text_input/TextInput";
+import TextArea from "../../form-components/form-text-area/FormTextArea";
+import FormInput from "../../form-components/form-input/FormInput";
 
 const LavoroForm: React.FC<{
     lavoro: Lavoro | null;
@@ -91,9 +91,7 @@ const LavoroForm: React.FC<{
         }
     };
 
-    const changeLavoroType = (e: any, type: any) => {
-        setStatus(e.detail.value);
-    };
+    const changeLavoroType = (e: any) => setStatus(e.detail.value);
 
     const getPossibleStatusValues = () =>
         !props.lavoro
@@ -104,7 +102,7 @@ const LavoroForm: React.FC<{
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
-                <TextInput
+                <FormInput
                     title=" Titolo (tra 10 e 45 lettere)"
                     inputValue={inputTitoloValue}
                     type={"text"}
@@ -119,7 +117,6 @@ const LavoroForm: React.FC<{
                         title="Status"
                         value={status}
                         function={changeLavoroType}
-                        type={"status"}
                         possibleValues={getPossibleStatusValues()}
                     />
                 )}

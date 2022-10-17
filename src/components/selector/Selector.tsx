@@ -7,7 +7,7 @@ import {
     useIonAlert,
 } from "@ionic/react";
 import { filterOutline, layersOutline, listOutline } from "ionicons/icons";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { entitiesType, Entity } from "../../entities/entity";
 import { Immobile } from "../../entities/immobile.model";
@@ -39,6 +39,7 @@ import ListDocumenti from "../lists/ListDocumenti";
 import { Documento } from "../../entities/documento.model";
 import FilterBar from "../bars/filter-bar/FilterBar";
 import { QueryData } from "../../entities/queryData";
+import useList from "../../hooks/use-list";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
@@ -81,9 +82,7 @@ const Selector: React.FC<{
 
     const history = useHistory();
 
-    const ionListRef = useRef<any>();
-
-    const closeItems = () => ionListRef.current.closeSlidingItems();
+    const { list, closeItemsList } = useList();
 
     // definisci quale tipologia di entity vuoi cercare
     useEffect(() => {
@@ -187,7 +186,7 @@ const Selector: React.FC<{
                 },
                 {
                     text: "Indietro",
-                    handler: () => closeItems(),
+                    handler: () => closeItemsList(),
                 },
             ],
         });
@@ -205,7 +204,7 @@ const Selector: React.FC<{
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
                         setUpdate={setUpdate}
-                        closeItems={closeItems}
+                        closeItems={closeItemsList}
                         selectMode={!!props.selectMode}
                     />
                 );
@@ -254,7 +253,7 @@ const Selector: React.FC<{
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
                         setUpdate={setUpdate}
-                        closeItems={closeItems}
+                        closeItems={closeItemsList}
                         selectMode={!!props.selectMode}
                     />
                 );
@@ -376,7 +375,7 @@ const Selector: React.FC<{
             )}
             {entities.length > 0 && (
                 <IonList
-                    ref={ionListRef}
+                    ref={list}
                     className={`${styles.list} ${getListHeight()}`}
                 >
                     {getEntities()}

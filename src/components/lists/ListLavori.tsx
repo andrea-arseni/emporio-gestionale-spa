@@ -56,31 +56,28 @@ const ListLavori: React.FC<{
                     </IonItem>
                     <IonItemOptions side="end">
                         <ItemOption
-                            handler={(lavoro) => goToData(lavoro.id!)}
-                            entity={lavoro}
+                            handler={() => goToData(lavoro.id!)}
                             colorType={"success"}
                             icon={openOutline}
                             title={"Apri"}
                         />
                         <ItemOption
-                            handler={(lavoro) => {
+                            handler={() => {
                                 props.setCurrentEntity(lavoro);
                                 props.setMode("form");
                             }}
-                            entity={lavoro}
                             colorType={"light"}
                             icon={createOutline}
                             title={"Modifica"}
                         />
                         <ItemOption
-                            handler={(lavoro) => {
+                            handler={() => {
                                 props.deleteEntity(
                                     "lavori",
                                     lavoro.id!.toString(),
                                     `Hai selezionato la cancellazione del lavoro. Si tratta di un processo irreversibile.`
                                 );
                             }}
-                            entity={lavoro}
                             colorType={"danger"}
                             icon={trashOutline}
                             title={"Elimina"}

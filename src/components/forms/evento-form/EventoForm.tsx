@@ -23,13 +23,13 @@ import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import DatePicker from "../../date-picker/DatePicker";
 import FormInputBoolean from "../../form-components/form-input-boolean/FormInputBoolean";
-import TextInput from "../../form-components/text_input/TextInput";
+import FormInput from "../../form-components/form-input/FormInput";
 import Modal from "../../modal/Modal";
 import Selector from "../../selector/Selector";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
 import { getDayName, openTimePicker } from "../../../utils/timeUtils";
 import useDateHandler from "../../../hooks/use-date-handler";
-import TextArea from "../../form-components/text_area/TextArea";
+import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormGroup from "../../form-components/form-group/FormGroup";
 
 const EventoForm: React.FC<{
@@ -37,6 +37,25 @@ const EventoForm: React.FC<{
     evento: Evento | null;
     backToList: () => void;
 }> = (props) => {
+    let statusChangedDescription: string | null = null;
+    let eventDescription =
+        props.evento && props.evento.descrizione
+            ? props.evento.descrizione
+            : null;
+
+    if (
+        props.evento &&
+        props.evento.descrizione &&
+        props.evento.descrizione.indexOf("[") === 0 &&
+        props.evento.descrizione.includes("]")
+    ) {
+        statusChangedDescription = props.evento.descrizione
+            .substring(1)
+            .split("]")[0]
+            .trim();
+        eventDescription = props.evento.descrizione.split("]")[1].trim();
+    }
+
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
@@ -72,6 +91,7 @@ const EventoForm: React.FC<{
     const {
         inputValue: inputStatusValue,
         inputIsInvalid: inputStatusIsInvalid,
+        inputIsTouched: inputStatusIsTouched,
         inputTouchedHandler: inputStatusTouchedHandler,
         inputChangedHandler: inputStatusChangedHandler,
     } = useInput(
@@ -88,7 +108,7 @@ const EventoForm: React.FC<{
         inputChangedHandler: inputNoteChangedHandler,
         inputIsInvalid: inputNoteIsInvalid,
         reset: inputNoteReset,
-    } = useInput(() => true, props.evento ? props.evento.descrizione : null);
+    } = useInput(() => true, eventDescription);
 
     const queryData = useQueryData("immobili");
 
@@ -102,10 +122,15 @@ const EventoForm: React.FC<{
     const getMessage = () =>
         `${isVisit ? "Visita Fissata" : "Persona Aggiornata"}`;
 
+    const getDescrizioneCompleta = statusChangedDescription
+        ? "[" + statusChangedDescription + "] " + inputNoteValue
+        : inputNoteValue;
+
     const isFormInvalid =
         (props.evento && !inputNoteIsTouched) ||
         (isVisit && (!inputDateValue || !timeValue)) ||
         (!isVisit &&
+            !inputStatusIsTouched &&
             (!inputNoteValue || inputNoteValue.toString().trim().length === 0));
 
     const submitForm = async (e: FormEvent) => {
@@ -115,7 +140,7 @@ const EventoForm: React.FC<{
             let reqBody = null;
             if (props.evento) {
                 reqBody = {
-                    descrizione: inputNoteValue.trim(),
+                    descrizione: getDescrizioneCompleta.trim(),
                 };
                 await axiosInstance.patch(
                     `/persone/${props.persona!.id}/eventi/${props.evento.id}`,
@@ -253,7 +278,7 @@ const EventoForm: React.FC<{
                     <ItemSelector
                         titoloGruppo={"Immobile d'Interesse"}
                         titoloBottone={"Aggiungi Casa d'Interesse"}
-                        item={immobileInteresse!}
+                        isItemPresent={!!immobileInteresse}
                         getItem={() =>
                             getImmobile(immobileInteresse as Immobile)
                         }
@@ -264,8 +289,8 @@ const EventoForm: React.FC<{
                     <ItemSelector
                         titoloGruppo={"Data della Visita"}
                         titoloBottone={"Seleziona Data"}
-                        item={inputDateValue}
-                        getItem={getDate}
+                        isItemPresent={!!inputDateValue}
+                        getItem={() => getDate()}
                         openSelector={() => setDatePickerIsOpen(true)}
                     />
                 )}
@@ -273,8 +298,8 @@ const EventoForm: React.FC<{
                     <ItemSelector
                         titoloGruppo={"Orario della Visita"}
                         titoloBottone={"Seleziona Orario"}
-                        item={timeValue}
-                        getItem={getTime}
+                        isItemPresent={!!timeValue}
+                        getItem={() => getTime()}
                         openSelector={() =>
                             openTimePicker(setTimeValue, present)
                         }
@@ -283,7 +308,7 @@ const EventoForm: React.FC<{
                 {!props.evento && (
                     <FormGroup title="Dati opzionali">
                         {isVisit && (
-                            <TextInput
+                            <FormInput
                                 title={"Dove"}
                                 inputValue={inputLuogoValue}
                                 type={"text"}

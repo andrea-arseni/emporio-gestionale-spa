@@ -30,7 +30,30 @@ const ListEventi: React.FC<{
         paroleChiave.forEach((el) => {
             if (evento.descrizione?.includes(el)) matchFound = true;
         });
-        return matchFound ? "tertiary" : "undefined";
+        return matchFound ? "tertiary" : undefined;
+    };
+
+    const getDescrizione = (evento: Evento) => {
+        if (
+            evento.descrizione &&
+            evento.descrizione.indexOf("[") === 0 &&
+            evento.descrizione.includes("]")
+        ) {
+            const primaParte = evento.descrizione
+                .substring(1)
+                .split("]")[0]
+                .trim();
+            const secondaParte = evento.descrizione.split("]")[1].trim();
+            return (
+                <>
+                    <p style={{ color: "#3880ff" }}>
+                        Status cambiato: {primaParte}
+                    </p>
+                    <h2>{secondaParte}</h2>
+                </>
+            );
+        }
+        return <h2>{evento.descrizione}</h2>;
     };
 
     return (
@@ -45,7 +68,7 @@ const ListEventi: React.FC<{
                                         ? `inserito da ${evento.user.name}`
                                         : ""
                                 }`}</p>
-                                <h2>{evento.descrizione}</h2>
+                                {getDescrizione(evento)}
                                 {evento.immobile && (
                                     <>
                                         <p>{`Interessato al Ref. ${evento.immobile.ref}: ${evento.immobile.titolo}`}</p>
@@ -56,24 +79,22 @@ const ListEventi: React.FC<{
                         </IonItem>
                         <IonItemOptions side="end">
                             <ItemOption
-                                handler={(evento) => {
+                                handler={() => {
                                     props.setCurrentEntity(evento);
                                     props.setMode("form");
                                 }}
-                                entity={evento}
                                 colorType={"light"}
                                 icon={createOutline}
                                 title={"Modifica"}
                             />
                             <ItemOption
-                                handler={(evento) =>
+                                handler={() =>
                                     props.deleteEntity(
                                         "eventi",
                                         evento.id!.toString(),
                                         `Hai selezionato la cancellazione dell'evento. Si tratta di un processo irreversibile. Lo status della persona non verrà modificato.`
                                     )
                                 }
-                                entity={evento}
                                 colorType={"danger"}
                                 icon={trashOutline}
                                 title={"Elimina"}

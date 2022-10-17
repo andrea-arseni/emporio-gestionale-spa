@@ -19,7 +19,7 @@ import { Immobile } from "../../entities/immobile.model";
 import useWindowSize from "../../hooks/use-size";
 import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
-import { numberAsPrice } from "../../utils/numberAsPrice";
+import { numberAsPrice } from "../../utils/numberUtils";
 import styles from "./Lists.module.css";
 import { useHistory } from "react-router";
 import useSelection from "../../hooks/use-selection";
@@ -148,44 +148,39 @@ const ListImmobili: React.FC<{
                     <IonItemOptions side="end">
                         <ItemOption
                             handler={() => console.log("files")}
-                            entity={immobile}
                             colorType={"primary"}
                             icon={cameraOutline}
                             title={"File"}
                         />
                         <ItemOption
                             handler={() => console.log("storia")}
-                            entity={immobile}
                             colorType={"tertiary"}
                             icon={newspaperOutline}
                             title={"Storia"}
                         />
                         <ItemOption
-                            handler={(immobile) => copyImmobile(immobile.id!)}
-                            entity={immobile}
+                            handler={() => copyImmobile(immobile.id!)}
                             colorType={"success"}
                             icon={copyOutline}
                             title={"Copia"}
                         />
                         <ItemOption
-                            handler={(immobile) => {
+                            handler={() => {
                                 props.setCurrentEntity(immobile);
                                 props.setMode("form");
                             }}
-                            entity={immobile}
                             colorType={"light"}
                             icon={createOutline}
                             title={"Modifica"}
                         />
                         <ItemOption
-                            handler={(immobile) => {
+                            handler={() => {
                                 props.deleteEntity(
                                     "immobili",
                                     immobile.id!.toString(),
                                     `Hai selezionato la cancellazione dell'immobile con riferimento ${immobile.ref}. Si tratta di un processo irreversibile.`
                                 );
                             }}
-                            entity={immobile}
                             colorType={"danger"}
                             icon={trashOutline}
                             title={"Elimina"}

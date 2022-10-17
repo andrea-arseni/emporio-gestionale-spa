@@ -8,7 +8,7 @@ import { createOutline, trashOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { Entity } from "../../entities/entity";
 import { Operazione } from "../../entities/operazione.model";
-import { numberAsPrice } from "../../utils/numberAsPrice";
+import { numberAsPrice } from "../../utils/numberUtils";
 import { getDayName } from "../../utils/timeUtils";
 import ItemOption from "./ItemOption";
 
@@ -34,23 +34,21 @@ const ListOperazioni: React.FC<{
             </IonItem>
             <IonItemOptions side="end">
                 <ItemOption
-                    handler={(input: Entity) => {
-                        props.setCurrentEntity(input);
+                    handler={() => {
+                        props.setCurrentEntity(operazione);
                         props.setMode("form");
                     }}
-                    entity={operazione}
                     colorType={"light"}
                     icon={createOutline}
                     title={"Modifica"}
                 />
                 <ItemOption
-                    handler={(operazione) =>
+                    handler={() =>
                         props.deleteEntity(
                             "operazioni",
                             operazione.id!.toString()
                         )
                     }
-                    entity={operazione}
                     colorType={"danger"}
                     icon={trashOutline}
                     title={"Elimina"}

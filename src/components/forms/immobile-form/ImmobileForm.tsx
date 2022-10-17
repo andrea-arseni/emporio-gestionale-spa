@@ -4,80 +4,60 @@ import {
     IonSelect,
     IonSelectOption,
     IonLabel,
-    IonInput,
-    IonTextarea,
-    IonNote,
     IonButton,
     useIonAlert,
     IonLoading,
-    IonItemOption,
-    IonItemOptions,
-    IonItemSliding,
-    IonText,
 } from "@ionic/react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Caratteristiche } from "../../../entities/caratteristiche.model";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
-import {
-    ariaCondizionata,
-    possibiliAC,
-} from "../../../types/aria_condizionata";
-import { arredamento, possibiliArredamenti } from "../../../types/arredamento";
-import {
-    balconi_terrazzi,
-    possibiliBalconiTerrazzi,
-} from "../../../types/balconi_terrazzi";
-import { box, possibiliBox } from "../../../types/box";
-import { categoria, possibleCategories } from "../../../types/categoria";
-import {
-    categoriaCatastale,
-    possibiliCategorieCatastali,
-} from "../../../types/categoria_catastale";
-import { citofono, possibleCitofoni } from "../../../types/citofono";
-import {
-    classeEnergetica,
-    possibleEnergeticClasses,
-} from "../../../types/classeEnergetica";
-import {
-    combustibile,
-    possibleCombustibili,
-} from "../../../types/combustibile";
+import useInput from "../../../hooks/use-input";
+import { possibiliAC } from "../../../types/aria_condizionata";
+import { possibiliArredamenti } from "../../../types/arredamento";
+import { possibiliBalconiTerrazzi } from "../../../types/balconi_terrazzi";
+import { possibiliBox } from "../../../types/box";
+import { possibleCategories } from "../../../types/categoria";
+import { possibiliCategorieCatastali } from "../../../types/categoria_catastale";
+import { possibleCitofoni } from "../../../types/citofono";
+import { possibleEnergeticClasses } from "../../../types/classeEnergetica";
+import { possibleCombustibili } from "../../../types/combustibile";
 import { possibleComuni, possibleZona } from "../../../types/comuni";
-import { contratto, possibleContratti } from "../../../types/contratto";
-import { esposizione, possibiliEsposizioni } from "../../../types/esposizione";
-import { giardino, possibiliGiardini } from "../../../types/giardino";
-import { immobileAttribute } from "../../../types/immobili_attributes";
-import { impianto, possibiliImpianti } from "../../../types/impianto";
-import { libero, possibleLibero } from "../../../types/libero";
-import { livelli, possibleLivelli } from "../../../types/livelli";
-import { locali, possibleLocali } from "../../../types/locali";
-import { piano, possiblePiano } from "../../../types/piano";
-import { portineria, possiblePortineria } from "../../../types/portineria";
-import { possibiliProprieta, proprieta } from "../../../types/proprieta";
+import { possibleContratti } from "../../../types/contratto";
+import { possibiliEsposizioni } from "../../../types/esposizione";
+import { possibiliGiardini } from "../../../types/giardino";
+import { possibiliImpianti } from "../../../types/impianto";
+import { possibleLibero } from "../../../types/libero";
+import { possibleLivelli } from "../../../types/livelli";
+import { possibleLocali } from "../../../types/locali";
+import { possiblePiano } from "../../../types/piano";
+import { possiblePortineria } from "../../../types/portineria";
+import { possibiliProprieta } from "../../../types/proprieta";
 import { possibleRiscaldamenti } from "../../../types/riscaldamento";
-import {
-    possibleSerramentiEsterni,
-    serramentiEsterni,
-} from "../../../types/serramenti_esterni";
-import {
-    possibleSerramentiInterni,
-    serramentiInterni,
-} from "../../../types/serramenti_interni";
-import { possibleStato, stato } from "../../../types/stato";
+import { possibleSerramentiEsterni } from "../../../types/serramenti_esterni";
+import { possibleSerramentiInterni } from "../../../types/serramenti_interni";
+import { possibleStato } from "../../../types/stato";
 import { possibleStatus, status } from "../../../types/status";
-import { possibleTipologies, tipologia } from "../../../types/tipologia";
+import { possibleTipologies } from "../../../types/tipologia";
 import axiosInstance from "../../../utils/axiosInstance";
 import capitalize from "../../../utils/capitalize";
 import errorHandler from "../../../utils/errorHandler";
 import { genericaDescrizione } from "../../../utils/genericaDescrizione";
-import Card from "../../card/Card";
 import FormGroup from "../../form-components/form-group/FormGroup";
 import FormInputBoolean from "../../form-components/form-input-boolean/FormInputBoolean";
-import FormInputNumber from "../../form-components/form-input-number/form-input-number";
-import FormInputText from "../../form-components/form-input-text/FormInputText";
 import FormSelect from "../../form-components/form-select/FormSelect";
+import TextArea from "../../form-components/form-text-area/FormTextArea";
+import FormInput from "../../form-components/form-input/FormInput";
 import Modal from "../../modal/Modal";
+import { possibiliTipiContratti } from "../../../types/tipo_contratti";
+import { possibiliCauzioni } from "../../../types/cauzioni";
+import ItemSelector from "../../form-components/item-selector/ItemSelector";
+import { Entity } from "../../../entities/entity";
+import useQueryData from "../../../hooks/use-query-data";
+import Selector from "../../selector/Selector";
+import SecondaryItem from "../../form-components/secondary-item/SecondaryItem";
+import useList from "../../../hooks/use-list";
+import { getPhoneValue } from "../../../utils/numberUtils";
 
 const ImmobileForm: React.FC<{
     immobile: Immobile | null;
@@ -94,201 +74,574 @@ const ImmobileForm: React.FC<{
                 undefined
     );
 
-    const [refValue, setRefValue] = useState<number | null>(
-        props.immobile ? props.immobile.ref : null
+    const {
+        inputValue: inputRefValue,
+        inputIsInvalid: inputRefIsInvalid,
+        inputTouchedHandler: inputRefTouchedHandler,
+        inputChangedHandler: inputRefChangedHandler,
+        reset: inputRefReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.ref : undefined
     );
 
-    const [titleValue, setTitleValue] = useState<string | null>(
-        props.immobile ? props.immobile.titolo : null
+    const {
+        inputValue: inputTitleValue,
+        inputIsInvalid: inputTitleIsInvalid,
+        inputTouchedHandler: inputTitleTouchedHandler,
+        inputChangedHandler: inputTitleChangedHandler,
+        reset: inputTitleReset,
+    } = useInput(
+        (el) => el.toString().length >= 15 && el.toString().length <= 60,
+        props.immobile ? props.immobile.titolo : undefined
     );
 
-    const [isTitleValid, setIsTitleValid] = useState<boolean | null>(true);
-
-    const [superficieValue, setSuperficieValue] = useState<number | null>(
-        props.immobile ? props.immobile.superficie : null
+    const {
+        inputValue: inputSuperficieValue,
+        inputIsInvalid: inputSuperficieIsInvalid,
+        inputTouchedHandler: inputSuperficieTouchedHandler,
+        inputChangedHandler: inputSuperficieChangedHandler,
+        reset: inputSuperficieReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.superficie : undefined
     );
 
-    const [isSuperficieValid, setIsSuperficieValid] = useState<boolean | null>(
-        true
+    const {
+        inputValue: inputTipologiaValue,
+        inputChangedHandler: inputTipologiaChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.tipologia : undefined
     );
 
-    const [tipologiaValue, setTipologiaValue] = useState<tipologia | null>(
-        props.immobile ? props.immobile.tipologia : null
+    const {
+        inputValue: inputLocaliValue,
+        inputChangedHandler: inputLocaliChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.locali : undefined
     );
 
-    const [localiValue, setLocaliValue] = useState<locali | null>(
-        props.immobile ? props.immobile.locali : null
+    const {
+        inputValue: inputComuneValue,
+        inputIsInvalid: inputComuneIsInvalid,
+        inputTouchedHandler: inputComuneTouchedHandler,
+        inputChangedHandler: inputComuneChangedHandler,
+        reset: inputComuneReset,
+    } = useInput(
+        (el) => el.toString().length > 5,
+        props.immobile ? props.immobile.comune : undefined
     );
 
-    const [comuneValue, setComuneValue] = useState<string | null>(
-        props.immobile ? props.immobile.comune : null
+    const {
+        inputValue: inputZonaValue,
+        inputChangedHandler: inputZonaChangedHandler,
+    } = useInput(() => true, props.immobile ? props.immobile.zona : undefined);
+
+    const {
+        inputValue: inputIndirizzoValue,
+        inputIsInvalid: inputIndirizzoIsInvalid,
+        inputTouchedHandler: inputIndirizzoTouchedHandler,
+        inputChangedHandler: inputIndirizzoChangedHandler,
+        reset: inputIndirizzoReset,
+    } = useInput(
+        (el) => el.toString().length > 5,
+        props.immobile ? props.immobile.indirizzo : undefined
     );
 
-    const [zonaValue, setZonaValue] = useState<string | null>(
-        props.immobile ? props.immobile.zona : null
+    const {
+        inputValue: inputPrezzoValue,
+        inputIsInvalid: inputPrezzoIsInvalid,
+        inputTouchedHandler: inputPrezzoTouchedHandler,
+        inputChangedHandler: inputPrezzoChangedHandler,
+        reset: inputPrezzoReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile && props.immobile.prezzo
+            ? +props.immobile.prezzo
+            : undefined
     );
 
-    const [indirizzoValue, setIndirizzoValue] = useState<string | null>(
-        props.immobile ? props.immobile.indirizzo : null
+    const {
+        inputValue: inputRiscaldamentoValue,
+        inputChangedHandler: inputRiscaldamentoChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.riscaldamento : undefined
     );
 
-    const [prezzoValue, setPrezzoValue] = useState<number | null>(
-        props.immobile ? props.immobile.prezzo : null
+    const {
+        inputValue: inputClasseEnergeticaValue,
+        inputChangedHandler: inputClasseEnergeticaChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.classeEnergetica : undefined
     );
 
-    const [isPrezzoValid, setIsPrezzoValid] = useState<boolean | null>(true);
+    const {
+        inputValue: inputConsumoValue,
+        inputIsInvalid: inputConsumoIsInvalid,
+        inputTouchedHandler: inputConsumoTouchedHandler,
+        inputChangedHandler: inputConsumoChangedHandler,
+        reset: inputConsumoReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.consumo : undefined
+    );
 
-    const [riscaldamentoValue, setRiscaldamentoValue] = useState<
-        "centralizzato" | "autonomo" | null
-    >(props.immobile ? props.immobile.riscaldamento : null);
+    const {
+        inputValue: inputContrattoValue,
+        inputChangedHandler: inputContrattoChangedHandler,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.contratto : undefined
+    );
 
-    const [classeEnergeticaValue, setClasseEnergeticaValue] =
-        useState<classeEnergetica | null>(
-            props.immobile ? props.immobile.classeEnergetica : null
+    const {
+        inputValue: inputCategoriaValue,
+        inputChangedHandler: inputCategoriaChangedHandler,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.categoria : undefined
+    );
+
+    const {
+        inputValue: inputStatoValue,
+        inputChangedHandler: inputStatoChangedHandler,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.stato : undefined
+    );
+
+    const {
+        inputValue: inputLiberoValue,
+        inputChangedHandler: inputLiberoChangedHandler,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.libero : undefined
+    );
+
+    const {
+        inputValue: inputStatusValue,
+        inputChangedHandler: inputStatusChangedHandler,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.status : undefined
+    );
+
+    const {
+        inputValue: inputPianoValue,
+        inputChangedHandler: inputPianoChangedHandler,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.piano : undefined
+    );
+
+    const {
+        inputValue: inputTotalePianiValue,
+        inputIsInvalid: inputTotalePianiIsInvalid,
+        inputTouchedHandler: inputTotalePianiTouchedHandler,
+        inputChangedHandler: inputTotalePianiChangedHandler,
+        reset: inputTotalePianiReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.caratteristiche?.totalePiani : undefined
+    );
+
+    const {
+        inputValue: inputDescrizioneValue,
+        inputIsTouched: inputDescrizioneIsTouched,
+        inputIsInvalid: inputDescrizioneIsInvalid,
+        inputTouchedHandler: inputDescrizioneTouchedHandler,
+        inputChangedHandler: inputDescrizioneChangedHandler,
+        reset: inputDescrizioneReset,
+    } = useInput(
+        (el) =>
+            el.toString().length > 100 && el.toString() !== genericaDescrizione,
+        props.immobile
+            ? props.immobile.caratteristiche?.descrizione
+            : genericaDescrizione
+    );
+
+    const {
+        inputValue: inputEsposizioneValue,
+        inputChangedHandler: inputEsposizioneChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.esposizione : undefined
+    );
+
+    const {
+        inputValue: inputSpeseCondominialiValue,
+        inputIsInvalid: inputSpeseCondominialiIsInvalid,
+        inputTouchedHandler: inputSpeseCondominialiTouchedHandler,
+        inputChangedHandler: inputSpeseCondominialiChangedHandler,
+        reset: inputSpeseCondominialiReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile
+            ? props.immobile.caratteristiche?.speseCondominiali
+            : undefined
+    );
+
+    const {
+        inputValue: inputSpeseExtraValue,
+        inputIsInvalid: inputSpeseExtraIsInvalid,
+        inputTouchedHandler: inputSpeseExtraTouchedHandler,
+        inputChangedHandler: inputSpeseExtraChangedHandler,
+        reset: inputSpeseExtraReset,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.speseExtraNote
+            : undefined
+    );
+
+    const [isCantina, setIsCantina] = useState<boolean>(!!props.immobile);
+
+    const [isMansarda, setIsMansarda] = useState<boolean>(!!props.immobile);
+
+    const [isTaverna, setIsTaverna] = useState<boolean>(!!props.immobile);
+
+    const [isAntifurto, setIsAntifurto] = useState<boolean>(!!props.immobile);
+
+    const [isSpeseCondominiali, setIsSpeseCondominiali] = useState<boolean>(
+        !!props.immobile
+    );
+
+    const [isSpeseExtra, setIsSpeseExtra] = useState<boolean>(!!props.immobile);
+
+    const [inputAscensoreValue, setInputAscensoreValue] = useState<boolean>(
+        props.immobile &&
+            props.immobile.caratteristiche &&
+            props.immobile.caratteristiche.ascensore
+            ? props.immobile.caratteristiche.ascensore
+            : false
+    );
+
+    const {
+        inputValue: inputArredamentoValue,
+        inputChangedHandler: inputArredamentoChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.arredamento : undefined
+    );
+
+    const {
+        inputValue: inputBalconiValue,
+        inputChangedHandler: inputBalconiChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.balconi : undefined
+    );
+
+    const {
+        inputValue: inputTerrazziValue,
+        inputChangedHandler: inputTerrazziChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.terrazzi : undefined
+    );
+
+    const {
+        inputValue: inputBoxValue,
+        inputChangedHandler: inputBoxChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.box : undefined
+    );
+
+    const {
+        inputValue: inputGiardinoValue,
+        inputChangedHandler: inputGiardinoChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.giardino : undefined
+    );
+
+    const {
+        inputValue: inputTavernaValue,
+        inputIsInvalid: inputTavernaIsInvalid,
+        inputTouchedHandler: inputTavernaTouchedHandler,
+        inputChangedHandler: inputTavernaChangedHandler,
+        reset: inputTavernaReset,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.taverna : undefined
+    );
+
+    const {
+        inputValue: inputMansardaValue,
+        inputIsInvalid: inputMansardaIsInvalid,
+        inputTouchedHandler: inputMansardaTouchedHandler,
+        inputChangedHandler: inputMansardaChangedHandler,
+        reset: inputMansardaReset,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.mansarda : undefined
+    );
+
+    const {
+        inputValue: inputCantinaValue,
+        inputIsInvalid: inputCantinaIsInvalid,
+        inputTouchedHandler: inputCantinaTouchedHandler,
+        inputChangedHandler: inputCantinaChangedHandler,
+        reset: inputCantinaReset,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.cantina : undefined
+    );
+
+    const {
+        inputValue: inputSpeseRiscaldamentoValue,
+        inputIsInvalid: inputSpeseRiscaldamentoIsInvalid,
+        inputTouchedHandler: inputSpeseRiscaldamentoTouchedHandler,
+        inputChangedHandler: inputSpeseRiscaldamentoChangedHandler,
+        reset: inputSpeseRiscaldamentoReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile
+            ? props.immobile.caratteristiche?.speseRiscaldamento
+            : undefined
+    );
+
+    const {
+        inputValue: inputAriaCondizionataValue,
+        inputChangedHandler: inputAriaCondizionataChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.ariaCondizionata
+            : undefined
+    );
+
+    const {
+        inputValue: inputProprietaValue,
+        inputChangedHandler: inputProprietaChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.proprieta : undefined
+    );
+
+    const {
+        inputValue: inputCategoriaCatastaleValue,
+        inputChangedHandler: inputCategoriaCatastaleChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.categoriaCatastale
+            : undefined
+    );
+
+    const {
+        inputValue: inputRenditaValue,
+        inputIsInvalid: inputRenditaIsInvalid,
+        inputTouchedHandler: inputRenditaTouchedHandler,
+        inputChangedHandler: inputRenditaChangedHandler,
+        reset: inputRenditaReset,
+    } = useInput(
+        (el) => el > 0,
+        props.immobile ? props.immobile.caratteristiche?.rendita : undefined
+    );
+
+    const {
+        inputValue: inputImpiantoElettricoValue,
+        inputChangedHandler: inputImpiantoElettricoChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.impiantoElettrico
+            : undefined
+    );
+
+    const {
+        inputValue: inputImpiantoIdraulicoValue,
+        inputChangedHandler: inputImpiantoIdraulicoChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.impiantoIdraulico
+            : undefined
+    );
+
+    const {
+        inputValue: inputLivelliValue,
+        inputChangedHandler: inputLivelliChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.livelli : undefined
+    );
+
+    const {
+        inputValue: inputSerramentiInterniValue,
+        inputChangedHandler: inputSerramentiInterniChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.serramentiInterni
+            : undefined
+    );
+
+    const {
+        inputValue: inputSerramentiEsterniValue,
+        inputChangedHandler: inputSerramentiEsterniChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.serramentiEsterni
+            : undefined
+    );
+
+    const [inputPortaBlindataValue, setInputPortaBlindataValue] =
+        useState<boolean>(
+            props.immobile &&
+                props.immobile.caratteristiche &&
+                props.immobile.caratteristiche.portaBlindata
+                ? props.immobile.caratteristiche.portaBlindata
+                : false
         );
 
-    const [consumoValue, setConsumoValue] = useState<number | null>(
-        props.immobile ? props.immobile.consumo : null
+    const {
+        inputValue: inputAntifurtoValue,
+        inputIsInvalid: inputAntifurtoIsInvalid,
+        inputTouchedHandler: inputAntifurtoTouchedHandler,
+        inputChangedHandler: inputAntifurtoChangedHandler,
+        reset: inputAntifurtoReset,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.antifurto : undefined
     );
 
-    const [isConsumoValid, setIsConsumoValid] = useState<boolean | null>(true);
-
-    const [contrattoValue, setContrattoValue] = useState<contratto | null>(
-        props.immobile ? props.immobile.contratto : null
+    const {
+        inputValue: inputCitofonoValue,
+        inputChangedHandler: inputCitofonoChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.citofono : undefined
     );
 
-    const [categoriaValue, setCategoriaValue] = useState<categoria | null>(
-        props.immobile ? props.immobile.categoria : null
+    const {
+        inputValue: inputAnnoCostruzioneValue,
+        inputIsInvalid: inputAnnoCostruzioneIsInvalid,
+        inputTouchedHandler: inputAnnoCostruzioneTouchedHandler,
+        inputChangedHandler: inputAnnoCostruzioneChangedHandler,
+        reset: inputAnnoCostruzioneReset,
+    } = useInput(
+        (el) => el >= 1800 && el <= new Date().getFullYear(),
+        props.immobile
+            ? props.immobile.caratteristiche?.annoCostruzione
+            : undefined
     );
 
-    const [statoValue, setStatoValue] = useState<stato | null>(
-        props.immobile ? props.immobile.stato : null
+    const {
+        inputValue: inputPortineriaValue,
+        inputChangedHandler: inputPortineriaChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.portineria : undefined
     );
 
-    const [liberoValue, setLiberoValue] = useState<libero | null>(
-        props.immobile ? props.immobile.libero : null
+    const {
+        inputValue: inputCombustibileValue,
+        inputChangedHandler: inputCombustibileChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.combustibile
+            : undefined
     );
 
-    const [statusValue, setStatusValue] = useState<status | null>(
-        props.immobile ? props.immobile.status : null
+    const {
+        inputValue: inputCablatoValue,
+        inputIsInvalid: inputCablatoIsInvalid,
+        inputTouchedHandler: inputCablatoTouchedHandler,
+        inputChangedHandler: inputCablatoChangedHandler,
+        reset: inputCablatoReset,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.cablato : undefined
     );
 
-    const [pianoValue, setPianoValue] = useState<piano | null>(
-        props.immobile ? props.immobile.piano : null
+    const {
+        inputValue: inputTipoContrattoValue,
+        inputChangedHandler: inputTipoContrattoChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile
+            ? props.immobile.caratteristiche?.tipoContratto
+            : undefined
     );
 
-    const [totalePianiValue, setTotalePianiValue] = useState<number | null>(
-        null
+    const {
+        inputValue: inputCauzioneValue,
+        inputChangedHandler: inputCauzioneChangedHandler,
+    } = useInput(
+        () => true,
+        props.immobile ? props.immobile.caratteristiche?.cauzione : undefined
     );
 
-    const [descrizioneValue, setDescrizioneValue] = useState<string | null>(
-        null
+    const {
+        inputValue: inputAltezzaValue,
+        inputIsInvalid: inputAltezzaIsInvalid,
+        inputTouchedHandler: inputAltezzaTouchedHandler,
+        inputChangedHandler: inputAltezzaChangedHandler,
+        reset: inputAltezzaReset,
+    } = useInput(
+        (el) => el >= 1,
+        props.immobile ? props.immobile.caratteristiche?.altezza : undefined
     );
 
-    const [isDescrizioneVirgin, setIsDescrizioneVirgin] =
-        useState<boolean>(true);
+    const {
+        inputValue: inputNameValue,
+        inputIsInvalid: inputNameIsInvalid,
+        inputIsTouched: inputNameIsTouched,
+        inputTouchedHandler: inputNameTouchedHandler,
+        inputChangedHandler: inputNameChangedHandler,
+        reset: inputNameReset,
+    } = useInput((el) => !!el && el.toString().trim().length > 4);
 
-    const [esposizioneValue, setEsposizioneValue] =
-        useState<esposizione | null>(null);
+    const {
+        inputValue: inputPhoneValue,
+        inputIsTouched: inputPhoneIsTouched,
+        inputIsInvalid: inputPhoneIsInvalid,
+        inputTouchedHandler: inputPhoneTouchedHandler,
+        inputChangedHandler: inputPhoneChangedHandler,
+        reset: inputPhoneReset,
+    } = useInput((el) => !!el && el.toString().trim().length > 0);
 
-    const [speseCondominialiValue, setSpeseCondominialiValue] = useState<
-        number | null
-    >(null);
+    const {
+        inputValue: inputEmailValue,
+        inputIsTouched: inputEmailIsTouched,
+        inputIsInvalid: inputEmailIsInvalid,
+        inputTouchedHandler: inputEmailTouchedHandler,
+        inputChangedHandler: inputEmailChangedHandler,
+        reset: inputEmailReset,
+    } = useInput((el) => !!el && /.+@.+\..+/.test(el.toString()));
 
-    const [isSpeseCondominialiValid, setIsSpeseCondominialiValid] =
-        useState<boolean>(true);
+    useEffect(() => {
+        if (!isSpeseExtra) inputSpeseExtraChangedHandler("");
+    }, [isSpeseExtra, inputSpeseExtraChangedHandler]);
 
-    const [speseExtraValue, setSpeseExtraValue] = useState<string | null>(null);
+    useEffect(() => {
+        if (!isSpeseCondominiali) inputSpeseCondominialiChangedHandler(null);
+    }, [isSpeseCondominiali, inputSpeseCondominialiChangedHandler]);
 
-    const [ascensoreValue, setAscensoreValue] = useState<boolean | null>(null);
+    useEffect(() => {
+        if (!isAntifurto) inputAntifurtoChangedHandler("");
+    }, [isAntifurto, inputAntifurtoChangedHandler]);
 
-    const [arredamentoValue, setArredamentoValue] =
-        useState<arredamento | null>(null);
+    useEffect(() => {
+        if (!isTaverna) inputTavernaChangedHandler("");
+    }, [isTaverna, inputTavernaChangedHandler]);
 
-    const [balconiValue, setBalconiValue] = useState<balconi_terrazzi | null>(
-        null
-    );
+    useEffect(() => {
+        if (!isMansarda) inputMansardaChangedHandler("");
+    }, [isMansarda, inputMansardaChangedHandler]);
 
-    const [terrazziValue, setTerrazziValue] = useState<balconi_terrazzi | null>(
-        null
-    );
-
-    const [boxValue, setBoxValue] = useState<box | null>(null);
-
-    const [giardinoValue, setGiardinoValue] = useState<giardino | null>(null);
-
-    const [tavernaValue, setTavernaValue] = useState<string | null>(null);
-
-    const [mansardaValue, setMansardaValue] = useState<string | null>(null);
-
-    const [cantinaValue, setCantinaValue] = useState<string | null>(null);
-
-    const [speseRiscaldamentoValue, setSpeseRiscaldamentoValue] = useState<
-        number | null
-    >(null);
-
-    const [isSpeseRiscaldamentoValid, setIsSpeseRiscaldamentoValid] =
-        useState<boolean>(true);
-
-    const [ariaCondizionataValue, setAriaCondizionataValue] =
-        useState<ariaCondizionata | null>(null);
-
-    const [proprietaValue, setProprietaValue] = useState<proprieta | null>(
-        null
-    );
-
-    const [categoriaCatastaleValue, setCategoriaCatastaleValue] =
-        useState<categoriaCatastale | null>(null);
-
-    const [renditaValue, setRenditaValue] = useState<number | null>(null);
-
-    const [isRenditaValid, setIsRenditaValid] = useState<boolean>(true);
-
-    const [impiantoElettricoValue, setImpiantoElettricoValue] =
-        useState<impianto | null>(null);
-
-    const [impiantoIdraulicoValue, setImpiantoIdraulicoValue] =
-        useState<impianto | null>(null);
-
-    const [livelliValue, setLivelliValue] = useState<livelli | null>(null);
-
-    const [serramentiInterniValue, setSerramentiInterniValue] =
-        useState<serramentiInterni | null>(null);
-
-    const [serramentiEsterniValue, setSerramentiEsterniValue] =
-        useState<serramentiEsterni | null>(null);
-
-    const [portaBlindataValue, setPortaBlindataValue] = useState<
-        boolean | null
-    >(null);
-
-    const [antifurtoValue, setAntifurtoValue] = useState<string | null>(null);
-
-    const [citofonoValue, setCitofonoValue] = useState<citofono | null>(null);
-
-    const [annoCostruzioneValue, setAnnoCostruzioneValue] = useState<
-        number | null
-    >(null);
-
-    const [isAnnoCostruzioneValid, setIsAnnoCostruzioneValid] =
-        useState<boolean>(true);
-
-    const [portineriaValue, setPortineriaValue] = useState<portineria | null>(
-        null
-    );
-
-    const [combustibileValue, setCombustibileValue] =
-        useState<combustibile | null>(null);
-
-    const [cablatoValue, setCablatoValue] = useState<string | null>(null);
-
-    const [tipoContrattoValue, setTipoContrattoValue] = useState<string | null>(
-        null
-    );
-
-    const [cauzioneValue, setCauzioneValue] = useState<string | null>(null);
-
-    const [altezzaValue, setAltezzaValue] = useState<string | null>(null);
+    useEffect(() => {
+        if (!isCantina) inputCantinaChangedHandler("");
+    }, [isCantina, inputCantinaChangedHandler]);
 
     const [showLoading, setShowLoading] = useState<boolean>(true);
 
@@ -300,28 +653,12 @@ const ImmobileForm: React.FC<{
 
     const [inquiliniValue, setInquiliniValue] = useState<Persona[]>([]);
 
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-
-    const [modalData, setModalData] = useState<{
-        type: "proprietario" | "inquilino";
-        person: Persona;
-    } | null>(null);
-
-    const ionListRef = useRef<any>();
-
-    const closeItems = () => ionListRef.current.closeSlidingItems();
-
-    const showPerson = (
-        type: "proprietario" | "inquilino",
-        person: Persona
-    ) => {
-        setModalData({ type, person });
-        setIsOpen(true);
-        closeItems();
-    };
+    const [caratteristicheFetched, setCaratteristicheFetched] =
+        useState<boolean>(false);
 
     useEffect(() => {
         const fetchCaratteristiche = async () => {
+            setCaratteristicheFetched(true);
             try {
                 const res = await axiosInstance.get(
                     `/immobili/${props.immobile!.id}`
@@ -330,40 +667,117 @@ const ImmobileForm: React.FC<{
                 setInquiliniValue(res.data.inquilini);
                 const caratteristiche = res.data.caratteristicheImmobile;
                 setShowLoading(false);
-                setDescrizioneValue(caratteristiche.descrizione);
-                setEsposizioneValue(caratteristiche.esposizione);
-                setSpeseCondominialiValue(caratteristiche.speseCondominiali);
-                setSpeseExtraValue(caratteristiche.speseExtraNote);
-                setAscensoreValue(caratteristiche.ascensore);
-                setArredamentoValue(caratteristiche.arredamento);
-                setBalconiValue(caratteristiche.balconi);
-                setTerrazziValue(caratteristiche.terrazzi);
-                setBoxValue(caratteristiche.box);
-                setGiardinoValue(caratteristiche.giardino);
-                setTavernaValue(caratteristiche.taverna);
-                setMansardaValue(caratteristiche.mansarda);
-                setCantinaValue(caratteristiche.cantina);
-                setSpeseRiscaldamentoValue(caratteristiche.speseRiscaldamento);
-                setAriaCondizionataValue(caratteristiche.ariaCondizionata);
-                setProprietaValue(caratteristiche.proprieta);
-                setCategoriaCatastaleValue(caratteristiche.categoriaCatastale);
-                setRenditaValue(caratteristiche.rendita);
-                setImpiantoElettricoValue(caratteristiche.impiantoElettrico);
-                setImpiantoIdraulicoValue(caratteristiche.impiantoIdraulico);
-                setLivelliValue(caratteristiche.livelli);
-                setSerramentiInterniValue(caratteristiche.serramentiInterni);
-                setSerramentiEsterniValue(caratteristiche.serramentiEsterni);
-                setPortaBlindataValue(caratteristiche.portaBlindata);
-                setAntifurtoValue(caratteristiche.antifurto);
-                setCitofonoValue(caratteristiche.citofono);
-                setAnnoCostruzioneValue(caratteristiche.annoCostruzione);
-                setPortineriaValue(caratteristiche.portineria);
-                setCombustibileValue(caratteristiche.combustibile);
-                setCablatoValue(caratteristiche.cablato);
-                setTipoContrattoValue(caratteristiche.tipoContratto);
-                setCauzioneValue(caratteristiche.cauzione);
-                setAltezzaValue(caratteristiche.altezza);
-                setTotalePianiValue(caratteristiche.totalePiani);
+                setIsCantina(
+                    caratteristiche &&
+                        caratteristiche.cantina &&
+                        caratteristiche.cantina !== "Assente"
+                );
+                setIsMansarda(
+                    caratteristiche &&
+                        caratteristiche.mansarda &&
+                        caratteristiche.mansarda !== "Assente"
+                );
+                setIsTaverna(
+                    caratteristiche &&
+                        caratteristiche.taverna &&
+                        caratteristiche.taverna !== "Assente"
+                );
+                setIsAntifurto(
+                    caratteristiche &&
+                        caratteristiche.antifurto &&
+                        caratteristiche.antifurto !== "Assente"
+                );
+                setIsSpeseCondominiali(
+                    caratteristiche && !!caratteristiche.speseCondominiali
+                );
+                setIsSpeseExtra(
+                    caratteristiche &&
+                        caratteristiche.speseExtraNote &&
+                        caratteristiche.speseExtraNote !==
+                            "Spese Extra non previste"
+                );
+                inputDescrizioneChangedHandler(
+                    null,
+                    caratteristiche.descrizione
+                );
+                inputEsposizioneChangedHandler(
+                    null,
+                    caratteristiche.esposizione
+                );
+                inputSpeseCondominialiChangedHandler(
+                    null,
+                    caratteristiche.speseCondominiali
+                );
+                inputSpeseExtraChangedHandler(
+                    null,
+                    caratteristiche.speseExtraNote
+                );
+                setInputAscensoreValue(caratteristiche.ascensore);
+                inputArredamentoChangedHandler(
+                    null,
+                    caratteristiche.arredamento
+                );
+                inputBalconiChangedHandler(null, caratteristiche.balconi);
+                inputTerrazziChangedHandler(null, caratteristiche.terrazzi);
+                inputBoxChangedHandler(null, caratteristiche.box);
+                inputGiardinoChangedHandler(null, caratteristiche.giardino);
+                inputTavernaChangedHandler(null, caratteristiche.taverna);
+                inputMansardaChangedHandler(null, caratteristiche.mansarda);
+                inputCantinaChangedHandler(null, caratteristiche.cantina);
+                inputSpeseRiscaldamentoChangedHandler(
+                    null,
+                    caratteristiche.speseRiscaldamento
+                );
+                inputAriaCondizionataChangedHandler(
+                    null,
+                    caratteristiche.ariaCondizionata
+                );
+                inputProprietaChangedHandler(null, caratteristiche.proprieta);
+                inputCategoriaCatastaleChangedHandler(
+                    null,
+                    caratteristiche.categoriaCatastale
+                );
+                inputRenditaChangedHandler(null, caratteristiche.rendita);
+                inputImpiantoElettricoChangedHandler(
+                    null,
+                    caratteristiche.impiantoElettrico
+                );
+                inputImpiantoIdraulicoChangedHandler(
+                    null,
+                    caratteristiche.impiantoIdraulico
+                );
+                inputLivelliChangedHandler(null, caratteristiche.livelli);
+                inputSerramentiInterniChangedHandler(
+                    null,
+                    caratteristiche.serramentiInterni
+                );
+                inputSerramentiEsterniChangedHandler(
+                    null,
+                    caratteristiche.serramentiEsterni
+                );
+                setInputPortaBlindataValue(caratteristiche.portaBlindata);
+                inputAntifurtoChangedHandler(null, caratteristiche.antifurto);
+                inputCitofonoChangedHandler(null, caratteristiche.citofono);
+                inputAnnoCostruzioneChangedHandler(
+                    null,
+                    caratteristiche.annoCostruzione
+                );
+                inputPortineriaChangedHandler(null, caratteristiche.portineria);
+                inputCombustibileChangedHandler(
+                    null,
+                    caratteristiche.combustibile
+                );
+                inputCablatoChangedHandler(null, caratteristiche.cablato);
+                inputTipoContrattoChangedHandler(
+                    null,
+                    caratteristiche.tipoContratto
+                );
+                inputCauzioneChangedHandler(null, caratteristiche.cauzione);
+                inputAltezzaChangedHandler(null, caratteristiche.altezza);
+                inputTotalePianiChangedHandler(
+                    null,
+                    caratteristiche.totalePiani
+                );
             } catch (e) {
                 setShowLoading(false);
                 errorHandler(
@@ -374,111 +788,191 @@ const ImmobileForm: React.FC<{
                 );
             }
         };
-        props.immobile ? fetchCaratteristiche() : setShowLoading(false);
-    }, [props.immobile, presentAlert]);
+        props.immobile && !caratteristicheFetched
+            ? fetchCaratteristiche()
+            : setShowLoading(false);
+    }, [
+        props.immobile,
+        presentAlert,
+        inputAltezzaChangedHandler,
+        inputAnnoCostruzioneChangedHandler,
+        inputAntifurtoChangedHandler,
+        inputAriaCondizionataChangedHandler,
+        inputArredamentoChangedHandler,
+        inputBalconiChangedHandler,
+        inputTerrazziChangedHandler,
+        inputBoxChangedHandler,
+        inputCablatoChangedHandler,
+        inputCantinaChangedHandler,
+        inputCategoriaCatastaleChangedHandler,
+        inputCauzioneChangedHandler,
+        inputCitofonoChangedHandler,
+        inputCombustibileChangedHandler,
+        inputDescrizioneChangedHandler,
+        inputEsposizioneChangedHandler,
+        inputGiardinoChangedHandler,
+        inputImpiantoElettricoChangedHandler,
+        inputImpiantoIdraulicoChangedHandler,
+        inputLivelliChangedHandler,
+        inputMansardaChangedHandler,
+        inputPortineriaChangedHandler,
+        inputProprietaChangedHandler,
+        inputRenditaChangedHandler,
+        inputSerramentiEsterniChangedHandler,
+        inputSerramentiInterniChangedHandler,
+        inputSpeseCondominialiChangedHandler,
+        inputSpeseExtraChangedHandler,
+        inputSpeseRiscaldamentoChangedHandler,
+        inputTavernaChangedHandler,
+        inputTipoContrattoChangedHandler,
+        inputTotalePianiChangedHandler,
+        caratteristicheFetched,
+        setCaratteristicheFetched,
+    ]);
 
-    const isFormValid =
-        titleValue &&
-        isTitleValid &&
-        superficieValue &&
-        isSuperficieValid &&
-        tipologiaValue &&
-        localiValue &&
-        comuneValue &&
-        indirizzoValue &&
-        prezzoValue &&
-        isPrezzoValid &&
-        riscaldamentoValue &&
-        classeEnergeticaValue &&
-        consumoValue &&
-        isConsumoValid &&
-        contrattoValue &&
-        categoriaValue &&
-        statoValue &&
-        statusValue &&
-        liberoValue &&
-        pianoValue &&
-        isSpeseCondominialiValid &&
-        isSpeseRiscaldamentoValid &&
-        isRenditaValid &&
-        isAnnoCostruzioneValid &&
-        !isDescrizioneVirgin;
+    const [newProprietarioPartOpened, setNewProprietarioPartOpened] =
+        useState<boolean>(false);
+
+    const isFormInvalid =
+        !inputTitleValue ||
+        inputTitleIsInvalid ||
+        !inputSuperficieValue ||
+        inputSuperficieIsInvalid ||
+        !inputTipologiaValue ||
+        !inputLocaliValue ||
+        !inputComuneValue ||
+        !inputIndirizzoValue ||
+        !inputPrezzoValue ||
+        inputPrezzoIsInvalid ||
+        !inputRiscaldamentoValue ||
+        !inputClasseEnergeticaValue ||
+        !inputConsumoValue ||
+        inputConsumoIsInvalid ||
+        !inputContrattoValue ||
+        !inputCategoriaValue ||
+        !inputStatoValue ||
+        !inputStatusValue ||
+        !inputLiberoValue ||
+        !inputPianoValue ||
+        inputSpeseCondominialiIsInvalid ||
+        inputSpeseRiscaldamentoIsInvalid ||
+        inputRenditaIsInvalid ||
+        inputAnnoCostruzioneIsInvalid ||
+        inputDescrizioneIsInvalid ||
+        (!props.immobile && !inputDescrizioneIsTouched) ||
+        (newProprietarioPartOpened &&
+            (!inputNameIsTouched ||
+                (!inputEmailIsTouched && !inputPhoneIsTouched))) ||
+        (newProprietarioPartOpened &&
+            inputEmailValue.trim().length === 0 &&
+            (getPhoneValue(inputPhoneValue) === null ||
+                getPhoneValue(inputPhoneValue)!.length === 0)) ||
+        (newProprietarioPartOpened && inputNameIsInvalid) ||
+        (newProprietarioPartOpened && inputPhoneIsInvalid) ||
+        (newProprietarioPartOpened && inputEmailIsInvalid);
+
+    const getProprietario = () => {
+        // if newpart is open create new object
+        if (newProprietarioPartOpened) {
+            return {
+                nome:
+                    inputNameValue && inputNameValue.trim().length > 0
+                        ? inputNameValue
+                        : null,
+                telefono: getPhoneValue(inputPhoneValue),
+                email:
+                    inputEmailValue && inputEmailValue.trim().length > 0
+                        ? inputEmailValue
+                        : null,
+            };
+        } else {
+            return proprietarioValue ? proprietarioValue : null;
+        }
+    };
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
         const immobile = new Immobile(
             null,
-            isAutomaticRef ? null : refValue,
-            titleValue,
-            superficieValue,
+            isAutomaticRef ? null : inputRefValue,
+            inputTitleValue,
+            inputSuperficieValue,
             null,
-            tipologiaValue,
-            localiValue,
-            indirizzoValue,
-            zonaValue ? zonaValue : "",
-            comuneValue,
-            prezzoValue ? +prezzoValue.toString().replace(".", "") : null,
-            riscaldamentoValue,
-            classeEnergeticaValue,
-            consumoValue,
-            contrattoValue,
-            categoriaValue,
-            statoValue,
-            liberoValue,
-            statusValue
-                ? (capitalize(statusValue.toLowerCase()) as status)
+            inputTipologiaValue,
+            inputLocaliValue,
+            inputIndirizzoValue,
+            inputZonaValue ? inputZonaValue : "",
+            inputComuneValue,
+            inputPrezzoValue
+                ? +inputPrezzoValue.toString().replace(".", "")
                 : null,
-            pianoValue,
+            inputRiscaldamentoValue,
+            inputClasseEnergeticaValue,
+            inputConsumoValue,
+            inputContrattoValue,
+            inputCategoriaValue,
+            inputStatoValue,
+            inputLiberoValue,
+            inputStatusValue
+                ? (capitalize(inputStatusValue.toLowerCase()) as status)
+                : null,
+            inputPianoValue,
             null,
             null,
             null,
-            null
+            inquiliniValue
         );
         const caratteristicheImmobile = new Caratteristiche(
             null,
-            descrizioneValue,
-            esposizioneValue,
-            speseCondominialiValue
-                ? +speseCondominialiValue.toString().split(".")[0].split(",")[0]
-                : null,
-            speseExtraValue,
-            ascensoreValue,
-            arredamentoValue,
-            balconiValue,
-            terrazziValue,
-            boxValue,
-            giardinoValue,
-            tavernaValue,
-            mansardaValue,
-            cantinaValue,
-            speseRiscaldamentoValue,
-            ariaCondizionataValue,
-            proprietaValue,
-            categoriaCatastaleValue,
-            renditaValue,
-            impiantoElettricoValue,
-            impiantoIdraulicoValue,
-            livelliValue,
-            serramentiInterniValue,
-            serramentiEsterniValue,
-            portaBlindataValue,
-            antifurtoValue,
-            citofonoValue,
-            annoCostruzioneValue,
-            portineriaValue,
-            combustibileValue,
-            cablatoValue,
-            tipoContrattoValue,
-            cauzioneValue,
-            altezzaValue,
-            totalePianiValue
+            inputDescrizioneValue,
+            inputEsposizioneValue,
+            inputSpeseCondominialiValue
+                ? +inputSpeseCondominialiValue
+                      .toString()
+                      .split(".")[0]
+                      .split(",")[0]
+                : 0,
+            inputSpeseExtraValue
+                ? inputSpeseExtraValue
+                : "Spese Extra non previste",
+            inputAscensoreValue,
+            inputArredamentoValue,
+            inputBalconiValue,
+            inputTerrazziValue,
+            inputBoxValue,
+            inputGiardinoValue,
+            inputTavernaValue ? inputTavernaValue : "Assente",
+            inputMansardaValue ? inputMansardaValue : "Assente",
+            inputCantinaValue ? inputCantinaValue : "Assente",
+            inputSpeseRiscaldamentoValue,
+            inputAriaCondizionataValue,
+            inputProprietaValue,
+            inputCategoriaCatastaleValue,
+            inputRenditaValue,
+            inputImpiantoElettricoValue,
+            inputImpiantoIdraulicoValue,
+            inputLivelliValue,
+            inputSerramentiInterniValue,
+            inputSerramentiEsterniValue,
+            inputPortaBlindataValue,
+            inputAntifurtoValue ? inputAntifurtoValue : "Assente",
+            inputCitofonoValue,
+            inputAnnoCostruzioneValue,
+            inputPortineriaValue,
+            inputCombustibileValue,
+            inputCablatoValue,
+            inputTipoContrattoValue,
+            inputCauzioneValue,
+            inputAltezzaValue,
+            inputTotalePianiValue
         );
         setShowLoading(true);
         const reqBody = {
             immobile,
-            proprietario: proprietarioValue,
+            proprietario: getProprietario(),
             caratteristicheImmobile,
         };
+
         try {
             const res = props.immobile
                 ? await axiosInstance.patch(
@@ -511,293 +1005,121 @@ const ImmobileForm: React.FC<{
         }
     };
 
-    const cancellaInquilino = async (id: number) => {
-        setShowLoading(true);
-        try {
-            await axiosInstance.patch(`/persone/${id}`, {
-                immobileAffitto: null,
+    const deletePersona = (id: number, mode: "proprietario" | "inquilino") => {
+        setCurrentPersona(null);
+        if (mode === "inquilino") {
+            setInquiliniValue((prevList) => {
+                return prevList.filter((el) => el.id! !== id);
             });
-            setShowLoading(false);
-        } catch (e) {
-            setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Impossibile cancellare l'inquilino",
-                presentAlert
-            );
-        }
-    };
-
-    const confirmDeletePersona = (
-        entityType: "proprietario" | "inquilino",
-        id: number
-    ) => {
-        if (entityType === "proprietario") {
-            if (!proprietarioValue || proprietarioValue.id !== id)
-                errorHandler(
-                    null,
-                    () => {},
-                    "Errore nella cancellazione della persona",
-                    presentAlert
-                );
+        } else if (mode === "proprietario") {
             setProprietarioValue(null);
-        } else {
-            if (
-                !inquiliniValue ||
-                inquiliniValue.length === 0 ||
-                inquiliniValue.find((el) => el.id === id) === undefined
-            )
-                errorHandler(
-                    null,
-                    () => {},
-                    "Errore nella cancellazione della persona",
-                    presentAlert
-                );
-            setInquiliniValue((prevInquiliniValue) =>
-                prevInquiliniValue.filter((el) => el.id !== id)
-            );
-            cancellaInquilino(id);
         }
     };
 
-    const deletePersona = (
-        entityType: "proprietario" | "inquilino",
-        persona: Persona
-    ) => {
-        presentAlert({
-            header: `Cancellazione ${entityType}`,
-            subHeader: `Hai selezionato la cancellazione di ${persona.nome} come ${entityType} di questo immobile. 
-            Sei sicuro?`,
-            buttons: [
-                {
-                    text: "Conferma",
-                    handler: () =>
-                        confirmDeletePersona(entityType, persona.id!),
-                },
-                {
-                    text: "Indietro",
-                    handler: () => closeItems(),
-                },
-            ],
-        });
+    const queryData = useQueryData("persone");
+
+    const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+
+    const [choiceMode, setChoiceMode] = useState<
+        "proprietario" | "inquilino" | null
+    >(null);
+
+    // persona che viene definita nel selector
+    const [currentPersona, setCurrentPersona] = useState<Entity | null>(null);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (choiceMode === "proprietario" && currentPersona) {
+                setProprietarioValue(currentPersona as Persona);
+                setModalIsOpen(false);
+                setCurrentPersona(null);
+            } else if (choiceMode === "inquilino" && currentPersona) {
+                const itemAlreadyPresent = inquiliniValue.find(
+                    (el) => el.id === currentPersona.id
+                );
+                if (!itemAlreadyPresent)
+                    setInquiliniValue((prevList) => [
+                        currentPersona as Persona,
+                        ...prevList,
+                    ]);
+                setModalIsOpen(false);
+                setCurrentPersona(null);
+            }
+        }, 300);
+    }, [currentPersona, choiceMode, inquiliniValue]);
+
+    const openModal = (type: "proprietario" | "inquilino") => {
+        setChoiceMode(type);
+        setCurrentPersona(null);
+        setModalIsOpen(true);
     };
 
-    const changeImmobileValue = (e: any, type: immobileAttribute) => {
-        switch (type) {
-            case "ref":
-                setRefValue(e.detail.value);
-                break;
-            case "title":
-                setTitleValue(e.detail.value);
-                setIsTitleValid(
-                    e.detail.value.toString().length >= 15 &&
-                        e.detail.value.toString().length <= 60
-                );
-                break;
-            case "superficie":
-                setSuperficieValue(e.detail.value);
-                setIsSuperficieValid(e.detail.value > 0);
-                break;
-            case "tipologia":
-                setTipologiaValue(e.detail.value);
-                break;
-            case "locali":
-                setLocaliValue(e.detail.value);
-                break;
-            case "comune":
-                setZonaValue(null);
-                if (e.detail.value === "notInList") {
-                    setIsManualTown(true);
-                    setComuneValue("");
-                } else {
-                    setComuneValue(e.detail.value);
-                }
-                break;
-            case "zona":
-                if (e.detail.value === null) return;
-                setZonaValue(
-                    possibleZona.find((el) => el.id === e.detail.value)!.id
-                );
-                break;
-            case "indirizzo":
-                setIndirizzoValue(e.detail.value);
-                break;
-            case "prezzo":
-                setPrezzoValue(e.detail.value);
-                setIsPrezzoValid(e.detail.value > 0);
-                break;
-            case "riscaldamento":
-                setRiscaldamentoValue(e.detail.value);
-                break;
-            case "classeEnergetica":
-                setClasseEnergeticaValue(e.detail.value);
-                break;
-            case "consumo":
-                setConsumoValue(e.detail.value);
-                setIsConsumoValid(e.detail.value > 0);
-                break;
-            case "contratto":
-                setContrattoValue(e.detail.value);
-                break;
-            case "categoria":
-                setCategoriaValue(e.detail.value);
-                break;
-            case "stato":
-                setStatoValue(e.detail.value);
-                break;
-            case "libero":
-                setLiberoValue(e.detail.value);
-                break;
-            case "status":
-                setStatusValue(e.detail.value);
-                break;
-            case "piano":
-                setPianoValue(e.detail.value);
-                break;
-            case "descrizione":
-                setDescrizioneValue(e.detail.value);
-                setIsDescrizioneVirgin(false);
-                break;
-            case "esposizione":
-                setEsposizioneValue(e.detail.value);
-                break;
-            case "arredamento":
-                setArredamentoValue(e.detail.value);
-                break;
-            case "speseCondominiali":
-                setSpeseCondominialiValue(e.detail.value);
-                setIsSpeseCondominialiValid(e.detail.value >= 0);
-                break;
-            case "speseExtraNote":
-                setSpeseExtraValue(e.detail.value);
-                break;
-            case "ascensore":
-                setAscensoreValue(e.detail.value);
-                break;
-            case "balconi":
-                setBalconiValue(e.detail.value);
-                break;
-            case "terrazzi":
-                setTerrazziValue(e.detail.value);
-                break;
-            case "box":
-                setBoxValue(e.detail.value);
-                break;
-            case "giardino":
-                setGiardinoValue(e.detail.value);
-                break;
-            case "taverna":
-                setTavernaValue(e.detail.value);
-                break;
-            case "mansarda":
-                setMansardaValue(e.detail.value);
-                break;
-            case "cantina":
-                setCantinaValue(e.detail.value);
-                break;
-            case "speseRiscaldamento":
-                setSpeseRiscaldamentoValue(e.detail.value);
-                setIsSpeseRiscaldamentoValid(e.detail.value >= 0);
-                break;
-            case "ariaCondizionata":
-                setAriaCondizionataValue(e.detail.value);
-                break;
-            case "proprieta":
-                setProprietaValue(e.detail.value);
-                break;
-            case "categoriaCatastale":
-                setCategoriaCatastaleValue(e.detail.value);
-                break;
-            case "rendita":
-                setRenditaValue(e.detail.value);
-                setIsRenditaValid(e.detail.value >= 0);
-                break;
-            case "impiantoElettrico":
-                setImpiantoElettricoValue(e.detail.value);
-                break;
-            case "impiantoIdraulico":
-                setImpiantoIdraulicoValue(e.detail.value);
-                break;
-            case "livelli":
-                setLivelliValue(e.detail.value);
-                break;
-            case "serramentiInterni":
-                setSerramentiInterniValue(e.detail.value);
-                break;
-            case "serramentiEsterni":
-                setSerramentiEsterniValue(e.detail.value);
-                break;
-            case "portaBlindata":
-                setPortaBlindataValue(e.detail.value);
-                break;
-            case "antifurto":
-                setAntifurtoValue(e.detail.value);
-                break;
-            case "annoCostruzione":
-                setAnnoCostruzioneValue(e.detail.value);
-                setIsAnnoCostruzioneValid(
-                    e.detail.value >= 1800 &&
-                        e.detail.value <= new Date().getFullYear()
-                );
-                break;
-            case "citofono":
-                setCitofonoValue(e.detail.value);
-                break;
-            case "portineria":
-                setPortineriaValue(e.detail.value);
-                break;
-            case "combustibile":
-                setCombustibileValue(e.detail.value);
-                break;
-            case "cablato":
-                setCablatoValue(e.detail.value);
-                break;
-            case "tipoContratto":
-                setTipoContrattoValue(e.detail.value);
-                break;
-            case "cauzione":
-                setCauzioneValue(e.detail.value);
-                break;
-            case "altezza":
-                setAltezzaValue(e.detail.value);
-                break;
-            case "totalePiani":
-                setTotalePianiValue(e.detail.value);
-                break;
-            default:
-                break;
+    const {
+        list: listSecondaryItems,
+        closeItemsList: closeSecondaryItemsList,
+    } = useList();
+
+    useEffect(() => {
+        if (!newProprietarioPartOpened) {
+            inputNameReset();
+            inputPhoneReset();
+            inputEmailReset();
         }
-    };
+    }, [
+        newProprietarioPartOpened,
+        inputNameReset,
+        inputPhoneReset,
+        inputEmailReset,
+    ]);
 
-    const getInquiliniItems = inquiliniValue.map((el) => (
-        <IonItemSliding key={el.id} id={el.id?.toString()}>
-            <IonItem detail>
+    const getPersone = (type: "proprietario" | "inquilino") => {
+        let list: Persona[] = [];
+        if (type === "proprietario" && proprietarioValue) {
+            list = [proprietarioValue];
+        } else if (type === "inquilino") {
+            list = inquiliniValue;
+        }
+        const renderList = list.map((el) => (
+            <SecondaryItem
+                closeItems={closeSecondaryItemsList}
+                key={el!.id}
+                deleteAction={() => {
+                    deletePersona(el!.id!, type);
+                    if (type === "proprietario")
+                        setNewProprietarioPartOpened(false);
+                }}
+            >
                 <IonLabel text-wrap>
-                    <h2>{el.nome}</h2>
+                    <h2>{capitalize(el.nome!)}</h2>
+                    <h3>
+                        {!el.telefono && "Telefono mancante"}
+                        {el.telefono && (
+                            <a href={`tel:${el.telefono}`}>{el.telefono}</a>
+                        )}
+                    </h3>
+                    <h3>
+                        {!el.email && "Email mancante"}
+                        {el.email && (
+                            <a href={`mailto:${el.email}`}>{el.email}</a>
+                        )}
+                    </h3>
                 </IonLabel>
-            </IonItem>
-            <IonItemOptions side="end">
-                <IonItemOption
-                    color="primary"
-                    onClick={() => showPerson("inquilino", el)}
-                >
-                    <IonText>Visualizza</IonText>
-                </IonItemOption>
-                <IonItemOption
-                    color="danger"
-                    onClick={() => deletePersona("inquilino", el)}
-                >
-                    <IonText>Elimina</IonText>
-                </IonItemOption>
-            </IonItemOptions>
-        </IonItemSliding>
-    ));
+            </SecondaryItem>
+        ));
+        return (
+            <IonList
+                style={{ padding: "0", margin: "0" }}
+                ref={listSecondaryItems}
+            >
+                {renderList}
+            </IonList>
+        );
+    };
 
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            <IonList className="list" ref={ionListRef}>
+            <IonList className="list">
                 <FormGroup title="Dati Base - Obbligatori">
                     {!props.immobile && (
                         <FormInputBoolean
@@ -807,52 +1129,49 @@ const ImmobileForm: React.FC<{
                         />
                     )}
                     {(props.immobile || !isAutomaticRef) && (
-                        <FormInputNumber
-                            titolo="Riferimento"
-                            type="ref"
-                            value={refValue}
-                            changeHandler={changeImmobileValue}
-                            invalidCondition={!!refValue && refValue <= 0}
-                            invalidNote="Il riferimento deve essere maggiore di 0"
+                        <FormInput
+                            title="Riferimento"
+                            inputValue={inputRefValue}
+                            type={"number"}
+                            inputIsInvalid={inputRefIsInvalid}
+                            inputChangeHandler={inputRefChangedHandler}
+                            inputTouchHandler={inputRefTouchedHandler}
+                            errorMessage="Il riferimento deve essere maggiore di 0"
+                            reset={inputRefReset}
                         />
                     )}
-
-                    <IonItem>
-                        <IonLabel position="floating">
-                            Titolo (tra 15 e 60 lettere)
-                        </IonLabel>
-                        <IonInput
-                            type="text"
-                            value={titleValue}
-                            onIonChange={(e) => changeImmobileValue(e, "title")}
-                        ></IonInput>
-                        <IonNote color={isTitleValid ? "primary" : "danger"}>
-                            {`${titleValue ? titleValue.length : 0} letter${
-                                titleValue?.length === 1 ? "a" : "e"
-                            } usat${titleValue?.length === 1 ? "a" : "e"}`}
-                        </IonNote>
-                    </IonItem>
-                    <FormInputNumber
-                        titolo="Superficie in metri quadri"
-                        type="superficie"
-                        value={superficieValue}
-                        changeHandler={changeImmobileValue}
-                        invalidCondition={!isSuperficieValid}
-                        invalidNote="La superficie deve essere maggiore di 0 metri
-                                quadri"
+                    <FormInput
+                        title={"Titolo (tra 15 e 60 lettere)"}
+                        inputValue={inputTitleValue}
+                        type={"text"}
+                        inputIsInvalid={inputTitleIsInvalid}
+                        inputChangeHandler={inputTitleChangedHandler}
+                        inputTouchHandler={inputTitleTouchedHandler}
+                        errorMessage={`${inputTitleValue.length} lettere: lunghezza non valida`}
+                        reset={inputTitleReset}
+                    />
+                    <FormInput
+                        title={"Superficie in metri quadri"}
+                        inputValue={inputSuperficieValue}
+                        type={"number"}
+                        inputIsInvalid={inputSuperficieIsInvalid}
+                        inputChangeHandler={inputSuperficieChangedHandler}
+                        inputTouchHandler={inputSuperficieTouchedHandler}
+                        errorMessage={
+                            "La superficie deve essere maggiore di 0 metri quadri"
+                        }
+                        reset={inputSuperficieReset}
                     />
                     <FormSelect
                         title="Tipologia"
-                        value={tipologiaValue}
-                        function={changeImmobileValue}
-                        type={"tipologia"}
+                        value={inputTipologiaValue}
+                        function={inputTipologiaChangedHandler}
                         possibleValues={possibleTipologies}
                     />
                     <FormSelect
                         title="Locali"
-                        value={localiValue}
-                        function={changeImmobileValue}
-                        type={"locali"}
+                        value={inputLocaliValue}
+                        function={inputLocaliChangedHandler}
                         possibleValues={possibleLocali}
                     />
                     {!isManualTown && (
@@ -862,45 +1181,50 @@ const ImmobileForm: React.FC<{
                                 cancelText="Torna Indietro"
                                 mode="ios"
                                 interface="action-sheet"
-                                value={comuneValue}
-                                onIonChange={(e) =>
-                                    changeImmobileValue(e, "comune")
-                                }
+                                value={inputComuneValue}
+                                onIonChange={inputComuneChangedHandler}
                             >
                                 {possibleComuni.map((el) => (
                                     <IonSelectOption key={el} value={el}>
                                         {capitalize(el)}
                                     </IonSelectOption>
                                 ))}
-                                <IonSelectOption value="notInList">
+                                <IonSelectOption
+                                    value="notInList"
+                                    onClick={() => setIsManualTown(true)}
+                                >
                                     Non presente in lista
                                 </IonSelectOption>
                             </IonSelect>
                         </IonItem>
                     )}
                     {isManualTown && (
-                        <FormInputText
-                            titolo="Comune"
-                            value={comuneValue}
-                            changeHandler={changeImmobileValue}
-                            type={"comune"}
+                        <FormInput
+                            title={"Comune"}
+                            inputValue={inputComuneValue}
+                            type={"text"}
+                            inputIsInvalid={inputComuneIsInvalid}
+                            inputChangeHandler={inputComuneChangedHandler}
+                            inputTouchHandler={inputComuneTouchedHandler}
+                            errorMessage={"Lunghezza non valida"}
+                            reset={inputComuneReset}
                         />
                     )}
-                    {(comuneValue === "Segrate" ||
-                        comuneValue === "Milano") && (
+                    {(inputComuneValue === "Segrate" ||
+                        inputComuneValue === "Milano") && (
                         <IonItem>
                             <IonLabel position="floating">Zona</IonLabel>
                             <IonSelect
                                 cancelText="Torna Indietro"
                                 mode="ios"
                                 interface="action-sheet"
-                                value={zonaValue}
-                                onIonChange={(e) =>
-                                    changeImmobileValue(e, "zona")
-                                }
+                                value={inputZonaValue}
+                                onIonChange={inputZonaChangedHandler}
                             >
                                 {possibleZona
-                                    .filter((e) => e.comune === comuneValue)
+                                    .filter(
+                                        (e) => e.comune === inputComuneValue
+                                    )
                                     .map((el) => (
                                         <IonSelectOption
                                             key={el.id}
@@ -912,432 +1236,497 @@ const ImmobileForm: React.FC<{
                             </IonSelect>
                         </IonItem>
                     )}
-                    <FormInputText
-                        titolo="Indirizzo"
-                        value={indirizzoValue}
-                        changeHandler={changeImmobileValue}
-                        type={"indirizzo"}
+                    <FormInput
+                        title={"Indirizzo"}
+                        inputValue={inputIndirizzoValue}
+                        type={"text"}
+                        inputIsInvalid={inputIndirizzoIsInvalid}
+                        inputChangeHandler={inputIndirizzoChangedHandler}
+                        inputTouchHandler={inputIndirizzoTouchedHandler}
+                        errorMessage={"Lunghezza non valida"}
+                        reset={inputIndirizzoReset}
                     />
-                    <FormInputNumber
-                        titolo="Prezzo Richiesto"
-                        type="prezzo"
-                        value={prezzoValue}
-                        changeHandler={changeImmobileValue}
-                        invalidCondition={!isPrezzoValid}
-                        invalidNote="Il prezzo deve essere maggiore di 0 €"
+                    <FormInput
+                        title={"Prezzo richiesto"}
+                        inputValue={inputPrezzoValue}
+                        type={"number"}
+                        inputIsInvalid={inputPrezzoIsInvalid}
+                        inputChangeHandler={inputPrezzoChangedHandler}
+                        inputTouchHandler={inputPrezzoTouchedHandler}
+                        errorMessage={"Il prezzo deve essere maggiore di 0 €"}
+                        reset={inputPrezzoReset}
                     />
                     <FormSelect
                         title="Riscaldamento"
-                        value={riscaldamentoValue}
-                        function={changeImmobileValue}
-                        type={"riscaldamento"}
+                        value={inputRiscaldamentoValue}
+                        function={inputRiscaldamentoChangedHandler}
                         possibleValues={possibleRiscaldamenti}
                     />
                     <FormSelect
                         title="Classe Energetica"
-                        value={classeEnergeticaValue}
-                        function={changeImmobileValue}
-                        type={"classeEnergetica"}
+                        value={inputClasseEnergeticaValue}
+                        function={inputClasseEnergeticaChangedHandler}
                         possibleValues={possibleEnergeticClasses}
                     />
-                    <FormInputNumber
-                        titolo="Consumo espresso in KWh/m³a"
-                        type="consumo"
-                        value={consumoValue}
-                        changeHandler={changeImmobileValue}
-                        invalidCondition={!isConsumoValid}
-                        invalidNote="Il consumo deve essere maggiore di 0 KWh/m³a"
+                    <FormInput
+                        title={"Consumo espresso in KWh/m³a"}
+                        inputValue={inputConsumoValue}
+                        type={"text"}
+                        inputIsInvalid={inputConsumoIsInvalid}
+                        inputChangeHandler={inputConsumoChangedHandler}
+                        inputTouchHandler={inputConsumoTouchedHandler}
+                        errorMessage={
+                            "Il consumo deve essere maggiore di 0 KWh/m³a"
+                        }
+                        reset={inputConsumoReset}
                     />
                     <FormSelect
                         title="Contratto"
-                        value={contrattoValue}
-                        function={changeImmobileValue}
-                        type={"contratto"}
+                        value={inputContrattoValue}
+                        function={inputContrattoChangedHandler}
                         possibleValues={possibleContratti}
                     />
                     <FormSelect
                         title="Categoria"
-                        value={categoriaValue}
-                        function={changeImmobileValue}
-                        type={"categoria"}
+                        value={inputCategoriaValue}
+                        function={inputCategoriaChangedHandler}
                         possibleValues={possibleCategories}
                     />
                     <FormSelect
                         title="Stato"
-                        value={statoValue}
-                        function={changeImmobileValue}
-                        type={"stato"}
+                        value={inputStatoValue}
+                        function={inputStatoChangedHandler}
                         possibleValues={possibleStato}
                     />
                     <FormSelect
                         title="Libero"
-                        value={liberoValue}
-                        function={changeImmobileValue}
-                        type={"libero"}
+                        value={inputLiberoValue}
+                        function={inputLiberoChangedHandler}
                         possibleValues={possibleLibero}
                     />
                     <FormSelect
                         title="Status"
-                        value={statusValue}
-                        function={changeImmobileValue}
-                        type={"status"}
+                        value={inputStatusValue}
+                        function={inputStatusChangedHandler}
                         possibleValues={possibleStatus.map((el) =>
                             el.toLowerCase()
                         )}
                     />
                     <FormSelect
                         title="Piano"
-                        value={pianoValue}
-                        function={changeImmobileValue}
-                        type={"piano"}
+                        value={inputPianoValue}
+                        function={inputPianoChangedHandler}
                         possibleValues={possiblePiano}
                     />
-                    <FormInputNumber
-                        titolo="Totale piani edificio"
-                        type="totalePiani"
-                        value={totalePianiValue}
-                        changeHandler={changeImmobileValue}
-                        invalidCondition={false}
-                        invalidNote=""
+                    <FormInput
+                        title="Totale piani edificio"
+                        inputValue={inputTotalePianiValue}
+                        type={"text"}
+                        inputIsInvalid={inputTotalePianiIsInvalid}
+                        inputChangeHandler={inputTotalePianiChangedHandler}
+                        inputTouchHandler={inputTotalePianiTouchedHandler}
+                        errorMessage={"Valore non valido"}
+                        reset={inputTotalePianiReset}
                     />
-                    <IonItem>
-                        <IonLabel position="floating">Descrizione</IonLabel>
-                        <IonTextarea
-                            color={isDescrizioneVirgin ? "danger" : "dark"}
-                            auto-grow
-                            rows={10}
-                            value={
-                                descrizioneValue
-                                    ? descrizioneValue
-                                    : genericaDescrizione
-                            }
-                            onIonChange={(e) =>
-                                changeImmobileValue(e, "descrizione")
-                            }
-                        ></IonTextarea>
-                    </IonItem>
+                    <TextArea
+                        title={`Descrizione ${
+                            !inputDescrizioneIsTouched && !props.immobile
+                                ? "DA CAMBIARE"
+                                : ""
+                        }`}
+                        inputValue={inputDescrizioneValue}
+                        inputChangeHandler={inputDescrizioneChangedHandler}
+                        inputTouchHandler={inputDescrizioneTouchedHandler}
+                        reset={inputDescrizioneReset}
+                        inputIsInvalid={inputDescrizioneIsInvalid}
+                        errorMessage={
+                            inputDescrizioneValue === genericaDescrizione
+                                ? "Descrizione da cambiare"
+                                : "Descrizione troppo corta"
+                        }
+                    />
                 </FormGroup>
                 <FormGroup title="Caratteristiche - Opzionali">
                     <FormInputBoolean
-                        condition={ascensoreValue}
-                        setCondition={setAscensoreValue}
+                        condition={inputAscensoreValue}
+                        setCondition={setInputAscensoreValue}
                         sentence="E' presente l'ascensore"
                     />
                     <FormInputBoolean
-                        condition={portaBlindataValue}
-                        setCondition={setPortaBlindataValue}
+                        condition={inputPortaBlindataValue}
+                        setCondition={setInputPortaBlindataValue}
                         sentence="La porta d'ingresso è blindata"
                     />
-                    <FormInputNumber
-                        titolo="Spese condominiali (€ al mese)"
-                        type="speseCondominiali"
-                        value={speseCondominialiValue}
-                        changeHandler={changeImmobileValue}
-                        invalidCondition={!isSpeseCondominialiValid}
-                        invalidNote="Le spese condominiali non possono essere più basse di 0 €/mese"
+                    <FormInputBoolean
+                        condition={isSpeseCondominiali}
+                        setCondition={setIsSpeseCondominiali}
+                        sentence="Sono presenti spese condominiali"
                     />
-                    <FormInputText
-                        titolo="Note su Spese-Extra"
-                        value={speseExtraValue}
-                        changeHandler={changeImmobileValue}
-                        type={"speseExtraNote"}
-                    />
-                    <FormInputText
-                        titolo="Descrizione Taverna"
-                        value={tavernaValue}
-                        changeHandler={changeImmobileValue}
-                        type={"taverna"}
-                    />
-                    <FormInputText
-                        titolo="Descrizione Mansarda"
-                        value={mansardaValue}
-                        changeHandler={changeImmobileValue}
-                        type={"mansarda"}
-                    />
-                    <FormInputText
-                        titolo="Descrizione Cantina"
-                        value={cantinaValue}
-                        changeHandler={changeImmobileValue}
-                        type={"cantina"}
-                    />
-                    {riscaldamentoValue === "autonomo" && (
-                        <FormInputNumber
-                            titolo="Spese riscaldamento (€ al mese)"
-                            type="speseRiscaldamento"
-                            value={speseRiscaldamentoValue}
-                            changeHandler={changeImmobileValue}
-                            invalidCondition={!isSpeseRiscaldamentoValid}
-                            invalidNote="Le spese di riscaldamento non possono essere più basse di 0 €/mese"
+                    {isSpeseCondominiali && (
+                        <FormInput
+                            title="Spese condominiali (€ al mese)"
+                            inputValue={inputSpeseCondominialiValue}
+                            type={"number"}
+                            inputIsInvalid={inputSpeseCondominialiIsInvalid}
+                            inputChangeHandler={
+                                inputSpeseCondominialiChangedHandler
+                            }
+                            inputTouchHandler={
+                                inputSpeseCondominialiTouchedHandler
+                            }
+                            errorMessage={
+                                "Le spese condominiali non possono essere più basse di 0 €/mese"
+                            }
+                            reset={inputSpeseCondominialiReset}
                         />
                     )}
-                    <FormInputText
-                        titolo="Antifurto"
-                        value={antifurtoValue}
-                        changeHandler={changeImmobileValue}
-                        type={"antifurto"}
+                    <FormInputBoolean
+                        condition={isSpeseExtra}
+                        setCondition={setIsSpeseExtra}
+                        sentence="Sono in previsione spese extra"
                     />
+                    {isSpeseExtra && (
+                        <FormInput
+                            title="Note su Spese-Extra"
+                            inputValue={inputSpeseExtraValue}
+                            type={"text"}
+                            inputIsInvalid={inputSpeseExtraIsInvalid}
+                            inputChangeHandler={inputSpeseExtraChangedHandler}
+                            inputTouchHandler={inputSpeseExtraTouchedHandler}
+                            errorMessage={""}
+                            reset={inputSpeseExtraReset}
+                        />
+                    )}
+                    <FormInputBoolean
+                        condition={isTaverna}
+                        setCondition={setIsTaverna}
+                        sentence="E' presente la taverna"
+                    />
+                    {isTaverna && (
+                        <FormInput
+                            title="Descrizione Taverna"
+                            inputValue={inputTavernaValue}
+                            type={"text"}
+                            inputIsInvalid={inputTavernaIsInvalid}
+                            inputChangeHandler={inputTavernaChangedHandler}
+                            inputTouchHandler={inputTavernaTouchedHandler}
+                            errorMessage={""}
+                            reset={inputTavernaReset}
+                        />
+                    )}
+                    <FormInputBoolean
+                        condition={isMansarda}
+                        setCondition={setIsMansarda}
+                        sentence="E' presente la mansarda"
+                    />
+                    {isMansarda && (
+                        <FormInput
+                            title="Descrizione Mansarda"
+                            inputValue={inputMansardaValue}
+                            type={"text"}
+                            inputIsInvalid={inputMansardaIsInvalid}
+                            inputChangeHandler={inputMansardaChangedHandler}
+                            inputTouchHandler={inputMansardaTouchedHandler}
+                            errorMessage={""}
+                            reset={inputMansardaReset}
+                        />
+                    )}
+                    <FormInputBoolean
+                        condition={isCantina}
+                        setCondition={setIsCantina}
+                        sentence="E' presente la cantina"
+                    />
+                    {isCantina && (
+                        <FormInput
+                            title="Descrizione Cantina"
+                            inputValue={inputCantinaValue}
+                            type={"text"}
+                            inputIsInvalid={inputCantinaIsInvalid}
+                            inputChangeHandler={inputCantinaChangedHandler}
+                            inputTouchHandler={inputCantinaTouchedHandler}
+                            errorMessage={""}
+                            reset={inputCantinaReset}
+                        />
+                    )}
+                    {inputRiscaldamentoValue === "autonomo" && (
+                        <FormInput
+                            title="Spese riscaldamento (€ al mese)"
+                            inputValue={inputSpeseRiscaldamentoValue}
+                            type={"number"}
+                            inputIsInvalid={inputSpeseRiscaldamentoIsInvalid}
+                            inputChangeHandler={
+                                inputSpeseRiscaldamentoChangedHandler
+                            }
+                            inputTouchHandler={
+                                inputSpeseRiscaldamentoTouchedHandler
+                            }
+                            errorMessage={
+                                "Le spese di riscaldamento non possono essere più basse di 0 €/mese"
+                            }
+                            reset={inputSpeseRiscaldamentoReset}
+                        />
+                    )}
+                    <FormInputBoolean
+                        condition={isAntifurto}
+                        setCondition={setIsAntifurto}
+                        sentence="E' presente l'antifurto"
+                    />
+                    {isAntifurto && (
+                        <FormInput
+                            title="Antifurto"
+                            inputValue={inputAntifurtoValue}
+                            type={"text"}
+                            inputIsInvalid={inputAntifurtoIsInvalid}
+                            inputChangeHandler={inputAntifurtoChangedHandler}
+                            inputTouchHandler={inputAntifurtoTouchedHandler}
+                            errorMessage={""}
+                            reset={inputAntifurtoReset}
+                        />
+                    )}
                     <FormSelect
                         title="Esposizione"
-                        value={esposizioneValue}
-                        function={changeImmobileValue}
-                        type={"esposizione"}
+                        value={inputEsposizioneValue}
+                        function={inputEsposizioneChangedHandler}
                         possibleValues={possibiliEsposizioni}
                     />
                     <FormSelect
                         title="Arredamento"
-                        value={arredamentoValue}
-                        function={changeImmobileValue}
-                        type={"arredamento"}
+                        value={inputArredamentoValue}
+                        function={inputArredamentoChangedHandler}
                         possibleValues={possibiliArredamenti}
                     />
                     <FormSelect
                         title="Balconi"
-                        value={balconiValue}
-                        function={changeImmobileValue}
-                        type={"balconi"}
+                        value={inputBalconiValue}
+                        function={inputBalconiChangedHandler}
                         possibleValues={possibiliBalconiTerrazzi}
                     />
                     <FormSelect
                         title="Terrazzi"
-                        value={terrazziValue}
-                        function={changeImmobileValue}
-                        type={"terrazzi"}
+                        value={inputTerrazziValue}
+                        function={inputTerrazziChangedHandler}
                         possibleValues={possibiliBalconiTerrazzi}
                     />
                     <FormSelect
                         title="Box"
-                        value={boxValue}
-                        function={changeImmobileValue}
-                        type={"box"}
+                        value={inputBoxValue}
+                        function={inputBoxChangedHandler}
                         possibleValues={possibiliBox}
                     />
                     <FormSelect
                         title="Giardino"
-                        value={giardinoValue}
-                        function={changeImmobileValue}
-                        type={"giardino"}
+                        value={inputGiardinoValue}
+                        function={inputGiardinoChangedHandler}
                         possibleValues={possibiliGiardini}
                     />
                     <FormSelect
                         title="Aria Condizionata"
-                        value={ariaCondizionataValue}
-                        function={changeImmobileValue}
-                        type={"ariaCondizionata"}
+                        value={inputAriaCondizionataValue}
+                        function={inputAriaCondizionataChangedHandler}
                         possibleValues={possibiliAC}
                     />
                     <FormSelect
                         title="Proprietà"
-                        value={proprietaValue}
-                        function={changeImmobileValue}
-                        type={"proprieta"}
+                        value={inputProprietaValue}
+                        function={inputProprietaChangedHandler}
                         possibleValues={possibiliProprieta}
                     />
-                    <FormInputNumber
-                        titolo="Anno di Costruzione"
-                        type="annoCostruzione"
-                        value={annoCostruzioneValue}
-                        changeHandler={changeImmobileValue}
-                        invalidCondition={!isAnnoCostruzioneValid}
-                        invalidNote={`L'anno di costruzione deve essere compreso tra il 1800 ed il ${new Date().getFullYear()}`}
+                    <FormInput
+                        title="Anno di Costruzione"
+                        inputValue={inputAnnoCostruzioneValue}
+                        type={"number"}
+                        inputIsInvalid={inputAnnoCostruzioneIsInvalid}
+                        inputChangeHandler={inputAnnoCostruzioneChangedHandler}
+                        inputTouchHandler={inputAnnoCostruzioneTouchedHandler}
+                        errorMessage={`L'anno di costruzione deve essere compreso tra il 1800 ed il ${new Date().getFullYear()}`}
+                        reset={inputAnnoCostruzioneReset}
                     />
                     <FormSelect
                         title="Categoria Catastale"
-                        value={categoriaCatastaleValue}
-                        function={changeImmobileValue}
-                        type={"categoriaCatastale"}
+                        value={inputCategoriaCatastaleValue}
+                        function={inputCategoriaCatastaleChangedHandler}
                         possibleValues={possibiliCategorieCatastali}
                     />
-                    <FormInputNumber
-                        titolo="Rendita Catastale (€/anno)"
-                        type="rendita"
-                        value={renditaValue}
-                        changeHandler={changeImmobileValue}
-                        invalidCondition={!isRenditaValid}
-                        invalidNote="La rendita catastale non può essere più bassa di 0 €/anno"
+                    <FormInput
+                        title="Rendita Catastale (€/anno)"
+                        inputValue={inputRenditaValue}
+                        type={"number"}
+                        inputIsInvalid={inputRenditaIsInvalid}
+                        inputChangeHandler={inputRenditaChangedHandler}
+                        inputTouchHandler={inputRenditaTouchedHandler}
+                        errorMessage={`La rendita catastale non può essere più bassa di 0 €/anno`}
+                        reset={inputRenditaReset}
                     />
                     <FormSelect
                         title="Impianto Elettrico"
-                        value={impiantoElettricoValue}
-                        function={changeImmobileValue}
-                        type={"impiantoElettrico"}
+                        value={inputImpiantoElettricoValue}
+                        function={inputImpiantoElettricoChangedHandler}
                         possibleValues={possibiliImpianti}
                     />
                     <FormSelect
                         title="Impianto Idraulico"
-                        value={impiantoIdraulicoValue}
-                        function={changeImmobileValue}
-                        type={"impiantoIdraulico"}
+                        value={inputImpiantoIdraulicoValue}
+                        function={inputImpiantoIdraulicoChangedHandler}
                         possibleValues={possibiliImpianti}
                     />
                     <FormSelect
                         title="Combustibile"
-                        value={combustibileValue}
-                        function={changeImmobileValue}
-                        type={"combustibile"}
+                        value={inputCombustibileValue}
+                        function={inputCombustibileChangedHandler}
                         possibleValues={possibleCombustibili}
                     />
                     <FormSelect
                         title="Livelli"
-                        value={livelliValue}
-                        function={changeImmobileValue}
-                        type={"livelli"}
+                        value={inputLivelliValue}
+                        function={inputLivelliChangedHandler}
                         possibleValues={possibleLivelli}
                     />
                     <FormSelect
                         title="Serramenti Interni"
-                        value={serramentiInterniValue}
-                        function={changeImmobileValue}
-                        type={"serramentiInterni"}
+                        value={inputSerramentiInterniValue}
+                        function={inputSerramentiInterniChangedHandler}
                         possibleValues={possibleSerramentiInterni}
                     />
                     <FormSelect
                         title="Serramenti Esterni"
-                        value={serramentiEsterniValue}
-                        function={changeImmobileValue}
-                        type={"serramentiEsterni"}
+                        value={inputSerramentiEsterniValue}
+                        function={inputSerramentiEsterniChangedHandler}
                         possibleValues={possibleSerramentiEsterni}
                     />
                     <FormSelect
                         title="Citofono"
-                        value={citofonoValue}
-                        function={changeImmobileValue}
-                        type={"citofono"}
+                        value={inputCitofonoValue}
+                        function={inputCitofonoChangedHandler}
                         possibleValues={possibleCitofoni}
                     />
                     <FormSelect
                         title="Portineria"
-                        value={portineriaValue}
-                        function={changeImmobileValue}
-                        type={"portineria"}
+                        value={inputPortineriaValue}
+                        function={inputPortineriaChangedHandler}
                         possibleValues={possiblePortineria}
                     />
-                    <FormInputText
-                        titolo="Cablato"
-                        value={cablatoValue}
-                        changeHandler={changeImmobileValue}
-                        type={"cablato"}
+                    <FormInput
+                        title="Cablato"
+                        inputValue={inputCablatoValue}
+                        type={"text"}
+                        inputIsInvalid={inputCablatoIsInvalid}
+                        inputChangeHandler={inputCablatoChangedHandler}
+                        inputTouchHandler={inputCablatoTouchedHandler}
+                        errorMessage={``}
+                        reset={inputCablatoReset}
                     />
-                    <FormInputText
-                        titolo="Altezza soffitto"
-                        value={altezzaValue}
-                        changeHandler={changeImmobileValue}
-                        type={"altezza"}
+                    <FormInput
+                        title="Altezza Soffitto"
+                        inputValue={inputAltezzaValue}
+                        type={"text"}
+                        inputIsInvalid={inputAltezzaIsInvalid}
+                        inputChangeHandler={inputAltezzaChangedHandler}
+                        inputTouchHandler={inputAltezzaTouchedHandler}
+                        errorMessage={`L'altezza dichiarata deve essere di almeno 1 metro`}
+                        reset={inputAltezzaReset}
                     />
-                    {contrattoValue === "affitto" && (
+                    {inputContrattoValue === "affitto" && (
                         <>
-                            <FormInputText
-                                titolo="Tipo Contratto"
-                                value={tipoContrattoValue}
-                                changeHandler={changeImmobileValue}
-                                type={"tipoContratto"}
+                            <FormSelect
+                                title="Tipo Contratto"
+                                value={inputTipoContrattoValue}
+                                function={inputTipoContrattoChangedHandler}
+                                possibleValues={possibiliTipiContratti}
                             />
-                            <FormInputText
-                                titolo="Cauzione"
-                                value={cauzioneValue}
-                                changeHandler={changeImmobileValue}
-                                type={"cauzione"}
+                            <FormSelect
+                                title="Cauzione"
+                                value={inputCauzioneValue}
+                                function={inputCauzioneChangedHandler}
+                                possibleValues={possibiliCauzioni}
                             />
                         </>
                     )}
                 </FormGroup>
-                <FormGroup
-                    title={`Proprietario ${
+                <ItemSelector
+                    titoloGruppo={`Proprietario ${
                         proprietarioValue ? "presente" : "mancante"
                     }`}
+                    titoloBottone="Aggiungi Proprietario dalla Lista"
+                    isItemPresent={!!proprietarioValue}
+                    getItem={() => getPersone("proprietario")}
+                    openSelector={() => {
+                        openModal("proprietario");
+                        setNewProprietarioPartOpened(false);
+                    }}
                 >
-                    {!proprietarioValue && (
-                        <IonButton expand="block" color="light">
-                            Aggiungi Proprietario
+                    {!proprietarioValue && !newProprietarioPartOpened && (
+                        <IonButton
+                            expand="block"
+                            color="light"
+                            onClick={() => setNewProprietarioPartOpened(true)}
+                        >
+                            {"Inserisci Nuova Persona"}
                         </IonButton>
                     )}
-                    {proprietarioValue && (
-                        <IonItemSliding id={proprietarioValue.id?.toString()}>
-                            <IonItem detail>
-                                <IonLabel text-wrap>
-                                    <h2>{proprietarioValue.nome}</h2>
-                                </IonLabel>
-                            </IonItem>
-                            <IonItemOptions side="end">
-                                <IonItemOption
-                                    color="primary"
-                                    onClick={() =>
-                                        showPerson(
-                                            "proprietario",
-                                            proprietarioValue
-                                        )
-                                    }
-                                >
-                                    <IonText>Visualizza</IonText>
-                                </IonItemOption>
-                                <IonItemOption
-                                    color="warning"
-                                    onClick={() => {}}
-                                >
-                                    <IonText>Cambia</IonText>
-                                </IonItemOption>
-                                <IonItemOption
-                                    color="danger"
-                                    onClick={() =>
-                                        deletePersona(
-                                            "proprietario",
-                                            proprietarioValue
-                                        )
-                                    }
-                                >
-                                    <IonText>Elimina</IonText>
-                                </IonItemOption>
-                            </IonItemOptions>
-                        </IonItemSliding>
+                    {newProprietarioPartOpened && (
+                        <>
+                            <FormInput
+                                title={"Nome (Obbligatorio - almeno 5 lettere)"}
+                                inputValue={inputNameValue}
+                                type={"text"}
+                                inputIsInvalid={inputNameIsInvalid}
+                                inputChangeHandler={inputNameChangedHandler}
+                                inputTouchHandler={inputNameTouchedHandler}
+                                errorMessage={"Nome troppo corto"}
+                                reset={inputNameReset}
+                            />
+                            <FormInput
+                                title={"Telefono"}
+                                inputValue={inputPhoneValue}
+                                type={"text"}
+                                inputIsInvalid={inputPhoneIsInvalid}
+                                inputChangeHandler={inputPhoneChangedHandler}
+                                inputTouchHandler={inputPhoneTouchedHandler}
+                                errorMessage={"Telefono non valido"}
+                                reset={inputPhoneReset}
+                            />
+                            <FormInput
+                                title={"Email"}
+                                inputValue={inputEmailValue}
+                                type={"email"}
+                                inputIsInvalid={inputEmailIsInvalid}
+                                inputChangeHandler={inputEmailChangedHandler}
+                                inputTouchHandler={inputEmailTouchedHandler}
+                                errorMessage={"Email non valida"}
+                                reset={inputEmailReset}
+                            />
+                        </>
                     )}
-                </FormGroup>
-                <FormGroup
-                    title={`Inquilini ${
-                        inquiliniValue && inquiliniValue.length > 0
-                            ? "presenti"
-                            : "mancanti"
-                    }`}
-                >
-                    {getInquiliniItems}
-                    <IonButton expand="block" color="light">
-                        Aggiungi Inquilino
-                    </IonButton>
-                </FormGroup>
+                </ItemSelector>
+                <ItemSelector
+                    titoloGruppo={`Inquilini `}
+                    titoloBottone="Aggiungi Inquilino"
+                    isItemPresent={!!inquiliniValue}
+                    getItem={() => getPersone("inquilino")}
+                    openSelector={() => openModal("inquilino")}
+                    multiple
+                />
                 <IonButton
                     expand="block"
-                    disabled={!isFormValid}
+                    disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}
                 >
                     {props.immobile ? "Modifica" : "Aggiungi"} immobile
                 </IonButton>
             </IonList>
-
-            {modalData && (
-                <Modal
-                    setIsOpen={setIsOpen}
-                    isOpen={isOpen}
-                    title={`Dati ${modalData.type}`}
-                    handler={() => setIsOpen(false)}
-                >
-                    <Card
-                        subTitle={""}
-                        title={
-                            modalData.person.nome
-                                ? modalData.person.nome
-                                : "Nome non presente"
-                        }
-                        phone={
-                            modalData.person.telefono
-                                ? modalData.person.telefono
-                                : "Telefono non presente"
-                        }
-                        email={
-                            modalData.person.email
-                                ? modalData.person.email
-                                : "Email non presente"
-                        }
-                    />
-                </Modal>
-            )}
+            <Modal
+                setIsOpen={setModalIsOpen}
+                isOpen={modalIsOpen}
+                title={`Scegli persona come ${choiceMode}`}
+                handler={() => setModalIsOpen(false)}
+            >
+                <Selector
+                    entitiesType="persone"
+                    setCurrentEntity={setCurrentPersona}
+                    selectMode
+                    queryData={queryData}
+                />
+            </Modal>
         </form>
     );
 };

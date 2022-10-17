@@ -7,7 +7,7 @@ import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import FormSelect from "../../form-components/form-select/FormSelect";
-import TextArea from "../../form-components/text_area/TextArea";
+import TextArea from "../../form-components/form-text-area/FormTextArea";
 
 const StepForm: React.FC<{
     lavoro: Lavoro;
@@ -15,6 +15,20 @@ const StepForm: React.FC<{
     backToList: () => void;
     setCurrentLavoro: Dispatch<SetStateAction<Lavoro | null>>;
 }> = (props) => {
+    let statusChangedDescription: string | null = null;
+    let stepDescription =
+        props.step && props.step.descrizione ? props.step.descrizione : null;
+
+    if (
+        props.step &&
+        props.step.descrizione &&
+        props.step.descrizione.includes("***")
+    ) {
+        const partiDescrizione = props.step.descrizione.split("***");
+        statusChangedDescription = partiDescrizione[0].trim();
+        stepDescription = partiDescrizione[1].trim();
+    }
+
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [presentAlert] = useIonAlert();
@@ -22,21 +36,25 @@ const StepForm: React.FC<{
     const {
         inputValue: inputDescrizioneValue,
         inputIsInvalid: inputDescrizioneIsInvalid,
+        inputIsTouched: inputDescrizioneIsTouched,
         inputTouchedHandler: inputDescrizioneTouchedHandler,
         inputChangedHandler: inputDescrizioneChangedHandler,
         reset: inputDescrizioneReset,
-    } = useInput(
-        () => true,
-        props.step && props.step.descrizione !== undefined
-            ? props.step.descrizione
-            : null
-    );
+    } = useInput((el) => el.toString().length > 0, stepDescription);
 
     const [status, setStatus] = useState<lavoroType>(
         props.lavoro.status as lavoroType
     );
 
-    const isFormValid = inputDescrizioneValue && status;
+    const [statusChanged, setStatusChanged] = useState<boolean>(false);
+
+    const isFormValid =
+        (!props.step && (inputDescrizioneValue || statusChanged)) ||
+        (props.step && !inputDescrizioneIsInvalid && inputDescrizioneIsTouched);
+
+    const getDescrizioneCompleta = statusChangedDescription
+        ? statusChangedDescription + "***" + inputDescrizioneValue
+        : inputDescrizioneValue;
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
@@ -44,8 +62,8 @@ const StepForm: React.FC<{
         const url = `lavori/${props.lavoro!.id}/steps`;
         const reqBody = {
             lavoroStatus: status.toUpperCase(),
-            stepMessage: inputDescrizioneValue,
-            descrizione: inputDescrizioneValue,
+            stepMessage: getDescrizioneCompleta,
+            descrizione: getDescrizioneCompleta,
         };
         try {
             props.step
@@ -81,8 +99,9 @@ const StepForm: React.FC<{
         }
     };
 
-    const changeLavoroType = (e: any, type: any) => {
+    const changeLavoroType = (e: any) => {
         setStatus(e.detail.value);
+        setStatusChanged(true);
     };
 
     const getPossibleStatusValues = () =>
@@ -97,7 +116,6 @@ const StepForm: React.FC<{
                         title="Status"
                         value={status}
                         function={changeLavoroType}
-                        type={"status"}
                         possibleValues={getPossibleStatusValues()}
                     />
                 )}

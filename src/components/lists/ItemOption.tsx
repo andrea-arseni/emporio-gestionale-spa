@@ -1,12 +1,10 @@
 import { IonItemOption, IonIcon, IonText } from "@ionic/react";
-import { Entity } from "../../entities/entity";
 import useWindowSize from "../../hooks/use-size";
 import { colorType } from "../../types/color_types";
 import styles from "./Lists.module.css";
 
 const ItemOption: React.FC<{
-    handler: (input: any | undefined) => void;
-    entity: Entity;
+    handler: () => void;
     colorType: colorType;
     icon: string;
     title: string;
@@ -19,7 +17,7 @@ const ItemOption: React.FC<{
                 className={`itemOption ${
                     width > 500 ? styles.normalWidth : styles.littleWidth
                 }`}
-                onClick={() => props.handler(props.entity)}
+                onClick={() => props.handler()}
             >
                 <IonIcon
                     icon={props.icon}

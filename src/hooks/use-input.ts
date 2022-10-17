@@ -23,9 +23,7 @@ const useInput = (
     };
 
     const inputChangedHandler = (event: any, directValue?: string | null) => {
-        setInputValue(
-            !event && directValue ? directValue : event.target!.value
-        );
+        setInputValue(!event ? directValue : event.target!.value);
 
         if (
             (!event && directValue === "") ||
@@ -42,7 +40,6 @@ const useInput = (
     const reset = () => {
         setInputValue("");
         setInputIsTouched(false);
-        setVirginInput(true);
     };
 
     return {

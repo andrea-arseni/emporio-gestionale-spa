@@ -1,12 +1,10 @@
 import { IonItem, IonLabel, IonSelect, IonSelectOption } from "@ionic/react";
-import { immobileAttribute } from "../../../types/immobili_attributes";
 import capitalize from "../../../utils/capitalize";
 
 const FormSelect: React.FC<{
     title: string;
     value: string | null | number;
-    function: (e: any, type: immobileAttribute) => void;
-    type: immobileAttribute;
+    function: (e: any) => void;
     possibleValues: string[] | number[];
 }> = (props) => {
     return (
@@ -17,7 +15,7 @@ const FormSelect: React.FC<{
                 mode="ios"
                 interface="action-sheet"
                 value={props.value?.toString().toLowerCase()}
-                onIonChange={(e) => props.function(e, props.type)}
+                onIonChange={(e) => props.function(e)}
             >
                 {props.possibleValues.map((el) => (
                     <IonSelectOption

@@ -19,6 +19,7 @@ import PageFooter from "../../../components/page-footer/PageFooter";
 import { Documento } from "../../../entities/documento.model";
 import { Entity } from "../../../entities/entity";
 import { Persona } from "../../../entities/persona.model";
+import useList from "../../../hooks/use-list";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import { submitFile } from "../../../utils/fileUtils";
@@ -47,9 +48,7 @@ const PersonaFilePage: React.FC<{}> = () => {
 
     const [update, setUpdate] = useState<number>(0);
 
-    const ionListRef = useRef<any>();
-
-    const closeItems = () => ionListRef.current.closeSlidingItems();
+    const { list, closeItemsList } = useList();
 
     useEffect(() => {
         const fetchPersona = async () => {
@@ -107,7 +106,7 @@ const PersonaFilePage: React.FC<{}> = () => {
                 },
                 {
                     text: "Indietro",
-                    handler: () => closeItems(),
+                    handler: () => closeItemsList(),
                 },
             ],
         });
@@ -154,7 +153,10 @@ const PersonaFilePage: React.FC<{}> = () => {
                         }
                     />
                     {persona && persona.files && persona.files.length > 0 && (
-                        <IonList className={`${styles.list} ${styles.simple}`}>
+                        <IonList
+                            ref={list}
+                            className={`${styles.list} ${styles.simple}`}
+                        >
                             <ListDocumenti
                                 documenti={persona.files as Documento[]}
                                 setMode={setMode}

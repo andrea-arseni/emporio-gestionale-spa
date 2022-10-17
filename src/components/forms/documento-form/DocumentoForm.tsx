@@ -8,7 +8,7 @@ import {
     getFileExtension,
     getFileNameWithoutExtension,
 } from "../../../utils/fileUtils";
-import TextInput from "../../form-components/text_input/TextInput";
+import FormInput from "../../form-components/form-input/FormInput";
 
 const DocumentoForm: React.FC<{
     documento: Documento | null;
@@ -69,7 +69,7 @@ const DocumentoForm: React.FC<{
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
-                <TextInput
+                <FormInput
                     title={"Nome File (minimo 5 massimo 40 lettere)"}
                     inputValue={inputValue}
                     type={"text"}

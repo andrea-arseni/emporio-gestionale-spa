@@ -17,8 +17,8 @@ import errorHandler from "../../../utils/errorHandler";
 import { getDayName } from "../../../utils/timeUtils";
 import DatePicker from "../../date-picker/DatePicker";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
-import TextArea from "../../form-components/text_area/TextArea";
-import TextInput from "../../form-components/text_input/TextInput";
+import TextArea from "../../form-components/form-text-area/FormTextArea";
+import FormInput from "../../form-components/form-input/FormInput";
 
 const FormOperation: React.FC<{
     operation: Operazione | null;
@@ -134,7 +134,7 @@ const FormOperation: React.FC<{
                         sundayDisabled
                     />
                 )}
-                <TextInput
+                <FormInput
                     title="Importo in €"
                     inputValue={inputImportoValue}
                     type={"number"}
@@ -147,8 +147,8 @@ const FormOperation: React.FC<{
                 <ItemSelector
                     titoloGruppo={"Data"}
                     titoloBottone={"Seleziona Data"}
-                    item={inputDateValue}
-                    getItem={getDate}
+                    isItemPresent={!!inputDateValue}
+                    getItem={() => getDate()}
                     openSelector={() => setDatePickerIsOpen(true)}
                     simple
                 />
@@ -168,7 +168,9 @@ const FormOperation: React.FC<{
                     type="submit"
                     disabled={isFormDisabled}
                 >
-                    {`${props.operation ? "Modifica " : "Crea nuova "} visita`}
+                    {`${
+                        props.operation ? "Modifica " : "Crea nuova "
+                    } operazione`}
                 </IonButton>
             </IonList>
         </form>

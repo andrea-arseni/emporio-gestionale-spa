@@ -134,26 +134,20 @@ const ListDocumenti: React.FC<{
                         {(getFileType(documento.nome!) === "image" ||
                             getFileType(documento.nome!) === "pdf") && (
                             <ItemOption
-                                handler={(documento) =>
-                                    getFileAndOpen(documento)
-                                }
-                                entity={documento}
+                                handler={() => getFileAndOpen(documento)}
                                 colorType={"dark"}
                                 icon={openOutline}
                                 title={"Leggi"}
                             />
                         )}
                         <ItemOption
-                            handler={(documento) =>
-                                getFileAndDownload(documento)
-                            }
-                            entity={documento}
+                            handler={() => getFileAndDownload(documento)}
                             colorType={"primary"}
                             icon={downloadOutline}
                             title={"Scarica"}
                         />
                         <ItemOption
-                            handler={(documento) =>
+                            handler={() =>
                                 isFileSelected(documento.id!)
                                     ? shareFile(
                                           currentFile!.byteArray,
@@ -162,7 +156,6 @@ const ListDocumenti: React.FC<{
                                       )
                                     : selectFile(documento.id!)
                             }
-                            entity={documento}
                             colorType={
                                 isFileSelected(documento.id!)
                                     ? "success"
@@ -180,24 +173,22 @@ const ListDocumenti: React.FC<{
                             }
                         />
                         <ItemOption
-                            handler={(documento) => {
+                            handler={() => {
                                 props.setCurrentEntity(documento);
                                 props.setMode("form");
                             }}
-                            entity={documento}
                             colorType={"light"}
                             icon={createOutline}
                             title={"Rinomina"}
                         />
                         <ItemOption
-                            handler={(documento) =>
+                            handler={() =>
                                 props.deleteEntity(
                                     "documenti",
                                     documento.id!.toString(),
                                     `Hai selezionato la cancellazione del documento selezionato. Si tratta di un processo irreversibile.`
                                 )
                             }
-                            entity={documento}
                             colorType={"danger"}
                             icon={trashOutline}
                             title={"Elimina"}

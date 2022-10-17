@@ -4,33 +4,16 @@ import FormGroup from "../form-group/FormGroup";
 const ItemSelector: React.FC<{
     titoloGruppo: string;
     titoloBottone: string;
-    item: any;
-    getItem: (data: any) => any;
+    isItemPresent: boolean;
+    getItem: () => void;
     openSelector: () => void;
     simple?: boolean;
     multiple?: boolean;
 }> = (props) => {
-    console.log(props.item);
-
-    if (props.simple)
-        return (
-            <>
-                {props.item && props.getItem(props.item)}
-                {!props.item && (
-                    <IonButton
-                        expand="block"
-                        color="light"
-                        onClick={props.openSelector}
-                    >
-                        {props.titoloBottone}
-                    </IonButton>
-                )}
-            </>
-        );
-
-    return (
-        <FormGroup title={props.titoloGruppo}>
-            {(props.multiple || !props.item) && (
+    const bloccoItem = (
+        <>
+            {props.isItemPresent && props.getItem()}
+            {(!props.isItemPresent || props.multiple) && (
                 <IonButton
                     expand="block"
                     color="light"
@@ -39,9 +22,13 @@ const ItemSelector: React.FC<{
                     {props.titoloBottone}
                 </IonButton>
             )}
-            {props.item && props.getItem(props.item)}
-        </FormGroup>
+            {props.children}
+        </>
     );
+
+    if (props.simple) return bloccoItem;
+
+    return <FormGroup title={props.titoloGruppo}>{bloccoItem}</FormGroup>;
 };
 
 export default ItemSelector;

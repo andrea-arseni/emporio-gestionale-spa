@@ -19,6 +19,7 @@ import { Persona } from "../../entities/persona.model";
 import { getPersonaNameColor } from "../../utils/statusHandler";
 import useWindowSize from "../../hooks/use-size";
 import ItemOption from "./ItemOption";
+import useSelection from "../../hooks/use-selection";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -39,6 +40,10 @@ const ListPersone: React.FC<{
         history.push(`/persone/${id.toString()}`);
     };
 
+    const { selectEntity, entitySelected } = useSelection(
+        props.setCurrentEntity
+    );
+
     const getPersona = (persona: Persona) => {
         return (
             <IonItem
@@ -47,7 +52,12 @@ const ListPersone: React.FC<{
                 color={
                     !props.selectMode
                         ? getPersonaNameColor(persona.status!.toLowerCase())
+                        : entitySelected === persona.id
+                        ? "secondary"
                         : undefined
+                }
+                onClick={() =>
+                    props.selectMode ? selectEntity(persona) : null
                 }
             >
                 <IonLabel text-wrap>
@@ -106,6 +116,9 @@ const ListPersone: React.FC<{
         );
     };
 
+    if (props.selectMode)
+        return <>{props.persone.map((el) => getPersona(el))}</>;
+
     return (
         <>
             {props.persone.map((persona: Persona) => (
@@ -113,8 +126,7 @@ const ListPersone: React.FC<{
                     {getPersona(persona)}
                     <IonItemOptions side="end">
                         <ItemOption
-                            handler={(persona) => goToData(persona.id!)}
-                            entity={persona}
+                            handler={() => goToData(persona.id!)}
                             colorType={"primary"}
                             icon={openOutline}
                             title={"Apri"}
@@ -123,7 +135,6 @@ const ListPersone: React.FC<{
                             handler={() =>
                                 history.push(`/persone/${persona.id}/files`)
                             }
-                            entity={persona}
                             colorType={"success"}
                             icon={folderOutline}
                             title={"Files"}
@@ -133,7 +144,6 @@ const ListPersone: React.FC<{
                                 props.setCurrentEntity(persona);
                                 props.setMode("form");
                             }}
-                            entity={persona}
                             colorType={"light"}
                             icon={createOutline}
                             title={"Modifica"}
@@ -146,7 +156,6 @@ const ListPersone: React.FC<{
                                     `Hai selezionato la cancellazione della persona selezionata. Si tratta di un processo irreversibile.`
                                 );
                             }}
-                            entity={persona}
                             colorType={"danger"}
                             icon={trashOutline}
                             title={"Elimina"}

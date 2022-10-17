@@ -20,6 +20,20 @@ const ListSteps: React.FC<{
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
 }> = (props) => {
+    const getDescrizione = (step: Step) => {
+        if (step.descrizione && step.descrizione.includes("***")) {
+            const primaParte = step.descrizione.split("***")[0].trim();
+            const secondaParte = step.descrizione.split("***")[1].trim();
+            return (
+                <>
+                    <p style={{ color: "#3880ff" }}>{primaParte}</p>
+                    <h2>{secondaParte}</h2>
+                </>
+            );
+        }
+        return <h2>{step.descrizione}</h2>;
+    };
+
     return (
         <>
             {props.steps.map((step: Step) => {
@@ -28,7 +42,7 @@ const ListSteps: React.FC<{
                         <IonItem detail>
                             <IonLabel text-wrap>
                                 <p>{getDateAndTime(step.data!)}</p>
-                                <h2>{step.descrizione}</h2>
+                                {getDescrizione(step)}
                                 <p>{step.user?.name}</p>
                             </IonLabel>
                         </IonItem>
@@ -38,7 +52,6 @@ const ListSteps: React.FC<{
                                     props.setCurrentEntity(step);
                                     props.setMode("form");
                                 }}
-                                entity={step}
                                 colorType={"light"}
                                 icon={createOutline}
                                 title={"Modifica"}
@@ -51,7 +64,6 @@ const ListSteps: React.FC<{
                                         `Hai selezionato la cancellazione dello step. Si tratta di un processo irreversibile. Lo status del lavoro non verrà modificato.`
                                     );
                                 }}
-                                entity={step}
                                 colorType={"danger"}
                                 icon={trashOutline}
                                 title={"Elimina"}

@@ -5,7 +5,7 @@ import { entitiesType } from "../../../entities/entity";
 import { Filtro } from "../../../entities/filtro.model";
 import useWindowSize from "../../../hooks/use-size";
 import capitalize from "../../../utils/capitalize";
-import { numberAsPrice } from "../../../utils/numberAsPrice";
+import { numberAsPrice } from "../../../utils/numberUtils";
 import { getStatusText } from "../../../utils/statusHandler";
 import { getDayName } from "../../../utils/timeUtils";
 import Title from "../../title/Title";

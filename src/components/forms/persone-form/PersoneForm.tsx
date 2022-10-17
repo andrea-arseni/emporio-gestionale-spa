@@ -7,9 +7,7 @@ import {
     IonLoading,
     IonSelect,
     IonSelectOption,
-    IonIcon,
 } from "@ionic/react";
-import { closeOutline } from "ionicons/icons";
 import {
     Dispatch,
     FormEvent,
@@ -17,33 +15,30 @@ import {
     useEffect,
     useState,
 } from "react";
-import { useHistory } from "react-router";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
 import useQueryData from "../../../hooks/use-query-data";
 import useInput from "../../../hooks/use-input";
-import useSelection from "../../../hooks/use-selection";
 import { possibiliPersoneTypes } from "../../../types/persona_types";
 import { possibiliProvenienzePersona } from "../../../types/provenienza_persona";
 import axiosInstance from "../../../utils/axiosInstance";
 import capitalize from "../../../utils/capitalize";
 import errorHandler from "../../../utils/errorHandler";
-import TextInput from "../../form-components/text_input/TextInput";
+import FormInput from "../../form-components/form-input/FormInput";
 import Modal from "../../modal/Modal";
 import Selector from "../../selector/Selector";
-import styles from "./PersoneForm.module.css";
 import FormGroup from "../../form-components/form-group/FormGroup";
-import TextArea from "../../form-components/text_area/TextArea";
+import TextArea from "../../form-components/form-text-area/FormTextArea";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
+import SecondaryItem from "../../form-components/secondary-item/SecondaryItem";
+import useList from "../../../hooks/use-list";
 
 const PersoneForm: React.FC<{
     persona: Persona | null;
     backToList: () => void;
     setCurrentPersona: Dispatch<SetStateAction<Entity | null>>;
 }> = (props) => {
-    const history = useHistory();
-
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
@@ -192,7 +187,7 @@ const PersoneForm: React.FC<{
         reset: inputNoteReset,
     } = useInput(() => true);
 
-    const queryData = useQueryData("persone");
+    const queryData = useQueryData("immobili");
 
     const getPhoneValue = () => {
         let phoneValue: string = inputPhoneValue
@@ -296,42 +291,7 @@ const PersoneForm: React.FC<{
         }
     };
 
-    const [navigateToImmobile, setNavigateToImmobile] = useState<Entity | null>(
-        null
-    );
-
-    useEffect(() => {
-        setTimeout(() => {
-            if (navigateToImmobile)
-                history.push(`immobili/${navigateToImmobile.id}`);
-        }, 300);
-    }, [navigateToImmobile, history]);
-
-    const { selectEntity, entitySelected } = useSelection(
-        setNavigateToImmobile
-    );
-
-    const alertDeleteHouse = (
-        id: number,
-        mode: "proprietà" | "locazione" | "interesse"
-    ) => {
-        presentAlert({
-            header: "Cancellazione dell'immobile",
-            message: `La cancellazione diverrà effettiva al salvataggio ${
-                props.persona ? "delle modifiche" : "della persona"
-            }.`,
-            buttons: [
-                {
-                    text: "Conferma",
-                    handler: () => deleteHouse(id, mode),
-                },
-                {
-                    text: "Cancella",
-                    role: "cancel",
-                },
-            ],
-        });
-    };
+    const { list: itemsList, closeItemsList } = useList();
 
     const getImmobili = (mode: "proprietà" | "locazione" | "interesse") => {
         let list: Immobile[] = [];
@@ -342,30 +302,25 @@ const PersoneForm: React.FC<{
         } else if (mode === "locazione" && immobileLocato) {
             list = [immobileLocato];
         }
-        return list.map((el) => {
+        const renderList = list.map((el) => {
             return (
-                <IonItem
+                <SecondaryItem
                     key={el!.id}
-                    color={
-                        entitySelected && entitySelected === el!.id
-                            ? "tertiary"
-                            : undefined
-                    }
-                    onClick={() => selectEntity(el!)}
+                    deleteAction={() => deleteHouse(el!.id!, mode)}
+                    closeItems={closeItemsList}
                 >
                     <IonLabel text-wrap>
                         <h3>Riferimento {el!.ref}</h3>
                         <p>{el!.titolo}</p>
                     </IonLabel>
-                    <IonIcon
-                        slot="end"
-                        className={styles.icon}
-                        icon={closeOutline}
-                        onClick={() => alertDeleteHouse(el!.id!, mode)}
-                    ></IonIcon>
-                </IonItem>
+                </SecondaryItem>
             );
         });
+        return (
+            <IonList style={{ padding: "0", margin: "0" }} ref={itemsList}>
+                {renderList}
+            </IonList>
+        );
     };
 
     return (
@@ -373,7 +328,7 @@ const PersoneForm: React.FC<{
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
                 <FormGroup title="Dati base">
-                    <TextInput
+                    <FormInput
                         title={"Nome (Obbligatorio - almeno 5 lettere)"}
                         inputValue={inputNameValue}
                         type={"text"}
@@ -383,7 +338,7 @@ const PersoneForm: React.FC<{
                         errorMessage={"Nome troppo corto"}
                         reset={inputNameReset}
                     />
-                    <TextInput
+                    <FormInput
                         title={"Telefono"}
                         inputValue={inputPhoneValue}
                         type={"text"}
@@ -393,7 +348,7 @@ const PersoneForm: React.FC<{
                         errorMessage={"Telefono non valido"}
                         reset={inputPhoneReset}
                     />
-                    <TextInput
+                    <FormInput
                         title={"Email"}
                         inputValue={inputEmailValue}
                         type={"email"}
@@ -457,7 +412,7 @@ const PersoneForm: React.FC<{
                             ))}
                         </IonSelect>
                     </IonItem>
-                    <TextInput
+                    <FormInput
                         title={"Ruolo"}
                         inputValue={inputRuoloValue}
                         type={"text"}
@@ -481,7 +436,7 @@ const PersoneForm: React.FC<{
                     <ItemSelector
                         titoloGruppo="Immobile d'Interesse"
                         titoloBottone="Aggiungi Casa d'Interesse"
-                        item={immobileInteresse}
+                        isItemPresent={!!immobileInteresse}
                         getItem={() => getImmobili("interesse")}
                         openSelector={() => openModal("interesse")}
                     />
@@ -489,7 +444,7 @@ const PersoneForm: React.FC<{
                 <ItemSelector
                     titoloGruppo="Immobili di Proprietà"
                     titoloBottone="Aggiungi Casa di Proprietà"
-                    item={listHouses}
+                    isItemPresent={!!listHouses}
                     getItem={() => getImmobili("proprietà")}
                     openSelector={() => openModal("proprietà")}
                     multiple
@@ -497,7 +452,7 @@ const PersoneForm: React.FC<{
                 <ItemSelector
                     titoloGruppo="Immobile Locato"
                     titoloBottone="Aggiungi Casa in cui è Inquilino"
-                    item={immobileLocato}
+                    isItemPresent={!!immobileLocato}
                     getItem={() => getImmobili("locazione")}
                     openSelector={() => openModal("locazione")}
                 />

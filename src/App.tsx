@@ -141,7 +141,21 @@ const App: React.FC = () => {
 export default App;
 
 /*
-- Testing di documenti
-- Testing di file persona
-- Attacco agli immobili
+
+*** PARTE BASE FINITA ***
+
+- Storia dell'immobile rewritten
+- Check correttezza data
+- Check correttezza orari eventi backend
+
+- Files con divisione Foto + Documenti
+- Files con 4 caselle speciali
+- File speciale anche su persona
+- Altri files
+
+- Show documentazione completa o no in lista immobili e persona
+
+- IN PERSONA
+- Add Contact action
+- Write Email
 */
