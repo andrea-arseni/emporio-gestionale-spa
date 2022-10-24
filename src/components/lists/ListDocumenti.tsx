@@ -21,6 +21,7 @@ import {
     downloadFile,
     getFileNameWithoutExtension,
     getFileType,
+    getReportName,
     openFile,
     shareFile,
 } from "../../utils/fileUtils";
@@ -33,16 +34,19 @@ import pdf from "../../assets/pdf.png";
 import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
 import ItemOption from "./ItemOption";
+import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
 
 const ListDocumenti: React.FC<{
     documenti: Documento[];
-    setCurrentEntity: Dispatch<SetStateAction<Entity | null>>;
-    setMode: Dispatch<SetStateAction<"list" | "form">>;
+    setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
+    setMode?:
+        | Dispatch<SetStateAction<"list" | "form">>
+        | Dispatch<SetStateAction<fileMode>>;
     deleteEntity: (type: string, id: string, message?: string) => void;
-    showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
     baseUrl: string;
+    closeItems: () => void;
 }> = (props) => {
     const [presentAlert] = useIonAlert();
 
@@ -92,20 +96,29 @@ const ListDocumenti: React.FC<{
 
     const getFileAndOpen = async (documento: Documento) => {
         if (isFileSelected(documento.id!)) {
+            props.closeItems();
             openFile(currentFile!.byteArray, currentFile!.documento);
         } else {
             const res = await selectFile(documento.id!);
+            props.closeItems();
             openFile(res.byteArray, res.file);
         }
     };
 
     const getFileAndDownload = async (documento: Documento) => {
         if (isFileSelected(documento.id!)) {
+            props.closeItems();
             downloadFile(currentFile!.byteArray, currentFile!.documento);
         } else {
             const res = await selectFile(documento.id!);
+            props.closeItems();
             downloadFile(res.byteArray, res.file);
         }
+    };
+
+    const shareThisFile = () => {
+        props.closeItems();
+        shareFile(currentFile!.byteArray, currentFile!.documento, presentAlert);
     };
 
     const getDocumento = (documento: Documento) => {
@@ -116,7 +129,18 @@ const ListDocumenti: React.FC<{
                     <img alt={type} src={getThumbnail(type)} />
                 </IonThumbnail>
                 <IonLabel text-wrap>
-                    <h2>{getFileNameWithoutExtension(documento.nome!)} </h2>
+                    <h2>
+                        {`${
+                            documento.tipologia === "REPORT"
+                                ? "Report attività"
+                                : getFileNameWithoutExtension(documento.nome!)
+                        }`}
+                    </h2>
+                    {documento.tipologia === "REPORT" && (
+                        <p style={{ color: "#1361f3", fontWeight: "bold" }}>
+                            {getReportName(documento.nome!)}
+                        </p>
+                    )}
                 </IonLabel>
             </IonItem>
         );
@@ -132,7 +156,8 @@ const ListDocumenti: React.FC<{
                     {getDocumento(documento)}
                     <IonItemOptions side="end">
                         {(getFileType(documento.nome!) === "image" ||
-                            getFileType(documento.nome!) === "pdf") && (
+                            getFileType(documento.nome!) === "pdf" ||
+                            getFileType(documento.nome!) === "text") && (
                             <ItemOption
                                 handler={() => getFileAndOpen(documento)}
                                 colorType={"dark"}
@@ -149,11 +174,7 @@ const ListDocumenti: React.FC<{
                         <ItemOption
                             handler={() =>
                                 isFileSelected(documento.id!)
-                                    ? shareFile(
-                                          currentFile!.byteArray,
-                                          currentFile!.documento,
-                                          presentAlert
-                                      )
+                                    ? shareThisFile()
                                     : selectFile(documento.id!)
                             }
                             colorType={
@@ -172,15 +193,17 @@ const ListDocumenti: React.FC<{
                                     : "Seleziona"
                             }
                         />
-                        <ItemOption
-                            handler={() => {
-                                props.setCurrentEntity(documento);
-                                props.setMode("form");
-                            }}
-                            colorType={"light"}
-                            icon={createOutline}
-                            title={"Rinomina"}
-                        />
+                        {props.setCurrentEntity && props.setMode && (
+                            <ItemOption
+                                handler={() => {
+                                    props.setCurrentEntity!(documento);
+                                    props.setMode!("form");
+                                }}
+                                colorType={"light"}
+                                icon={createOutline}
+                                title={"Rinomina"}
+                            />
+                        )}
                         <ItemOption
                             handler={() =>
                                 props.deleteEntity(

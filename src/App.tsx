@@ -23,7 +23,6 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import Header from "./components/header/Header";
 import Menu from "./components/menu/Menu";
-import { useSelector } from "react-redux";
 import { RootState } from "./store";
 import AuthPage from "./pages/auth/AuthPage/AuthPage";
 import { Redirect, Route, Switch } from "react-router-dom";
@@ -32,7 +31,6 @@ import PasswordPage from "./pages/auth/PasswordPage/PasswordPage";
 import AppuntamentiPage from "./pages/appuntamenti/AppuntamentiPage/AppuntamentiPage";
 import ImmobiliPage from "./pages/immobili/ImmobiliPage/ImmobiliPage";
 import OperazioniPage from "./pages/operazioni/OperazioniPage/OperazioniPage";
-import ImmobileDataPage from "./pages/immobili/ImmobileDataPage/ImmobileDataPage";
 import LogsPage from "./pages/immobili/LogsPage/LogsPage";
 import LavoriPage from "./pages/lavori/LavoriPage/LavoriPage";
 import LavoriDataPage from "./pages/lavori/LavoriDataPage/LavoriDataPage";
@@ -40,11 +38,13 @@ import PersonaPage from "./pages/persone/PersonaPage/PersonaPage";
 import EventsPage from "./pages/persone/EventsPage/EventsPage";
 import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
 import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
+import ImmobiliFilesPage from "./pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
+import { useAppSelector } from "./hooks";
 
 setupIonicReact();
 
 const App: React.FC = () => {
-    const token = useSelector((state: RootState) => state.auth.authToken);
+    const token = useAppSelector((state: RootState) => state.auth.authToken);
 
     return (
         <IonApp>
@@ -79,8 +79,8 @@ const App: React.FC = () => {
                             </Route>
                         )}
                         {token && (
-                            <Route path="/immobili/:id" exact>
-                                <ImmobileDataPage />
+                            <Route path="/immobili/:id/files" exact>
+                                <ImmobiliFilesPage />
                             </Route>
                         )}
                         {token && (
@@ -142,20 +142,23 @@ export default App;
 
 /*
 
-*** PARTE BASE FINITA ***
+25 Ottobre 
 
-- Storia dell'immobile rewritten
-- Check correttezza data
-- Check correttezza orari eventi backend
-
-- Files con divisione Foto + Documenti
-- Files con 4 caselle speciali
-- File speciale anche su persona
-- Altri files
+- Report per documenti generici
+- File speciale anche su persona indaga
 
 - Show documentazione completa o no in lista immobili e persona
+- Show prima foto in immobili
 
 - IN PERSONA
 - Add Contact action
-- Write Email
+- Write Message interesse immobile
+
+Obiettivi 26 Ottobre
+
+- Recupera Psw non funziona
+- Check design on selection
+
 */
+
+/* PARTE VISITE - Messaggio conferma visita - Confermata */

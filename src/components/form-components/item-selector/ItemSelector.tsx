@@ -1,5 +1,5 @@
-import { IonButton } from "@ionic/react";
 import FormGroup from "../form-group/FormGroup";
+import styles from "./ItemSelector.module.css";
 
 const ItemSelector: React.FC<{
     titoloGruppo: string;
@@ -9,18 +9,19 @@ const ItemSelector: React.FC<{
     openSelector: () => void;
     simple?: boolean;
     multiple?: boolean;
+    color?: boolean;
 }> = (props) => {
     const bloccoItem = (
         <>
             {props.isItemPresent && props.getItem()}
             {(!props.isItemPresent || props.multiple) && (
-                <IonButton
-                    expand="block"
+                <button
                     color="light"
+                    className={styles.button}
                     onClick={props.openSelector}
                 >
                     {props.titoloBottone}
-                </IonButton>
+                </button>
             )}
             {props.children}
         </>
@@ -28,7 +29,22 @@ const ItemSelector: React.FC<{
 
     if (props.simple) return bloccoItem;
 
-    return <FormGroup title={props.titoloGruppo}>{bloccoItem}</FormGroup>;
+    return (
+        <FormGroup
+            color={
+                !props.color
+                    ? undefined
+                    : props.isItemPresent
+                    ? "success"
+                    : "danger"
+            }
+            title={`${props.titoloGruppo} ${
+                props.isItemPresent && props.color ? "presente" : "mancante"
+            }`}
+        >
+            {bloccoItem}
+        </FormGroup>
+    );
 };
 
 export default ItemSelector;

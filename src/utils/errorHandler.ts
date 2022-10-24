@@ -14,6 +14,8 @@ const errorHandler = (
     const originalErrorMessage =
         e && e.response && e.response.data && e.response.data.message
             ? e.response.data.message
+            : e && e.response && e.response.data
+            ? e.response.data
             : null;
 
     const subHeader = originalErrorMessage ? message : "";

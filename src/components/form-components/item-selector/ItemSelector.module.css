@@ -1,0 +1,15 @@
+.button {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 40px;
+    background-color: rgb(228, 228, 228);
+    color: rgb(44, 44, 44);
+    transition: all 0.4s;
+}
+
+.button:hover {
+    background-color: white;
+    color: rgb(17, 17, 27);
+}

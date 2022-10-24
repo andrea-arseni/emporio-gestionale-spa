@@ -6,7 +6,7 @@ import {
     IonLoading,
     useIonAlert,
 } from "@ionic/react";
-import { documentsOutline } from "ionicons/icons";
+import { documentsSharp } from "ionicons/icons";
 import { useRef, useState } from "react";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
 import DocumentoForm from "../../../components/forms/documento-form/DocumentoForm";
@@ -49,15 +49,16 @@ const DocumentiPage: React.FC<{}> = () => {
                         style={{ margin: 0 }}
                         onClick={() => inputFileRef.current.click()}
                     >
-                        <IonIcon icon={documentsOutline} />
+                        <IonIcon icon={documentsSharp} />
                         <IonLabel style={{ paddingLeft: "16px" }}>
-                            Nuovo Documento
+                            Nuovi Documenti
                         </IonLabel>
                     </IonButton>
                     <input
                         style={{
                             display: "none",
                         }}
+                        multiple
                         ref={inputFileRef}
                         type="file"
                         onChange={(e) =>

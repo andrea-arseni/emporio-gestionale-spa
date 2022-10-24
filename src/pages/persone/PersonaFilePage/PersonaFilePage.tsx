@@ -7,7 +7,7 @@ import {
     IonLoading,
     useIonAlert,
 } from "@ionic/react";
-import { documentsOutline } from "ionicons/icons";
+import { documentsSharp } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
@@ -131,9 +131,9 @@ const PersonaFilePage: React.FC<{}> = () => {
                         style={{ margin: 0 }}
                         onClick={() => inputFileRef.current.click()}
                     >
-                        <IonIcon icon={documentsOutline} />
+                        <IonIcon icon={documentsSharp} />
                         <IonLabel style={{ paddingLeft: "16px" }}>
-                            Nuovo File
+                            Nuovi File
                         </IonLabel>
                     </IonButton>
                     <input
@@ -141,6 +141,7 @@ const PersonaFilePage: React.FC<{}> = () => {
                             display: "none",
                         }}
                         ref={inputFileRef}
+                        multiple
                         type="file"
                         onChange={(e) =>
                             submitFile(
@@ -162,10 +163,10 @@ const PersonaFilePage: React.FC<{}> = () => {
                                 setMode={setMode}
                                 setCurrentEntity={setCurrentDocumento}
                                 deleteEntity={deleteEntity}
-                                showLoading={showLoading}
                                 setShowLoading={setShowLoading}
                                 setUpdate={setUpdate}
                                 baseUrl={`/persone/${personaId}/files`}
+                                closeItems={closeItemsList}
                             />
                         </IonList>
                     )}

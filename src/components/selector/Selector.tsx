@@ -276,10 +276,10 @@ const Selector: React.FC<{
                         setMode={props.setMode!}
                         setCurrentEntity={props.setCurrentEntity!}
                         deleteEntity={deleteEntity}
-                        showLoading={showLoading}
                         setShowLoading={setShowLoading}
                         setUpdate={setUpdate}
                         baseUrl="/documenti"
+                        closeItems={closeItemsList}
                     />
                 );
         }

@@ -8,6 +8,7 @@ import {
 import { arrowBackOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
 import { Entity } from "../../../entities/entity";
+import { Immobile } from "../../../entities/immobile.model";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Persona } from "../../../entities/persona.model";
 import {
@@ -18,7 +19,7 @@ import styles from "./RiepilogoBar.module.css";
 
 const RiepilogoBar: React.FC<{
     currentEntity: Entity;
-    tipologia: "persona" | "lavoro";
+    tipologia: "persona" | "lavoro" | "immobile";
 }> = (props) => {
     const history = useHistory();
 
@@ -26,13 +27,17 @@ const RiepilogoBar: React.FC<{
         if (props.tipologia === "persona") {
             const persona = props.currentEntity as Persona;
             return persona.nome;
+        } else if (props.tipologia === "lavoro") {
+            const entity = props.currentEntity as Lavoro;
+            return entity.titolo;
         } else {
-            const lavoro = props.currentEntity as Lavoro;
-            return lavoro.titolo;
+            const entity = props.currentEntity as Immobile;
+            return `Ref. ${entity.ref} - ${entity.titolo}`;
         }
     };
 
     const getColor = () => {
+        if (props.tipologia === "immobile") return undefined;
         return props.tipologia === "lavoro"
             ? getLavoroTitleColor(entity!.status!)
             : getPersonaNameColor(entity!.status!);
@@ -41,7 +46,7 @@ const RiepilogoBar: React.FC<{
     const entity =
         props.tipologia === "persona"
             ? (props.currentEntity as Persona)
-            : (props.currentEntity as Lavoro);
+            : (props.currentEntity as Lavoro | Immobile);
 
     return (
         <IonToolbar mode="ios" className={styles.toolbar} color={getColor()}>
@@ -50,10 +55,18 @@ const RiepilogoBar: React.FC<{
                     <IonIcon slot="icon-only" icon={arrowBackOutline} />
                 </IonButton>
             </IonButtons>
-            <IonTitle size="small" className={styles.smallTitle}>
-                {entity!.status?.replace("_", " ")}
+            {props.tipologia !== "immobile" && (
+                <IonTitle size="small" className={styles.smallTitle}>
+                    {entity!.status?.replace("_", " ")}
+                </IonTitle>
+            )}
+            <IonTitle
+                className={
+                    props.tipologia !== "immobile" ? styles.title : undefined
+                }
+            >
+                {getTitle()}
             </IonTitle>
-            <IonTitle className={styles.title}>{getTitle()}</IonTitle>
         </IonToolbar>
     );
 };

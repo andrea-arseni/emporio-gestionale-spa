@@ -8,6 +8,7 @@ export class Documento {
         public tipologia: string | null,
         public codiceBucket: string | null,
         public immobile?: Immobile,
-        public persona?: Persona
+        public persona?: Persona,
+        public base64String?: string
     ) {}
 }

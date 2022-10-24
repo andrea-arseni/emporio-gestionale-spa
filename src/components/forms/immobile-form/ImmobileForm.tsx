@@ -890,6 +890,20 @@ const ImmobileForm: React.FC<{
         }
     };
 
+    const getComuneValue = () => {
+        if (!isManualTown || !inputComuneValue) return inputComuneValue;
+        let output = inputComuneValue;
+        possibleComuni.forEach((el) => {
+            if (
+                el.toLowerCase().trim() ===
+                inputComuneValue.toLowerCase().trim()
+            ) {
+                output = el;
+            }
+        });
+        return output;
+    };
+
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
         const immobile = new Immobile(
@@ -902,7 +916,7 @@ const ImmobileForm: React.FC<{
             inputLocaliValue,
             inputIndirizzoValue,
             inputZonaValue ? inputZonaValue : "",
-            inputComuneValue,
+            getComuneValue(),
             inputPrezzoValue
                 ? +inputPrezzoValue.toString().replace(".", "")
                 : null,
@@ -1116,6 +1130,13 @@ const ImmobileForm: React.FC<{
         );
     };
 
+    useEffect(() => {
+        if (inputComuneValue === "notInList") {
+            inputComuneReset();
+            setIsManualTown(true);
+        }
+    }, [inputComuneValue, inputComuneReset]);
+
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
@@ -1189,10 +1210,7 @@ const ImmobileForm: React.FC<{
                                         {capitalize(el)}
                                     </IonSelectOption>
                                 ))}
-                                <IonSelectOption
-                                    value="notInList"
-                                    onClick={() => setIsManualTown(true)}
-                                >
+                                <IonSelectOption value="notInList">
                                     Non presente in lista
                                 </IonSelectOption>
                             </IonSelect>
@@ -1207,7 +1225,10 @@ const ImmobileForm: React.FC<{
                             inputChangeHandler={inputComuneChangedHandler}
                             inputTouchHandler={inputComuneTouchedHandler}
                             errorMessage={"Lunghezza non valida"}
-                            reset={inputComuneReset}
+                            reset={() => {
+                                inputComuneReset();
+                                setIsManualTown(false);
+                            }}
                         />
                     )}
                     {(inputComuneValue === "Segrate" ||

@@ -1,0 +1,49 @@
+.simple {
+    height: calc(100vh - 44px - 100px - 62px);
+    overflow: scroll;
+    background: linear-gradient(to left, azure, white, rgb(255, 244, 244));
+}
+
+.col {
+    height: 300px;
+}
+
+.grid {
+    position: relative;
+}
+
+.selectionButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 140px;
+    border-radius: 10px;
+    padding: 16px;
+    background-color: rgb(241, 241, 241);
+    border: #3880ff 1px solid;
+    color: rgb(66, 66, 66);
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.4s ease;
+}
+
+.selectionButton:hover {
+    background-color: white;
+    color: #3880ff;
+}
+
+.selectionInfo {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 140px;
+    border-radius: 10px;
+    padding: 16px;
+    background-color: white;
+    color: #3880ff;
+    border: #3880ff 1px solid;
+    font-size: 90%;
+    text-align: center;
+}

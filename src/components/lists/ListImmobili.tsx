@@ -42,10 +42,6 @@ const ListImmobili: React.FC<{
 
     const [presentAlert] = useIonAlert();
 
-    const goToData = (id: number) => {
-        history.push(`/immobili/${id.toString()}`);
-    };
-
     const copyImmobile = async (id: number) => {
         // loader
         props.setShowLoading(true);
@@ -147,13 +143,17 @@ const ListImmobili: React.FC<{
                     {getImmobile(immobile)}
                     <IonItemOptions side="end">
                         <ItemOption
-                            handler={() => console.log("files")}
+                            handler={() =>
+                                history.push(`/immobili/${immobile.id}/files`)
+                            }
                             colorType={"primary"}
                             icon={cameraOutline}
                             title={"File"}
                         />
                         <ItemOption
-                            handler={() => console.log("storia")}
+                            handler={() =>
+                                history.push(`/immobili/${immobile.id}/storia`)
+                            }
                             colorType={"tertiary"}
                             icon={newspaperOutline}
                             title={"Storia"}

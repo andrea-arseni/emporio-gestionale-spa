@@ -14,7 +14,7 @@ const ListLogs: React.FC<{
                     {log.user && log.user.name && (
                         <p>{capitalize(log.user.name)}</p>
                     )}
-                    <h2>{log.azione}</h2>
+                    <h2>{capitalize(log.azione!)}</h2>
                 </IonLabel>
             </IonItem>
         );

@@ -9,7 +9,7 @@ import { stato } from "../types/stato";
 import { status } from "../types/status";
 import { tipologia } from "../types/tipologia";
 import { Caratteristiche } from "./caratteristiche.model";
-import { File } from "./file.model";
+import { Documento } from "./documento.model";
 import { Log } from "./log.model";
 import { Persona } from "./persona.model";
 
@@ -37,7 +37,7 @@ export class Immobile {
         public piano: piano | null,
         public caratteristiche: Caratteristiche | null,
         public logs: Log[] | null,
-        public files: File[] | null,
+        public files: Documento[] | null,
         public inquilini: Persona[] | null
     ) {}
 }

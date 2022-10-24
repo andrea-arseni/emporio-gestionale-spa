@@ -1,9 +1,9 @@
 import { IonItemGroup, IonItemDivider, IonLabel } from "@ionic/react";
 
-const FormGroup: React.FC<{ title: string }> = (props) => {
+const FormGroup: React.FC<{ title: string; color?: string }> = (props) => {
     return (
         <IonItemGroup>
-            <IonItemDivider color="dark">
+            <IonItemDivider color={props.color ? props.color : "dark"}>
                 <IonLabel color="light">
                     <h2>{props.title}</h2>
                 </IonLabel>

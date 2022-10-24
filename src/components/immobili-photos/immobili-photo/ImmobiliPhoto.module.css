@@ -1,0 +1,23 @@
+.frame {
+    height: 100%;
+    background-color: aliceblue;
+    border: 1px solid lightblue;
+}
+
+.over {
+    background-color: red;
+}
+
+.image {
+    height: 90%;
+    width: 90%;
+}
+
+.isNotSelected {
+    opacity: 0.6;
+}
+
+.isSelected {
+    border: 2px solid #3880ff;
+    opacity: 1;
+}
