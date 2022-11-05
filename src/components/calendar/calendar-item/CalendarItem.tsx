@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Visit } from "../../../entities/visit.model";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { setTooltip } from "../../../store/appuntamenti-slice";
 import styles from "./CalendarItem.module.css";
 
 const CalendarItem: React.FC<{
@@ -8,14 +10,18 @@ const CalendarItem: React.FC<{
 }> = (props) => {
     const date = new Date(props.dateAsString);
 
-    const [tooltipActivated, setTooltipActivated] = useState<boolean>(false);
+    const tooltipActivated = useAppSelector(
+        (state) => state.appuntamenti.tooltipActivated
+    );
+
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (tooltipActivated)
+        if (tooltipActivated === props.dateAsString)
             setTimeout(() => {
-                setTooltipActivated(false);
+                dispatch(setTooltip(null));
             }, 2000);
-    }, [tooltipActivated]);
+    }, [tooltipActivated, dispatch, props.dateAsString]);
 
     const isPast = (dateProposed: Date) => {
         const nowTime = new Date().getTime();
@@ -45,7 +51,7 @@ const CalendarItem: React.FC<{
                                       null
                                   )
                               )
-                        : () => setTooltipActivated(true)
+                        : () => dispatch(setTooltip(props.dateAsString))
                 }
                 className={`${styles.app} ${isPast(date) ? styles.past : ""}`}
                 slot="start"
@@ -54,7 +60,7 @@ const CalendarItem: React.FC<{
             </div>
             <div
                 className={`${styles.tooltip} ${
-                    isPast(date) && tooltipActivated
+                    isPast(date) && tooltipActivated === props.dateAsString
                         ? styles.activated
                         : styles.deactivated
                 }`}

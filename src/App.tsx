@@ -150,13 +150,13 @@ export default App;
 
 3 Novembre
 
-- Un ultimo tentativo con isModalOpen in redux e modal componente, se no pace!
+- titolo e backtolist funzionanti
 
-- Singolo component on div for avoid rerendering - COMBATTI PARENZO!
+- Test visualizza
 
-- Standard user attuale on post - and other user 
+- Test inserimento 
 
-- Inserimento OK
+- Funzione Elimina Visita
 
 - Funzione Modifica Visita 
 

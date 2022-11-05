@@ -6,11 +6,12 @@ import {
     IonLabel,
     IonList,
 } from "@ionic/react";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { Visit } from "../../entities/visit.model";
 import useSize from "../../hooks/use-size";
 import { areDateEquals, getDateAsString, Giorno } from "../../utils/timeUtils";
 import CalendarItem from "./calendar-item/CalendarItem";
+import CalendarModal from "./calendar-modal/CalendarModal";
 import styles from "./Calendar.module.css";
 import VisitItem from "./visit-item/VisitItem";
 
@@ -128,12 +129,14 @@ const Calendar: React.FC<{
     return widthScreen < 700 ? (
         <IonGrid className={styles.grid}>
             <IonRow>{getDayGrid()}</IonRow>
+            <CalendarModal />
         </IonGrid>
     ) : (
         <IonGrid className={styles.grid}>
             <IonRow>{getWeekGrid()}</IonRow>
+            <CalendarModal />
         </IonGrid>
     );
 };
 
-export default Calendar;
+export default memo(Calendar);

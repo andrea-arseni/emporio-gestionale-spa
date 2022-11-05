@@ -7,7 +7,7 @@ import {
     IonSegmentButton,
     useIonAlert,
 } from "@ionic/react";
-import { calendarOutline, listOutline, trashBinOutline } from "ionicons/icons";
+import { calendarOutline, listOutline } from "ionicons/icons";
 import { useCallback, useEffect, useState } from "react";
 import CalendarNavigator from "../../../components/calendar-navigator/CalendarNavigator";
 import Calendar from "../../../components/calendar/Calendar";
@@ -22,8 +22,12 @@ import axiosInstance from "../../../utils/axiosInstance";
 import { Visit } from "../../../entities/visit.model";
 import FormVisit from "../../../components/forms/visit-form/VisitForm";
 import errorHandler from "../../../utils/errorHandler";
-import FormTitle from "../../../components/form-components/form-title/FormTitle";
-import Modal from "../../../components/modal/Modal";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import {
+    backToList,
+    setCurrentVisit,
+    setPageMode,
+} from "../../../store/appuntamenti-slice";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
@@ -43,25 +47,18 @@ const AppuntamentiPage: React.FC<{}> = () => {
 
     const [update, doUpdate] = useState<number>(0);
 
-    const [currentVisit, setCurrentVisit] = useState<Visit | null>(null);
+    const dispatch = useAppDispatch();
 
-    const [pageMode, setPageMode] = useState<"calendario" | "lista" | "form">(
-        "calendario"
-    );
+    const pageMode = useAppSelector((state) => state.appuntamenti.pageMode);
 
     const openVisitForm = (visit: Visit | null) => {
-        setCurrentVisit(visit);
-        setPageMode("form");
-    };
-
-    const backToList = () => {
-        setPageMode("calendario");
-        setCurrentVisit(null);
+        dispatch(setCurrentVisit(visit));
+        dispatch(setPageMode("form"));
     };
 
     const operationComplete = () => {
         doUpdate((prevState) => ++prevState);
-        backToList();
+        dispatch(backToList());
     };
 
     const changeDay = useCallback(
@@ -145,35 +142,21 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 </>
             )}
             {pageMode === "form" && (
-                <>
-                    <FormTitle
-                        title={
-                            currentVisit && currentVisit.id
-                                ? "Modifica Visita"
-                                : "Nuova Visita"
-                        }
-                        handler={backToList}
-                        backToList
-                    />
-                    <FormVisit
-                        operationComplete={operationComplete}
-                        visit={currentVisit}
-                    />
-                </>
+                <FormVisit operationComplete={operationComplete} />
             )}
             {pageMode !== "form" && (
                 <>
                     <IonSegment mode="ios" value={pageMode}>
                         <IonSegmentButton
                             value="calendario"
-                            onClick={() => setPageMode("calendario")}
+                            onClick={() => dispatch(setPageMode("calendario"))}
                         >
                             <IonIcon icon={calendarOutline} />
                             <IonLabel>Calendario</IonLabel>
                         </IonSegmentButton>
                         <IonSegmentButton
                             value="lista"
-                            onClick={() => setPageMode("lista")}
+                            onClick={() => dispatch(setPageMode("lista"))}
                         >
                             <IonIcon icon={listOutline} />
                             <IonLabel>Lista</IonLabel>
