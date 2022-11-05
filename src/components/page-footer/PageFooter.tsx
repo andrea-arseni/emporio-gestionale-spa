@@ -6,7 +6,7 @@ import Title from "../title/Title";
 import styles from "./PageFooter.module.css";
 
 const PageFooter: React.FC<{
-    page: number;
+    page?: number;
     setPage?: Dispatch<SetStateAction<number>>;
     numberOfResults: number;
     simple?: boolean;
@@ -14,7 +14,9 @@ const PageFooter: React.FC<{
     const [width] = useWindowSize();
 
     if (props.simple) {
-        const text = `${props.numberOfResults} risultati`;
+        const text = `${props.numberOfResults} risultat${
+            props.numberOfResults === 1 ? "o" : "i"
+        } `;
         return (
             <IonFooter className={styles.footer}>
                 <IonToolbar mode="ios" className={styles.toolbar}>
@@ -26,12 +28,14 @@ const PageFooter: React.FC<{
 
     const text = `Pagina ${props.page} di ${Math.ceil(
         props.numberOfResults / 20
-    )} ( ${props.numberOfResults} risultati )`;
+    )} ( ${props.numberOfResults} risultat${
+        props.numberOfResults === 1 ? "o" : "i"
+    } )`;
 
     return (
         <IonFooter className={styles.footer}>
             <IonToolbar mode="ios" className={styles.toolbar}>
-                {props.page > 1 && (
+                {props.page! > 1 && (
                     <IonButton
                         slot="start"
                         fill="clear"
@@ -47,7 +51,7 @@ const PageFooter: React.FC<{
                     </IonButton>
                 )}
                 {props.numberOfResults > 0 && <Title>{text}</Title>}
-                {props.page < Math.ceil(props.numberOfResults / 20) && (
+                {props.page! < Math.ceil(props.numberOfResults / 20) && (
                     <IonButton
                         slot="end"
                         fill="clear"

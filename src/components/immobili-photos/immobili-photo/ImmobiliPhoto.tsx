@@ -103,7 +103,6 @@ const ImmobiliPhoto: React.FC<{
                     props.bloccaSelezione(false);
                 }, 2000);
             } catch (e) {
-                console.log(e);
                 setRotating(null);
                 setShowLoading(false);
                 props.bloccaSelezione(false);

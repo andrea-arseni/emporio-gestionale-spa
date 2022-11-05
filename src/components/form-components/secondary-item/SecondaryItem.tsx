@@ -12,6 +12,7 @@ const SecondaryItem: React.FC<{
     deleteAction: () => void;
     visualizeAction?: () => void;
     closeItems: () => void;
+    directDeleting?: boolean;
 }> = (props) => {
     const [presentAlert] = useIonAlert();
 
@@ -45,7 +46,11 @@ const SecondaryItem: React.FC<{
                     />
                 )}
                 <ItemOption
-                    handler={() => alertDeleteEntity()}
+                    handler={() =>
+                        props.directDeleting
+                            ? props.deleteAction()
+                            : alertDeleteEntity()
+                    }
                     colorType={"danger"}
                     icon={closeOutline}
                     title={"Elimina"}

@@ -28,61 +28,9 @@
     top: -1px;
 }
 
-.app {
-    border: 1px solid gray;
-    height: 33px;
-    width: 40px;
-    border-radius: 6px;
-    padding: 2px 6px;
-    margin: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: small;
-}
-
-.app:hover {
-    cursor: pointer;
-    background-color: white;
-}
-
 .appFrame {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 80%;
-}
-
-@media (max-width: 1110px) {
-    .app {
-        margin-left: 0;
-        margin-right: 0;
-        font-size: smaller;
-        width: 38px;
-    }
-}
-
-@media (max-width: 990px) {
-    .app {
-        margin: 5px;
-        width: 40px;
-    }
-}
-
-@media (max-width: 905px) {
-    .app {
-        margin-left: 0;
-        margin-right: 0;
-        font-size: smaller;
-        width: 38px;
-    }
-}
-
-@media (max-width: 699px) {
-    .app {
-        font-size: normal;
-        width: 50px;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
 }

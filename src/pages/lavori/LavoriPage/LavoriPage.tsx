@@ -27,7 +27,6 @@ const LavoriPage: React.FC<{}> = () => {
             {mode === "list" && (
                 <IonContent>
                     <NewEntityBar
-                        entitiesType="lavori"
                         setMode={setMode}
                         icon={golfOutline}
                         title="Nuovo Obiettivo"

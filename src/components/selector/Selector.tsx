@@ -267,6 +267,7 @@ const Selector: React.FC<{
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
                         setUpdate={setUpdate}
+                        closeItems={closeItemsList}
                     />
                 );
             case "documenti":

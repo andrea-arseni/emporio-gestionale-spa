@@ -16,6 +16,8 @@ const TwoDates: React.FC<{
     action: (input: any) => void;
     text: string;
     limit?: Date;
+    goBack?: boolean;
+    getBack?: () => void;
 }> = (props) => {
     const [selectingStartDate, setSelectingStartDate] =
         useState<boolean>(false);
@@ -120,7 +122,6 @@ const TwoDates: React.FC<{
                         <IonButton
                             onClick={() => props.action({ startDate, endDate })}
                             className={styles.button}
-                            expand="full"
                             mode="ios"
                             color="primary"
                             type="submit"
@@ -128,6 +129,18 @@ const TwoDates: React.FC<{
                         >
                             {props.text}
                         </IonButton>
+
+                        {props.goBack && (
+                            <IonButton
+                                onClick={() => props.getBack!()}
+                                className={styles.button}
+                                mode="ios"
+                                color="light"
+                                type="button"
+                            >
+                                Indietro
+                            </IonButton>
+                        )}
                     </IonList>
                 </div>
             )}

@@ -69,7 +69,6 @@ const LavoriDataPage: React.FC<{}> = () => {
                             />
 
                             <NewEntityBar
-                                entitiesType="steps"
                                 setMode={setMode}
                                 icon={constructOutline}
                                 title="Aggiorna Obiettivo"

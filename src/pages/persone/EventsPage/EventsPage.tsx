@@ -10,13 +10,17 @@ import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Evento } from "../../../entities/evento.model";
 import { Persona } from "../../../entities/persona.model";
+import { useAppDispatch } from "../../../hooks";
 import useQueryData from "../../../hooks/use-query-data";
+import { setPersona } from "../../../store/persona-slice";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 
 const EventsPage: React.FC<{}> = () => {
     const location = useLocation();
     const id = location.pathname.split("/")[2];
+
+    const dispatch = useAppDispatch();
 
     const history = useHistory();
 
@@ -45,6 +49,7 @@ const EventsPage: React.FC<{}> = () => {
             try {
                 const res = await axiosInstance.get(`/persone/${id}`);
                 setCurrentPersona(res.data);
+                dispatch(setPersona(res.data));
                 setShowLoading(false);
             } catch (e) {
                 errorHandler(
@@ -57,7 +62,7 @@ const EventsPage: React.FC<{}> = () => {
         };
 
         fetchPersona();
-    }, [id, presentAlert, history, update]);
+    }, [id, presentAlert, history, update, dispatch]);
 
     return (
         <div className="page">
@@ -69,7 +74,6 @@ const EventsPage: React.FC<{}> = () => {
                         tipologia={"persona"}
                     />
                     <NewEntityBar
-                        entitiesType="eventi"
                         setMode={setMode}
                         icon={personAddOutline}
                         title="Aggiorna Persona"

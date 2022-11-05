@@ -100,15 +100,15 @@ const AuthPage: React.FC<{}> = () => {
 
     const submitLoginCall = async () => {
         const res = await axiosInstance.post(`users/login`, {
-            nameOrEmail: inputNameValue,
+            nameOrEmail: inputNameValue.trim(),
             password: inputPasswordValue,
         });
         setShowLoading(false);
-        const token = res.data.token;
+        const userData = res.data;
         // salva il token in global state
         // salva il token in localstorage
         // dichiara che sei entrato
-        dispatch(login(token));
+        dispatch(login(userData));
         history.replace("/appuntamenti");
     };
 

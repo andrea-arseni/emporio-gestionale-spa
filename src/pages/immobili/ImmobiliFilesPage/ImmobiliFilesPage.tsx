@@ -40,6 +40,7 @@ import errorHandler from "../../../utils/errorHandler";
 import {
     downloadMultipleFiles,
     shareMultipleFiles,
+    sortReports,
     submitFile,
 } from "../../../utils/fileUtils";
 import styles from "./ImmobiliFilesPage.module.css";
@@ -123,7 +124,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                 presentAlert
             );
         } else if (error.name === "createReport") {
-            console.log(error);
             errorHandler(
                 error.object,
                 () => {
@@ -280,6 +280,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         ? immobile.files.filter((el) => el.tipologia === "FOTO")
         : [];
 
+    sortReports(reports);
+
     const pickFile = (input: fileSpeciale | null) => {
         inputFileRef.current.click();
         setCurrentFileSpeciale(input);
@@ -301,7 +303,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             setIsSelectingDates(false);
             setUpdate((prevState) => ++prevState);
         } catch (e) {
-            console.log(e);
             dispatch(changeLoading(false));
             dispatch(setError({ name: "createReport", object: e }));
         }
@@ -427,6 +428,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                             action={creaReport}
                             text="Crea Report"
                             limit={new Date()}
+                            goBack
+                            getBack={() => setIsSelectingDates(false)}
                         />
                     )}
                 </IonContent>

@@ -12,7 +12,9 @@ import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
 import Card from "../../../components/card/Card";
+import FormGroup from "../../../components/form-components/form-group/FormGroup";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import ItemSelector from "../../../components/form-components/item-selector/ItemSelector";
 import DocumentoForm from "../../../components/forms/documento-form/DocumentoForm";
 import ListDocumenti from "../../../components/lists/ListDocumenti";
 import PageFooter from "../../../components/page-footer/PageFooter";
@@ -20,9 +22,15 @@ import { Documento } from "../../../entities/documento.model";
 import { Entity } from "../../../entities/entity";
 import { Persona } from "../../../entities/persona.model";
 import useList from "../../../hooks/use-list";
+import { fileSpeciale } from "../../../types/file_speciali";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
-import { submitFile } from "../../../utils/fileUtils";
+import {
+    getFilesNonSpeciali,
+    getFileSpeciale,
+    isFileSpecialePresent,
+    submitFile,
+} from "../../../utils/fileUtils";
 import styles from "./PersonaFilePage.module.css";
 
 const PersonaFilePage: React.FC<{}> = () => {
@@ -45,6 +53,9 @@ const PersonaFilePage: React.FC<{}> = () => {
     const [currentDocumento, setCurrentDocumento] = useState<Entity | null>(
         null
     );
+
+    const [currentFileSpeciale, setCurrentFileSpeciale] =
+        useState<fileSpeciale | null>(null);
 
     const [update, setUpdate] = useState<number>(0);
 
@@ -75,6 +86,11 @@ const PersonaFilePage: React.FC<{}> = () => {
         setMode("list");
         setCurrentDocumento(null);
         setUpdate((prevValue) => ++prevValue);
+    };
+
+    const pickFile = (input: fileSpeciale | null) => {
+        setCurrentFileSpeciale(input);
+        inputFileRef.current.click();
     };
 
     const confirmDeleteEntity = async (id: string) => {
@@ -112,6 +128,19 @@ const PersonaFilePage: React.FC<{}> = () => {
         });
     };
 
+    const getItem = (input: fileSpeciale) => {
+        return (
+            <ListDocumenti
+                documenti={getFileSpeciale(persona!.files!, input)}
+                deleteEntity={deleteEntity}
+                setShowLoading={setShowLoading}
+                setUpdate={setUpdate}
+                baseUrl={`/persone/${personaId}/files`}
+                closeItems={closeItemsList}
+            />
+        );
+    };
+
     return (
         <div className="page">
             {mode === "list" && (
@@ -129,7 +158,7 @@ const PersonaFilePage: React.FC<{}> = () => {
                         mode="ios"
                         fill="solid"
                         style={{ margin: 0 }}
-                        onClick={() => inputFileRef.current.click()}
+                        onClick={() => pickFile(null)}
                     >
                         <IonIcon icon={documentsSharp} />
                         <IonLabel style={{ paddingLeft: "16px" }}>
@@ -149,7 +178,9 @@ const PersonaFilePage: React.FC<{}> = () => {
                                 setShowLoading,
                                 presentAlert,
                                 `persone/${personaId}/files`,
-                                setUpdate
+                                setUpdate,
+                                undefined,
+                                currentFileSpeciale
                             )
                         }
                     />
@@ -158,16 +189,46 @@ const PersonaFilePage: React.FC<{}> = () => {
                             ref={list}
                             className={`${styles.list} ${styles.simple}`}
                         >
-                            <ListDocumenti
-                                documenti={persona.files as Documento[]}
-                                setMode={setMode}
-                                setCurrentEntity={setCurrentDocumento}
-                                deleteEntity={deleteEntity}
-                                setShowLoading={setShowLoading}
-                                setUpdate={setUpdate}
-                                baseUrl={`/persone/${personaId}/files`}
-                                closeItems={closeItemsList}
+                            <ItemSelector
+                                color
+                                titoloGruppo={"Documento Identificativo"}
+                                titoloBottone={"Aggiungi Identificativo"}
+                                isItemPresent={isFileSpecialePresent(
+                                    persona.files,
+                                    "documento-identità"
+                                )}
+                                getItem={() => getItem("documento-identità")}
+                                openSelector={() => {
+                                    pickFile("documento-identità");
+                                }}
                             />
+                            <FormGroup
+                                title={`${"Altri file"} : ${
+                                    getFilesNonSpeciali(
+                                        persona.files,
+                                        "persona"
+                                    ).length === 0
+                                        ? "Non presenti"
+                                        : getFilesNonSpeciali(
+                                              persona.files,
+                                              "persona"
+                                          ).length
+                                }`}
+                            >
+                                <ListDocumenti
+                                    documenti={getFilesNonSpeciali(
+                                        persona.files,
+                                        "persona"
+                                    )}
+                                    setMode={setMode}
+                                    setCurrentEntity={setCurrentDocumento}
+                                    setShowLoading={setShowLoading}
+                                    setUpdate={setUpdate}
+                                    baseUrl={`/persone/${personaId}/files`}
+                                    closeItems={closeItemsList}
+                                    deleteEntity={deleteEntity}
+                                />
+                            </FormGroup>
                         </IonList>
                     )}
                     {(!persona ||

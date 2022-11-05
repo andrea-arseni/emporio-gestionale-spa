@@ -7,11 +7,12 @@ const FormTitle: React.FC<{
     title: string;
     handler: () => void;
     backToList?: boolean;
+    fixed?: boolean;
 }> = (props) => {
     const [widthScreen] = useSize();
 
     return (
-        <IonToolbar mode="ios">
+        <IonToolbar mode="ios" className={props.fixed ? "fixed" : ""}>
             <IonButtons slot="end">
                 {widthScreen >= 500 && props.backToList && (
                     <IonButton

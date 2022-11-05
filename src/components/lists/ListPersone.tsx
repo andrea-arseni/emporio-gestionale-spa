@@ -4,11 +4,14 @@ import {
     IonLabel,
     IonNote,
     IonItemOptions,
+    useIonAlert,
 } from "@ionic/react";
+import { isPlatform } from "@ionic/react";
 import {
     createOutline,
     folderOutline,
     openOutline,
+    personAddOutline,
     trashOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
@@ -20,6 +23,7 @@ import { getPersonaNameColor } from "../../utils/statusHandler";
 import useWindowSize from "../../hooks/use-size";
 import ItemOption from "./ItemOption";
 import useSelection from "../../hooks/use-selection";
+import { saveContact } from "../../utils/contactUtils";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -35,6 +39,8 @@ const ListPersone: React.FC<{
     const history = useHistory();
 
     const [width] = useWindowSize();
+
+    const [presentAlert] = useIonAlert();
 
     const goToData = (id: number) => {
         history.push(`/persone/${id.toString()}`);
@@ -125,6 +131,17 @@ const ListPersone: React.FC<{
                 <IonItemSliding key={persona.id!} id={persona.id?.toString()}>
                     {getPersona(persona)}
                     <IonItemOptions side="end">
+                        {isPlatform("mobile") && (
+                            <ItemOption
+                                handler={() => {
+                                    props.closeItems();
+                                    saveContact(presentAlert, persona);
+                                }}
+                                colorType={"dark"}
+                                icon={personAddOutline}
+                                title={"Aggiungi"}
+                            />
+                        )}
                         <ItemOption
                             handler={() => goToData(persona.id!)}
                             colorType={"primary"}

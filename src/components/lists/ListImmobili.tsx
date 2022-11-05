@@ -24,6 +24,8 @@ import styles from "./Lists.module.css";
 import { useHistory } from "react-router";
 import useSelection from "../../hooks/use-selection";
 import ItemOption from "./ItemOption";
+import ImmobileThumbnail from "../immobile-thumbnail/ImmobileThumbnail";
+import FileSpecialiList from "../file-speciali-list/FileSpecialiList";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -97,16 +99,21 @@ const ListImmobili: React.FC<{
                 }
                 color={entitySelected === immobile.id ? "secondary" : undefined}
             >
-                <h3
-                    className={`${styles.ref} ${
-                        immobile.status?.toLowerCase() === "attivo"
-                            ? styles.active
-                            : styles.inactive
-                    }`}
+                {width >= 480 && <ImmobileThumbnail immobile={immobile} />}
+                <IonLabel
+                    text-wrap
+                    className={width >= 480 ? styles.label : ""}
                 >
-                    {immobile.ref}
-                </h3>
-                <IonLabel text-wrap>
+                    <h3
+                        style={{
+                            color:
+                                immobile.status?.toLowerCase() === "attivo"
+                                    ? "#018937"
+                                    : "#a40318",
+                        }}
+                    >
+                        Riferimento {immobile.ref}
+                    </h3>
                     <h2>{immobile.titolo} </h2>
                     <p>{`${immobile.indirizzo} (${immobile.comune})`}</p>
                     <p>
@@ -122,6 +129,11 @@ const ListImmobili: React.FC<{
                         {immobile.superficie} mq
                     </p>
                 </IonLabel>
+                {width >= 750 && (
+                    <IonNote slot="end" className={styles.note}>
+                        <FileSpecialiList id={immobile.id!} />
+                    </IonNote>
+                )}
                 {width >= 600 && (
                     <IonNote slot="end" className={styles.note}>
                         {immobile.contratto?.toUpperCase()}
@@ -138,56 +150,65 @@ const ListImmobili: React.FC<{
 
     return (
         <>
-            {props.immobili.map((immobile: Immobile) => (
-                <IonItemSliding key={immobile.id!} id={immobile.id?.toString()}>
-                    {getImmobile(immobile)}
-                    <IonItemOptions side="end">
-                        <ItemOption
-                            handler={() =>
-                                history.push(`/immobili/${immobile.id}/files`)
-                            }
-                            colorType={"primary"}
-                            icon={cameraOutline}
-                            title={"File"}
-                        />
-                        <ItemOption
-                            handler={() =>
-                                history.push(`/immobili/${immobile.id}/storia`)
-                            }
-                            colorType={"tertiary"}
-                            icon={newspaperOutline}
-                            title={"Storia"}
-                        />
-                        <ItemOption
-                            handler={() => copyImmobile(immobile.id!)}
-                            colorType={"success"}
-                            icon={copyOutline}
-                            title={"Copia"}
-                        />
-                        <ItemOption
-                            handler={() => {
-                                props.setCurrentEntity(immobile);
-                                props.setMode("form");
-                            }}
-                            colorType={"light"}
-                            icon={createOutline}
-                            title={"Modifica"}
-                        />
-                        <ItemOption
-                            handler={() => {
-                                props.deleteEntity(
-                                    "immobili",
-                                    immobile.id!.toString(),
-                                    `Hai selezionato la cancellazione dell'immobile con riferimento ${immobile.ref}. Si tratta di un processo irreversibile.`
-                                );
-                            }}
-                            colorType={"danger"}
-                            icon={trashOutline}
-                            title={"Elimina"}
-                        />
-                    </IonItemOptions>
-                </IonItemSliding>
-            ))}
+            {props.immobili.map((immobile: Immobile) => {
+                return (
+                    <IonItemSliding
+                        key={immobile.id!}
+                        id={immobile.id?.toString()}
+                    >
+                        {getImmobile(immobile)}
+                        <IonItemOptions side="end">
+                            <ItemOption
+                                handler={() =>
+                                    history.push(
+                                        `/immobili/${immobile.id}/files`
+                                    )
+                                }
+                                colorType={"primary"}
+                                icon={cameraOutline}
+                                title={"File"}
+                            />
+                            <ItemOption
+                                handler={() =>
+                                    history.push(
+                                        `/immobili/${immobile.id}/storia`
+                                    )
+                                }
+                                colorType={"tertiary"}
+                                icon={newspaperOutline}
+                                title={"Storia"}
+                            />
+                            <ItemOption
+                                handler={() => copyImmobile(immobile.id!)}
+                                colorType={"success"}
+                                icon={copyOutline}
+                                title={"Copia"}
+                            />
+                            <ItemOption
+                                handler={() => {
+                                    props.setCurrentEntity(immobile);
+                                    props.setMode("form");
+                                }}
+                                colorType={"light"}
+                                icon={createOutline}
+                                title={"Modifica"}
+                            />
+                            <ItemOption
+                                handler={() => {
+                                    props.deleteEntity(
+                                        "immobili",
+                                        immobile.id!.toString(),
+                                        `Hai selezionato la cancellazione dell'immobile con riferimento ${immobile.ref}. Si tratta di un processo irreversibile.`
+                                    );
+                                }}
+                                colorType={"danger"}
+                                icon={trashOutline}
+                                title={"Elimina"}
+                            />
+                        </IonItemOptions>
+                    </IonItemSliding>
+                );
+            })}
         </>
     );
 };

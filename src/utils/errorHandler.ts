@@ -14,20 +14,16 @@ const errorHandler = (
     const originalErrorMessage =
         e && e.response && e.response.data && e.response.data.message
             ? e.response.data.message
-            : e && e.response && e.response.data
+            : e &&
+              e.response &&
+              e.response.data &&
+              typeof e.response.data === "string"
             ? e.response.data
             : null;
 
     const subHeader = originalErrorMessage ? message : "";
 
-    let id: string | null = null;
-
     let text = originalErrorMessage ? originalErrorMessage : message;
-
-    if (text.includes("E' già presente a sistema una persona")) {
-        id = text.split(" id ")[1];
-        text = text.split("E' la persona")[0];
-    }
 
     const getButtons = () => {
         let buttons = [
@@ -36,11 +32,6 @@ const errorHandler = (
                 handler: handler,
             },
         ];
-        if (id)
-            buttons.push({
-                text: "Vai alla persona in questione",
-                handler: () => (secondHandler ? secondHandler(+id!) : null),
-            });
         return buttons;
     };
 

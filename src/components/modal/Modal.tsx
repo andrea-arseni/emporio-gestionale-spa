@@ -1,6 +1,6 @@
 import { IonContent, IonModal } from "@ionic/react";
 import { Dispatch, SetStateAction } from "react";
-import Title from "../form-components/form-title/FormTitle";
+import FormTitle from "../form-components/form-title/FormTitle";
 import styles from "./Modal.module.css";
 
 const Modal: React.FC<{
@@ -8,6 +8,7 @@ const Modal: React.FC<{
     handler: () => void;
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
+    padding?: boolean;
 }> = (props) => {
     return (
         <IonModal
@@ -15,13 +16,16 @@ const Modal: React.FC<{
             showBackdrop
             onDidDismiss={() => props.setIsOpen(false)}
         >
-            <IonContent className={styles.modalContent}>
-                <Title
+            <IonContent className={`${styles.modalContent}`}>
+                <FormTitle
+                    fixed
                     backToList={false}
                     title={props.title}
                     handler={props.handler}
                 />
-                {props.children}
+                <div className={`${props.padding ? styles.padding : ""}`}>
+                    {props.children}
+                </div>
             </IonContent>
         </IonModal>
     );

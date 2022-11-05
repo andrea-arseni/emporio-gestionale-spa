@@ -31,6 +31,7 @@ import excel from "../../assets/excel.png";
 import text from "../../assets/txt.png";
 import image from "../../assets/image.png";
 import pdf from "../../assets/pdf.png";
+import report from "../../assets/report.png";
 import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
 import ItemOption from "./ItemOption";
@@ -56,14 +57,14 @@ const ListDocumenti: React.FC<{
     } | null>(null);
 
     const getThumbnail = (
-        type: "image" | "word" | "excel" | "pdf" | "text" | "error"
+        type: "report" | "image" | "word" | "excel" | "pdf" | "text" | "error"
     ) => {
+        if (type === "report") return report;
         if (type === "image") return image;
         if (type === "excel") return excel;
         if (type === "pdf") return pdf;
         if (type === "text") return text;
         if (type === "word") return word;
-        console.log("Errore");
     };
 
     const selectFile = async (id: number) => {
@@ -122,7 +123,10 @@ const ListDocumenti: React.FC<{
     };
 
     const getDocumento = (documento: Documento) => {
-        const type = getFileType(documento.nome!);
+        const type =
+            documento.tipologia === "REPORT"
+                ? "report"
+                : getFileType(documento.nome!);
         return (
             <IonItem key={documento.id} detail>
                 <IonThumbnail slot="start" className={styles.border}>

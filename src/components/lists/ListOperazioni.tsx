@@ -25,11 +25,11 @@ const ListOperazioni: React.FC<{
                 color={operazione.importo! > 0 ? "secondary" : "dark"}
             >
                 <IonLabel text-wrap>
-                    <h3>{operazione.descrizione}</h3>
-                    <h2>{numberAsPrice(operazione.importo!)}</h2>
                     <p>{`${getDayName(new Date(operazione.data!), "long")} da ${
                         operazione.user?.name
                     }`}</p>
+                    <h3>{operazione.descrizione}</h3>
+                    <h2>{numberAsPrice(operazione.importo!)}</h2>
                 </IonLabel>
             </IonItem>
             <IonItemOptions side="end">

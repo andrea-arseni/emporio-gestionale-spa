@@ -3,7 +3,12 @@ import React, { Dispatch, SetStateAction } from "react";
 import { Documento } from "../../entities/documento.model";
 import { Entity } from "../../entities/entity";
 import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
-import { fileSpeciale, listFileSpeciali } from "../../types/file_speciali";
+import { fileSpeciale } from "../../types/file_speciali";
+import {
+    getFilesNonSpeciali,
+    getFileSpeciale,
+    isFileSpecialePresent,
+} from "../../utils/fileUtils";
 import Card from "../card/Card";
 import FormGroup from "../form-components/form-group/FormGroup";
 import ItemSelector from "../form-components/item-selector/ItemSelector";
@@ -40,13 +45,10 @@ export default React.forwardRef<
         },
         ref: any
     ) => {
-        const getFileSpeciale = (input: fileSpeciale) =>
-            props.files.filter((el: Documento) => el.nome?.includes(input));
-
         const getItem = (input: fileSpeciale) => {
             return (
                 <ListDocumenti
-                    documenti={getFileSpeciale(input)}
+                    documenti={getFileSpeciale(props.files, input)}
                     deleteEntity={props.deleteEntity}
                     setShowLoading={props.setShowLoading}
                     setUpdate={props.setUpdate}
@@ -56,20 +58,6 @@ export default React.forwardRef<
             );
         };
 
-        const isFileSpecialePresent = (input: fileSpeciale) =>
-            getFileSpeciale(input).length > 0;
-
-        const getFilesNonSpeciali = () => {
-            // per ogni file presente
-            return props.files.filter((filePresente: Documento) => {
-                // per ogni file speciale
-                return listFileSpeciali.every((fileSpeciale) => {
-                    // se il presente include lo speciale togli
-                    return !filePresente.nome?.includes(fileSpeciale);
-                });
-            });
-        };
-
         return (
             <IonList ref={ref} className={`${styles.list} ${styles.simple}`}>
                 <ItemSelector
@@ -77,6 +65,7 @@ export default React.forwardRef<
                     titoloGruppo={"Planimetria"}
                     titoloBottone={"Aggiungi Planimetria"}
                     isItemPresent={isFileSpecialePresent(
+                        props.files,
                         "planimetria-catastale"
                     )}
                     getItem={() => getItem("planimetria-catastale")}
@@ -86,7 +75,10 @@ export default React.forwardRef<
                     color
                     titoloGruppo={"Visura"}
                     titoloBottone={"Aggiungi Visura"}
-                    isItemPresent={isFileSpecialePresent("visura-catastale")}
+                    isItemPresent={isFileSpecialePresent(
+                        props.files,
+                        "visura-catastale"
+                    )}
                     getItem={() => getItem("visura-catastale")}
                     openSelector={() => props.pickFile("visura-catastale")}
                 />
@@ -94,7 +86,10 @@ export default React.forwardRef<
                     color
                     titoloGruppo={"Rogito"}
                     titoloBottone={"Aggiungi Rogito"}
-                    isItemPresent={isFileSpecialePresent("atto-provenienza")}
+                    isItemPresent={isFileSpecialePresent(
+                        props.files,
+                        "atto-provenienza"
+                    )}
                     getItem={() => getItem("atto-provenienza")}
                     openSelector={() => props.pickFile("atto-provenienza")}
                 />
@@ -103,6 +98,7 @@ export default React.forwardRef<
                     titoloGruppo={"APE"}
                     titoloBottone={"Aggiungi APE"}
                     isItemPresent={isFileSpecialePresent(
+                        props.files,
                         "certificazione-energetica"
                     )}
                     getItem={() => getItem("certificazione-energetica")}
@@ -110,15 +106,46 @@ export default React.forwardRef<
                         props.pickFile("certificazione-energetica")
                     }
                 />
+                <ItemSelector
+                    color
+                    titoloGruppo={"Consuntivo Spese Condominiali"}
+                    titoloBottone={"Aggiungi Consuntivo Spese"}
+                    isItemPresent={isFileSpecialePresent(
+                        props.files,
+                        "consuntivo-spese"
+                    )}
+                    getItem={() => getItem("consuntivo-spese")}
+                    openSelector={() => props.pickFile("consuntivo-spese")}
+                />
+                <ItemSelector
+                    color
+                    titoloGruppo={"Contratto di Esclusiva"}
+                    titoloBottone={"Aggiungi Esclusiva"}
+                    isItemPresent={isFileSpecialePresent(
+                        props.files,
+                        "contratto-collaborazione"
+                    )}
+                    getItem={() => getItem("contratto-collaborazione")}
+                    openSelector={() =>
+                        props.pickFile("contratto-collaborazione")
+                    }
+                />
                 <FormGroup
                     title={`${"Altri file (opzionali) "} : ${
-                        getFilesNonSpeciali().length === 0
+                        getFilesNonSpeciali(props.files, "immobile").length ===
+                        0
                             ? "Non presenti"
-                            : getFilesNonSpeciali().length
+                            : getFilesNonSpeciali(props.files, "immobile")
+                                  .length
                     }`}
                 >
                     <ListDocumenti
-                        documenti={getFilesNonSpeciali() as Documento[]}
+                        documenti={
+                            getFilesNonSpeciali(
+                                props.files,
+                                "immobile"
+                            ) as Documento[]
+                        }
                         setMode={props.setMode}
                         setCurrentEntity={props.setCurrentDocumento}
                         deleteEntity={props.deleteEntity}

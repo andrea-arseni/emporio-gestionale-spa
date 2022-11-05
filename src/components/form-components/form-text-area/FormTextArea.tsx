@@ -9,6 +9,7 @@ const FormTextArea: React.FC<{
     reset: () => void;
     inputIsInvalid?: boolean;
     errorMessage?: string;
+    readonly?: boolean;
 }> = (props) => {
     return (
         <IonItem>
@@ -19,6 +20,7 @@ const FormTextArea: React.FC<{
                 {props.title}
             </IonLabel>
             <IonTextarea
+                readonly={props.readonly}
                 color={props.inputIsInvalid ? "danger" : undefined}
                 auto-grow
                 rows={6}
@@ -29,7 +31,7 @@ const FormTextArea: React.FC<{
             {props.inputIsInvalid && (
                 <IonNote color="danger">{props.errorMessage}</IonNote>
             )}
-            {props.inputValue && (
+            {props.inputValue && !props.readonly && (
                 <IonIcon
                     slot="end"
                     style={{ position: "relative", top: "10px" }}

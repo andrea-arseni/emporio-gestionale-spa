@@ -1,9 +1,7 @@
 import { IonButton, IonIcon, IonLabel } from "@ionic/react";
 import { Dispatch, SetStateAction } from "react";
-import { entitiesType } from "../../../entities/entity";
 
 const NewEntityBar: React.FC<{
-    entitiesType: entitiesType;
     setMode: Dispatch<SetStateAction<"form" | "list">>;
     icon: string;
     title: string;

@@ -27,7 +27,6 @@ const ImmobiliPage: React.FC<{}> = () => {
             {mode === "list" && (
                 <IonContent>
                     <NewEntityBar
-                        entitiesType="immobili"
                         setMode={setMode}
                         icon={homeOutline}
                         title="Nuovo Immobile"

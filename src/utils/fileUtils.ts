@@ -6,7 +6,7 @@ import errorHandler from "./errorHandler";
 import heic2any from "heic2any";
 import Resizer from "react-image-file-resizer";
 import capitalize from "./capitalize";
-import { fileSpeciale } from "../types/file_speciali";
+import { fileSpeciale, listFileSpeciali } from "../types/file_speciali";
 import { getDayName } from "./timeUtils";
 
 export const getFileType = (fileName: string) => {
@@ -89,7 +89,7 @@ export const openFile = async (byteArray: string, documento: Documento) => {
     window.open(url);
 };
 
-const checkShareability = (presentAlert: any) => {
+export const checkShareability = (presentAlert: any) => {
     if (!navigator.canShare) {
         errorHandler(
             null,
@@ -351,3 +351,39 @@ const resizeImage = (file: File) =>
             resolve(uri);
         })
     );
+
+const convertStringsToTimes = (input: Documento[]) =>
+    input.map((el) => new Date(el.nome!.split("_")[0]).getTime());
+
+export const sortReports = (reports: Documento[]) => {
+    reports.sort((a, b) => {
+        // estrai prima string e convertila in tempo
+        const [primoTempo, secondoTempo] = convertStringsToTimes([a, b]);
+        return primoTempo - secondoTempo;
+    });
+};
+
+export const getFileSpeciale = (files: Documento[], input: fileSpeciale) =>
+    files.filter((el: Documento) => el.nome?.includes(input));
+
+export const isFileSpecialePresent = (
+    files: Documento[],
+    input: fileSpeciale
+) => getFileSpeciale(files, input).length > 0;
+
+export const getFilesNonSpeciali = (
+    files: Documento[],
+    type: "immobile" | "persona"
+) => {
+    // per ogni file presente
+    return files.filter((filePresente: Documento) => {
+        // per ogni file speciale
+        return listFileSpeciali
+            .filter((el) => el.type === type)
+            .map((el) => el.fileSpeciale)
+            .every((fileSpeciale) => {
+                // se il presente include lo speciale togli
+                return !filePresente.nome?.includes(fileSpeciale);
+            });
+    });
+};

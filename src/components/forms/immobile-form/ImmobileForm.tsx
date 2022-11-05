@@ -258,7 +258,9 @@ const ImmobileForm: React.FC<{
         reset: inputDescrizioneReset,
     } = useInput(
         (el) =>
-            el.toString().length > 100 && el.toString() !== genericaDescrizione,
+            el.toString().length > 100 &&
+            el.toString().length < 2060 &&
+            el.toString() !== genericaDescrizione,
         props.immobile
             ? props.immobile.caratteristiche?.descrizione
             : genericaDescrizione
@@ -1363,7 +1365,9 @@ const ImmobileForm: React.FC<{
                         errorMessage={
                             inputDescrizioneValue === genericaDescrizione
                                 ? "Descrizione da cambiare"
-                                : "Descrizione troppo corta"
+                                : inputDescrizioneValue.toString().length < 100
+                                ? "Descrizione troppo corta"
+                                : "Descrizione troppo lunga"
                         }
                     />
                 </FormGroup>

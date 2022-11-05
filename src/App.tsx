@@ -40,6 +40,7 @@ import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
 import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
 import ImmobiliFilesPage from "./pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
 import { useAppSelector } from "./hooks";
+import ReportsPage from "./pages/documenti/ReportsPage/ReportsPage";
 
 setupIonicReact();
 
@@ -124,6 +125,11 @@ const App: React.FC = () => {
                             </Route>
                         )}
                         {token && (
+                            <Route path="/reports">
+                                <ReportsPage />
+                            </Route>
+                        )}
+                        {token && (
                             <Route path="/logout">
                                 <Logout />
                             </Route>
@@ -142,23 +148,36 @@ export default App;
 
 /*
 
-25 Ottobre 
+3 Novembre
 
-- Report per documenti generici
-- File speciale anche su persona indaga
+- Un ultimo tentativo con isModalOpen in redux e modal componente, se no pace!
 
-- Show documentazione completa o no in lista immobili e persona
-- Show prima foto in immobili
+- Singolo component on div for avoid rerendering - COMBATTI PARENZO!
 
-- IN PERSONA
-- Add Contact action
-- Write Message interesse immobile
+- Standard user attuale on post - and other user 
 
-Obiettivi 26 Ottobre
+- Inserimento OK
 
-- Recupera Psw non funziona
-- Check design on selection
+- Funzione Modifica Visita 
 
+- Funzione Conferma Visita 
+
+PER OGGI OK
+
+***
+ 
+- ionic capacitor add ios
+- ionic capacitor copy ios
+- ionic capacitor run ios * is 2 step, is better
+- npx cap run android
+
+<uses-permission android:name="android.permission.READ_CONTACTS" />
+<uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+
+// Initializes the Bridge
+@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.registerPlugin(Contacts.class);
+    }
 */
-
-/* PARTE VISITE - Messaggio conferma visita - Confermata */

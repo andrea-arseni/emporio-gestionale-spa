@@ -6,17 +6,34 @@ import {
     IonLabel,
     IonList,
 } from "@ionic/react";
+import { useEffect, useRef } from "react";
 import { Visit } from "../../entities/visit.model";
 import useSize from "../../hooks/use-size";
-import { areDateEquals, Giorno } from "../../utils/timeUtils";
+import { areDateEquals, getDateAsString, Giorno } from "../../utils/timeUtils";
+import CalendarItem from "./calendar-item/CalendarItem";
 import styles from "./Calendar.module.css";
+import VisitItem from "./visit-item/VisitItem";
 
 const Calendar: React.FC<{
     currentWeek: Giorno[];
     currentDay: Date;
     visits: Visit[];
-    openVisitForm: (date: Date, time: string, visit: Visit | null) => void;
+    openVisitForm: (visit: Visit | null) => void;
 }> = (props) => {
+    const timeRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const timeOut = setTimeout(() => {
+            if (timeRef.current) {
+                timeRef.current!.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
+        }, 400);
+        return () => clearTimeout(timeOut);
+    }, [timeRef, props.currentWeek]);
+
     const isToday = (dayProposed: Date) =>
         areDateEquals(new Date(), dayProposed);
 
@@ -31,15 +48,6 @@ const Calendar: React.FC<{
     };
 
     const [widthScreen] = useSize();
-
-    const handleClick = (
-        e: any,
-        date: Date,
-        time: string,
-        visit: Visit | null
-    ) => {
-        if (e.detail === 2) props.openVisitForm(date, time, visit);
-    };
 
     const getWeekGrid = () => props.currentWeek.map((el) => getGrid(el));
 
@@ -67,11 +75,7 @@ const Calendar: React.FC<{
                         0
                 );
             })
-            .map((el) => (
-                <div className={styles.app} key={el.id! + Math.random() * 1000}>
-                    App
-                </div>
-            ));
+            .map((visita) => <VisitItem key={visita.id} visita={visita} />);
     };
 
     const getGrid = (day: Giorno) => {
@@ -87,30 +91,35 @@ const Calendar: React.FC<{
                 <IonList className={styles.list}>
                     {widthScreen >= 700 && (
                         <IonItem color="primary">
-                            <IonLabel>{day.giornoSettimana}</IonLabel>
+                            <IonLabel>
+                                {day.giornoSettimana} {day.date.getDate()}
+                            </IonLabel>
                         </IonItem>
                     )}
-                    {grid.map((el) => (
-                        <div
-                            className={`${styles.item} ${
-                                isNow(day.date, el) ? styles.now : ""
-                            } ${!isToday(day.date) ? `gray` : ``}`}
-                            key={Date.now() + Math.random() * 1000}
-                        >
+                    {grid.map((time) => {
+                        const dateString = `${getDateAsString(
+                            day.date
+                        )}T${time}`;
+                        return (
                             <div
-                                onClick={(e) =>
-                                    handleClick(e, day.date, el, null)
+                                ref={
+                                    isNow(day.date, time) ? timeRef : undefined
                                 }
-                                className={styles.app}
-                                slot="start"
+                                className={`${styles.item} ${
+                                    isNow(day.date, time) ? styles.now : ""
+                                } ${!isToday(day.date) ? `gray` : ``}`}
+                                key={Date.now() + Math.random() * 1000}
                             >
-                                {el}
+                                <CalendarItem
+                                    dateAsString={dateString}
+                                    openVisitForm={props.openVisitForm}
+                                />
+                                <div className={`${styles.appFrame}`}>
+                                    {getMeetings(day.date, time)}
+                                </div>
                             </div>
-                            <div className={styles.appFrame}>
-                                {getMeetings(day.date, el)}
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </IonList>
             </IonCol>
         );

@@ -7,7 +7,7 @@ import {
     IonSegmentButton,
     useIonAlert,
 } from "@ionic/react";
-import { calendarOutline, listOutline } from "ionicons/icons";
+import { calendarOutline, listOutline, trashBinOutline } from "ionicons/icons";
 import { useCallback, useEffect, useState } from "react";
 import CalendarNavigator from "../../../components/calendar-navigator/CalendarNavigator";
 import Calendar from "../../../components/calendar/Calendar";
@@ -20,9 +20,10 @@ import {
 } from "../../../utils/timeUtils";
 import axiosInstance from "../../../utils/axiosInstance";
 import { Visit } from "../../../entities/visit.model";
-import Modal from "../../../components/modal/Modal";
 import FormVisit from "../../../components/forms/visit-form/VisitForm";
 import errorHandler from "../../../utils/errorHandler";
+import FormTitle from "../../../components/form-components/form-title/FormTitle";
+import Modal from "../../../components/modal/Modal";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
@@ -40,29 +41,27 @@ const AppuntamentiPage: React.FC<{}> = () => {
 
     const [visits, setVisits] = useState<Visit[]>([]);
 
-    const [currentVisit, setCurrentVisit] = useState<Visit | null>();
+    const [update, doUpdate] = useState<number>(0);
 
-    const [pageMode, setPageMode] = useState<"calendario" | "lista">(
+    const [currentVisit, setCurrentVisit] = useState<Visit | null>(null);
+
+    const [pageMode, setPageMode] = useState<"calendario" | "lista" | "form">(
         "calendario"
     );
 
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const openVisitForm = (visit: Visit | null) => {
+        setCurrentVisit(visit);
+        setPageMode("form");
+    };
 
-    const openVisitForm = (date: Date, el: string, visit: Visit | null) => {
-        setCurrentVisit(
-            visit
-                ? visit
-                : new Visit(
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      `${getDateAsString(date)}T${el}`,
-                      null
-                  )
-        );
-        setIsOpen(true);
+    const backToList = () => {
+        setPageMode("calendario");
+        setCurrentVisit(null);
+    };
+
+    const operationComplete = () => {
+        doUpdate((prevState) => ++prevState);
+        backToList();
     };
 
     const changeDay = useCallback(
@@ -86,7 +85,6 @@ const AppuntamentiPage: React.FC<{}> = () => {
 
     useEffect(() => {
         const fetchVisits = async () => {
-            setShowLoading(true);
             try {
                 const url = `visite/?filter=quando&startDate=${getDateAsString(
                     currentWeek[0].date
@@ -108,18 +106,19 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 );
             }
         };
+        setShowLoading(true);
         fetchVisits();
-    }, [currentWeek, presentAlert]);
+    }, [currentWeek, presentAlert, update]);
 
     return (
         <IonContent className="page">
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            <DaySelector
-                currentDay={currentDay}
-                setCurrentDay={setCurrentDay}
-            />
             {pageMode === "calendario" && (
                 <>
+                    <DaySelector
+                        currentDay={currentDay}
+                        setCurrentDay={setCurrentDay}
+                    />
                     <CalendarNavigator
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
@@ -132,33 +131,56 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     />
                 </>
             )}
-            {pageMode === "lista" && <>Lista</>}
-            <Modal
-                setIsOpen={setIsOpen}
-                isOpen={isOpen}
-                title={
-                    currentVisit?.id ? "Modifica Visita" : "Crea nuova visita"
-                }
-                handler={() => setIsOpen(false)}
-            >
-                <FormVisit visit={currentVisit!} />
-            </Modal>
-            <IonSegment mode="ios" value={pageMode}>
-                <IonSegmentButton
-                    value="calendario"
-                    onClick={() => setPageMode("calendario")}
-                >
-                    <IonIcon icon={calendarOutline} />
-                    <IonLabel>Calendario</IonLabel>
-                </IonSegmentButton>
-                <IonSegmentButton
-                    value="lista"
-                    onClick={() => setPageMode("lista")}
-                >
-                    <IonIcon icon={listOutline} />
-                    <IonLabel>Lista</IonLabel>
-                </IonSegmentButton>
-            </IonSegment>
+            {pageMode === "lista" && (
+                <>
+                    <DaySelector
+                        currentDay={currentDay}
+                        setCurrentDay={setCurrentDay}
+                    />
+                    <CalendarNavigator
+                        currentDay={currentDay}
+                        setCurrentDay={setCurrentDay}
+                    />
+                    LISTA
+                </>
+            )}
+            {pageMode === "form" && (
+                <>
+                    <FormTitle
+                        title={
+                            currentVisit && currentVisit.id
+                                ? "Modifica Visita"
+                                : "Nuova Visita"
+                        }
+                        handler={backToList}
+                        backToList
+                    />
+                    <FormVisit
+                        operationComplete={operationComplete}
+                        visit={currentVisit}
+                    />
+                </>
+            )}
+            {pageMode !== "form" && (
+                <>
+                    <IonSegment mode="ios" value={pageMode}>
+                        <IonSegmentButton
+                            value="calendario"
+                            onClick={() => setPageMode("calendario")}
+                        >
+                            <IonIcon icon={calendarOutline} />
+                            <IonLabel>Calendario</IonLabel>
+                        </IonSegmentButton>
+                        <IonSegmentButton
+                            value="lista"
+                            onClick={() => setPageMode("lista")}
+                        >
+                            <IonIcon icon={listOutline} />
+                            <IonLabel>Lista</IonLabel>
+                        </IonSegmentButton>
+                    </IonSegment>
+                </>
+            )}
         </IonContent>
     );
 };

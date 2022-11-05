@@ -3,13 +3,30 @@ import {
     IonItem,
     IonLabel,
     IonItemOptions,
+    IonButton,
+    useIonAlert,
+    isPlatform,
 } from "@ionic/react";
-import { createOutline, trashOutline } from "ionicons/icons";
-import { Dispatch, SetStateAction } from "react";
+import {
+    createOutline,
+    pencilOutline,
+    personAddOutline,
+    trashOutline,
+} from "ionicons/icons";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Entity } from "../../entities/entity";
 import { Evento } from "../../entities/evento.model";
+import useInput from "../../hooks/use-input";
 import { getDateAndTime } from "../../utils/timeUtils";
+import Modal from "../modal/Modal";
 import ItemOption from "./ItemOption";
+import TextArea from "../form-components/form-text-area/FormTextArea";
+import { getInterestMessage } from "../../utils/messageUtils";
+import { useAppSelector } from "../../hooks";
+import { Immobile } from "../../entities/immobile.model";
+import { checkShareability } from "../../utils/fileUtils";
+import errorHandler from "../../utils/errorHandler";
+import { saveContact } from "../../utils/contactUtils";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -19,7 +36,53 @@ const ListEventi: React.FC<{
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
+    closeItems: () => void;
 }> = (props) => {
+    const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+
+    const persona = useAppSelector((state) => state.persona.persona);
+
+    const [currentImmobile, setCurrentImmobile] = useState<Immobile | null>(
+        null
+    );
+
+    const [presentAlert] = useIonAlert();
+
+    const sendInterestMessage = async () => {
+        if (!checkShareability(presentAlert)) return;
+
+        try {
+            await navigator.share({
+                text: inputNoteValue,
+                url:
+                    process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
+                    currentImmobile!.id!,
+            });
+        } catch (error) {
+            errorHandler(
+                null,
+                () => {},
+                `Condivisione testo non riuscita.`,
+                presentAlert
+            );
+        }
+    };
+
+    const {
+        inputValue: inputNoteValue,
+        inputTouchedHandler: inputNoteTouchedHandler,
+        inputChangedHandler: inputNoteChangedHandler,
+        inputIsInvalid: inputNoteIsInvalid,
+        reset: inputNoteReset,
+    } = useInput(() => true, "");
+
+    const apriModale = (immobile: Immobile) => {
+        setCurrentImmobile(immobile);
+        inputNoteChangedHandler(null, getInterestMessage(persona!, immobile));
+        setModalIsOpen(true);
+        props.closeItems();
+    };
+
     const getColor = (evento: Evento) => {
         let matchFound: boolean = false;
         const paroleChiave = [
@@ -71,13 +134,36 @@ const ListEventi: React.FC<{
                                 {getDescrizione(evento)}
                                 {evento.immobile && (
                                     <>
-                                        <p>{`Interessato al Ref. ${evento.immobile.ref}: ${evento.immobile.titolo}`}</p>
+                                        <p
+                                            style={{
+                                                color: "var(--ion-color-primary)",
+                                            }}
+                                        >{`Interessato al Ref. ${evento.immobile.ref}: ${evento.immobile.titolo}`}</p>
                                         <p>{`${evento.immobile.indirizzo} (${evento.immobile.comune})`}</p>
                                     </>
                                 )}
                             </IonLabel>
                         </IonItem>
                         <IonItemOptions side="end">
+                            {isPlatform("mobile") && (
+                                <ItemOption
+                                    handler={() => {
+                                        props.closeItems();
+                                        saveContact(presentAlert, persona!);
+                                    }}
+                                    colorType={"dark"}
+                                    icon={personAddOutline}
+                                    title={"Aggiungi"}
+                                />
+                            )}
+                            {evento.immobile && (
+                                <ItemOption
+                                    handler={() => apriModale(evento.immobile!)}
+                                    colorType={"success"}
+                                    icon={pencilOutline}
+                                    title={"Scrivi"}
+                                />
+                            )}
                             <ItemOption
                                 handler={() => {
                                     props.setCurrentEntity(evento);
@@ -103,6 +189,32 @@ const ListEventi: React.FC<{
                     </IonItemSliding>
                 );
             })}
+            <Modal
+                setIsOpen={setModalIsOpen}
+                isOpen={modalIsOpen}
+                title={`Definisci il testo da scrivere`}
+                handler={() => setModalIsOpen(false)}
+            >
+                <TextArea
+                    title="Descrizione"
+                    inputValue={inputNoteValue}
+                    inputIsInvalid={inputNoteIsInvalid}
+                    inputChangeHandler={inputNoteChangedHandler}
+                    inputTouchHandler={inputNoteTouchedHandler}
+                    errorMessage={"Input non valido"}
+                    reset={inputNoteReset}
+                />
+                <IonButton expand="full" onClick={() => sendInterestMessage()}>
+                    Invia Messaggio
+                </IonButton>
+                <IonButton
+                    color="light"
+                    expand="full"
+                    onClick={() => setModalIsOpen(false)}
+                >
+                    Annulla
+                </IonButton>
+            </Modal>
         </>
     );
 };

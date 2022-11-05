@@ -10,18 +10,19 @@ const ItemSelector: React.FC<{
     simple?: boolean;
     multiple?: boolean;
     color?: boolean;
+    strict?: boolean;
 }> = (props) => {
     const bloccoItem = (
         <>
             {props.isItemPresent && props.getItem()}
             {(!props.isItemPresent || props.multiple) && (
-                <button
+                <div
                     color="light"
                     className={styles.button}
                     onClick={props.openSelector}
                 >
                     {props.titoloBottone}
-                </button>
+                </div>
             )}
             {props.children}
         </>
@@ -39,7 +40,11 @@ const ItemSelector: React.FC<{
                     : "danger"
             }
             title={`${props.titoloGruppo} ${
-                props.isItemPresent && props.color ? "presente" : "mancante"
+                props.strict
+                    ? ""
+                    : props.isItemPresent
+                    ? "presente"
+                    : "mancante"
             }`}
         >
             {bloccoItem}

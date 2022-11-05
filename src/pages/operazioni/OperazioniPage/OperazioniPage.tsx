@@ -28,7 +28,6 @@ const OperazioniPage: React.FC<{}> = () => {
             {mode === "list" && (
                 <IonContent>
                     <NewEntityBar
-                        entitiesType="operazioni"
                         setMode={setMode}
                         icon={cardOutline}
                         title="Nuova Operazione"

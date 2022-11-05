@@ -10,6 +10,7 @@ const FormInput: React.FC<{
     inputTouchHandler: () => void;
     reset: () => void;
     errorMessage: string;
+    readonly?: boolean;
 }> = (props) => {
     return (
         <IonItem>
@@ -20,6 +21,7 @@ const FormInput: React.FC<{
                 {props.title}
             </IonLabel>
             <IonInput
+                readonly={props.readonly}
                 autocomplete="off"
                 color={props.inputIsInvalid ? "danger" : "dark"}
                 type={props.type}
@@ -30,7 +32,7 @@ const FormInput: React.FC<{
             {props.inputIsInvalid && (
                 <IonNote color="danger">{props.errorMessage}</IonNote>
             )}
-            {props.inputValue && (
+            {props.inputValue && !props.readonly && (
                 <IonIcon
                     slot="end"
                     style={{ position: "relative", top: "10px" }}

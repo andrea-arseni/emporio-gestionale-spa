@@ -15,6 +15,7 @@ import {
     documentsOutline,
     logOutOutline,
     golfOutline,
+    podiumOutline,
 } from "ionicons/icons";
 import { useLocation } from "react-router";
 import style from "./Menu.module.css";
@@ -55,6 +56,11 @@ const appPages: AppPage[] = [
         title: "Documenti",
         url: "/documenti",
         icon: documentsOutline,
+    },
+    {
+        title: "Report",
+        url: "/reports",
+        icon: podiumOutline,
     },
     {
         title: "Logout",

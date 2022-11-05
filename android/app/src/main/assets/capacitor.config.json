@@ -1,0 +1,6 @@
+{
+	"appId": "it.emporiocase.gestionale",
+	"appName": "ni",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

@@ -1,10 +1,7 @@
-import { IonButton, IonIcon, IonToolbar } from "@ionic/react";
-import { arrowBackOutline, arrowForwardOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import useSize from "../../hooks/use-size";
 import { getDayName, setWeek } from "../../utils/timeUtils";
-import Title from "../title/Title";
-import styles from "./CalendarNavigator.module.css";
+import ArrowsBar from "../bars/arrows-bar/ArrowsBar";
 
 const CalendarNavigator: React.FC<{
     currentDay: Date;
@@ -42,33 +39,11 @@ const CalendarNavigator: React.FC<{
     };
 
     return (
-        <IonToolbar mode="ios" className={styles.navigator}>
-            <IonButton
-                slot="start"
-                fill="clear"
-                color="light"
-                onClick={moveInTime.bind(null, "backward")}
-            >
-                <IonIcon
-                    color="dark"
-                    slot="icon-only"
-                    icon={arrowBackOutline}
-                ></IonIcon>
-            </IonButton>
-            <Title>{getTitolo()}</Title>
-            <IonButton
-                slot="end"
-                fill="clear"
-                color="light"
-                onClick={moveInTime.bind(null, "forward")}
-            >
-                <IonIcon
-                    color="dark"
-                    slot="icon-only"
-                    icon={arrowForwardOutline}
-                ></IonIcon>
-            </IonButton>
-        </IonToolbar>
+        <ArrowsBar
+            moveBackward={moveInTime.bind(null, "backward")}
+            moveForward={moveInTime.bind(null, "forward")}
+            titolo={getTitolo()}
+        />
     );
 };
 

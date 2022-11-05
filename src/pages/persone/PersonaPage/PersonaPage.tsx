@@ -27,7 +27,6 @@ const PersonaPage: React.FC<{}> = () => {
             {mode === "list" && (
                 <IonContent>
                     <NewEntityBar
-                        entitiesType="persone"
                         setMode={setMode}
                         icon={peopleOutline}
                         title="Nuova Persona"
