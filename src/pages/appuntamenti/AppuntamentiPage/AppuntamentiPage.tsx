@@ -8,7 +8,7 @@ import {
     useIonAlert,
 } from "@ionic/react";
 import { calendarOutline, listOutline } from "ionicons/icons";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CalendarNavigator from "../../../components/calendar-navigator/CalendarNavigator";
 import Calendar from "../../../components/calendar/Calendar";
 import DaySelector from "../../../components/day-selector/DaySelector";
@@ -25,14 +25,16 @@ import errorHandler from "../../../utils/errorHandler";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import {
     backToList,
+    refresh,
     setCurrentVisit,
     setPageMode,
 } from "../../../store/appuntamenti-slice";
+import { changeLoading } from "../../../store/ui-slice";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
 
-    const [showLoading, setShowLoading] = useState<boolean>(false);
+    const showLoading = useAppSelector((state) => state.ui.isLoading);
 
     const [currentWeek, setCurrentWeek] = useState<Giorno[]>(
         setWeek(new Date())
@@ -45,7 +47,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
 
     const [visits, setVisits] = useState<Visit[]>([]);
 
-    const [update, doUpdate] = useState<number>(0);
+    const trigger = useAppSelector((state) => state.appuntamenti.trigger);
 
     const dispatch = useAppDispatch();
 
@@ -57,28 +59,27 @@ const AppuntamentiPage: React.FC<{}> = () => {
     };
 
     const operationComplete = () => {
-        doUpdate((prevState) => ++prevState);
+        dispatch(refresh());
         dispatch(backToList());
     };
 
-    const changeDay = useCallback(
-        (newDay: Date) => {
+    useEffect(() => {
+        const changeDay = (newDay: Date) => {
             // è il giorno nella stessa settimana
             const isDayInTheSameWeek = currentWeek.find((el) =>
                 areDateEquals(el.date, newDay)
             );
+            console.log(newDay);
+            console.log(isDayInTheSameWeek);
             // se no cambia la settimana
             if (!isDayInTheSameWeek) {
                 const newWeek = setWeek(newDay);
                 setCurrentWeek(newWeek);
             }
-        },
-        [currentWeek]
-    );
+        };
 
-    useEffect(() => {
         changeDay(currentDay);
-    }, [currentDay, changeDay]);
+    }, [currentDay, currentWeek]);
 
     useEffect(() => {
         const fetchVisits = async () => {
@@ -91,10 +92,10 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     )
                 )}`;
                 const res = await axiosInstance.get(url);
-                setShowLoading(false);
+                dispatch(changeLoading(false));
                 setVisits(res.data.data);
             } catch (e: any) {
-                setShowLoading(false);
+                dispatch(changeLoading(false));
                 errorHandler(
                     e,
                     () => {},
@@ -103,9 +104,9 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 );
             }
         };
-        setShowLoading(true);
+        dispatch(changeLoading(true));
         fetchVisits();
-    }, [currentWeek, presentAlert, update]);
+    }, [currentWeek, presentAlert, trigger, dispatch]);
 
     return (
         <IonContent className="page">

@@ -1,12 +1,5 @@
-.modalContent {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.content {
     position: relative;
-    overflow: scroll;
-}
-
-.modalContent ion-datetime {
-    position: relative;
-    top: 30px;
+    top: 45px;
+    overflow: hidden;
 }

@@ -148,19 +148,20 @@ export default App;
 
 /*
 
-3 Novembre
-
-- titolo e backtolist funzionanti
-
-- Test visualizza
-
-- Test inserimento 
-
-- Funzione Elimina Visita
-
-- Funzione Modifica Visita 
+5 Novembre
 
 - Funzione Conferma Visita 
+
+- Change content of modal con messaggio editabile
+- Share testing
+
+- Lista Visita One Day
+- Lista Visita con Items
+- If persona also add contatto - pure in form
+- Testing Generico
+
+- Immobile Concluso
+- Ripristina Immobile
 
 PER OGGI OK
 

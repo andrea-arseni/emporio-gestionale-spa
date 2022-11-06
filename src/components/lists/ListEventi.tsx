@@ -203,6 +203,7 @@ const ListEventi: React.FC<{
                     inputTouchHandler={inputNoteTouchedHandler}
                     errorMessage={"Input non valido"}
                     reset={inputNoteReset}
+                    rows={12}
                 />
                 <IonButton expand="full" onClick={() => sendInterestMessage()}>
                     Invia Messaggio

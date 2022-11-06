@@ -15,28 +15,6 @@ const VisitItem: React.FC<{ visita: Visit }> = (props) => {
         dispatch(setModalOpened(true));
     };
 
-    /* const confermaEliminaVisita = async () => {
-        try {
-            setShowLoading(true);
-            await axiosInstance.delete("/visite/" + props.visita!.id);
-            //setModalIsOpen(false);
-            setTimeout(() => {
-                //doUpdate((prevState) => ++prevState);
-            }, 300);
-        } catch (e) {
-            //setModalIsOpen(false);
-            setShowLoading(false);
-            setTimeout(() => {
-                errorHandler(
-                    e,
-                    () => {},
-                    "Cancellazione non riuscita",
-                    presentAlert
-                );
-            }, 300);
-        }
-    }; */
-
     return (
         <>
             <div

@@ -4,7 +4,6 @@ import {
     IonItem,
     IonLabel,
     IonList,
-    IonLoading,
     useIonAlert,
     useIonPicker,
 } from "@ionic/react";
@@ -41,8 +40,6 @@ const FormVisit: React.FC<{
     operationComplete?: () => void;
 }> = (props) => {
     const visit = useAppSelector((state) => state.appuntamenti.currentVisit);
-
-    const isLoading = useAppSelector((state) => state.ui.isLoading);
 
     const dispatch = useAppDispatch();
 
@@ -96,7 +93,10 @@ const FormVisit: React.FC<{
         inputTouchedHandler: inputUserTouchedHandler,
         inputChangedHandler: inputUserChangedHandler,
         reset: inputUserReset,
-    } = useInput(() => true, visit && visit.user ? visit.user.name : null);
+    } = useInput(
+        () => true,
+        visit && visit.user ? capitalize(visit.user.name!) : null
+    );
 
     const {
         inputValue: inputDoveValue,
@@ -170,18 +170,31 @@ const FormVisit: React.FC<{
 
     const submitVisit = async (e: FormEvent) => {
         e.preventDefault();
+        const mode = visit && visit.id ? "update" : "insert";
         dispatch(changeLoading(true));
         const quando = inputDateValue.split("T")[0] + "T" + timeValue + ":00";
         const reqBody = {
             quando,
-            idPersona: personaValue?.id,
-            idImmobile: immobileValue?.id,
-            userName: null,
+            idPersona: personaValue
+                ? personaValue.id
+                : mode === "update"
+                ? 0
+                : null,
+            idImmobile: immobileValue
+                ? immobileValue.id
+                : mode === "update"
+                ? 0
+                : null,
+            userName: inputUserValue,
             dove: inputDoveValue,
             note: inputNoteValue,
         };
         try {
-            await axiosInstance.post("/visite", reqBody);
+            if (mode === "update") {
+                await axiosInstance.patch(`/visite/${visit!.id}`, reqBody);
+            } else {
+                await axiosInstance.post("/visite", reqBody);
+            }
             dispatch(changeLoading(false));
             props.operationComplete!();
         } catch (error: any) {
@@ -310,7 +323,6 @@ const FormVisit: React.FC<{
                 />
             )}
             <form className="form">
-                <IonLoading cssClass="loader" isOpen={isLoading} />
                 <IonList className="list">
                     <ItemSelector
                         strict={props.readonly}
@@ -441,7 +453,7 @@ const FormVisit: React.FC<{
                 {datePickerIsOpen && (
                     <DatePicker
                         closePicker={() => setDatePickerIsOpen(false)}
-                        minValue="2019-01-01T00:00:00"
+                        minValue={new Date().toISOString()}
                         maxValue="2040-05-31T23:59:59"
                         changeHandler={inputDateChangedHandler}
                         value={inputDateValue}

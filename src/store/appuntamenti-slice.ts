@@ -6,12 +6,14 @@ interface AppuntamentiState {
     tooltipActivated: string | null;
     currentVisit: Visit | null;
     pageMode: pageMode;
+    trigger: number;
 }
 
 const initialState = {
     tooltipActivated: null,
     currentVisit: null,
     pageMode: "calendario",
+    trigger: 0,
 } as AppuntamentiState;
 
 const appuntamentiSlice = createSlice({
@@ -31,9 +33,12 @@ const appuntamentiSlice = createSlice({
             state.currentVisit = null;
             state.pageMode = "calendario";
         },
+        refresh(state) {
+            ++state.trigger;
+        },
     },
 });
 
-export const { setTooltip, setCurrentVisit, setPageMode, backToList } =
+export const { setTooltip, setCurrentVisit, setPageMode, backToList, refresh } =
     appuntamentiSlice.actions;
 export default appuntamentiSlice.reducer;

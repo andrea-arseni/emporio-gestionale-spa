@@ -1,4 +1,4 @@
-import { IonContent, IonModal } from "@ionic/react";
+import { IonModal } from "@ionic/react";
 import { Dispatch, SetStateAction } from "react";
 import FormTitle from "../form-components/form-title/FormTitle";
 import styles from "./Modal.module.css";
@@ -15,15 +15,13 @@ const Modal: React.FC<{
             showBackdrop
             onDidDismiss={() => props.setIsOpen(false)}
         >
-            <IonContent className={`${styles.modalContent}`}>
-                <FormTitle
-                    fixed
-                    backToList={false}
-                    title={props.title}
-                    handler={props.handler}
-                />
-                <div>{props.children}</div>
-            </IonContent>
+            <FormTitle
+                fixed
+                backToList={false}
+                title={props.title}
+                handler={props.handler}
+            />
+            <div className={styles.content}>{props.children}</div>
         </IonModal>
     );
 };

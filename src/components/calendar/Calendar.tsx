@@ -56,6 +56,7 @@ const Calendar: React.FC<{
         const selectedDay = props.currentWeek.find((el) =>
             areDateEquals(el.date, props.currentDay)
         );
+        if (!selectedDay) return null;
         return getGrid(selectedDay!);
     };
 
@@ -81,7 +82,7 @@ const Calendar: React.FC<{
 
     const getGrid = (day: Giorno) => {
         const grid: string[] = [];
-        for (let i = 9; i < 21; i++) {
+        for (let i = 8; i < 21; i++) {
             ["00", "15", "30", "45"].forEach((minutes) => {
                 const hour = i < 10 ? "0" + i : i.toString();
                 grid.push(`${hour}:${minutes}`);

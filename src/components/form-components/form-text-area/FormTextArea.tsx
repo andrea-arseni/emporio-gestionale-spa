@@ -6,10 +6,11 @@ const FormTextArea: React.FC<{
     inputValue: string;
     inputChangeHandler: (e: any) => void;
     inputTouchHandler: () => void;
-    reset: () => void;
+    reset?: () => void;
     inputIsInvalid?: boolean;
     errorMessage?: string;
     readonly?: boolean;
+    rows?: number;
 }> = (props) => {
     return (
         <IonItem>
@@ -23,7 +24,7 @@ const FormTextArea: React.FC<{
                 readonly={props.readonly}
                 color={props.inputIsInvalid ? "danger" : undefined}
                 auto-grow
-                rows={6}
+                rows={props.rows ? props.rows : 6}
                 value={props.inputValue}
                 onIonChange={props.inputChangeHandler}
                 onIonBlur={props.inputTouchHandler}
@@ -31,13 +32,13 @@ const FormTextArea: React.FC<{
             {props.inputIsInvalid && (
                 <IonNote color="danger">{props.errorMessage}</IonNote>
             )}
-            {props.inputValue && !props.readonly && (
+            {props.inputValue && !props.readonly && props.reset && (
                 <IonIcon
                     slot="end"
                     style={{ position: "relative", top: "10px" }}
                     icon={closeOutline}
                     onClick={() => {
-                        props.reset();
+                        props.reset!();
                     }}
                 ></IonIcon>
             )}
