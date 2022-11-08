@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Visit } from "../entities/visit.model";
 
-type pageMode = "calendario" | "lista" | "form";
+type pageMode = "calendario" | "lista";
 interface AppuntamentiState {
     tooltipActivated: string | null;
     currentVisit: Visit | null;
     pageMode: pageMode;
+    isFormActive: boolean;
     trigger: number;
 }
 
@@ -14,6 +15,7 @@ const initialState = {
     currentVisit: null,
     pageMode: "calendario",
     trigger: 0,
+    isFormActive: false,
 } as AppuntamentiState;
 
 const appuntamentiSlice = createSlice({
@@ -29,9 +31,12 @@ const appuntamentiSlice = createSlice({
         setPageMode(state, action: PayloadAction<pageMode>) {
             state.pageMode = action.payload;
         },
+        setFormActive(state, action: PayloadAction<boolean>) {
+            state.isFormActive = action.payload;
+        },
         backToList(state) {
             state.currentVisit = null;
-            state.pageMode = "calendario";
+            state.isFormActive = false;
         },
         refresh(state) {
             ++state.trigger;
@@ -39,6 +44,12 @@ const appuntamentiSlice = createSlice({
     },
 });
 
-export const { setTooltip, setCurrentVisit, setPageMode, backToList, refresh } =
-    appuntamentiSlice.actions;
+export const {
+    setTooltip,
+    setCurrentVisit,
+    setPageMode,
+    backToList,
+    refresh,
+    setFormActive,
+} = appuntamentiSlice.actions;
 export default appuntamentiSlice.reducer;

@@ -148,17 +148,9 @@ export default App;
 
 /*
 
-5 Novembre
+8 Novembre
 
-- Funzione Conferma Visita 
-
-- Change content of modal con messaggio editabile
-- Share testing
-
-- Lista Visita One Day
-- Lista Visita con Items
-- If persona also add contatto - pure in form
-- Testing Generico
+- Testing su Report Generico 
 
 - Immobile Concluso
 - Ripristina Immobile

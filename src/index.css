@@ -51,16 +51,6 @@
     margin: 5px auto;
 }
 
-.spaces {
-    margin-top: 4px;
-    margin-bottom: 0;
-    background-color: white;
-}
-
-.spaces * {
-    margin: 6px;
-}
-
 .arrowBack {
     cursor: pointer;
     padding: 10px;

@@ -6,11 +6,14 @@ import ArrowsBar from "../bars/arrows-bar/ArrowsBar";
 const CalendarNavigator: React.FC<{
     currentDay: Date;
     setCurrentDay: Dispatch<SetStateAction<Date>>;
+    mode: "day" | "day-week";
 }> = (props) => {
     const [widthScreen] = useSize();
 
+    const mode = props.mode === "day" || widthScreen < 700 ? "day" : "week";
+
     const getTitolo = () => {
-        if (widthScreen < 700)
+        if (mode === "day")
             return getDayName(
                 props.currentDay,
                 widthScreen > 385 ? "long" : "short"
@@ -22,16 +25,18 @@ const CalendarNavigator: React.FC<{
         )}`;
     };
 
-    const moveInTime = (mode: "forward" | "backward") => {
+    const moveInTime = (direction: "forward" | "backward") => {
         let offset =
-            mode === "backward" ? -1000 * 60 * 60 * 24 : +1000 * 60 * 60 * 24;
+            direction === "backward"
+                ? -1000 * 60 * 60 * 24
+                : +1000 * 60 * 60 * 24;
 
-        if (widthScreen >= 700) offset = offset * 7;
+        if (mode === "week") offset = offset * 7;
         let newDay = new Date(props.currentDay.getTime() + offset);
         if (newDay.getDay() === 0)
             newDay = new Date(
                 newDay.getTime() +
-                    (mode === "backward"
+                    (direction === "backward"
                         ? -1000 * 60 * 60 * 24
                         : +1000 * 60 * 60 * 24)
             );

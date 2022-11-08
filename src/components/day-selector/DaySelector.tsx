@@ -7,6 +7,7 @@ import {
 import { calendarOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import DatePicker from "../date-picker/DatePicker";
+import styles from "./DaySelector.module.css";
 
 const DaySelector: React.FC<{
     currentDay: Date;
@@ -23,11 +24,10 @@ const DaySelector: React.FC<{
     return (
         <>
             <IonButton
-                className="spaces"
+                className={styles.daySelector}
                 expand="full"
                 mode="ios"
                 color="dark"
-                fill="outline"
                 onClick={() => setIsOpen(true)}
             >
                 <IonIcon icon={calendarOutline} />

@@ -4,13 +4,14 @@ import {
     IonItemOptions,
     IonItemSliding,
 } from "@ionic/react";
-import { closeOutline, openOutline } from "ionicons/icons";
+import { closeOutline, openOutline, personAddOutline } from "ionicons/icons";
 import ItemOption from "../../lists/ItemOption";
 import styles from "./SecondaryItem.module.css";
 
 const SecondaryItem: React.FC<{
     deleteAction: () => void;
     visualizeAction?: () => void;
+    addAction?: () => void;
     closeItems: () => void;
     directDeleting?: boolean;
 }> = (props) => {
@@ -43,6 +44,14 @@ const SecondaryItem: React.FC<{
                         colorType={"primary"}
                         icon={openOutline}
                         title={"Apri"}
+                    />
+                )}
+                {props.addAction && (
+                    <ItemOption
+                        handler={() => props.addAction!()}
+                        colorType={"light"}
+                        icon={personAddOutline}
+                        title={"Aggiungi"}
                     />
                 )}
                 <ItemOption

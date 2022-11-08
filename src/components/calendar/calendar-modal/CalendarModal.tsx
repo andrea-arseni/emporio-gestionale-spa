@@ -16,8 +16,8 @@ import {
 import { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
-import { setPageMode } from "../../../store/appuntamenti-slice";
-import { eliminaVisita } from "../../../store/appuntamenti-thunk";
+import { setFormActive } from "../../../store/appuntamenti-slice";
+import { alertEliminaVisita } from "../../../store/appuntamenti-thunk";
 import { setModalOpened } from "../../../store/ui-slice";
 import errorHandler from "../../../utils/errorHandler";
 import { checkShareability } from "../../../utils/fileUtils";
@@ -92,25 +92,8 @@ const CalendarModal: React.FC<{}> = () => {
     const modificaVisita = () => {
         dispatch(setModalOpened(false));
         setTimeout(() => {
-            dispatch(setPageMode("form"));
+            dispatch(setFormActive(true));
         }, 300);
-    };
-
-    const alertEliminaVisita = () => {
-        presentAlert({
-            header: "Sei sicuro?",
-            message: `La cancellazione della visita è irreversibile.`,
-            buttons: [
-                {
-                    text: "Procedi",
-                    handler: () => dispatch(eliminaVisita(null)),
-                },
-                {
-                    text: "Indietro",
-                    role: "cancel",
-                },
-            ],
-        });
     };
 
     return (
@@ -143,7 +126,9 @@ const CalendarModal: React.FC<{}> = () => {
                         </IonSegmentButton>
                         <IonSegmentButton
                             value="elimina"
-                            onClick={alertEliminaVisita}
+                            onClick={() =>
+                                dispatch(alertEliminaVisita(presentAlert))
+                            }
                         >
                             <IonIcon icon={trashBinOutline} />
                             <IonLabel>Elimina</IonLabel>

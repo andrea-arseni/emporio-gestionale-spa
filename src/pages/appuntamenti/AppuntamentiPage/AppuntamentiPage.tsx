@@ -1,4 +1,5 @@
 import {
+    IonButton,
     IonContent,
     IonIcon,
     IonLabel,
@@ -7,7 +8,7 @@ import {
     IonSegmentButton,
     useIonAlert,
 } from "@ionic/react";
-import { calendarOutline, listOutline } from "ionicons/icons";
+import { calendarOutline, listOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import CalendarNavigator from "../../../components/calendar-navigator/CalendarNavigator";
 import Calendar from "../../../components/calendar/Calendar";
@@ -27,9 +28,11 @@ import {
     backToList,
     refresh,
     setCurrentVisit,
+    setFormActive,
     setPageMode,
 } from "../../../store/appuntamenti-slice";
 import { changeLoading } from "../../../store/ui-slice";
+import ListVisits from "../../../components/lists/ListVisits";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
@@ -53,9 +56,13 @@ const AppuntamentiPage: React.FC<{}> = () => {
 
     const pageMode = useAppSelector((state) => state.appuntamenti.pageMode);
 
+    const isFormActive = useAppSelector(
+        (state) => state.appuntamenti.isFormActive
+    );
+
     const openVisitForm = (visit: Visit | null) => {
         dispatch(setCurrentVisit(visit));
-        dispatch(setPageMode("form"));
+        dispatch(setFormActive(true));
     };
 
     const operationComplete = () => {
@@ -69,8 +76,6 @@ const AppuntamentiPage: React.FC<{}> = () => {
             const isDayInTheSameWeek = currentWeek.find((el) =>
                 areDateEquals(el.date, newDay)
             );
-            console.log(newDay);
-            console.log(isDayInTheSameWeek);
             // se no cambia la settimana
             if (!isDayInTheSameWeek) {
                 const newWeek = setWeek(newDay);
@@ -108,16 +113,28 @@ const AppuntamentiPage: React.FC<{}> = () => {
         fetchVisits();
     }, [currentWeek, presentAlert, trigger, dispatch]);
 
+    const todaysVisits = visits
+        .filter((visit) => {
+            const dataVisita = new Date(visit.quando!);
+            return dataVisita.getDate() === currentDay.getDate();
+        })
+        .sort((a, b) => {
+            const firstDate: Date = new Date(a.quando!);
+            const secondDate: Date = new Date(b.quando!);
+            return firstDate.getTime() - secondDate.getTime();
+        });
+
     return (
         <IonContent className="page">
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            {pageMode === "calendario" && (
+            {pageMode === "calendario" && !isFormActive && (
                 <>
                     <DaySelector
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
                     />
                     <CalendarNavigator
+                        mode="day-week"
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
                     />
@@ -129,23 +146,37 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     />
                 </>
             )}
-            {pageMode === "lista" && (
+            {pageMode === "lista" && !isFormActive && (
                 <>
+                    <IonButton
+                        color="primary"
+                        expand="full"
+                        mode="ios"
+                        fill="solid"
+                        style={{ margin: 0 }}
+                        onClick={() => openVisitForm(null)}
+                    >
+                        <IonIcon icon={peopleOutline} />
+                        <IonLabel style={{ paddingLeft: "16px" }}>
+                            Nuova Visita
+                        </IonLabel>
+                    </IonButton>
                     <DaySelector
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
                     />
                     <CalendarNavigator
+                        mode="day"
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
                     />
-                    LISTA
+                    <ListVisits visits={todaysVisits} />
                 </>
             )}
-            {pageMode === "form" && (
+            {isFormActive && (
                 <FormVisit operationComplete={operationComplete} />
             )}
-            {pageMode !== "form" && (
+            {!isFormActive && (
                 <>
                     <IonSegment mode="ios" value={pageMode}>
                         <IonSegmentButton

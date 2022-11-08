@@ -34,6 +34,7 @@ import { changeLoading } from "../../../store/ui-slice";
 import FormTitle from "../../form-components/form-title/FormTitle";
 import { backToList } from "../../../store/appuntamenti-slice";
 import { setModalOpened } from "../../../store/ui-slice";
+import { isNativeApp, saveContact } from "../../../utils/contactUtils";
 
 const FormVisit: React.FC<{
     readonly?: boolean;
@@ -270,6 +271,11 @@ const FormVisit: React.FC<{
                 {!props.readonly && (
                     <SecondaryItem
                         directDeleting
+                        addAction={
+                            isNativeApp
+                                ? () => saveContact(presentAlert, personaValue!)
+                                : undefined
+                        }
                         closeItems={closePersoneItemsList}
                         deleteAction={() => setPersonaValue(null)}
                     >

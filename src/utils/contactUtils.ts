@@ -68,6 +68,7 @@ const isContactAlreadyPresent = async (presentAlert: any, persona: Persona) => {
 export const saveContact = async (presentAlert: any, persona: Persona) => {
     const isGranted = await askContactPermission(presentAlert);
     if (!isGranted) return;
+
     const isPersonaAlreadyPresent = await isContactAlreadyPresent(
         presentAlert,
         persona
@@ -120,3 +121,6 @@ export const saveContact = async (presentAlert: any, persona: Persona) => {
         );
     }
 };
+
+export const isNativeApp =
+    (isPlatform("ios") || isPlatform("android")) && !isPlatform("mobileweb");

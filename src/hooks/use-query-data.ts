@@ -13,6 +13,8 @@ const useQueryData = (entitiesType: entitiesType) => {
                 return "nome";
             case "persone":
                 return "status";
+            case "visite":
+                return "id";
             default:
                 return "data";
         }

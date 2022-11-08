@@ -6,7 +6,6 @@ import {
     IonItemOptions,
     useIonAlert,
 } from "@ionic/react";
-import { isPlatform } from "@ionic/react";
 import {
     createOutline,
     folderOutline,
@@ -23,7 +22,7 @@ import { getPersonaNameColor } from "../../utils/statusHandler";
 import useWindowSize from "../../hooks/use-size";
 import ItemOption from "./ItemOption";
 import useSelection from "../../hooks/use-selection";
-import { saveContact } from "../../utils/contactUtils";
+import { isNativeApp, saveContact } from "../../utils/contactUtils";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -131,7 +130,7 @@ const ListPersone: React.FC<{
                 <IonItemSliding key={persona.id!} id={persona.id?.toString()}>
                     {getPersona(persona)}
                     <IonItemOptions side="end">
-                        {isPlatform("mobile") && (
+                        {isNativeApp && (
                             <ItemOption
                                 handler={() => {
                                     props.closeItems();

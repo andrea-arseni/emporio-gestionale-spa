@@ -3,9 +3,7 @@ import {
     IonItem,
     IonLabel,
     IonItemOptions,
-    IonButton,
     useIonAlert,
-    isPlatform,
 } from "@ionic/react";
 import {
     createOutline,
@@ -18,15 +16,14 @@ import { Entity } from "../../entities/entity";
 import { Evento } from "../../entities/evento.model";
 import useInput from "../../hooks/use-input";
 import { getDateAndTime } from "../../utils/timeUtils";
-import Modal from "../modal/Modal";
 import ItemOption from "./ItemOption";
-import TextArea from "../form-components/form-text-area/FormTextArea";
 import { getInterestMessage } from "../../utils/messageUtils";
 import { useAppSelector } from "../../hooks";
 import { Immobile } from "../../entities/immobile.model";
 import { checkShareability } from "../../utils/fileUtils";
 import errorHandler from "../../utils/errorHandler";
-import { saveContact } from "../../utils/contactUtils";
+import { isNativeApp, saveContact } from "../../utils/contactUtils";
+import ModalMessage from "../modal/modal-message/ModalMessage";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -73,7 +70,6 @@ const ListEventi: React.FC<{
         inputTouchedHandler: inputNoteTouchedHandler,
         inputChangedHandler: inputNoteChangedHandler,
         inputIsInvalid: inputNoteIsInvalid,
-        reset: inputNoteReset,
     } = useInput(() => true, "");
 
     const apriModale = (immobile: Immobile) => {
@@ -145,7 +141,7 @@ const ListEventi: React.FC<{
                             </IonLabel>
                         </IonItem>
                         <IonItemOptions side="end">
-                            {isPlatform("mobile") && (
+                            {isNativeApp && (
                                 <ItemOption
                                     handler={() => {
                                         props.closeItems();
@@ -189,33 +185,15 @@ const ListEventi: React.FC<{
                     </IonItemSliding>
                 );
             })}
-            <Modal
-                setIsOpen={setModalIsOpen}
-                isOpen={modalIsOpen}
-                title={`Definisci il testo da scrivere`}
-                handler={() => setModalIsOpen(false)}
-            >
-                <TextArea
-                    title="Descrizione"
-                    inputValue={inputNoteValue}
-                    inputIsInvalid={inputNoteIsInvalid}
-                    inputChangeHandler={inputNoteChangedHandler}
-                    inputTouchHandler={inputNoteTouchedHandler}
-                    errorMessage={"Input non valido"}
-                    reset={inputNoteReset}
-                    rows={12}
-                />
-                <IonButton expand="full" onClick={() => sendInterestMessage()}>
-                    Invia Messaggio
-                </IonButton>
-                <IonButton
-                    color="light"
-                    expand="full"
-                    onClick={() => setModalIsOpen(false)}
-                >
-                    Annulla
-                </IonButton>
-            </Modal>
+            <ModalMessage
+                modalIsOpen={modalIsOpen}
+                setModalIsOpen={setModalIsOpen}
+                handler={sendInterestMessage}
+                inputValue={inputNoteValue}
+                inputTouchedHandler={inputNoteTouchedHandler}
+                inputChangedHandler={inputNoteChangedHandler}
+                inputIsInvalid={inputNoteIsInvalid}
+            />
         </>
     );
 };

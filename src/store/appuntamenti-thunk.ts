@@ -1,25 +1,3 @@
-/* const confermaEliminaVisita = async () => {
-        try {
-            setShowLoading(true);
-            await axiosInstance.delete("/visite/" + props.visita!.id);
-            //setModalIsOpen(false);
-            setTimeout(() => {
-                //doUpdate((prevState) => ++prevState);
-            }, 300);
-        } catch (e) {
-            //setModalIsOpen(false);
-            setShowLoading(false);
-            setTimeout(() => {
-                errorHandler(
-                    e,
-                    () => {},
-                    "Cancellazione non riuscita",
-                    presentAlert
-                );
-            }, 300);
-        }
-    }; */
-
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from ".";
 import axiosInstance from "../utils/axiosInstance";
@@ -43,3 +21,24 @@ export const eliminaVisita = createAsyncThunk<any, any, { state: RootState }>(
         }
     }
 );
+
+export const alertEliminaVisita = createAsyncThunk<
+    any,
+    any,
+    { state: RootState }
+>("alertEliminaVisita", async (presentAlert, { dispatch }) => {
+    presentAlert({
+        header: "Sei sicuro?",
+        message: `La cancellazione della visita è irreversibile.`,
+        buttons: [
+            {
+                text: "Procedi",
+                handler: () => dispatch(eliminaVisita(null)),
+            },
+            {
+                text: "Indietro",
+                role: "cancel",
+            },
+        ],
+    });
+});
