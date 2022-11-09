@@ -89,6 +89,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
 
     const [isSelectingDates, setIsSelectingDates] = useState<boolean>(false);
 
+    const eseguiUpdate = () => setUpdate((prevState) => ++prevState);
+
     useEffect(() => {
         setShowLoading(loading);
     }, [loading]);
@@ -280,6 +282,15 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         ? immobile.files.filter((el) => el.tipologia === "FOTO")
         : [];
 
+    const excludeFirstFotoIfSigned = () => {
+        if (foto.find((el) => el.nome === "0")) {
+            foto.sort((a, b) => +a.nome! - +b.nome!);
+            foto.splice(1, 1);
+        }
+    };
+
+    excludeFirstFotoIfSigned();
+
     sortReports(reports);
 
     const pickFile = (input: fileSpeciale | null) => {
@@ -371,6 +382,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     />
                     <NewFileButton
                         mode={mode}
+                        selectionMode={selectionMode}
+                        listIdPhotoSelected={listIdPhotoSelected}
                         action={() =>
                             mode !== "report"
                                 ? pickFile(null)
@@ -394,12 +407,12 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     )}
                     {!isSelectingDates && mode === "foto" && (
                         <ImmobiliPhotos
-                            idImmobile={immobileId}
                             foto={foto}
                             selectionMode={selectionMode}
                             setSelectionMode={setSelectionMode}
                             listIdPhotoSelected={listIdPhotoSelected}
                             setListIdPhotoSelected={setListIdPhotoSelected}
+                            eseguiUpdate={eseguiUpdate}
                         />
                     )}
                     {!isSelectingDates && mode === "report" && (

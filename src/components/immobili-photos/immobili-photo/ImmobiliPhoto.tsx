@@ -120,13 +120,24 @@ const ImmobiliPhoto: React.FC<{
 
     const [, dragRef] = useDrag({
         type: "photo",
-        item: { id: props.foto.id },
+        item: { id: props.foto.id, name: props.foto.nome },
     });
 
     const [{ isOver }, dropRef] = useDrop({
         accept: "photo",
-        drop: (item: { id: number }) => {
-            if (item.id !== props.foto.id)
+        drop: (item: { id: number; name: string }) => {
+            if (props.foto.nome === "0" || item.name === "0") {
+                presentAlert({
+                    header: "Scambio non permesso",
+                    message: `Non è possibile spostare una foto con la scritta.`,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => {},
+                        },
+                    ],
+                });
+            } else if (item.id !== props.foto.id)
                 dispatch(
                     swapPhotoPositions({
                         url: `/immobili/${props.idImmobile}/files/${item.id}`,
@@ -170,7 +181,7 @@ const ImmobiliPhoto: React.FC<{
                         } `}
                         alt="Immagine non disponibile 😱😱😱"
                     />
-                    {!props.selectionMode && (
+                    {!props.selectionMode && props.foto.nome !== "0" && (
                         <>
                             <IonFab
                                 vertical="bottom"

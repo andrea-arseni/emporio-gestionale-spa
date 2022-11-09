@@ -148,14 +148,15 @@ export default App;
 
 /*
 
-8 Novembre
+9 Novembre
 
-- Testing su Report Generico 
+- Testing con immagine orizzontale
+- Testing con immagine verticale
+- Testing con immagine piccola
+- Testing con immagine spostata
 
-- Immobile Concluso
-- Ripristina Immobile
+- Testing
 
-PER OGGI OK
 
 ***
  

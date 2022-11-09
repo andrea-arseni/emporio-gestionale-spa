@@ -10,7 +10,9 @@ import { fileSpeciale, listFileSpeciali } from "../types/file_speciali";
 import { getDayName } from "./timeUtils";
 
 export const getFileType = (fileName: string) => {
-    const extension = fileName.split(".")[fileName.split(".").length - 1];
+    const extension = fileName
+        .split(".")
+        [fileName.split(".").length - 1].toLowerCase();
     if (extension === "jpeg" || extension === "jpg" || extension === "png")
         return "image";
     if (extension === "txt") return "text";
@@ -245,7 +247,11 @@ const concludiUpload = (
         buttons: [
             {
                 text: "OK",
-                handler: () => setUpdate((prevState) => ++prevState),
+                handler: () =>
+                    setTimeout(
+                        () => setUpdate((prevState) => ++prevState),
+                        1000
+                    ),
             },
         ],
     });

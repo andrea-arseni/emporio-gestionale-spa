@@ -6,22 +6,27 @@ import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPa
 const NewFileButton: React.FC<{
     mode: fileMode;
     action: () => void;
+    selectionMode: boolean;
+    listIdPhotoSelected: number[] | null;
 }> = (props) => {
     const immobile = useAppSelector((state) => state.immobile.immobile);
 
     const numeroFoto = immobile?.files?.filter(
-        (el) => el.tipologia === "FOTO"
+        (el) => el.tipologia === "FOTO" && el.nome !== "0"
     ).length;
 
     return (
         <IonButton
-            color="primary"
+            color={props.selectionMode ? "dark" : "primary"}
             expand="full"
             mode="ios"
             fill="solid"
             style={{ margin: 0 }}
             onClick={props.action}
-            disabled={props.mode === "foto" && numeroFoto! >= 20}
+            disabled={
+                props.selectionMode ||
+                (props.mode === "foto" && numeroFoto! >= 20)
+            }
         >
             <IonIcon
                 icon={
@@ -33,7 +38,14 @@ const NewFileButton: React.FC<{
                 }
             />
             <IonLabel style={{ paddingLeft: "16px" }}>
-                {props.mode === "files"
+                {props.selectionMode
+                    ? `Foto Selezionate: ${
+                          props.listIdPhotoSelected &&
+                          props.listIdPhotoSelected.length
+                              ? props.listIdPhotoSelected.length
+                              : 0
+                      } su ${numeroFoto}`
+                    : props.mode === "files"
                     ? "Nuovi File"
                     : props.mode === "foto" && numeroFoto! >= 20
                     ? "Raggiunto limite di 20 foto"

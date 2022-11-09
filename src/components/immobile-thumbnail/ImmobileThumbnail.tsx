@@ -1,5 +1,5 @@
 import { IonSpinner, IonThumbnail } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Immobile } from "../../entities/immobile.model";
 import notAvailable from "../../assets/notAvailable.png";
 import axiosInstance from "../../utils/axiosInstance";
@@ -11,19 +11,17 @@ const ImmobileThumbnail: React.FC<{
 }> = (props) => {
     const [showLoading, setShowLoading] = useState<boolean>(true);
 
-    const primaFoto =
-        props.immobile.files!.length === 0
-            ? null
-            : props.immobile.files!.filter((el) => el.tipologia === "FOTO")[0];
+    const getPrimaFoto = useCallback(() => {
+        if (!props.immobile.files || props.immobile.files.length === 0)
+            return null;
+        const foto = props.immobile.files.filter(
+            (el) => el.tipologia === "FOTO"
+        );
+        if (!foto || foto.length === 0) return null;
+        return foto[0];
+    }, [props.immobile.files]);
 
     useEffect(() => {
-        const primaFoto =
-            props.immobile.files!.length === 0
-                ? null
-                : props.immobile.files!.filter(
-                      (el) => el.tipologia === "FOTO"
-                  )[0];
-
         const fetchImmobileAvatar = async () => {
             try {
                 const url = `/immobili/${props.immobile.id}/files/${
@@ -40,13 +38,17 @@ const ImmobileThumbnail: React.FC<{
             }
         };
 
+        const primaFoto = getPrimaFoto();
+
         if (primaFoto) {
             fetchImmobileAvatar();
         } else {
             setShowLoading(false);
         }
         return () => {};
-    }, [props.immobile]);
+    }, [props.immobile, getPrimaFoto]);
+
+    const primaFoto = getPrimaFoto();
 
     return (
         <IonThumbnail>
@@ -58,7 +60,7 @@ const ImmobileThumbnail: React.FC<{
                             : styles.inactive
                     }`}
                     alt="Silhouette of mountains"
-                    src={primaFoto ? primaFoto.base64String : notAvailable}
+                    src={primaFoto ? primaFoto!.base64String : notAvailable}
                 />
             )}
             {showLoading && (
