@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Documento } from "../entities/documento.model";
 import { Immobile } from "../entities/immobile.model";
 import { getBase64StringFromByteArray } from "../utils/fileUtils";
 
@@ -16,6 +17,32 @@ const immobileSlice = createSlice({
     reducers: {
         setImmobile(state, action: PayloadAction<Immobile | null>) {
             state.immobile = action.payload;
+        },
+        deleteFile(state, action: PayloadAction<number | null>) {
+            const index = state.immobile?.files?.findIndex(
+                (el) => el.id === action.payload
+            );
+            if (index || index === 0) state.immobile?.files?.splice(index, 1);
+        },
+        addSignedPhoto(
+            state,
+            action: PayloadAction<{ byteArray: string; file: Documento }>
+        ) {
+            const file = action.payload.file;
+            state.immobile?.files?.unshift(
+                new Documento(
+                    file.id,
+                    "0",
+                    "FOTO",
+                    file.codiceBucket,
+                    undefined,
+                    undefined,
+                    getBase64StringFromByteArray(
+                        action.payload.byteArray,
+                        file.codiceBucket!
+                    )
+                )
+            );
         },
         setPhoto(
             state,
@@ -55,6 +82,12 @@ const immobileSlice = createSlice({
     },
 });
 
-export const { setImmobile, setPhoto, erasePhoto, swapPhotos } =
-    immobileSlice.actions;
+export const {
+    setImmobile,
+    setPhoto,
+    erasePhoto,
+    swapPhotos,
+    deleteFile,
+    addSignedPhoto,
+} = immobileSlice.actions;
 export default immobileSlice.reducer;

@@ -14,6 +14,7 @@ import { useHistory } from "react-router";
 import { Lavoro } from "../../entities/lavoro.model";
 import { getLavoroTitleColor } from "../../utils/statusHandler";
 import ItemOption from "./ItemOption";
+import { isUserAdmin } from "../../utils/userUtils";
 
 const ListLavori: React.FC<{
     lavori: Lavoro[];
@@ -70,18 +71,20 @@ const ListLavori: React.FC<{
                             icon={createOutline}
                             title={"Modifica"}
                         />
-                        <ItemOption
-                            handler={() => {
-                                props.deleteEntity(
-                                    "lavori",
-                                    lavoro.id!.toString(),
-                                    `Hai selezionato la cancellazione del lavoro. Si tratta di un processo irreversibile.`
-                                );
-                            }}
-                            colorType={"danger"}
-                            icon={trashOutline}
-                            title={"Elimina"}
-                        />
+                        {isUserAdmin() && (
+                            <ItemOption
+                                handler={() => {
+                                    props.deleteEntity(
+                                        "lavori",
+                                        lavoro.id!.toString(),
+                                        `Hai selezionato la cancellazione del lavoro. Si tratta di un processo irreversibile.`
+                                    );
+                                }}
+                                colorType={"danger"}
+                                icon={trashOutline}
+                                title={"Elimina"}
+                            />
+                        )}
                     </IonItemOptions>
                 </IonItemSliding>
             ))}

@@ -26,19 +26,29 @@ export const alertEliminaVisita = createAsyncThunk<
     any,
     any,
     { state: RootState }
->("alertEliminaVisita", async (presentAlert, { dispatch }) => {
-    presentAlert({
-        header: "Sei sicuro?",
-        message: `La cancellazione della visita è irreversibile.`,
-        buttons: [
-            {
-                text: "Procedi",
-                handler: () => dispatch(eliminaVisita(null)),
-            },
-            {
-                text: "Indietro",
-                role: "cancel",
-            },
-        ],
-    });
-});
+>(
+    "alertEliminaVisita",
+    async (
+        obj: { presentAlert: any; closeItemsList?: () => void },
+        { dispatch }
+    ) => {
+        obj.presentAlert({
+            header: "Sei sicuro?",
+            message: `La cancellazione della visita è irreversibile.`,
+            buttons: [
+                {
+                    text: "Procedi",
+                    handler: () => dispatch(eliminaVisita(null)),
+                },
+                {
+                    text: "Indietro",
+                    role: "cancel",
+                    handler: () => {
+                        obj.closeItemsList !== undefined &&
+                            obj.closeItemsList();
+                    },
+                },
+            ],
+        });
+    }
+);

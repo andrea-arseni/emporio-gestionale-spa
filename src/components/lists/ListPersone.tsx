@@ -23,6 +23,7 @@ import useWindowSize from "../../hooks/use-size";
 import ItemOption from "./ItemOption";
 import useSelection from "../../hooks/use-selection";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
+import { isUserAdmin } from "../../utils/userUtils";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -164,18 +165,20 @@ const ListPersone: React.FC<{
                             icon={createOutline}
                             title={"Modifica"}
                         />
-                        <ItemOption
-                            handler={() => {
-                                props.deleteEntity(
-                                    "persone",
-                                    persona.id!.toString(),
-                                    `Hai selezionato la cancellazione della persona selezionata. Si tratta di un processo irreversibile.`
-                                );
-                            }}
-                            colorType={"danger"}
-                            icon={trashOutline}
-                            title={"Elimina"}
-                        />
+                        {isUserAdmin() && (
+                            <ItemOption
+                                handler={() => {
+                                    props.deleteEntity(
+                                        "persone",
+                                        persona.id!.toString(),
+                                        `Hai selezionato la cancellazione della persona selezionata. Si tratta di un processo irreversibile.`
+                                    );
+                                }}
+                                colorType={"danger"}
+                                icon={trashOutline}
+                                title={"Elimina"}
+                            />
+                        )}
                     </IonItemOptions>
                 </IonItemSliding>
             ))}

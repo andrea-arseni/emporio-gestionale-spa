@@ -21,9 +21,11 @@ import { getInterestMessage } from "../../utils/messageUtils";
 import { useAppSelector } from "../../hooks";
 import { Immobile } from "../../entities/immobile.model";
 import { checkShareability } from "../../utils/fileUtils";
+import { Share } from "@capacitor/share";
 import errorHandler from "../../utils/errorHandler";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import ModalMessage from "../modal/modal-message/ModalMessage";
+import { isUserAdmin } from "../../utils/userUtils";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -49,7 +51,7 @@ const ListEventi: React.FC<{
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await navigator.share({
+            await Share.share({
                 text: inputNoteValue,
                 url:
                     process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
@@ -169,18 +171,20 @@ const ListEventi: React.FC<{
                                 icon={createOutline}
                                 title={"Modifica"}
                             />
-                            <ItemOption
-                                handler={() =>
-                                    props.deleteEntity(
-                                        "eventi",
-                                        evento.id!.toString(),
-                                        `Hai selezionato la cancellazione dell'evento. Si tratta di un processo irreversibile. Lo status della persona non verrà modificato.`
-                                    )
-                                }
-                                colorType={"danger"}
-                                icon={trashOutline}
-                                title={"Elimina"}
-                            />
+                            {isUserAdmin() && (
+                                <ItemOption
+                                    handler={() =>
+                                        props.deleteEntity(
+                                            "eventi",
+                                            evento.id!.toString(),
+                                            `Hai selezionato la cancellazione dell'evento. Si tratta di un processo irreversibile. Lo status della persona non verrà modificato.`
+                                        )
+                                    }
+                                    colorType={"danger"}
+                                    icon={trashOutline}
+                                    title={"Elimina"}
+                                />
+                            )}
                         </IonItemOptions>
                     </IonItemSliding>
                 );

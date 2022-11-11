@@ -8,7 +8,6 @@ import {
     useIonAlert,
 } from "@ionic/react";
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
-import { Documento } from "../../entities/documento.model";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Card from "../card/Card";
@@ -19,14 +18,13 @@ import errorHandler from "../../utils/errorHandler";
 import axiosSecondaryApi from "../../utils/axiosSecondaryApi";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { changeLoading } from "../../store/ui-slice";
+import { fetchFotoFirmata } from "../../store/immobile-thunk";
 
 const ImmobiliPhotos: React.FC<{
-    foto: Documento[];
     selectionMode: boolean;
     setSelectionMode: Dispatch<SetStateAction<boolean>>;
     listIdPhotoSelected: number[] | null;
     setListIdPhotoSelected: Dispatch<SetStateAction<number[] | null>>;
-    eseguiUpdate: () => void;
 }> = (props) => {
     const [selectionStop, setSelectionStop] = useState<boolean>(false);
 
@@ -36,8 +34,22 @@ const ImmobiliPhotos: React.FC<{
 
     const immobile = useAppSelector((state) => state.immobile.immobile);
 
-    const showSelectAll =
-        props.foto.length !== props.listIdPhotoSelected?.length;
+    const foto = !immobile
+        ? []
+        : immobile.files
+        ? immobile.files.filter((el) => el.tipologia === "FOTO")
+        : [];
+
+    const excludeFirstFotoIfSigned = () => {
+        if (foto.find((el) => el.nome === "0")) {
+            foto.sort((a, b) => +a.nome! - +b.nome!);
+            foto.splice(1, 1);
+        }
+    };
+
+    excludeFirstFotoIfSigned();
+
+    const showSelectAll = foto.length !== props.listIdPhotoSelected?.length;
 
     const bloccaSelezione = useCallback(
         (input: boolean) => setSelectionStop(input),
@@ -45,7 +57,7 @@ const ImmobiliPhotos: React.FC<{
     );
 
     const selectAllPhotos = () => {
-        props.setListIdPhotoSelected(props.foto.map((el) => el.id!));
+        props.setListIdPhotoSelected(foto.map((el) => el.id!));
     };
 
     const selectPhoto = (id: number) =>
@@ -70,8 +82,7 @@ const ImmobiliPhotos: React.FC<{
                 { tipologia, colore: Math.random() > 0.5 ? "blue" : "red" }
             );
             setTimeout(() => {
-                dispatch(changeLoading(false));
-                props.eseguiUpdate();
+                dispatch(fetchFotoFirmata(immobile!.id!));
             }, 500);
         } catch (e) {
             dispatch(changeLoading(false));
@@ -79,7 +90,7 @@ const ImmobiliPhotos: React.FC<{
         }
     };
 
-    if (props.foto.length === 0)
+    if (foto.length === 0)
         return (
             <Card
                 subTitle={`Questo immobile non ha ancora foto associate`}
@@ -88,24 +99,23 @@ const ImmobiliPhotos: React.FC<{
         );
 
     const getSize = (type: "xl" | "lg" | "md" | "sm" | "xs") => {
-        if (props.foto.length === 1 || type === "xs") return "12";
-        if (props.foto.length === 2 || type === "sm") return "6";
-        if (props.foto.length === 3 || type === "md") return "4";
-        if (props.foto.length === 4 || type === "lg") return "3";
-        return "2";
+        if (foto.length === 1 || type === "xs") return "12";
+        if (foto.length === 2 || type === "sm") return "6";
+        if (foto.length === 3 || type === "md") return "4";
+        return "3";
     };
 
-    const areAllPhotoPresent = () => props.foto.every((el) => el.base64String);
+    const areAllPhotoPresent = () => foto.every((el) => el.base64String);
 
-    const isPhotoSignedPresent = props.foto.find((el) => el.nome === "0");
+    const isPhotoSignedPresent = foto.find((el) => el.nome === "0");
 
     const getFrames = () =>
-        props.foto
+        foto
             .sort((a, b) => +a.nome! - +b.nome!)
             .map((el) => {
                 return (
                     <IonCol
-                        className={styles.col}
+                        className="centered"
                         key={el.id}
                         sizeXl={getSize("xl")}
                         sizeLg={getSize("lg")}
@@ -135,7 +145,7 @@ const ImmobiliPhotos: React.FC<{
         <>
             {!isPhotoSignedPresent && (
                 <IonButton
-                    color="danger"
+                    color="dark"
                     expand="full"
                     mode="ios"
                     fill="solid"

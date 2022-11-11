@@ -13,6 +13,7 @@ import {
     trashBinOutline,
     chatboxEllipsesOutline,
 } from "ionicons/icons";
+import { Share } from "@capacitor/share";
 import { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
@@ -22,6 +23,7 @@ import { setModalOpened } from "../../../store/ui-slice";
 import errorHandler from "../../../utils/errorHandler";
 import { checkShareability } from "../../../utils/fileUtils";
 import { getConfermaVisitaMessage } from "../../../utils/messageUtils";
+import { isUserAdmin } from "../../../utils/userUtils";
 import FormTextArea from "../../form-components/form-text-area/FormTextArea";
 import FormTitle from "../../form-components/form-title/FormTitle";
 import FormVisit from "../../forms/visit-form/VisitForm";
@@ -58,7 +60,7 @@ const CalendarModal: React.FC<{}> = () => {
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await navigator.share({
+            await Share.share({
                 text: inputNoteValue,
                 url: visit?.immobile
                     ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
@@ -124,15 +126,19 @@ const CalendarModal: React.FC<{}> = () => {
                             <IonIcon icon={createOutline} />
                             <IonLabel>Modifica</IonLabel>
                         </IonSegmentButton>
-                        <IonSegmentButton
-                            value="elimina"
-                            onClick={() =>
-                                dispatch(alertEliminaVisita(presentAlert))
-                            }
-                        >
-                            <IonIcon icon={trashBinOutline} />
-                            <IonLabel>Elimina</IonLabel>
-                        </IonSegmentButton>
+                        {isUserAdmin() && (
+                            <IonSegmentButton
+                                value="elimina"
+                                onClick={() =>
+                                    dispatch(
+                                        alertEliminaVisita({ presentAlert })
+                                    )
+                                }
+                            >
+                                <IonIcon icon={trashBinOutline} />
+                                <IonLabel>Elimina</IonLabel>
+                            </IonSegmentButton>
+                        )}
                     </IonSegment>
                 </IonContent>
             )}

@@ -9,6 +9,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Entity } from "../../entities/entity";
 import { Step } from "../../entities/step.model";
 import { getDateAndTime } from "../../utils/timeUtils";
+import { isUserAdmin } from "../../utils/userUtils";
 import ItemOption from "./ItemOption";
 
 const ListSteps: React.FC<{
@@ -56,18 +57,20 @@ const ListSteps: React.FC<{
                                 icon={createOutline}
                                 title={"Modifica"}
                             />
-                            <ItemOption
-                                handler={() => {
-                                    props.deleteEntity(
-                                        "steps",
-                                        step.id!.toString(),
-                                        `Hai selezionato la cancellazione dello step. Si tratta di un processo irreversibile. Lo status del lavoro non verrà modificato.`
-                                    );
-                                }}
-                                colorType={"danger"}
-                                icon={trashOutline}
-                                title={"Elimina"}
-                            />
+                            {isUserAdmin() && (
+                                <ItemOption
+                                    handler={() => {
+                                        props.deleteEntity(
+                                            "steps",
+                                            step.id!.toString(),
+                                            `Hai selezionato la cancellazione dello step. Si tratta di un processo irreversibile. Lo status del lavoro non verrà modificato.`
+                                        );
+                                    }}
+                                    colorType={"danger"}
+                                    icon={trashOutline}
+                                    title={"Elimina"}
+                                />
+                            )}
                         </IonItemOptions>
                     </IonItemSliding>
                 );

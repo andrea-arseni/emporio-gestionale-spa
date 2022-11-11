@@ -33,6 +33,7 @@ const authSlice = createSlice({
         },
         logout(state) {
             localStorage.removeItem("authToken");
+            localStorage.removeItem("userData");
             state.authToken = null;
         },
         /* incrementByAmount(state, action: PayloadAction<number>) {

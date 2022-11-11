@@ -31,6 +31,7 @@ import { Documento } from "../../../entities/documento.model";
 import { Entity } from "../../../entities/entity";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import useList from "../../../hooks/use-list";
+import { deleteFile } from "../../../store/immobile-slice";
 import { fetchImmobileById } from "../../../store/immobile-thunk";
 import { changeLoading, setError } from "../../../store/ui-slice";
 import { fileSpeciale } from "../../../types/file_speciali";
@@ -43,6 +44,7 @@ import {
     sortReports,
     submitFile,
 } from "../../../utils/fileUtils";
+import { isUserAdmin } from "../../../utils/userUtils";
 import styles from "./ImmobiliFilesPage.module.css";
 
 export type fileMode = "files" | "foto" | "form" | "report";
@@ -88,8 +90,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     const [isLoading, setShowLoading] = useState<boolean>(false);
 
     const [isSelectingDates, setIsSelectingDates] = useState<boolean>(false);
-
-    const eseguiUpdate = () => setUpdate((prevState) => ++prevState);
 
     useEffect(() => {
         setShowLoading(loading);
@@ -159,13 +159,16 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     };
 
     const confermaCancellazioneAvvenuta = () => {
+        dispatch(changeLoading(false));
+        setListIdPhotoSelected(null);
+        setSelectionMode(false);
         presentAlert({
             header: "Cancellazione completata",
             subHeader: `La cancellazione delle foto è avvenuta con successo.`,
             buttons: [
                 {
                     text: "Ok",
-                    handler: () => setUpdate((prevState) => ++prevState),
+                    role: "cancel",
                 },
             ],
         });
@@ -174,15 +177,13 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     const eliminaFotoSelezionate = async (index: number) => {
         dispatch(changeLoading(true));
         if (index === listIdPhotoSelected!.length) {
-            dispatch(changeLoading(false));
-            setListIdPhotoSelected(null);
-            setSelectionMode(false);
             confermaCancellazioneAvvenuta();
             return;
         }
         let id = listIdPhotoSelected![index];
         try {
             await axiosInstance.delete(`/immobili/${immobileId}/files/${id}`);
+            dispatch(deleteFile(id));
             ++index;
             eliminaFotoSelezionate(index);
         } catch (e) {
@@ -278,18 +279,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     const files = immobile.files
         ? immobile.files.filter((el) => el.tipologia === "DOCUMENTO")
         : [];
-    const foto = immobile.files
-        ? immobile.files.filter((el) => el.tipologia === "FOTO")
-        : [];
-
-    const excludeFirstFotoIfSigned = () => {
-        if (foto.find((el) => el.nome === "0")) {
-            foto.sort((a, b) => +a.nome! - +b.nome!);
-            foto.splice(1, 1);
-        }
-    };
-
-    excludeFirstFotoIfSigned();
 
     sortReports(reports);
 
@@ -359,14 +348,16 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     <IonIcon icon={shareOutline} />
                     <IonLabel>Condividi</IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton
-                    disabled={isButtonDisabled}
-                    value="delete"
-                    onClick={() => alertEliminaFotoSelezionate()}
-                >
-                    <IonIcon icon={trashOutline} />
-                    <IonLabel>Elimina</IonLabel>
-                </IonSegmentButton>
+                {isUserAdmin() && (
+                    <IonSegmentButton
+                        disabled={isButtonDisabled}
+                        value="delete"
+                        onClick={() => alertEliminaFotoSelezionate()}
+                    >
+                        <IonIcon icon={trashOutline} />
+                        <IonLabel>Elimina</IonLabel>
+                    </IonSegmentButton>
+                )}
             </IonSegment>
         );
     };
@@ -407,12 +398,10 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     )}
                     {!isSelectingDates && mode === "foto" && (
                         <ImmobiliPhotos
-                            foto={foto}
                             selectionMode={selectionMode}
                             setSelectionMode={setSelectionMode}
                             listIdPhotoSelected={listIdPhotoSelected}
                             setListIdPhotoSelected={setListIdPhotoSelected}
-                            eseguiUpdate={eseguiUpdate}
                         />
                     )}
                     {!isSelectingDates && mode === "report" && (

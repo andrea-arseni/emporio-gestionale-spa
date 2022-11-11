@@ -1,6 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../utils/axiosInstance";
-import { setImmobile, setPhoto, swapPhotos } from "./immobile-slice";
+import {
+    addSignedPhoto,
+    setImmobile,
+    setPhoto,
+    swapPhotos,
+} from "./immobile-slice";
 import { changeLoading, setError } from "./ui-slice";
 
 export const fetchImmobileById = createAsyncThunk(
@@ -14,6 +19,22 @@ export const fetchImmobileById = createAsyncThunk(
         } catch (e) {
             dispatch(changeLoading(false));
             dispatch(setError({ name: "fetchImmobileById", object: e }));
+        }
+    }
+);
+
+export const fetchFotoFirmata = createAsyncThunk(
+    "fetchFotoFirmata",
+    async (immobileId: number, { dispatch }) => {
+        try {
+            const res = await axiosInstance.get(
+                `/immobili/${immobileId}/fotofirmata`
+            );
+            dispatch(changeLoading(false));
+            dispatch(addSignedPhoto(res.data));
+        } catch (e) {
+            dispatch(changeLoading(false));
+            dispatch(setError({ name: "fetchFotoFirmata", object: e }));
         }
     }
 );

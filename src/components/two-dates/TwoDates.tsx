@@ -1,11 +1,4 @@
-import {
-    IonList,
-    IonItem,
-    IonButton,
-    IonLabel,
-    IonIcon,
-    DatetimeChangeEventDetail,
-} from "@ionic/react";
+import { IonList, IonItem, IonButton, IonLabel, IonIcon } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
 import { useState } from "react";
 import { getDayName } from "../../utils/timeUtils";
@@ -28,7 +21,7 @@ const TwoDates: React.FC<{
 
     const [endDate, setEndDate] = useState<string | null>(null);
 
-    const setNewDate = (e: CustomEvent<DatetimeChangeEventDetail>) => {
+    const setNewDate = (e: CustomEvent<any>) => {
         const date = e.detail.value!.split("T")[0];
         selectingStartDate ? setStartDate(date) : setEndDate(date);
         setSelectingStartDate(false);

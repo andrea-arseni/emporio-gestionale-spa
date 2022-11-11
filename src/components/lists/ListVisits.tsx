@@ -24,7 +24,9 @@ import capitalize from "../../utils/capitalize";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import errorHandler from "../../utils/errorHandler";
 import { checkShareability } from "../../utils/fileUtils";
+import { Share } from "@capacitor/share";
 import { getConfermaVisitaMessage } from "../../utils/messageUtils";
+import { isUserAdmin } from "../../utils/userUtils";
 import Card from "../card/Card";
 import ModalMessage from "../modal/modal-message/ModalMessage";
 import ItemOption from "./ItemOption";
@@ -59,15 +61,14 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
 
     const eliminaVisita = (visita: Visit) => {
         dispatch(setCurrentVisit(visita));
-        dispatch(alertEliminaVisita(presentAlert));
-        closeItemsList();
+        dispatch(alertEliminaVisita({ presentAlert, closeItemsList }));
     };
 
     const sendConfirmationMessage = async () => {
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await navigator.share({
+            await Share.share({
                 text: inputNoteValue,
             });
         } catch (error) {
@@ -155,12 +156,14 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
                         icon={createOutline}
                         title={"Modifica"}
                     />
-                    <ItemOption
-                        handler={() => eliminaVisita(visit)}
-                        colorType={"danger"}
-                        icon={trashOutline}
-                        title={"Elimina"}
-                    />
+                    {isUserAdmin() && (
+                        <ItemOption
+                            handler={() => eliminaVisita(visit)}
+                            colorType={"danger"}
+                            icon={trashOutline}
+                            title={"Elimina"}
+                        />
+                    )}
                 </IonItemOptions>
             </IonItemSliding>
         );

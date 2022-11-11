@@ -8,6 +8,9 @@ import Resizer from "react-image-file-resizer";
 import capitalize from "./capitalize";
 import { fileSpeciale, listFileSpeciali } from "../types/file_speciali";
 import { getDayName } from "./timeUtils";
+import { Share } from "@capacitor/share";
+import { Directory, Filesystem } from "@capacitor/filesystem";
+import { isNativeApp } from "./contactUtils";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -135,13 +138,32 @@ export const shareMultipleFiles = async (
 ) => {
     if (!checkShareability(presentAlert)) return;
     const files = await getFilesFromBase64Strings(documenti);
-    for (let i = 0; i < files.length; i++) {
-        if (!checkSpecificFileShareability(presentAlert, files[i])) return;
-    }
+
     try {
-        await navigator.share({
-            files,
-        });
+        if (isNativeApp) {
+            /* return Filesystem.writeFile({
+                path: fileName,
+                data: base64Data,
+                directory: Directory.Cache,
+            })
+                .then(() => {
+                    return Filesystem.getUri({
+                        directory: Directory.Cache,
+                        path: fileName,
+                    });
+                })
+                .then((uriResult) => {
+                    return Share.share({
+                        title: fileName,
+                        text: fileName,
+                        url: uriResult.uri,
+                    });
+                }); */
+        } else {
+            await navigator.share({
+                files,
+            });
+        }
     } catch (error) {
         errorHandler(
             null,

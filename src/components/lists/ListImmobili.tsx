@@ -26,6 +26,7 @@ import useSelection from "../../hooks/use-selection";
 import ItemOption from "./ItemOption";
 import ImmobileThumbnail from "../immobile-thumbnail/ImmobileThumbnail";
 import FileSpecialiList from "../file-speciali-list/FileSpecialiList";
+import { isUserAdmin } from "../../utils/userUtils";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -193,18 +194,20 @@ const ListImmobili: React.FC<{
                                 icon={createOutline}
                                 title={"Modifica"}
                             />
-                            <ItemOption
-                                handler={() => {
-                                    props.deleteEntity(
-                                        "immobili",
-                                        immobile.id!.toString(),
-                                        `Hai selezionato la cancellazione dell'immobile con riferimento ${immobile.ref}. Si tratta di un processo irreversibile.`
-                                    );
-                                }}
-                                colorType={"danger"}
-                                icon={trashOutline}
-                                title={"Elimina"}
-                            />
+                            {isUserAdmin() && (
+                                <ItemOption
+                                    handler={() => {
+                                        props.deleteEntity(
+                                            "immobili",
+                                            immobile.id!.toString(),
+                                            `Hai selezionato la cancellazione dell'immobile con riferimento ${immobile.ref}. Si tratta di un processo irreversibile.`
+                                        );
+                                    }}
+                                    colorType={"danger"}
+                                    icon={trashOutline}
+                                    title={"Elimina"}
+                                />
+                            )}
                         </IonItemOptions>
                     </IonItemSliding>
                 );

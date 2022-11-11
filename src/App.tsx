@@ -41,6 +41,7 @@ import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
 import ImmobiliFilesPage from "./pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
 import { useAppSelector } from "./hooks";
 import ReportsPage from "./pages/documenti/ReportsPage/ReportsPage";
+import { isUserAdmin } from "./utils/userUtils";
 
 setupIonicReact();
 
@@ -114,7 +115,7 @@ const App: React.FC = () => {
                                 <LavoriDataPage />
                             </Route>
                         )}
-                        {token && (
+                        {token && isUserAdmin() && (
                             <Route path="/operazioni">
                                 <OperazioniPage />
                             </Route>
@@ -150,13 +151,7 @@ export default App;
 
 9 Novembre
 
-- Testing con immagine orizzontale
-- Testing con immagine verticale
-- Testing con immagine piccola
-- Testing con immagine spostata
-
-- Testing
-
+- Switch to Share API
 
 ***
  

@@ -36,6 +36,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
 import ItemOption from "./ItemOption";
 import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
+import { isUserAdmin } from "../../utils/userUtils";
 
 const ListDocumenti: React.FC<{
     documenti: Documento[];
@@ -197,29 +198,33 @@ const ListDocumenti: React.FC<{
                                     : "Seleziona"
                             }
                         />
-                        {props.setCurrentEntity && props.setMode && (
+                        {props.setCurrentEntity &&
+                            props.setMode &&
+                            isUserAdmin() && (
+                                <ItemOption
+                                    handler={() => {
+                                        props.setCurrentEntity!(documento);
+                                        props.setMode!("form");
+                                    }}
+                                    colorType={"light"}
+                                    icon={createOutline}
+                                    title={"Rinomina"}
+                                />
+                            )}
+                        {isUserAdmin() && (
                             <ItemOption
-                                handler={() => {
-                                    props.setCurrentEntity!(documento);
-                                    props.setMode!("form");
-                                }}
-                                colorType={"light"}
-                                icon={createOutline}
-                                title={"Rinomina"}
+                                handler={() =>
+                                    props.deleteEntity(
+                                        "documenti",
+                                        documento.id!.toString(),
+                                        `Hai selezionato la cancellazione del documento selezionato. Si tratta di un processo irreversibile.`
+                                    )
+                                }
+                                colorType={"danger"}
+                                icon={trashOutline}
+                                title={"Elimina"}
                             />
                         )}
-                        <ItemOption
-                            handler={() =>
-                                props.deleteEntity(
-                                    "documenti",
-                                    documento.id!.toString(),
-                                    `Hai selezionato la cancellazione del documento selezionato. Si tratta di un processo irreversibile.`
-                                )
-                            }
-                            colorType={"danger"}
-                            icon={trashOutline}
-                            title={"Elimina"}
-                        />
                     </IonItemOptions>
                 </IonItemSliding>
             ))}
