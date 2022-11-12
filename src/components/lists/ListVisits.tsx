@@ -15,7 +15,7 @@ import {
 import { useState } from "react";
 import { Persona } from "../../entities/persona.model";
 import { Visit } from "../../entities/visit.model";
-import { useAppDispatch } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import useInput from "../../hooks/use-input";
 import useList from "../../hooks/use-list";
 import { setCurrentVisit, setFormActive } from "../../store/appuntamenti-slice";
@@ -40,6 +40,10 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
     const [presentAlert] = useIonAlert();
 
     const dispatch = useAppDispatch();
+
+    const currentVisit = useAppSelector(
+        (state) => state.appuntamenti.currentVisit
+    );
 
     const {
         inputValue: inputNoteValue,
@@ -70,6 +74,12 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
         try {
             await Share.share({
                 text: inputNoteValue,
+                url: currentVisit!.immobile
+                    ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
+                      currentVisit!.immobile.id!
+                    : undefined,
+                dialogTitle: "Conferma Visita",
+                title: "Messaggio",
             });
         } catch (error) {
             errorHandler(

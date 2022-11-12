@@ -56,6 +56,8 @@ const ListEventi: React.FC<{
                 url:
                     process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
                     currentImmobile!.id!,
+                dialogTitle: "Interessamento Immobile",
+                title: "Messaggio",
             });
         } catch (error) {
             errorHandler(

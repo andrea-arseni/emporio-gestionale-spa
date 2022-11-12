@@ -8,9 +8,9 @@ import Resizer from "react-image-file-resizer";
 import capitalize from "./capitalize";
 import { fileSpeciale, listFileSpeciali } from "../types/file_speciali";
 import { getDayName } from "./timeUtils";
-import { Share } from "@capacitor/share";
-import { Directory, Filesystem } from "@capacitor/filesystem";
 import { isNativeApp } from "./contactUtils";
+import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
+import { SocialSharingOptions } from "../types/social-sharing-options";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -95,7 +95,7 @@ export const openFile = async (byteArray: string, documento: Documento) => {
 };
 
 export const checkShareability = (presentAlert: any) => {
-    if (!navigator.canShare) {
+    if (!isNativeApp && !navigator.canShare) {
         errorHandler(
             null,
             () => {},
@@ -108,7 +108,7 @@ export const checkShareability = (presentAlert: any) => {
 };
 
 const checkSpecificFileShareability = (presentAlert: any, file: File) => {
-    if (!navigator.canShare({ files: [file] })) {
+    if (!isNativeApp && !navigator.canShare({ files: [file] })) {
         errorHandler(
             null,
             () => {},
@@ -138,27 +138,12 @@ export const shareMultipleFiles = async (
 ) => {
     if (!checkShareability(presentAlert)) return;
     const files = await getFilesFromBase64Strings(documenti);
-
     try {
         if (isNativeApp) {
-            /* return Filesystem.writeFile({
-                path: fileName,
-                data: base64Data,
-                directory: Directory.Cache,
-            })
-                .then(() => {
-                    return Filesystem.getUri({
-                        directory: Directory.Cache,
-                        path: fileName,
-                    });
-                })
-                .then((uriResult) => {
-                    return Share.share({
-                        title: fileName,
-                        text: fileName,
-                        url: uriResult.uri,
-                    });
-                }); */
+            const options: SocialSharingOptions = {
+                files: documenti.map((el) => el.base64String!),
+            };
+            await SocialSharing.shareWithOptions(options);
         } else {
             await navigator.share({
                 files,
@@ -195,9 +180,16 @@ export const shareFile = async (
     const file = new File([blob], documento.nome!, { type: blob.type });
     if (!checkSpecificFileShareability(presentAlert, file)) return;
     try {
-        await navigator.share({
-            files: [file],
-        });
+        if (isNativeApp) {
+            const options: SocialSharingOptions = {
+                files: [base64File],
+            };
+            await SocialSharing.shareWithOptions(options);
+        } else {
+            await navigator.share({
+                files: [file],
+            });
+        }
     } catch (error) {
         errorHandler(
             null,

@@ -1,5 +1,5 @@
+import { Documento } from "./documento.model";
 import { Evento } from "./evento.model";
-import { File } from "./file.model";
 import { Immobile } from "./immobile.model";
 
 export class Persona {
@@ -12,7 +12,7 @@ export class Persona {
         public immobili: Immobile[] | number[] | null,
         public immobileInquilino: Immobile | number | null,
         public eventi: Evento[] | null,
-        public files: File[] | null,
+        public files: Documento[] | null,
         public provenienza: string | null,
         public status: string | null
     ) {}

@@ -151,7 +151,19 @@ export default App;
 
 9 Novembre
 
-- Switch to Share API
+- Obiettivo: share file and multiple files in Native App
+
+- Test share API working on normal cases and not working on file case -> Sharing of file not working on Android - VINTO
+- Consider SocialSharing both for single file and files - VINTO
+- Testing Browser - VINTO
+- Testing Android - VINTO
+- Testing IOS - VINTO
+- Sharing solved!
+
+
+
+- Localhost problem
+- cordova-plugin-nativestorage
 
 ***
  

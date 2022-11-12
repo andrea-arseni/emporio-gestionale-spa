@@ -66,6 +66,8 @@ const CalendarModal: React.FC<{}> = () => {
                     ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
                       visit.immobile.id!
                     : undefined,
+                dialogTitle: "Conferma Visita",
+                title: "Messaggio",
             });
             smontaModale();
         } catch (error) {

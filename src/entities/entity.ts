@@ -1,7 +1,6 @@
 import { Caratteristiche } from "./caratteristiche.model";
 import { Documento } from "./documento.model";
 import { Evento } from "./evento.model";
-import { File } from "./file.model";
 import { Immobile } from "./immobile.model";
 import { Lavoro } from "./lavoro.model";
 import { Log } from "./log.model";
@@ -15,7 +14,6 @@ export type entitiesType =
     | "caratteristiche"
     | "immobili"
     | "eventi"
-    | "files"
     | "lavori"
     | "logs"
     | "operazioni"
@@ -29,7 +27,6 @@ export type Entity =
     | Caratteristiche
     | Immobile
     | Evento
-    | File
     | Lavoro
     | Log
     | Operazione

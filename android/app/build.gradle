@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
+
+    namespace 'it.emporiocase.gestionale'
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "it.emporiocase.gestionale"
