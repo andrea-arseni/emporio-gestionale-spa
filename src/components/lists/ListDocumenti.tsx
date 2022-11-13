@@ -37,6 +37,7 @@ import errorHandler from "../../utils/errorHandler";
 import ItemOption from "./ItemOption";
 import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
 import { isUserAdmin } from "../../utils/userUtils";
+import { useAppSelector } from "../../hooks";
 
 const ListDocumenti: React.FC<{
     documenti: Documento[];
@@ -123,6 +124,8 @@ const ListDocumenti: React.FC<{
         shareFile(currentFile!.byteArray, currentFile!.documento, presentAlert);
     };
 
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const getDocumento = (documento: Documento) => {
         const type =
             documento.tipologia === "REPORT"
@@ -200,7 +203,7 @@ const ListDocumenti: React.FC<{
                         />
                         {props.setCurrentEntity &&
                             props.setMode &&
-                            isUserAdmin() && (
+                            isUserAdmin(userData) && (
                                 <ItemOption
                                     handler={() => {
                                         props.setCurrentEntity!(documento);
@@ -211,7 +214,7 @@ const ListDocumenti: React.FC<{
                                     title={"Rinomina"}
                                 />
                             )}
-                        {isUserAdmin() && (
+                        {isUserAdmin(userData) && (
                             <ItemOption
                                 handler={() =>
                                     props.deleteEntity(

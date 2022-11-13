@@ -1,3 +1,41 @@
 .list {
     padding-top: 44px;
 }
+
+.link {
+    width: 100% !important;
+    padding: 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 82%;
+    height: 46px !important;
+    border-bottom: 1px solid lightgray;
+}
+
+.link * {
+    margin-right: 7px;
+}
+
+.inactive {
+    background-color: white;
+    color: #555;
+    transition: all 0.3s;
+}
+
+.inactive:hover {
+    background-color: rgb(237, 236, 236);
+}
+
+.active {
+    color: white;
+    background-color: var(--ion-color-primary);
+    transition: all 0.3s;
+}
+
+.active:hover {
+    background-color: #2b73f9;
+}
+
+.itemWrapper {
+    width: 100%;
+}

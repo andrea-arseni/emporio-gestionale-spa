@@ -37,6 +37,8 @@ const CalendarModal: React.FC<{}> = () => {
 
     const [presentAlert] = useIonAlert();
 
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const [modalMode, setModalMode] = useState<"visit" | "message">("visit");
 
     const {
@@ -48,7 +50,10 @@ const CalendarModal: React.FC<{}> = () => {
 
     const confermaVisita = () => {
         setModalMode("message");
-        inputNoteChangedHandler(null, getConfermaVisitaMessage(visit!));
+        inputNoteChangedHandler(
+            null,
+            getConfermaVisitaMessage(visit!, userData!)
+        );
     };
 
     const smontaModale = () => {
@@ -128,7 +133,7 @@ const CalendarModal: React.FC<{}> = () => {
                             <IonIcon icon={createOutline} />
                             <IonLabel>Modifica</IonLabel>
                         </IonSegmentButton>
-                        {isUserAdmin() && (
+                        {isUserAdmin(userData) && (
                             <IonSegmentButton
                                 value="elimina"
                                 onClick={() =>

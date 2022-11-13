@@ -1,9 +1,4 @@
-import {
-    IonApp,
-    IonRouterOutlet,
-    IonSplitPane,
-    setupIonicReact,
-} from "@ionic/react";
+import { IonApp, IonPage, IonSplitPane, setupIonicReact } from "@ionic/react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -23,10 +18,8 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import Header from "./components/header/Header";
 import Menu from "./components/menu/Menu";
-import { RootState } from "./store";
 import AuthPage from "./pages/auth/AuthPage/AuthPage";
-import { Redirect, Route, Switch } from "react-router-dom";
-import Logout from "./components/logout/Logout";
+import { Route, Routes } from "react-router-dom";
 import PasswordPage from "./pages/auth/PasswordPage/PasswordPage";
 import AppuntamentiPage from "./pages/appuntamenti/AppuntamentiPage/AppuntamentiPage";
 import ImmobiliPage from "./pages/immobili/ImmobiliPage/ImmobiliPage";
@@ -39,107 +32,118 @@ import EventsPage from "./pages/persone/EventsPage/EventsPage";
 import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
 import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
 import ImmobiliFilesPage from "./pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
-import { useAppSelector } from "./hooks";
+import { useAppDispatch, useAppSelector } from "./hooks";
 import ReportsPage from "./pages/documenti/ReportsPage/ReportsPage";
 import { isUserAdmin } from "./utils/userUtils";
+import { useEffect } from "react";
+import { performAutoLogin } from "./store/auth-thunk";
 
 setupIonicReact();
 
 const App: React.FC = () => {
-    const token = useAppSelector((state: RootState) => state.auth.authToken);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(performAutoLogin());
+    }, [dispatch]);
+
+    const token = useAppSelector((state) => state.auth.authToken);
+
+    const userData = useAppSelector((state) => state.auth.userData);
 
     return (
         <IonApp>
             <Header token={token} />
             <IonSplitPane contentId="main">
                 {token && <Menu />}
-                <IonRouterOutlet id="main">
-                    <Switch>
+                <IonPage id="main">
+                    <Routes>
                         {!token && (
-                            <Route path="/login">
-                                <AuthPage />
-                            </Route>
+                            <Route path="/login" element={<AuthPage />} />
                         )}
                         {!token && (
-                            <Route path="/primo-accesso">
-                                <PasswordPage />
-                            </Route>
+                            <Route
+                                path="/primo-accesso"
+                                element={<PasswordPage />}
+                            />
                         )}
                         {!token && (
-                            <Route path="/rinnova-password">
-                                <PasswordPage />
-                            </Route>
+                            <Route
+                                path="/rinnova-password"
+                                element={<PasswordPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/appuntamenti">
-                                <AppuntamentiPage />
-                            </Route>
+                            <Route
+                                path="/appuntamenti"
+                                element={<AppuntamentiPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/immobili" exact>
-                                <ImmobiliPage />
-                            </Route>
+                            <Route
+                                path="/immobili"
+                                element={<ImmobiliPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/immobili/:id/files" exact>
-                                <ImmobiliFilesPage />
-                            </Route>
+                            <Route
+                                path="/immobili/:id/files"
+                                element={<ImmobiliFilesPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/immobili/:id/storia">
-                                <LogsPage />
-                            </Route>
+                            <Route
+                                path="/immobili/:id/storia"
+                                element={<LogsPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/persone" exact>
-                                <PersonaPage />
-                            </Route>
+                            <Route path="/persone" element={<PersonaPage />} />
                         )}
                         {token && (
-                            <Route path="/persone/:id" exact>
-                                <EventsPage />
-                            </Route>
+                            <Route
+                                path="/persone/:id"
+                                element={<EventsPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/persone/:id/files">
-                                <PersonaFilePage />
-                            </Route>
-                        )}{" "}
-                        {token && (
-                            <Route path="/obiettivi" exact>
-                                <LavoriPage />
-                            </Route>
+                            <Route
+                                path="/persone/:id/files"
+                                element={<PersonaFilePage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/obiettivi/:id">
-                                <LavoriDataPage />
-                            </Route>
-                        )}
-                        {token && isUserAdmin() && (
-                            <Route path="/operazioni">
-                                <OperazioniPage />
-                            </Route>
+                            <Route path="/obiettivi" element={<LavoriPage />} />
                         )}
                         {token && (
-                            <Route path="/documenti">
-                                <DocumentiPage />
-                            </Route>
+                            <Route
+                                path="/obiettivi/:id"
+                                element={<LavoriDataPage />}
+                            />
+                        )}
+                        {token && isUserAdmin(userData) && (
+                            <Route
+                                path="/operazioni"
+                                element={<OperazioniPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/reports">
-                                <ReportsPage />
-                            </Route>
+                            <Route
+                                path="/documenti"
+                                element={<DocumentiPage />}
+                            />
                         )}
                         {token && (
-                            <Route path="/logout">
-                                <Logout />
-                            </Route>
+                            <Route path="/reports" element={<ReportsPage />} />
                         )}
-                        <Route path="*">
-                            <Redirect to={token ? "appuntamenti" : "login"} />
-                        </Route>
-                    </Switch>
-                </IonRouterOutlet>
+                        <Route
+                            path="*"
+                            element={
+                                token ? <AppuntamentiPage /> : <AuthPage />
+                            }
+                        />
+                    </Routes>
+                </IonPage>
             </IonSplitPane>
         </IonApp>
     );
@@ -149,21 +153,7 @@ export default App;
 
 /*
 
-9 Novembre
 
-- Obiettivo: share file and multiple files in Native App
-
-- Test share API working on normal cases and not working on file case -> Sharing of file not working on Android - VINTO
-- Consider SocialSharing both for single file and files - VINTO
-- Testing Browser - VINTO
-- Testing Android - VINTO
-- Testing IOS - VINTO
-- Sharing solved!
-
-
-
-- Localhost problem
-- cordova-plugin-nativestorage
 
 ***
  

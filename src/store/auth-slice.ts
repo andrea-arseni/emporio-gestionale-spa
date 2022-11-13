@@ -1,22 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface AuthState {
-    authToken: string | null;
+export interface userData {
+    email: string;
+    name: string;
+    role: string;
 }
 
-interface loginData {
+export interface loginData {
     token: string;
-    userData: {
-        email: string;
-        name: string;
-        role: string;
-    };
+    userData: userData;
+}
+
+interface AuthState {
+    authToken: string | null;
+    userData: userData | null;
 }
 
 const initialState = {
-    authToken: localStorage.getItem("authToken")
-        ? localStorage.getItem("authToken")
-        : "",
+    authToken: null,
+    userData: null,
 } as AuthState;
 
 const authSlice = createSlice({
@@ -24,21 +26,13 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         login(state, action: PayloadAction<loginData>) {
-            localStorage.setItem("authToken", action.payload.token);
-            localStorage.setItem(
-                "userData",
-                JSON.stringify(action.payload.userData)
-            );
             state.authToken = action.payload.token;
+            state.userData = action.payload.userData;
         },
         logout(state) {
-            localStorage.removeItem("authToken");
-            localStorage.removeItem("userData");
             state.authToken = null;
+            state.userData = null;
         },
-        /* incrementByAmount(state, action: PayloadAction<number>) {
-            state.value += action.payload;
-        }, */
     },
 });
 

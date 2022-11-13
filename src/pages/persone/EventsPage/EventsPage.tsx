@@ -1,7 +1,8 @@
 import { IonContent, IonLoading, useIonAlert } from "@ionic/react";
 import { personAddOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
 import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
@@ -22,7 +23,7 @@ const EventsPage: React.FC<{}> = () => {
 
     const dispatch = useAppDispatch();
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [showLoading, setShowLoading] = useState<boolean>(true);
 
@@ -54,7 +55,7 @@ const EventsPage: React.FC<{}> = () => {
             } catch (e) {
                 errorHandler(
                     e,
-                    () => history.goBack(),
+                    () => navigate(-1),
                     "Persona impossibile da aprire",
                     presentAlert
                 );
@@ -62,7 +63,7 @@ const EventsPage: React.FC<{}> = () => {
         };
 
         fetchPersona();
-    }, [id, presentAlert, history, update, dispatch]);
+    }, [id, presentAlert, navigate, update, dispatch]);
 
     return (
         <div className="page">

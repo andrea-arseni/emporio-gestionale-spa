@@ -33,6 +33,8 @@ import ItemOption from "./ItemOption";
 import styles from "./Lists.module.css";
 
 const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
     const { list, closeItemsList } = useList();
@@ -53,7 +55,10 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
     } = useInput(() => true, "");
 
     const apriModale = (visita: Visit) => {
-        inputNoteChangedHandler(null, getConfermaVisitaMessage(visita));
+        inputNoteChangedHandler(
+            null,
+            getConfermaVisitaMessage(visita, userData!)
+        );
         setModalIsOpen(true);
         closeItemsList();
     };
@@ -166,7 +171,7 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
                         icon={createOutline}
                         title={"Modifica"}
                     />
-                    {isUserAdmin() && (
+                    {isUserAdmin(userData) && (
                         <ItemOption
                             handler={() => eliminaVisita(visit)}
                             colorType={"danger"}

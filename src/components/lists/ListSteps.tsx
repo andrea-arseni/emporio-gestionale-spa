@@ -8,6 +8,7 @@ import { createOutline, trashOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { Entity } from "../../entities/entity";
 import { Step } from "../../entities/step.model";
+import { useAppSelector } from "../../hooks";
 import { getDateAndTime } from "../../utils/timeUtils";
 import { isUserAdmin } from "../../utils/userUtils";
 import ItemOption from "./ItemOption";
@@ -21,6 +22,8 @@ const ListSteps: React.FC<{
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
 }> = (props) => {
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const getDescrizione = (step: Step) => {
         if (step.descrizione && step.descrizione.includes("***")) {
             const primaParte = step.descrizione.split("***")[0].trim();
@@ -57,7 +60,7 @@ const ListSteps: React.FC<{
                                 icon={createOutline}
                                 title={"Modifica"}
                             />
-                            {isUserAdmin() && (
+                            {isUserAdmin(userData) && (
                                 <ItemOption
                                     handler={() => {
                                         props.deleteEntity(

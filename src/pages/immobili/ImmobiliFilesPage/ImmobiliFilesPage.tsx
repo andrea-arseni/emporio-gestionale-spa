@@ -17,7 +17,8 @@ import {
     trashOutline,
 } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
 import Card from "../../../components/card/Card";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
@@ -52,7 +53,9 @@ export type fileMode = "files" | "foto" | "form" | "report";
 const ImmobiliFilesPage: React.FC<{}> = () => {
     const location = useLocation();
 
-    const history = useHistory();
+    const userData = useAppSelector((state) => state.auth.userData);
+
+    const navigate = useNavigate();
 
     const [presentAlert] = useIonAlert();
 
@@ -105,7 +108,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             errorHandler(
                 error.object,
                 () => {
-                    history.goBack();
+                    navigate(-1);
                     dispatch(setError(null));
                 },
                 "Impossibile leggere i file dell'immobile",
@@ -136,7 +139,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                 presentAlert
             );
         }
-    }, [error, history, presentAlert, dispatch]);
+    }, [error, navigate, presentAlert, dispatch]);
 
     const alertEliminaFotoSelezionate = () => {
         // alert vuoi farlo davvero? E' irreversibile
@@ -348,7 +351,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     <IonIcon icon={shareOutline} />
                     <IonLabel>Condividi</IonLabel>
                 </IonSegmentButton>
-                {isUserAdmin() && (
+                {isUserAdmin(userData) && (
                     <IonSegmentButton
                         disabled={isButtonDisabled}
                         value="delete"

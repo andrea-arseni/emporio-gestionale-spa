@@ -7,7 +7,7 @@ import {
     IonTitle,
 } from "@ionic/react";
 import { reorderFourOutline } from "ionicons/icons";
-import { useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
 
 const Header: React.FC<{ token: string | null }> = (props) => {
     const location = useLocation();

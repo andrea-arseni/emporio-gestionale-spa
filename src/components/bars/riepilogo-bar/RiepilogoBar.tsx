@@ -6,7 +6,7 @@ import {
     IonTitle,
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import { Lavoro } from "../../../entities/lavoro.model";
@@ -21,7 +21,7 @@ const RiepilogoBar: React.FC<{
     currentEntity: Entity;
     tipologia: "persona" | "lavoro" | "immobile";
 }> = (props) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const getTitle = () => {
         if (props.tipologia === "persona") {
@@ -51,7 +51,7 @@ const RiepilogoBar: React.FC<{
     return (
         <IonToolbar mode="ios" className={styles.toolbar} color={getColor()}>
             <IonButtons slot="start">
-                <IonButton onClick={() => history.goBack()}>
+                <IonButton onClick={() => navigate(-1)}>
                     <IonIcon slot="icon-only" icon={arrowBackOutline} />
                 </IonButton>
             </IonButtons>

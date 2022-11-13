@@ -21,12 +21,13 @@ import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
 import { numberAsPrice } from "../../utils/numberUtils";
 import styles from "./Lists.module.css";
-import { useHistory } from "react-router";
 import useSelection from "../../hooks/use-selection";
 import ItemOption from "./ItemOption";
 import ImmobileThumbnail from "../immobile-thumbnail/ImmobileThumbnail";
 import FileSpecialiList from "../file-speciali-list/FileSpecialiList";
 import { isUserAdmin } from "../../utils/userUtils";
+import { useAppSelector } from "../../hooks";
+import { useNavigate } from "react-router-dom";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -39,7 +40,7 @@ const ListImmobili: React.FC<{
     closeItems: () => void;
     selectMode: boolean;
 }> = (props) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [width] = useWindowSize();
 
@@ -89,6 +90,8 @@ const ListImmobili: React.FC<{
     const { selectEntity, entitySelected } = useSelection(
         props.setCurrentEntity
     );
+
+    const userData = useAppSelector((state) => state.auth.userData);
 
     const getImmobile = (immobile: Immobile) => {
         return (
@@ -161,9 +164,7 @@ const ListImmobili: React.FC<{
                         <IonItemOptions side="end">
                             <ItemOption
                                 handler={() =>
-                                    history.push(
-                                        `/immobili/${immobile.id}/files`
-                                    )
+                                    navigate(`/immobili/${immobile.id}/files`)
                                 }
                                 colorType={"primary"}
                                 icon={cameraOutline}
@@ -171,9 +172,7 @@ const ListImmobili: React.FC<{
                             />
                             <ItemOption
                                 handler={() =>
-                                    history.push(
-                                        `/immobili/${immobile.id}/storia`
-                                    )
+                                    navigate(`/immobili/${immobile.id}/storia`)
                                 }
                                 colorType={"tertiary"}
                                 icon={newspaperOutline}
@@ -194,7 +193,7 @@ const ListImmobili: React.FC<{
                                 icon={createOutline}
                                 title={"Modifica"}
                             />
-                            {isUserAdmin() && (
+                            {isUserAdmin(userData) && (
                                 <ItemOption
                                     handler={() => {
                                         props.deleteEntity(

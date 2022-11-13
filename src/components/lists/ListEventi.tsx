@@ -47,6 +47,8 @@ const ListEventi: React.FC<{
 
     const [presentAlert] = useIonAlert();
 
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const sendInterestMessage = async () => {
         if (!checkShareability(presentAlert)) return;
 
@@ -78,7 +80,10 @@ const ListEventi: React.FC<{
 
     const apriModale = (immobile: Immobile) => {
         setCurrentImmobile(immobile);
-        inputNoteChangedHandler(null, getInterestMessage(persona!, immobile));
+        inputNoteChangedHandler(
+            null,
+            getInterestMessage(persona!, immobile, userData!)
+        );
         setModalIsOpen(true);
         props.closeItems();
     };
@@ -173,7 +178,7 @@ const ListEventi: React.FC<{
                                 icon={createOutline}
                                 title={"Modifica"}
                             />
-                            {isUserAdmin() && (
+                            {isUserAdmin(userData) && (
                                 <ItemOption
                                     handler={() =>
                                         props.deleteEntity(

@@ -9,7 +9,8 @@ import {
 } from "@ionic/react";
 import { documentsSharp } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
 import Card from "../../../components/card/Card";
 import FormGroup from "../../../components/form-components/form-group/FormGroup";
@@ -36,7 +37,7 @@ import styles from "./PersonaFilePage.module.css";
 const PersonaFilePage: React.FC<{}> = () => {
     const location = useLocation();
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const personaId = location.pathname.split("/")[2];
 
@@ -72,7 +73,7 @@ const PersonaFilePage: React.FC<{}> = () => {
                 setShowLoading(false);
                 errorHandler(
                     e,
-                    () => history.goBack(),
+                    () => navigate(-1),
                     "Impossibile leggere i file della persona",
                     presentAlert
                 );
@@ -80,7 +81,7 @@ const PersonaFilePage: React.FC<{}> = () => {
         };
 
         fetchPersona();
-    }, [history, personaId, presentAlert, update]);
+    }, [navigate, personaId, presentAlert, update]);
 
     const backToList = () => {
         setMode("list");

@@ -1,7 +1,6 @@
 import {
     IonContent,
     IonIcon,
-    IonItem,
     IonLabel,
     IonList,
     IonMenu,
@@ -17,7 +16,9 @@ import {
     golfOutline,
     podiumOutline,
 } from "ionicons/icons";
-import { useLocation } from "react-router";
+import { NavLink, useLocation } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { performLogout } from "../../store/auth-thunk";
 import { isUserAdmin } from "../../utils/userUtils";
 import style from "./Menu.module.css";
 
@@ -28,6 +29,10 @@ interface AppPage {
 }
 
 const Menu: React.FC<{}> = () => {
+    const dispatch = useAppDispatch();
+
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const appPages: AppPage[] = [
         {
             title: "Appuntamenti",
@@ -64,16 +69,11 @@ const Menu: React.FC<{}> = () => {
             url: "/reports",
             icon: podiumOutline,
         },
-        {
-            title: "Logout",
-            url: "/logout",
-            icon: logOutOutline,
-        },
     ];
 
     const location = useLocation();
 
-    if (!isUserAdmin()) {
+    if (!isUserAdmin(userData)) {
         const indexOperazioni = appPages.findIndex(
             (el) => el.title === "Operazioni"
         );
@@ -86,40 +86,58 @@ const Menu: React.FC<{}> = () => {
                 <IonList id="inbox-list" className={style.list}>
                     {appPages.map((appPage, index) => {
                         return (
-                            <IonMenuToggle key={index} autoHide={false}>
-                                <IonItem
-                                    color={
-                                        location.pathname === appPage.url
-                                            ? "primary"
-                                            : ""
-                                    }
-                                    routerLink={appPage.url}
-                                    routerDirection="none"
-                                    lines="none"
-                                    detail={false}
+                            <IonMenuToggle
+                                autoHide={false}
+                                key={index}
+                                className={`${style.itemWrapper} centered`}
+                            >
+                                <div
+                                    className={`${style.itemWrapper} centered`}
                                 >
-                                    <IonIcon
-                                        slot="start"
-                                        icon={appPage.icon}
-                                        className={
-                                            location.pathname === appPage.url
-                                                ? "selected"
-                                                : ""
-                                        }
-                                    />
-                                    <IonLabel
-                                        className={
-                                            location.pathname === appPage.url
-                                                ? "selected"
-                                                : ""
+                                    <NavLink
+                                        to={appPage.url}
+                                        className={({ isActive }) =>
+                                            isActive
+                                                ? `${style.link} centered ${style.active}`
+                                                : `${style.link} centered ${style.inactive}`
                                         }
                                     >
-                                        {appPage.title}
-                                    </IonLabel>
-                                </IonItem>
+                                        <IonIcon
+                                            slot="start"
+                                            icon={appPage.icon}
+                                            className={
+                                                location.pathname ===
+                                                appPage.url
+                                                    ? "selected"
+                                                    : ""
+                                            }
+                                        />
+                                        <IonLabel
+                                            className={
+                                                location.pathname ===
+                                                appPage.url
+                                                    ? "selected"
+                                                    : ""
+                                            }
+                                        >
+                                            {appPage.title}
+                                        </IonLabel>
+                                    </NavLink>
+                                </div>
                             </IonMenuToggle>
                         );
                     })}
+                    <IonMenuToggle className={`${style.itemWrapper} centered`}>
+                        <div className={`${style.itemWrapper} centered`}>
+                            <div
+                                className={`${style.link} centered ${style.inactive}`}
+                                onClick={() => dispatch(performLogout())}
+                            >
+                                <IonIcon slot="start" icon={logOutOutline} />
+                                <IonLabel>LOGOUT</IonLabel>
+                            </div>
+                        </div>
+                    </IonMenuToggle>
                 </IonList>
             </IonContent>
         </IonMenu>

@@ -1,13 +1,13 @@
 import { IonToolbar, IonIcon, IonLabel } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 import Title from "../../title/Title";
 
 const StaticBar: React.FC<{
     icon: string;
     title: string;
 }> = (props) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     return (
         <IonToolbar mode="ios">
@@ -15,7 +15,7 @@ const StaticBar: React.FC<{
                 slot="start"
                 icon={arrowBackOutline}
                 className="arrowBack"
-                onClick={() => history.goBack()}
+                onClick={() => navigate(-1)}
             />
             <Title>
                 <IonIcon

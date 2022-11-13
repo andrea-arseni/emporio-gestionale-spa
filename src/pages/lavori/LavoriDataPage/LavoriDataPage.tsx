@@ -1,7 +1,7 @@
 import { IonContent, IonLoading, useIonAlert } from "@ionic/react";
 import { constructOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
 import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";

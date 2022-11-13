@@ -16,7 +16,6 @@ import {
 import { Dispatch, SetStateAction } from "react";
 import { Entity } from "../../entities/entity";
 import styles from "./Lists.module.css";
-import { useHistory } from "react-router";
 import { Persona } from "../../entities/persona.model";
 import { getPersonaNameColor } from "../../utils/statusHandler";
 import useWindowSize from "../../hooks/use-size";
@@ -24,6 +23,8 @@ import ItemOption from "./ItemOption";
 import useSelection from "../../hooks/use-selection";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import { isUserAdmin } from "../../utils/userUtils";
+import { useAppSelector } from "../../hooks";
+import { useNavigate } from "react-router-dom";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -36,14 +37,16 @@ const ListPersone: React.FC<{
     closeItems: () => void;
     selectMode: boolean;
 }> = (props) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [width] = useWindowSize();
 
     const [presentAlert] = useIonAlert();
 
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const goToData = (id: number) => {
-        history.push(`/persone/${id.toString()}`);
+        navigate(`/persone/${id.toString()}`);
     };
 
     const { selectEntity, entitySelected } = useSelection(
@@ -150,7 +153,7 @@ const ListPersone: React.FC<{
                         />
                         <ItemOption
                             handler={() =>
-                                history.push(`/persone/${persona.id}/files`)
+                                navigate(`/persone/${persona.id}/files`)
                             }
                             colorType={"success"}
                             icon={folderOutline}
@@ -165,7 +168,7 @@ const ListPersone: React.FC<{
                             icon={createOutline}
                             title={"Modifica"}
                         />
-                        {isUserAdmin() && (
+                        {isUserAdmin(userData) && (
                             <ItemOption
                                 handler={() => {
                                     props.deleteEntity(

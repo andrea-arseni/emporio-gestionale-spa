@@ -1,6 +1,4 @@
-export const isUserAdmin = () => {
-    const role = localStorage.getItem("userData")
-        ? JSON.parse(localStorage.getItem("userData")!).role
-        : null;
-    return role && role === "ADMIN";
-};
+import { userData } from "../store/auth-slice";
+
+export const isUserAdmin = (userData: userData | null) =>
+    userData && userData.role && userData.role === "ADMIN";

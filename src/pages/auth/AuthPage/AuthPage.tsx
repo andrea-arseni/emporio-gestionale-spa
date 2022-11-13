@@ -12,15 +12,13 @@ import React, { FormEvent, Fragment, useState } from "react";
 import styles from "./AuthPage.module.css";
 import logo from "../../../assets/logo.png";
 import useInput from "../../../hooks/use-input";
-import { login } from "../../../store/auth-slice";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
+import { performLogin } from "../../../store/auth-thunk";
+import { useAppDispatch } from "../../../hooks";
 
 const AuthPage: React.FC<{}> = () => {
-    const history = useHistory();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const [mode, setMode] = useState<"login" | "forgot-password">("login");
 
     const revertMode = () =>
@@ -108,8 +106,7 @@ const AuthPage: React.FC<{}> = () => {
         // salva il token in global state
         // salva il token in localstorage
         // dichiara che sei entrato
-        dispatch(login(userData));
-        history.replace("/appuntamenti");
+        dispatch(performLogin(userData));
     };
 
     const submitForgotPasswordCall = async () => {

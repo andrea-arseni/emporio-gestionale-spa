@@ -9,19 +9,18 @@ import {
     useIonAlert,
 } from "@ionic/react";
 import { FormEvent, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import logo from "../../../assets/logo.png";
+import { useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
-import { login } from "../../../store/auth-slice";
+import { performLogin } from "../../../store/auth-thunk";
 import axiosInstance from "../../../utils/axiosInstance";
 import capitalize from "../../../utils/capitalize";
 import styles from "./PasswordPage.module.css";
 
 const PasswordPage: React.FC<{}> = () => {
     const location = useLocation();
-    const dispatch = useDispatch();
-    const history = useHistory();
+    const dispatch = useAppDispatch();
     const [presentAlert] = useIonAlert();
     const [showLoading, setShowLoading] = useState<boolean>(false);
     const mode = location.pathname.substring(1).replace("-", " ");
@@ -96,12 +95,11 @@ const PasswordPage: React.FC<{}> = () => {
                 }
             );
             setShowLoading(false);
-            const authToken = res.data.token;
+            const userData = res.data;
             // salva il token in global state
             // salva il token in localstorage
             // dichiara che sei entrato
-            dispatch(login(authToken));
-            history.replace("/appuntamenti");
+            dispatch(performLogin(userData));
         } catch (e: any) {
             setShowLoading(false);
             presentAlert({

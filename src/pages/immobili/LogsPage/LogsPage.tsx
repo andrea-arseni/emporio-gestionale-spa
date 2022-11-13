@@ -1,6 +1,6 @@
 import { IonContent } from "@ionic/react";
 import { bookOutline } from "ionicons/icons";
-import { useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
 import StaticBar from "../../../components/bars/static-bar/StaticBar";
 import Selector from "../../../components/selector/Selector";
 import useQueryData from "../../../hooks/use-query-data";

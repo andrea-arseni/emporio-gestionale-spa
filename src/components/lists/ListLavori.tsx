@@ -10,11 +10,12 @@ import { Dispatch, SetStateAction } from "react";
 import { Entity } from "../../entities/entity";
 import useWindowSize from "../../hooks/use-size";
 import styles from "./Lists.module.css";
-import { useHistory } from "react-router";
 import { Lavoro } from "../../entities/lavoro.model";
 import { getLavoroTitleColor } from "../../utils/statusHandler";
 import ItemOption from "./ItemOption";
 import { isUserAdmin } from "../../utils/userUtils";
+import { useAppSelector } from "../../hooks";
+import { useNavigate } from "react-router-dom";
 
 const ListLavori: React.FC<{
     lavori: Lavoro[];
@@ -25,12 +26,14 @@ const ListLavori: React.FC<{
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     setUpdate: Dispatch<SetStateAction<number>>;
 }> = (props) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [width] = useWindowSize();
 
+    const userData = useAppSelector((state) => state.auth.userData);
+
     const goToData = (id: number) => {
-        history.push(`/obiettivi/${id.toString()}`);
+        navigate(`/obiettivi/${id.toString()}`);
     };
 
     return (
@@ -71,7 +74,7 @@ const ListLavori: React.FC<{
                             icon={createOutline}
                             title={"Modifica"}
                         />
-                        {isUserAdmin() && (
+                        {isUserAdmin(userData) && (
                             <ItemOption
                                 handler={() => {
                                     props.deleteEntity(

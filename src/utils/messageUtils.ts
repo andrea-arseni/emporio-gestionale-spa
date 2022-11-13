@@ -1,6 +1,7 @@
 import { Immobile } from "../entities/immobile.model";
 import { Persona } from "../entities/persona.model";
 import { Visit } from "../entities/visit.model";
+import { userData } from "../store/auth-slice";
 import { tipologia } from "../types/tipologia";
 import capitalize from "./capitalize";
 import { getDayName } from "./timeUtils";
@@ -15,8 +16,7 @@ const getSaluto = () => {
     return "Buonasera";
 };
 
-const getPresentazione = (nome: string | null) => {
-    const userData = JSON.parse(localStorage.getItem("userData")!);
+const getPresentazione = (nome: string | null, userData: userData) => {
     return `${getSaluto()}${getNome(nome)}, sono ${
         userData.name
     } dell'Emporio Case.`;
@@ -63,10 +63,14 @@ const getDove = (visita: Visit) => {
 
 const chiusuraVisita = `Per qualsiasi comunicazione mi scriva pure qui. Grazie`;
 
-export const getInterestMessage = (persona: Persona, immobile: Immobile) => {
-    const userData = JSON.parse(localStorage.getItem("userData")!);
+export const getInterestMessage = (
+    persona: Persona,
+    immobile: Immobile,
+    userData: userData
+) => {
     return `${getPresentazione(
-        persona.nome
+        persona.nome,
+        userData
     )} Abbiamo ricevuto il suo interessamento in merito all'immobile che stiamo ${
         immobile.contratto === "affitto" ? "affittando" : "vendendo"
     } in ${immobile.indirizzo} a ${capitalize(
@@ -76,9 +80,10 @@ export const getInterestMessage = (persona: Persona, immobile: Immobile) => {
     }. Grazie`;
 };
 
-export const getConfermaVisitaMessage = (visita: Visit) => {
+export const getConfermaVisitaMessage = (visita: Visit, userData: userData) => {
     return `${getPresentazione(
-        visita.persona && visita.persona.nome
+        visita.persona && visita.persona.nome,
+        userData
     )} ${getDataAppuntamento(visita.quando!)}${getImmobileAppuntamento(
         visita.immobile
     )}${getDove(visita)} ${chiusuraVisita}`;
