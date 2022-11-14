@@ -38,6 +38,7 @@ import ItemOption from "./ItemOption";
 import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
 import { isUserAdmin } from "../../utils/userUtils";
 import { useAppSelector } from "../../hooks";
+import { isNativeApp } from "../../utils/contactUtils";
 
 const ListDocumenti: React.FC<{
     documenti: Documento[];
@@ -163,7 +164,8 @@ const ListDocumenti: React.FC<{
                 >
                     {getDocumento(documento)}
                     <IonItemOptions side="end">
-                        {(getFileType(documento.nome!) === "image" ||
+                        {(isNativeApp ||
+                            getFileType(documento.nome!) === "image" ||
                             getFileType(documento.nome!) === "pdf" ||
                             getFileType(documento.nome!) === "text") && (
                             <ItemOption

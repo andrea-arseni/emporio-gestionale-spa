@@ -153,6 +153,9 @@ export default App;
 
 /*
 
+- Test Android *
+- Test IOS *
+- Test Browser
 
 
 ***

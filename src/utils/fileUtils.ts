@@ -11,6 +11,8 @@ import { getDayName } from "./timeUtils";
 import { isNativeApp } from "./contactUtils";
 import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
 import { SocialSharingOptions } from "../types/social-sharing-options";
+import { File as FilePlugin } from "@awesome-cordova-plugins/file";
+import { FileOpener } from "@awesome-cordova-plugins/file-opener";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -91,7 +93,34 @@ export const openFile = async (byteArray: string, documento: Documento) => {
     const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
     const blob = await getBlobFromBase64String(base64File);
     const url = URL.createObjectURL(blob);
-    window.open(url);
+    if (isNativeApp) {
+        try {
+            await FilePlugin.writeFile(
+                FilePlugin.cacheDirectory,
+                documento.nome!,
+                blob,
+                { replace: true }
+            );
+        } catch (e) {
+            alert("File non scrivibile, impossibile procedere");
+        }
+        try {
+            await FileOpener.open(
+                `${FilePlugin.cacheDirectory}${documento.nome!}`,
+                getMimeType(documento.nome!)
+            );
+            setTimeout(async () => {
+                await FilePlugin.removeFile(
+                    FilePlugin.cacheDirectory,
+                    documento.nome!
+                );
+            }, 20000);
+        } catch (e) {
+            alert("File non apribile, procedura annullata");
+        }
+    } else {
+        window.open(url);
+    }
 };
 
 export const checkShareability = (presentAlert: any) => {
