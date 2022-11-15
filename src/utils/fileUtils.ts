@@ -7,12 +7,16 @@ import heic2any from "heic2any";
 import Resizer from "react-image-file-resizer";
 import capitalize from "./capitalize";
 import { fileSpeciale, listFileSpeciali } from "../types/file_speciali";
-import { getDayName } from "./timeUtils";
+import { getDayName, getTwoDigitString } from "./timeUtils";
 import { isNativeApp } from "./contactUtils";
 import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
 import { SocialSharingOptions } from "../types/social-sharing-options";
 import { File as FilePlugin } from "@awesome-cordova-plugins/file";
 import { FileOpener } from "@awesome-cordova-plugins/file-opener";
+import { AndroidPermissions } from "@awesome-cordova-plugins/android-permissions";
+import { isPlatform } from "@ionic/core";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { changeLoading } from "../store/ui-slice";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -77,16 +81,178 @@ export const getBase64StringFromByteArray = (
     return `data:${mimeType};base64,${byteArray}`;
 };
 
-export const downloadFile = (byteArray: string, documento: Documento) => {
-    const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
-    FileSaver.saveAs(base64File, documento.nome!);
+export const checkAndroidPermissionsForWritingFiles = async () => {
+    try {
+        await AndroidPermissions.checkPermission(
+            AndroidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
+        );
+    } catch (e) {
+        await AndroidPermissions.requestPermission(
+            AndroidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
+        );
+    }
 };
 
-export const downloadMultipleFiles = (documenti: Documento[]) => {
-    documenti.forEach((el) => {
-        const extension = getFileExtension(el.codiceBucket!);
-        FileSaver.saveAs(el.base64String!, el.nome! + "." + extension);
-    });
+export const checkAndCreateEmporioDirectory = async () => {
+    try {
+        await FilePlugin.createDir(
+            FilePlugin.externalRootDirectory + "Pictures",
+            "Emporio",
+            false
+        );
+    } catch (e: any) {
+        if (e.message !== "PATH_EXISTS_ERR") console.log(e);
+    }
+};
+
+const getImageName = (nome: string) => {
+    const extension = getFileExtension(nome);
+    const today = new Date();
+    return `${today.getFullYear()}${getTwoDigitString(
+        today.getMonth()
+    )}${getTwoDigitString(today.getHours())}_${Math.floor(
+        100000 + Math.random() * 900000
+    )}.${extension}`;
+};
+
+export const salvaFotoInIos = async (documenti: Documento[], dispatch: any) => {
+    try {
+        await SocialSharing.saveToPhotoAlbum(
+            documenti.map((el) => el.base64String!)
+        );
+        if (dispatch) dispatch(changeLoading(false));
+        alert(
+            `Foto salvat${
+                documenti.length === 1 ? "a" : "e"
+            } con successo in Galleria`
+        );
+    } catch (e: any) {
+        if (dispatch) dispatch(changeLoading(false));
+        alert("Errore nel salvataggio delle foto, procedura annullata.");
+    }
+};
+
+export const salvaDocumentoInIos = async (documento: Documento, blob: Blob) => {
+    const isImage = getFileType(documento.nome!) === "image";
+    if (isImage) {
+        await salvaFotoInIos([documento], null);
+    } else {
+        try {
+            await FilePlugin.writeFile(
+                FilePlugin.cacheDirectory,
+                documento.nome!,
+                blob,
+                { replace: true }
+            );
+        } catch (e) {
+            alert("File non salvabile, impossibile procedere");
+        }
+        try {
+            await FileOpener.showOpenWithDialog(
+                `${FilePlugin.cacheDirectory}${documento.nome!}`,
+                getMimeType(documento.nome!)
+            );
+            setTimeout(async () => {
+                await FilePlugin.removeFile(
+                    FilePlugin.cacheDirectory,
+                    documento.nome!
+                );
+            }, 120000);
+        } catch (e) {
+            alert("File non apribile, impossibile procedere");
+        }
+    }
+};
+
+export const salvaDocumentoInAndroid = async (nome: string, blob: Blob) => {
+    const isImage = getFileType(nome) === "image";
+    if (isImage) await checkAndCreateEmporioDirectory();
+    const directory = !isImage ? "Download" : "Pictures/Emporio";
+    const messaggioChiusura = !isImage
+        ? `Si trova al seguente percorso Archivio/Memoria interna/Download/${nome}`
+        : `Si trova in Galleria`;
+    const usedName = !isImage ? nome : getImageName(nome);
+    try {
+        await FilePlugin.writeFile(
+            FilePlugin.externalRootDirectory + directory,
+            usedName,
+            blob
+        );
+        alert(`File scaricato. ${messaggioChiusura}`);
+    } catch (e) {
+        console.log(e);
+        alert("File non scaricabile, impossibile procedere");
+    }
+};
+
+export const downloadFile = async (byteArray: string, documento: Documento) => {
+    const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
+    const blob = await getBlobFromBase64String(base64File);
+    documento.base64String = base64File;
+    if (isNativeApp && isPlatform("ios")) {
+        salvaDocumentoInIos(documento, blob);
+    } else if (isNativeApp && isPlatform("android")) {
+        await checkAndroidPermissionsForWritingFiles();
+        await salvaDocumentoInAndroid(documento.nome!, blob);
+    } else {
+        FileSaver.saveAs(base64File, documento.nome!);
+    }
+};
+
+export const downloadMultipleFiles = async (
+    documenti: Documento[],
+    dispatch: any
+) => {
+    if (isNativeApp && isPlatform("android")) {
+        await checkAndroidPermissionsForWritingFiles();
+        await checkAndCreateEmporioDirectory();
+        let error = null;
+        for (let i = 0; i < documenti.length; i++) {
+            const blob = await getBlobFromBase64String(
+                documenti[i].base64String!
+            );
+            const usedName = await getImageName(documenti[i].codiceBucket!);
+            try {
+                await FilePlugin.writeFile(
+                    FilePlugin.externalRootDirectory + "Pictures/Emporio",
+                    usedName,
+                    blob
+                );
+            } catch (e) {
+                error = `'${documenti[i]
+                    .nome!}' non scaricabile, impossibile procedere`;
+                break;
+            }
+        }
+        dispatch(changeLoading(false));
+        alert(
+            error
+                ? error
+                : `Foto salvat${
+                      documenti.length === 1 ? "a" : "e"
+                  } con successo in Galleria`
+        );
+    } else if (isNativeApp && isPlatform("ios")) {
+        try {
+            await SocialSharing.saveToPhotoAlbum(
+                documenti.map((el) => el.base64String!)
+            );
+            dispatch(changeLoading(false));
+            alert(
+                `Foto salvat${
+                    documenti.length === 1 ? "a" : "e"
+                } con successo in Galleria`
+            );
+        } catch (e: any) {
+            dispatch(changeLoading(false));
+            alert("Errore nel salvataggio delle foto, procedura annullata.");
+        }
+    } else {
+        documenti.forEach((el) => {
+            const extension = getFileExtension(el.codiceBucket!);
+            FileSaver.saveAs(el.base64String!, el.nome! + "." + extension);
+        });
+    }
 };
 
 export const openFile = async (byteArray: string, documento: Documento) => {
@@ -102,7 +268,7 @@ export const openFile = async (byteArray: string, documento: Documento) => {
                 { replace: true }
             );
         } catch (e) {
-            alert("File non scrivibile, impossibile procedere");
+            alert("File non scaricabile, impossibile procedere");
         }
         try {
             await FileOpener.open(
@@ -172,6 +338,7 @@ export const shareMultipleFiles = async (
             const options: SocialSharingOptions = {
                 files: documenti.map((el) => el.base64String!),
             };
+
             await SocialSharing.shareWithOptions(options);
         } else {
             await navigator.share({

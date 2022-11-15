@@ -1,0 +1,2 @@
+/*! For license information please see 3914.8d80c07e.chunk.js.LICENSE.txt */
+"use strict";(self.webpackChunkemporiocasegestionale=self.webpackChunkemporiocasegestionale||[]).push([[3914],{6578:function(e,o,n){n.r(o),n.d(o,{i:function(){return r}});var r=function(e){return e&&""!==e.dir?"rtl"===e.dir.toLowerCase():"rtl"===(null===document||void 0===document?void 0:document.dir.toLowerCase())}}}]);

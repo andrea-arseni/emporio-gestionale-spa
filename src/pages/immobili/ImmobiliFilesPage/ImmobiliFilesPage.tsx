@@ -263,8 +263,9 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     };
 
     const scaricaFotoSelezionate = () => {
+        dispatch(changeLoading(true));
         const photoSelected = getPhotoSelected();
-        downloadMultipleFiles(photoSelected);
+        downloadMultipleFiles(photoSelected, dispatch);
     };
 
     if (!immobile)

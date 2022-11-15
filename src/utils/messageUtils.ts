@@ -22,14 +22,32 @@ const getPresentazione = (nome: string | null, userData: userData) => {
     } dell'Emporio Case.`;
 };
 
+const getGiornoAppuntamento = (giornoAppuntamento: string, date: Date) => {
+    const oggi = new Date();
+    oggi.setHours(23, 59, 59, 59);
+    date.setHours(0, 0, 0, 0);
+    if (
+        oggi.getDate() === date.getDate() &&
+        oggi.getMonth() === date.getMonth() &&
+        oggi.getFullYear() === date.getFullYear()
+    )
+        return "oggi";
+    if (date.getTime() - oggi.getTime() < 1000 * 60 * 60 * 24) {
+        return "domani";
+    }
+    return giornoAppuntamento;
+};
+
 const getDataAppuntamento = (quando: string) => {
-    const partiGiornoAppuntamento = getDayName(new Date(quando), "long").split(
-        " "
-    );
+    const date = new Date(quando);
+    const partiGiornoAppuntamento = getDayName(date, "long").split(" ");
     partiGiornoAppuntamento.pop();
     const giornoAppuntamento = partiGiornoAppuntamento.join(" ");
     const tempoAppuntamento = quando.split("T")[1].substring(0, 5);
-    return `Le confermo l'appuntamento di ${giornoAppuntamento} alle ${tempoAppuntamento}`;
+    return `Le confermo l'appuntamento di ${getGiornoAppuntamento(
+        giornoAppuntamento,
+        date
+    )} alle ${tempoAppuntamento}`;
 };
 
 const getTipologia = (tipologia: tipologia) => {

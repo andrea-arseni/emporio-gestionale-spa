@@ -1,7 +1,7 @@
 import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isNativeApp } from "../utils/contactUtils";
-import { login, logout, loginData } from "./auth-slice";
+import { login, logout, loginData, autologin } from "./auth-slice";
 
 export const performAutoLogin = createAsyncThunk(
     "autoLogin",
@@ -14,7 +14,7 @@ export const performAutoLogin = createAsyncThunk(
                 : null;
             if (token && userData) {
                 const loginData: loginData = { token, userData };
-                dispatch(login(loginData));
+                dispatch(autologin(loginData));
             }
         } else {
             const token = localStorage.getItem("authToken");
@@ -23,7 +23,7 @@ export const performAutoLogin = createAsyncThunk(
                 : null;
             if (token && userData) {
                 const loginData: loginData = { token, userData };
-                dispatch(login(loginData));
+                dispatch(autologin(loginData));
             }
         }
     }
