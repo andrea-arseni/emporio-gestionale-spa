@@ -185,66 +185,72 @@ const PersonaFilePage: React.FC<{}> = () => {
                             )
                         }
                     />
-                    {persona && persona.files && persona.files.length > 0 && (
-                        <IonList
-                            ref={list}
-                            className={`${styles.list} ${styles.simple}`}
+                    <IonList
+                        ref={list}
+                        className={`${styles.list} ${styles.simple}`}
+                    >
+                        <ItemSelector
+                            color
+                            titoloGruppo={"Documento Identificativo"}
+                            titoloBottone={"Aggiungi Identificativo"}
+                            isItemPresent={isFileSpecialePresent(
+                                persona && persona.files ? persona.files : [],
+                                "documento-identità"
+                            )}
+                            getItem={() => getItem("documento-identità")}
+                            openSelector={() => {
+                                pickFile("documento-identità");
+                            }}
+                        />
+                        <FormGroup
+                            title={`${"Altri file"} : ${
+                                getFilesNonSpeciali(
+                                    persona && persona.files
+                                        ? persona.files
+                                        : [],
+                                    "persona"
+                                ).length === 0
+                                    ? "Non presenti"
+                                    : getFilesNonSpeciali(
+                                          persona && persona.files
+                                              ? persona.files
+                                              : [],
+                                          "persona"
+                                      ).length
+                            }`}
                         >
-                            <ItemSelector
-                                color
-                                titoloGruppo={"Documento Identificativo"}
-                                titoloBottone={"Aggiungi Identificativo"}
-                                isItemPresent={isFileSpecialePresent(
-                                    persona.files,
-                                    "documento-identità"
+                            {persona &&
+                                persona.files &&
+                                persona.files.length > 0 && (
+                                    <ListDocumenti
+                                        documenti={getFilesNonSpeciali(
+                                            persona.files,
+                                            "persona"
+                                        )}
+                                        setMode={setMode}
+                                        setCurrentEntity={setCurrentDocumento}
+                                        setShowLoading={setShowLoading}
+                                        setUpdate={setUpdate}
+                                        baseUrl={`/persone/${personaId}/files`}
+                                        closeItems={closeItemsList}
+                                        deleteEntity={deleteEntity}
+                                    />
                                 )}
-                                getItem={() => getItem("documento-identità")}
-                                openSelector={() => {
-                                    pickFile("documento-identità");
-                                }}
-                            />
-                            <FormGroup
-                                title={`${"Altri file"} : ${
-                                    getFilesNonSpeciali(
-                                        persona.files,
-                                        "persona"
-                                    ).length === 0
-                                        ? "Non presenti"
-                                        : getFilesNonSpeciali(
-                                              persona.files,
-                                              "persona"
-                                          ).length
-                                }`}
-                            >
-                                <ListDocumenti
-                                    documenti={getFilesNonSpeciali(
-                                        persona.files,
-                                        "persona"
-                                    )}
-                                    setMode={setMode}
-                                    setCurrentEntity={setCurrentDocumento}
-                                    setShowLoading={setShowLoading}
-                                    setUpdate={setUpdate}
-                                    baseUrl={`/persone/${personaId}/files`}
-                                    closeItems={closeItemsList}
-                                    deleteEntity={deleteEntity}
-                                />
-                            </FormGroup>
-                        </IonList>
-                    )}
-                    {(!persona ||
-                        !persona.files ||
-                        persona.files.length === 0) &&
-                        !showLoading && (
-                            <div className={`${styles.simple} centered`}>
-                                <Card
-                                    subTitle={`Questa persona non ha file associati`}
-                                    title={
-                                        "Non sono stati trovati risultati per la ricerca effettuata"
-                                    }
-                                />
-                            </div>
-                        )}
+                            {(!persona ||
+                                !persona.files ||
+                                persona.files.length === 0) && (
+                                <div className={`${styles.simple} centered`}>
+                                    <Card
+                                        subTitle={`Questa persona non ha file associati`}
+                                        title={
+                                            "Non sono stati trovati risultati per la ricerca effettuata"
+                                        }
+                                    />
+                                </div>
+                            )}
+                        </FormGroup>
+                    </IonList>
+
                     <PageFooter
                         page={0}
                         numberOfResults={

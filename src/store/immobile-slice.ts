@@ -79,6 +79,15 @@ const immobileSlice = createSlice({
             // assign FOTO 2 nuovoNome
             photoTwo!.nome = action.payload.nuovoNome;
         },
+        ripristinaImmobile(state) {
+            const index = state.immobile!.files?.findIndex(
+                (el) => el.tipologia === "FOTO" && el.nome === "0"
+            );
+            state.immobile?.files?.splice(index!, 1);
+        },
+        addFile(state, action: PayloadAction<Documento>) {
+            state.immobile?.files?.push(action.payload);
+        },
     },
 });
 
@@ -89,5 +98,7 @@ export const {
     swapPhotos,
     deleteFile,
     addSignedPhoto,
+    ripristinaImmobile,
+    addFile,
 } = immobileSlice.actions;
 export default immobileSlice.reducer;

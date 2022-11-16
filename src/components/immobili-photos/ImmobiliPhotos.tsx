@@ -105,8 +105,6 @@ const ImmobiliPhotos: React.FC<{
         return "3";
     };
 
-    const areAllPhotoPresent = () => foto.every((el) => el.base64String);
-
     const isPhotoSignedPresent = foto.find((el) => el.nome === "0");
 
     const getFrames = () =>
@@ -159,7 +157,7 @@ const ImmobiliPhotos: React.FC<{
                 </IonButton>
             )}
             <IonGrid className={styles.grid}>
-                {!selectionStop && areAllPhotoPresent() && (
+                {!selectionStop && (
                     <button
                         className={`${styles.fabButton} ${styles.selectionButton}`}
                         onClick={() =>
@@ -169,17 +167,14 @@ const ImmobiliPhotos: React.FC<{
                         {props.selectionMode ? "ANNULLA" : "SELEZIONA"}
                     </button>
                 )}
-                {!selectionStop &&
-                    areAllPhotoPresent() &&
-                    props.selectionMode &&
-                    showSelectAll && (
-                        <button
-                            className={`${styles.fabButton} ${styles.otherButton}`}
-                            onClick={selectAllPhotos}
-                        >
-                            SELEZIONA TUTTE
-                        </button>
-                    )}
+                {!selectionStop && props.selectionMode && showSelectAll && (
+                    <button
+                        className={`${styles.fabButton} ${styles.otherButton}`}
+                        onClick={selectAllPhotos}
+                    >
+                        SELEZIONA TUTTE
+                    </button>
+                )}
                 <IonRow
                     className={`${styles.row} ${
                         isPhotoSignedPresent

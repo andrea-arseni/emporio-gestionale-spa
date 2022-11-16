@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../utils/axiosInstance";
 import {
     addSignedPhoto,
+    ripristinaImmobile,
     setImmobile,
     setPhoto,
     swapPhotos,
@@ -73,6 +74,21 @@ export const swapPhotoPositions = createAsyncThunk(
         } catch (e) {
             dispatch(changeLoading(false));
             dispatch(setError({ name: "swapPhotoPositions", object: e }));
+        }
+    }
+);
+
+export const performRipristinaImmobile = createAsyncThunk(
+    "ripristinaImmobile",
+    async (id: number, { dispatch }) => {
+        dispatch(changeLoading(true));
+        try {
+            await axiosInstance.patch(`/immobili/${id}/files/ripristina`, {});
+            dispatch(changeLoading(false));
+            dispatch(ripristinaImmobile());
+        } catch (e) {
+            dispatch(changeLoading(false));
+            dispatch(setError({ name: "ripristinaImmobile", object: e }));
         }
     }
 );

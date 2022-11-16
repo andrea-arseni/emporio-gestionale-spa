@@ -11,13 +11,22 @@ const NewFileButton: React.FC<{
 }> = (props) => {
     const immobile = useAppSelector((state) => state.immobile.immobile);
 
+    const isImmobileClosed = immobile?.files?.find(
+        (el) => el.nome === "0" && el.tipologia === "FOTO"
+    );
+
     const numeroFoto = immobile?.files?.filter(
         (el) => el.tipologia === "FOTO" && el.nome !== "0"
     ).length;
 
     return (
         <IonButton
-            color={props.selectionMode ? "dark" : "primary"}
+            color={
+                props.selectionMode ||
+                (isImmobileClosed && props.mode === "foto")
+                    ? "dark"
+                    : "primary"
+            }
             expand="full"
             mode="ios"
             fill="solid"
@@ -25,7 +34,7 @@ const NewFileButton: React.FC<{
             onClick={props.action}
             disabled={
                 props.selectionMode ||
-                (props.mode === "foto" && numeroFoto! >= 20)
+                (props.mode === "foto" && numeroFoto! >= 30)
             }
         >
             <IonIcon
@@ -47,10 +56,12 @@ const NewFileButton: React.FC<{
                       } su ${numeroFoto}`
                     : props.mode === "files"
                     ? "Nuovi File"
-                    : props.mode === "foto" && numeroFoto! >= 20
-                    ? "Raggiunto limite di 20 foto"
+                    : props.mode === "foto" && isImmobileClosed
+                    ? "Riattiva Immobile"
+                    : props.mode === "foto" && numeroFoto! >= 30
+                    ? "Raggiunto limite di 30 foto"
                     : props.mode === "foto"
-                    ? `Nuove Foto - ${numeroFoto} su 20 spazi disponibili`
+                    ? `Nuove Foto - ${numeroFoto} su 30 spazi disponibili`
                     : `Crea Nuovo Report`}
             </IonLabel>
         </IonButton>

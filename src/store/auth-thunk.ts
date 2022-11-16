@@ -1,7 +1,7 @@
 import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isNativeApp } from "../utils/contactUtils";
-import { login, logout, loginData, autologin } from "./auth-slice";
+import { login, logout, loginData } from "./auth-slice";
 
 export const performAutoLogin = createAsyncThunk(
     "autoLogin",
@@ -12,19 +12,21 @@ export const performAutoLogin = createAsyncThunk(
             const userData = userDataStringified
                 ? JSON.parse(userDataStringified)
                 : null;
-            if (token && userData) {
-                const loginData: loginData = { token, userData };
-                dispatch(autologin(loginData));
-            }
+            const loginData: loginData = {
+                token: token ? token : null,
+                userData: userData ? userData : null,
+            };
+            dispatch(login(loginData));
         } else {
             const token = localStorage.getItem("authToken");
             const userData = localStorage.getItem("userData")
                 ? JSON.parse(localStorage.getItem("userData")!)
                 : null;
-            if (token && userData) {
-                const loginData: loginData = { token, userData };
-                dispatch(autologin(loginData));
-            }
+            const loginData: loginData = {
+                token,
+                userData,
+            };
+            dispatch(login(loginData));
         }
     }
 );
@@ -40,7 +42,7 @@ export const performLogin = createAsyncThunk(
             );
             dispatch(login(loginData));
         } else {
-            localStorage.setItem("authToken", loginData.token);
+            localStorage.setItem("authToken", loginData.token!);
             localStorage.setItem(
                 "userData",
                 JSON.stringify(loginData.userData)

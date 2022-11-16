@@ -17,6 +17,7 @@ import { AndroidPermissions } from "@awesome-cordova-plugins/android-permissions
 import { isPlatform } from "@ionic/core";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { changeLoading } from "../store/ui-slice";
+import { addFile } from "../store/immobile-slice";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -423,7 +424,8 @@ export const submitFile = async (
     url: string,
     setUpdate: Dispatch<SetStateAction<number>>,
     tipologia?: "documento" | "foto",
-    currentFileSpeciale?: fileSpeciale | null
+    currentFileSpeciale?: fileSpeciale | null,
+    dispatch?: any
 ) => {
     if (e.target.files.length === 0) return;
     setShowLoading!(true);
@@ -435,7 +437,8 @@ export const submitFile = async (
         presentAlert,
         url,
         tipologia,
-        currentFileSpeciale
+        currentFileSpeciale,
+        dispatch
     );
 };
 
@@ -444,7 +447,8 @@ const concludiUpload = (
     listFiles: File[],
     setShowLoading: Dispatch<SetStateAction<boolean>>,
     presentAlert: any,
-    currentFileSpeciale?: fileSpeciale | null
+    currentFileSpeciale?: fileSpeciale | null,
+    dispatch?: any
 ) => {
     setShowLoading(false);
     presentAlert({
@@ -458,10 +462,12 @@ const concludiUpload = (
             {
                 text: "OK",
                 handler: () =>
-                    setTimeout(
-                        () => setUpdate((prevState) => ++prevState),
-                        1000
-                    ),
+                    dispatch === undefined
+                        ? setTimeout(
+                              () => setUpdate((prevState) => ++prevState),
+                              1000
+                          )
+                        : {},
             },
         ],
     });
@@ -475,7 +481,8 @@ const uploadFileToServer = async (
     presentAlert: any,
     url: string,
     tipologia?: "documento" | "foto",
-    currentFileSpeciale?: fileSpeciale | null
+    currentFileSpeciale?: fileSpeciale | null,
+    dispatch?: any
 ) => {
     if (currentIndex === listFiles.length) {
         concludiUpload(
@@ -483,7 +490,8 @@ const uploadFileToServer = async (
             listFiles,
             setShowLoading,
             presentAlert,
-            currentFileSpeciale
+            currentFileSpeciale,
+            dispatch
         );
         return;
     }
@@ -504,7 +512,12 @@ const uploadFileToServer = async (
     formData.append("file", file!);
     if (tipologia) formData.append("name", tipologia);
     try {
-        await axiosInstance.post(url, formData);
+        const res = await axiosInstance.post(url, formData);
+        const newFoto = res.data;
+        if (dispatch !== undefined)
+            setTimeout(() => {
+                dispatch(addFile(newFoto));
+            }, 3000);
         ++currentIndex;
         uploadFileToServer(
             setUpdate,
@@ -514,7 +527,8 @@ const uploadFileToServer = async (
             presentAlert,
             url,
             tipologia,
-            currentFileSpeciale
+            currentFileSpeciale,
+            dispatch
         );
     } catch (e) {
         setShowLoading(false);

@@ -33,7 +33,10 @@ import { Entity } from "../../../entities/entity";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import useList from "../../../hooks/use-list";
 import { deleteFile } from "../../../store/immobile-slice";
-import { fetchImmobileById } from "../../../store/immobile-thunk";
+import {
+    fetchImmobileById,
+    performRipristinaImmobile,
+} from "../../../store/immobile-thunk";
 import { changeLoading, setError } from "../../../store/ui-slice";
 import { fileSpeciale } from "../../../types/file_speciali";
 import axiosInstance from "../../../utils/axiosInstance";
@@ -138,6 +141,13 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                 "Creazione Report non riuscita",
                 presentAlert
             );
+        } else if (error.name === "ripristinaImmobile") {
+            errorHandler(
+                error.object,
+                () => dispatch(setError(null)),
+                "Riattivazione immobile non riuscita",
+                presentAlert
+            );
         }
     }, [error, navigate, presentAlert, dispatch]);
 
@@ -193,11 +203,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             dispatch(changeLoading(false));
             errorHandler(
                 e,
-                () =>
-                    setTimeout(
-                        () => setUpdate((prevState) => ++prevState),
-                        1000
-                    ),
+                () => {},
                 `Procedura interrotta: eliminazione foto non riuscita`,
                 presentAlert
             );
@@ -294,6 +300,13 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     const isButtonDisabled =
         !listIdPhotoSelected || listIdPhotoSelected!.length === 0;
 
+    const idImmobileClosed = immobile?.files?.find(
+        (el) => el.nome === "0" && el.tipologia === "FOTO"
+    )?.id;
+
+    const ripristinaImmobile = () =>
+        dispatch(performRipristinaImmobile(+immobileId));
+
     const creaReport = async (input: any) => {
         // react thunk
         dispatch(changeLoading(true));
@@ -380,9 +393,11 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                         selectionMode={selectionMode}
                         listIdPhotoSelected={listIdPhotoSelected}
                         action={() =>
-                            mode !== "report"
-                                ? pickFile(null)
-                                : setIsSelectingDates(true)
+                            mode === "report"
+                                ? setIsSelectingDates(true)
+                                : mode === "foto" && idImmobileClosed
+                                ? ripristinaImmobile()
+                                : pickFile(null)
                         }
                     />
                     {!isSelectingDates && mode === "files" && (
@@ -470,7 +485,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                         `immobili/${immobile.id}/files`,
                         setUpdate,
                         mode === "files" ? "documento" : "foto",
-                        currentFileSpeciale
+                        currentFileSpeciale,
+                        dispatch
                     );
                 }}
             />
