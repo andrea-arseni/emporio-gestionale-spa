@@ -59,16 +59,12 @@ export const performLogout = createAsyncThunk(
             await NativeStorage.remove("authToken");
             await NativeStorage.remove("userData");
             dispatch(logout());
-            setTimeout(() => {
-                window.location.reload();
-            }, 300);
+            window.location.replace("/login");
         } else {
             localStorage.removeItem("authToken");
             localStorage.removeItem("userData");
             dispatch(logout());
-            setTimeout(() => {
-                window.location.reload();
-            }, 100);
+            window.location.replace("/login");
         }
     }
 );

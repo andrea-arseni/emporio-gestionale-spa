@@ -1,4 +1,3 @@
-import { IonContent } from "@ionic/react";
 import { cardOutline } from "ionicons/icons";
 import { useState } from "react";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
@@ -24,9 +23,9 @@ const OperazioniPage: React.FC<{}> = () => {
     const queryData = useQueryData("operazioni");
 
     return (
-        <div className="page">
+        <>
             {mode === "list" && (
-                <IonContent>
+                <>
                     <NewEntityBar
                         setMode={setMode}
                         icon={cardOutline}
@@ -39,10 +38,10 @@ const OperazioniPage: React.FC<{}> = () => {
                         setCurrentEntity={setCurrentOperation}
                         queryData={queryData}
                     />
-                </IonContent>
+                </>
             )}
             {mode === "form" && (
-                <IonContent>
+                <>
                     <FormTitle
                         title={
                             currentOperation?.id
@@ -56,9 +55,9 @@ const OperazioniPage: React.FC<{}> = () => {
                         setMode={setMode}
                         operation={currentOperation as Operazione}
                     />
-                </IonContent>
+                </>
             )}
-        </div>
+        </>
     );
 };
 

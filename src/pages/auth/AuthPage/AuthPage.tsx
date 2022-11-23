@@ -1,6 +1,5 @@
 import {
     IonButton,
-    IonContent,
     IonInput,
     IonItem,
     IonLabel,
@@ -87,7 +86,7 @@ const AuthPage: React.FC<{}> = () => {
             setShowLoading(false);
             errorHandler(
                 e,
-                () => resetForm(),
+                () => {},
                 `${
                     mode === "login" ? "Login" : "Richiesta recupero password"
                 } non riuscita`,
@@ -189,13 +188,10 @@ const AuthPage: React.FC<{}> = () => {
     );
 
     return (
-        <IonContent>
+        <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <div className="wrapper centered gray">
-                <form
-                    className={`${styles.form} centered`}
-                    onSubmit={(e) => onSubmitHandler(e)}
-                >
+                <form className={`${styles.form} centered`}>
                     <img src={logo} alt="" className={styles.logo} />
                     {mode === "login" && loginInputs}
                     {mode === "forgot-password" && forgotPasswordInput}
@@ -216,7 +212,8 @@ const AuthPage: React.FC<{}> = () => {
                         className={`${styles.button} ${styles.mainButton}`}
                         mode="ios"
                         color="primary"
-                        type="submit"
+                        type="button"
+                        onClick={(e) => onSubmitHandler(e)}
                     >
                         {mode === "login"
                             ? "Login"
@@ -224,7 +221,7 @@ const AuthPage: React.FC<{}> = () => {
                     </IonButton>
                 </form>
             </div>
-        </IonContent>
+        </>
     );
 };
 

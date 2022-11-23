@@ -140,7 +140,7 @@ const ImmobiliPhotos: React.FC<{
             });
 
     return (
-        <>
+        <div>
             {!isPhotoSignedPresent && (
                 <IonButton
                     color="dark"
@@ -187,7 +187,7 @@ const ImmobiliPhotos: React.FC<{
                     </DndProvider>
                 </IonRow>
             </IonGrid>
-        </>
+        </div>
     );
 };
 

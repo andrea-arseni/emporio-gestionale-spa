@@ -43,7 +43,7 @@ const FormOperation: React.FC<{
         inputChangedHandler: inputImportoChangedHandler,
         reset: inputImportoReset,
     } = useInput(
-        () => true,
+        (el) => +el % 1 === 0,
         props.operation && props.operation.importo !== undefined
             ? props.operation.importo
             : null
@@ -134,16 +134,6 @@ const FormOperation: React.FC<{
                         sundayDisabled
                     />
                 )}
-                <FormInput
-                    title="Importo in €"
-                    inputValue={inputImportoValue}
-                    type={"number"}
-                    inputIsInvalid={inputImportoIsInvalid}
-                    inputChangeHandler={inputImportoChangedHandler}
-                    inputTouchHandler={inputImportoTouchedHandler}
-                    errorMessage={"Input non valido"}
-                    reset={inputImportoReset}
-                />
                 <ItemSelector
                     titoloGruppo={"Data"}
                     titoloBottone={"Seleziona Data"}
@@ -151,6 +141,16 @@ const FormOperation: React.FC<{
                     getItem={() => getDate()}
                     openSelector={() => setDatePickerIsOpen(true)}
                     simple
+                />
+                <FormInput
+                    title="Importo in €"
+                    inputValue={inputImportoValue}
+                    type={"number"}
+                    inputIsInvalid={inputImportoIsInvalid}
+                    inputChangeHandler={inputImportoChangedHandler}
+                    inputTouchHandler={inputImportoTouchedHandler}
+                    errorMessage={"Input non valido, solo numeri interi"}
+                    reset={inputImportoReset}
                 />
                 <TextArea
                     title="Descrizione"

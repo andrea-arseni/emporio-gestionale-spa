@@ -2,7 +2,7 @@ import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
     appId: "it.emporiocase.gestionale",
-    appName: "ni",
+    appName: "Emporio 23",
     webDir: "build",
     bundledWebRuntime: false,
 };

@@ -1,7 +1,9 @@
 import { IonButton, IonList, IonLoading, useIonAlert } from "@ionic/react";
 import { FormEvent, useState } from "react";
 import { Documento } from "../../../entities/documento.model";
+import { useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
+import { renameFile } from "../../../store/immobile-slice";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 import {
@@ -15,6 +17,8 @@ const DocumentoForm: React.FC<{
     backToList: () => void;
     baseUrl: string;
 }> = (props) => {
+    const dispatch = useAppDispatch();
+
     const nome = props.documento
         ? getFileNameWithoutExtension(props.documento.nome!)
         : null;
@@ -55,7 +59,16 @@ const DocumentoForm: React.FC<{
                 buttons: [
                     {
                         text: "OK",
-                        handler: () => props.backToList(),
+                        handler: () => {
+                            if (props.baseUrl.includes("immobili"))
+                                dispatch(
+                                    renameFile({
+                                        id: props.documento!.id!,
+                                        newName: nuovoNome,
+                                    })
+                                );
+                            props.backToList();
+                        },
                     },
                 ],
             });

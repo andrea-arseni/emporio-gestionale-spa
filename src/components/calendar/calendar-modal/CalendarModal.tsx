@@ -27,6 +27,7 @@ import { isUserAdmin } from "../../../utils/userUtils";
 import FormTextArea from "../../form-components/form-text-area/FormTextArea";
 import FormTitle from "../../form-components/form-title/FormTitle";
 import FormVisit from "../../forms/visit-form/VisitForm";
+import { isPast } from "../../../utils/timeUtils";
 
 const CalendarModal: React.FC<{}> = () => {
     const modalIsOpen = useAppSelector((state) => state.ui.isModalOpened);
@@ -119,13 +120,15 @@ const CalendarModal: React.FC<{}> = () => {
                         <FormVisit readonly />
                     </div>
                     <IonSegment mode="ios">
-                        <IonSegmentButton
-                            value="conferma"
-                            onClick={confermaVisita}
-                        >
-                            <IonIcon icon={chatboxEllipsesOutline} />
-                            <IonLabel>Conferma</IonLabel>
-                        </IonSegmentButton>
+                        {visit && !isPast(new Date(visit.quando!)) && (
+                            <IonSegmentButton
+                                value="conferma"
+                                onClick={confermaVisita}
+                            >
+                                <IonIcon icon={chatboxEllipsesOutline} />
+                                <IonLabel>Conferma</IonLabel>
+                            </IonSegmentButton>
+                        )}
                         <IonSegmentButton
                             value="modifica"
                             onClick={modificaVisita}

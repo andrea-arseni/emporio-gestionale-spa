@@ -597,7 +597,6 @@ const ImmobileForm: React.FC<{
     const {
         inputValue: inputNameValue,
         inputIsInvalid: inputNameIsInvalid,
-        inputIsTouched: inputNameIsTouched,
         inputTouchedHandler: inputNameTouchedHandler,
         inputChangedHandler: inputNameChangedHandler,
         reset: inputNameReset,
@@ -605,21 +604,24 @@ const ImmobileForm: React.FC<{
 
     const {
         inputValue: inputPhoneValue,
-        inputIsTouched: inputPhoneIsTouched,
         inputIsInvalid: inputPhoneIsInvalid,
         inputTouchedHandler: inputPhoneTouchedHandler,
         inputChangedHandler: inputPhoneChangedHandler,
         reset: inputPhoneReset,
-    } = useInput((el) => !!el && el.toString().trim().length > 0);
+    } = useInput(() => true);
 
     const {
         inputValue: inputEmailValue,
-        inputIsTouched: inputEmailIsTouched,
         inputIsInvalid: inputEmailIsInvalid,
         inputTouchedHandler: inputEmailTouchedHandler,
         inputChangedHandler: inputEmailChangedHandler,
         reset: inputEmailReset,
-    } = useInput((el) => !!el && /.+@.+\..+/.test(el.toString()));
+    } = useInput(
+        (el) =>
+            !el ||
+            el.toString().trim().length === 0 ||
+            /.+@.+\..+/.test(el.toString())
+    );
 
     useEffect(() => {
         if (!isSpeseExtra) inputSpeseExtraChangedHandler("");
@@ -862,13 +864,6 @@ const ImmobileForm: React.FC<{
         inputAnnoCostruzioneIsInvalid ||
         inputDescrizioneIsInvalid ||
         (!props.immobile && !inputDescrizioneIsTouched) ||
-        (newProprietarioPartOpened &&
-            (!inputNameIsTouched ||
-                (!inputEmailIsTouched && !inputPhoneIsTouched))) ||
-        (newProprietarioPartOpened &&
-            inputEmailValue.trim().length === 0 &&
-            (getPhoneValue(inputPhoneValue) === null ||
-                getPhoneValue(inputPhoneValue)!.length === 0)) ||
         (newProprietarioPartOpened && inputNameIsInvalid) ||
         (newProprietarioPartOpened && inputPhoneIsInvalid) ||
         (newProprietarioPartOpened && inputEmailIsInvalid);
@@ -1044,7 +1039,7 @@ const ImmobileForm: React.FC<{
     const [currentPersona, setCurrentPersona] = useState<Entity | null>(null);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeOut = setTimeout(() => {
             if (choiceMode === "proprietario" && currentPersona) {
                 setProprietarioValue(currentPersona as Persona);
                 setModalIsOpen(false);
@@ -1062,6 +1057,7 @@ const ImmobileForm: React.FC<{
                 setCurrentPersona(null);
             }
         }, 300);
+        return () => clearTimeout(timeOut);
     }, [currentPersona, choiceMode, inquiliniValue]);
 
     const openModal = (type: "proprietario" | "inquilino") => {

@@ -10,6 +10,7 @@ const PageFooter: React.FC<{
     setPage?: Dispatch<SetStateAction<number>>;
     numberOfResults: number;
     simple?: boolean;
+    lifted?: boolean;
 }> = (props) => {
     const [width] = useWindowSize();
 
@@ -18,7 +19,7 @@ const PageFooter: React.FC<{
             props.numberOfResults === 1 ? "o" : "i"
         } `;
         return (
-            <IonFooter className={styles.footer}>
+            <IonFooter className={`${styles.footer}`}>
                 <IonToolbar mode="ios" className={styles.toolbar}>
                     {props.numberOfResults > 0 && <Title>{text}</Title>}
                 </IonToolbar>
@@ -32,40 +33,57 @@ const PageFooter: React.FC<{
         props.numberOfResults === 1 ? "o" : "i"
     } )`;
 
+    const content = (
+        <>
+            {props.page! > 1 && (
+                <IonButton
+                    slot="start"
+                    fill="clear"
+                    color="light"
+                    onClick={() => props.setPage!((page) => page - 1)}
+                >
+                    <IonIcon
+                        size={width < 400 ? "small" : undefined}
+                        color="dark"
+                        slot="icon-only"
+                        icon={arrowBackOutline}
+                    ></IonIcon>
+                </IonButton>
+            )}
+            {props.numberOfResults > 0 && <Title>{text}</Title>}
+            {props.page! < Math.ceil(props.numberOfResults / 20) && (
+                <IonButton
+                    slot="end"
+                    fill="clear"
+                    color="light"
+                    onClick={() => props.setPage!((page) => page + 1)}
+                >
+                    <IonIcon
+                        size={width < 400 ? "small" : undefined}
+                        color="dark"
+                        slot="icon-only"
+                        icon={arrowForwardOutline}
+                    ></IonIcon>
+                </IonButton>
+            )}
+        </>
+    );
+
+    if (props.lifted) {
+        return (
+            <IonToolbar
+                mode="ios"
+                className={`${styles.toolbar} ${styles.lifted} ${styles.bordered}`}
+            >
+                {content}
+            </IonToolbar>
+        );
+    }
+
     return (
-        <IonFooter className={styles.footer}>
-            <IonToolbar mode="ios" className={styles.toolbar}>
-                {props.page! > 1 && (
-                    <IonButton
-                        slot="start"
-                        fill="clear"
-                        color="light"
-                        onClick={() => props.setPage!((page) => page - 1)}
-                    >
-                        <IonIcon
-                            size={width < 400 ? "small" : undefined}
-                            color="dark"
-                            slot="icon-only"
-                            icon={arrowBackOutline}
-                        ></IonIcon>
-                    </IonButton>
-                )}
-                {props.numberOfResults > 0 && <Title>{text}</Title>}
-                {props.page! < Math.ceil(props.numberOfResults / 20) && (
-                    <IonButton
-                        slot="end"
-                        fill="clear"
-                        color="light"
-                        onClick={() => props.setPage!((page) => page + 1)}
-                    >
-                        <IonIcon
-                            size={width < 400 ? "small" : undefined}
-                            color="dark"
-                            slot="icon-only"
-                            icon={arrowForwardOutline}
-                        ></IonIcon>
-                    </IonButton>
-                )}
+        <IonFooter className={`${styles.footer}`}>
+            <IonToolbar mode="ios" className={`${styles.toolbar}`}>
+                {content}
             </IonToolbar>
         </IonFooter>
     );

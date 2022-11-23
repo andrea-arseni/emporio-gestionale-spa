@@ -1,4 +1,4 @@
-import { IonContent, IonList, IonLoading, useIonAlert } from "@ionic/react";
+import { IonList, IonLoading, useIonAlert } from "@ionic/react";
 import { podiumOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import ArrowsBar from "../../../components/bars/arrows-bar/ArrowsBar";
@@ -30,13 +30,17 @@ const ReportsPage: React.FC<{}> = (props) => {
     const [update, setUpdate] = useState<number>(0);
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchReports = async () => {
             try {
                 setShowLoading(true);
                 const res = await axiosInstance.get(`/reports?year=${year}`);
+                if (!mounted) return;
                 setShowLoading(false);
                 setReports(res.data.data);
             } catch (e) {
+                if (!mounted) return;
                 setShowLoading(false);
                 errorHandler(
                     e,
@@ -48,6 +52,10 @@ const ReportsPage: React.FC<{}> = (props) => {
         };
 
         fetchReports();
+
+        return () => {
+            mounted = false;
+        };
     }, [year, presentAlert, update]);
 
     const confirmDeleteEntity = async (id: string) => {
@@ -106,9 +114,9 @@ const ReportsPage: React.FC<{}> = (props) => {
     };
 
     return (
-        <div className="page">
+        <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
-            <IonContent>
+            <>
                 <NewEntityBar
                     setMode={setMode}
                     icon={podiumOutline}
@@ -158,8 +166,8 @@ const ReportsPage: React.FC<{}> = (props) => {
                         getBack={() => setMode("list")}
                     />
                 )}
-            </IonContent>
-        </div>
+            </>
+        </>
     );
 };
 

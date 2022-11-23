@@ -3,6 +3,22 @@
     padding: 0;
 }
 
+.fiveOtherElements {
+    height: calc(100% - 88px - 88px - 65px);
+}
+
+.sixOtherElements {
+    height: calc(100% - 88px - 88px - 65px - 62px);
+}
+
+.sevenOtherElements {
+    height: calc(100% - 88px - 88px - 65px - 62px - 40px);
+}
+
+.stepsList {
+    height: calc(100% - 88px - 88px - 65px - 48px);
+}
+
 .high {
     height: calc(100% - 45px - 45px - 45px - 61px - 50px);
 }
@@ -17,4 +33,7 @@
 
 .filterButton {
     margin: 0;
+    border-bottom: 1px solid gray;
+    max-height: 44px;
+    background-color: white;
 }

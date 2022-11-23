@@ -1,6 +1,5 @@
 import {
     IonButton,
-    IonContent,
     IonIcon,
     IonLabel,
     IonLoading,
@@ -37,9 +36,9 @@ const DocumentiPage: React.FC<{}> = () => {
     };
 
     return (
-        <div className="page">
+        <>
             {mode === "list" && (
-                <IonContent>
+                <>
                     <IonLoading cssClass="loader" isOpen={showLoading} />
                     <IonButton
                         color="primary"
@@ -78,10 +77,10 @@ const DocumentiPage: React.FC<{}> = () => {
                         setCurrentEntity={setCurrentDocumento}
                         queryData={queryData}
                     />
-                </IonContent>
+                </>
             )}
             {mode === "form" && (
-                <IonContent>
+                <>
                     <FormTitle
                         title={
                             currentDocumento ? "Rinomina File" : "Nuovo File"
@@ -94,9 +93,9 @@ const DocumentiPage: React.FC<{}> = () => {
                         backToList={backToList}
                         baseUrl={`/documenti`}
                     />
-                </IonContent>
+                </>
             )}
-        </div>
+        </>
     );
 };
 

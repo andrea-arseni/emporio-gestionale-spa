@@ -15,7 +15,7 @@ const FormSelect: React.FC<{
                 mode="ios"
                 interface="action-sheet"
                 value={props.value?.toString().toLowerCase()}
-                onIonChange={(e) => props.function(e)}
+                onIonChange={props.function}
             >
                 {props.possibleValues.map((el) => (
                     <IonSelectOption

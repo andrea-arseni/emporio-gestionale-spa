@@ -6,6 +6,7 @@ import {
     setImmobile,
     setPhoto,
     swapPhotos,
+    updateReports,
 } from "./immobile-slice";
 import { changeLoading, setError } from "./ui-slice";
 
@@ -17,6 +18,21 @@ export const fetchImmobileById = createAsyncThunk(
             const res = await axiosInstance.get(`/immobili/${immobileId}`);
             dispatch(changeLoading(false));
             dispatch(setImmobile(res.data));
+        } catch (e) {
+            dispatch(changeLoading(false));
+            dispatch(setError({ name: "fetchImmobileById", object: e }));
+        }
+    }
+);
+
+export const performUpdateReports = createAsyncThunk(
+    "updateReports",
+    async (immobileId: number, { dispatch }) => {
+        dispatch(changeLoading(true));
+        try {
+            const res = await axiosInstance.get(`/immobili/${immobileId}`);
+            dispatch(changeLoading(false));
+            dispatch(updateReports(res.data));
         } catch (e) {
             dispatch(changeLoading(false));
             dispatch(setError({ name: "fetchImmobileById", object: e }));

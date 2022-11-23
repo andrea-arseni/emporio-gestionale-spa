@@ -521,6 +521,28 @@ const FilterActionSheet: React.FC<{
                         },
                     },
                 ];
+                break;
+            case "visite":
+                buttons = [
+                    {
+                        text: "Filtra per Data",
+                        icon: calendarOutline,
+                        handler: () => {
+                            buttonHandler("dataFilter", {
+                                filter: "quando",
+                            });
+                        },
+                    },
+                    {
+                        text: "Filtra per Note",
+                        icon: textOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "note",
+                            });
+                        },
+                    },
+                ];
         }
 
         buttons!.push({

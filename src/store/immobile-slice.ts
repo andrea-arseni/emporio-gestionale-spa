@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Documento } from "../entities/documento.model";
 import { Immobile } from "../entities/immobile.model";
+import { Visit } from "../entities/visit.model";
 import { getBase64StringFromByteArray } from "../utils/fileUtils";
 
 interface ImmobileState {
     immobile: Immobile | null;
+    visite: Visit[];
 }
 
 const initialState = {
@@ -17,6 +19,17 @@ const immobileSlice = createSlice({
     reducers: {
         setImmobile(state, action: PayloadAction<Immobile | null>) {
             state.immobile = action.payload;
+        },
+        updateReports(state, action: PayloadAction<Immobile>) {
+            if (!state.immobile) return;
+            if (!state.immobile.files) state.immobile.files = [];
+            const reports = action.payload.files!.filter(
+                (el) => el.tipologia === "REPORT"
+            );
+            state.immobile.files = state.immobile?.files?.filter(
+                (el) => el.tipologia !== "REPORT"
+            );
+            state.immobile.files = state.immobile.files.concat(reports);
         },
         deleteFile(state, action: PayloadAction<number | null>) {
             const index = state.immobile?.files?.findIndex(
@@ -88,6 +101,23 @@ const immobileSlice = createSlice({
         addFile(state, action: PayloadAction<Documento>) {
             state.immobile?.files?.push(action.payload);
         },
+        renameFile(
+            state,
+            action: PayloadAction<{ id: number; newName: string }>
+        ) {
+            if (
+                !state.immobile ||
+                !state.immobile.files ||
+                state.immobile.files.length === 0
+            )
+                return;
+            const index = state.immobile.files.findIndex(
+                (el) => el.id === action.payload.id
+            );
+            if (index === -1) return;
+            console.log(index);
+            state.immobile.files[index].nome = action.payload.newName;
+        },
     },
 });
 
@@ -100,5 +130,7 @@ export const {
     addSignedPhoto,
     ripristinaImmobile,
     addFile,
+    renameFile,
+    updateReports,
 } = immobileSlice.actions;
 export default immobileSlice.reducer;

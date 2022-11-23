@@ -1,6 +1,15 @@
-.grid {
-    height: calc(100% - 45px - 62px - 66px);
+.bigGrid {
+    height: calc(100% - 48px - 62px - 62px - 44px);
     overflow: scroll;
+}
+
+.littleGrid {
+    height: calc(100% - 48px - 62px - 62px - 44px - 48px);
+    overflow: scroll;
+}
+
+.upperGrid {
+    max-height: 48px;
 }
 
 .gray {

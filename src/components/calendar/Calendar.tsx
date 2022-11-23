@@ -60,24 +60,28 @@ const Calendar: React.FC<{
         return getGrid(selectedDay!);
     };
 
+    const getVisiteInerenti = (dataAgenda: Date, oraAgenda: string) => {
+        return props.visits.filter((visit: Visit) => {
+            const dataVisita = new Date(visit.quando!);
+            return (
+                dataAgenda.getDate() === dataVisita.getDate() &&
+                dataVisita.getHours() ===
+                    Number.parseInt(oraAgenda.split(":")[0]) &&
+                dataVisita.getMinutes() -
+                    Number.parseInt(oraAgenda.split(":")[1]) <
+                    15 &&
+                dataVisita.getMinutes() -
+                    Number.parseInt(oraAgenda.split(":")[1]) >=
+                    0
+            );
+        });
+    };
+
     const getMeetings = (dataAgenda: Date, oraAgenda: string) => {
         // ritorna tutte quelle visite che sono nello stesso giorno alla stessa ora
-        return props.visits
-            .filter((visit: Visit) => {
-                const dataVisita = new Date(visit.quando!);
-                return (
-                    dataAgenda.getDate() === dataVisita.getDate() &&
-                    dataVisita.getHours() ===
-                        Number.parseInt(oraAgenda.split(":")[0]) &&
-                    dataVisita.getMinutes() -
-                        Number.parseInt(oraAgenda.split(":")[1]) <
-                        15 &&
-                    dataVisita.getMinutes() -
-                        Number.parseInt(oraAgenda.split(":")[1]) >=
-                        0
-                );
-            })
-            .map((visita) => <VisitItem key={visita.id} visita={visita} />);
+        return getVisiteInerenti(dataAgenda, oraAgenda).map((visita) => (
+            <VisitItem key={visita.id + "meeting"} visita={visita} />
+        ));
     };
 
     const getGrid = (day: Giorno) => {
@@ -90,14 +94,7 @@ const Calendar: React.FC<{
         }
         return (
             <IonCol key={Date.now() + Math.random() * 1000}>
-                <IonList className={styles.list}>
-                    {widthScreen >= 700 && (
-                        <IonItem color="primary">
-                            <IonLabel>
-                                {day.giornoSettimana} {day.date.getDate()}
-                            </IonLabel>
-                        </IonItem>
-                    )}
+                <IonList className={`${styles.list}`}>
                     {grid.map((time) => {
                         const dateString = `${getDateAsString(
                             day.date
@@ -110,11 +107,15 @@ const Calendar: React.FC<{
                                 className={`${styles.item} ${
                                     isNow(day.date, time) ? styles.now : ""
                                 } ${!isToday(day.date) ? `gray` : ``}`}
-                                key={Date.now() + Math.random() * 1000}
+                                key={`${dateString}`}
                             >
                                 <CalendarItem
                                     dateAsString={dateString}
                                     openVisitForm={props.openVisitForm}
+                                    visits={getVisiteInerenti(
+                                        new Date(dateString),
+                                        dateString.split("T")[1].substring(0, 5)
+                                    )}
                                 />
                                 <div className={`${styles.appFrame}`}>
                                     {getMeetings(day.date, time)}
@@ -127,16 +128,35 @@ const Calendar: React.FC<{
         );
     };
 
+    const getDayWeekNames = () => {
+        const cols = props.currentWeek.map((el) => (
+            <IonCol key={el.giornoSettimana}>
+                <IonItem
+                    color="primary"
+                    style={{ borderRight: "1px solid lightgray" }}
+                >
+                    <IonLabel className="centered">
+                        {el.giornoSettimana} {el.date.getDate()}
+                    </IonLabel>
+                </IonItem>
+            </IonCol>
+        ));
+        return <IonRow>{cols}</IonRow>;
+    };
+
     return widthScreen < 700 ? (
-        <IonGrid className={styles.grid}>
+        <IonGrid className={styles.bigGrid}>
             <IonRow>{getDayGrid()}</IonRow>
             <CalendarModal />
         </IonGrid>
     ) : (
-        <IonGrid className={styles.grid}>
-            <IonRow>{getWeekGrid()}</IonRow>
-            <CalendarModal />
-        </IonGrid>
+        <>
+            <IonGrid className={styles.upperGrid}>{getDayWeekNames()}</IonGrid>
+            <IonGrid className={styles.littleGrid}>
+                <IonRow>{getWeekGrid()}</IonRow>
+                <CalendarModal />
+            </IonGrid>
+        </>
     );
 };
 

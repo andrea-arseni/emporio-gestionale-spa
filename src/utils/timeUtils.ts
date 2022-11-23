@@ -134,42 +134,15 @@ export const addDays = (input: Date, numberOfDays: number) => {
 export const isNotSunday = (dateString: string) =>
     new Date(dateString).getDay() !== 0;
 
-export const openTimePicker = (
-    handler: (input: string) => void,
-    present: any
-) => {
-    const options: { text: string; value: string }[] = [];
+export const isPast = (input: Date) => input.getTime() < new Date().getTime();
 
+export const getPossibleTimeValues = () => {
+    const options: string[] = [];
     const minutes = ["00", "15", "30", "45"];
-
-    for (let hours = 8; hours < 22; hours++) {
+    for (let hours = 8; hours < 21; hours++) {
         minutes.forEach((min) =>
-            options.push({
-                text: `${getTwoDigitString(hours)}:${min}`,
-                value: `${getTwoDigitString(hours)}:${min}`,
-            })
+            options.push(`${getTwoDigitString(hours)}:${min}`)
         );
     }
-
-    present({
-        mode: "ios",
-        columns: [
-            {
-                name: "orari",
-                options: options,
-            },
-        ],
-        buttons: [
-            {
-                text: "Indietro",
-                role: "cancel",
-            },
-            {
-                text: "Conferma",
-                handler: (value: any) => {
-                    handler(value.orari.value);
-                },
-            },
-        ],
-    });
+    return options;
 };

@@ -28,17 +28,18 @@ const SortActionSheet: React.FC<{
         props.setSort(sortType);
     };
 
-    const getSortingTemporale = () => {
+    const getSortingTemporale = (nameParam?: string) => {
         return [
             {
                 text: "Dal più vecchio al più recente",
                 icon: calendarOutline,
-                handler: () => buttonHandler("data"),
+                handler: () => buttonHandler(nameParam ? nameParam : "data"),
             },
             {
                 text: "Dal più recente al più vecchio",
                 icon: calendarOutline,
-                handler: () => buttonHandler("data-desc"),
+                handler: () =>
+                    buttonHandler(`${nameParam ? nameParam : "data"}-desc`),
             },
         ];
     };
@@ -195,6 +196,9 @@ const SortActionSheet: React.FC<{
                         handler: () => buttonHandler("nome-desc"),
                     },
                 ];
+                break;
+            case "visite":
+                buttons = getSortingTemporale("quando");
         }
 
         buttons!.push({

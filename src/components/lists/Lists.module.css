@@ -54,8 +54,11 @@
 }
 
 .listVisit {
+    height: calc(100% - 45px - 45px - 48px - 62px - 62px);
+}
+
+.list {
     margin: 0;
     padding: 0;
     overflow: scroll;
-    height: calc(100% - 46px - 48px - 61px - 66px);
 }

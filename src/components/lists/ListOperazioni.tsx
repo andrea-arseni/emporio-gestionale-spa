@@ -17,12 +17,13 @@ const ListOperazioni: React.FC<{
     setCurrentEntity: Dispatch<SetStateAction<Entity | null>>;
     setMode: Dispatch<SetStateAction<"list" | "form">>;
     deleteEntity: (type: string, id: string) => void;
+    sumOfOperations: number;
 }> = (props) => {
     const operazioni = props.operazioni.map((operazione: Operazione) => (
         <IonItemSliding key={operazione.id!} id={operazione.id?.toString()}>
             <IonItem
                 detail
-                color={operazione.importo! > 0 ? "secondary" : "dark"}
+                color={operazione.importo! > 0 ? "light" : "secondary"}
             >
                 <IonLabel text-wrap>
                     <p>{`${getDayName(new Date(operazione.data!), "long")} da ${
@@ -56,20 +57,17 @@ const ListOperazioni: React.FC<{
             </IonItemOptions>
         </IonItemSliding>
     ));
-    const saldo = props.operazioni
-        .map((el) => el.importo!)
-        .reduce(
-            (previousValue, currentValue) => previousValue + currentValue,
-            0
-        );
+
     return (
         <>
             {operazioni}
-            <IonItem>
+            <IonItem color="tertiary">
                 <IonLabel>
                     <h2
                         style={{ textAlign: "center" }}
-                    >{`Saldo per questa lista: ${numberAsPrice(saldo)}`}</h2>
+                    >{`Saldo totale della lista: ${numberAsPrice(
+                        props.sumOfOperations
+                    )}`}</h2>
                 </IonLabel>
             </IonItem>
         </>

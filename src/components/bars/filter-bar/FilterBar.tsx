@@ -34,6 +34,19 @@ const FilterBar: React.FC<{
     };
 
     const getFilterTitleWithNumbers = () => {
+        if (
+            props.filter.filter === "importo" &&
+            props.filter.max === 0 &&
+            props.filter.min === undefined
+        )
+            return "Solo Spese";
+        if (
+            props.filter.filter === "importo" &&
+            props.filter.max === undefined &&
+            props.filter.min === 0
+        )
+            return "Solo Ricavi";
+
         let output = "Risultati ";
         output = output + `con ${capitalize(props.filter.filter!)} `;
         if (props.filter.min !== undefined)

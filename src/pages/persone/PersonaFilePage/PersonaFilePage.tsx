@@ -1,6 +1,5 @@
 import {
     IonButton,
-    IonContent,
     IonIcon,
     IonLabel,
     IonList,
@@ -63,13 +62,17 @@ const PersonaFilePage: React.FC<{}> = () => {
     const { list, closeItemsList } = useList();
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchPersona = async () => {
             setShowLoading(true);
             try {
                 const res = await axiosInstance.get("/persone/" + personaId);
+                if (!mounted) return;
                 setPersona(res.data);
                 setShowLoading(false);
             } catch (e) {
+                if (!mounted) return;
                 setShowLoading(false);
                 errorHandler(
                     e,
@@ -81,6 +84,10 @@ const PersonaFilePage: React.FC<{}> = () => {
         };
 
         fetchPersona();
+
+        return () => {
+            mounted = false;
+        };
     }, [navigate, personaId, presentAlert, update]);
 
     const backToList = () => {
@@ -143,9 +150,9 @@ const PersonaFilePage: React.FC<{}> = () => {
     };
 
     return (
-        <div className="page">
+        <>
             {mode === "list" && (
-                <IonContent>
+                <>
                     <IonLoading cssClass="loader" isOpen={showLoading} />
                     {persona && (
                         <RiepilogoBar
@@ -260,10 +267,10 @@ const PersonaFilePage: React.FC<{}> = () => {
                         }
                         simple
                     />
-                </IonContent>
+                </>
             )}
             {mode === "form" && (
-                <IonContent>
+                <>
                     <FormTitle
                         title={
                             currentDocumento ? "Rinomina File" : "Nuovo File"
@@ -276,9 +283,9 @@ const PersonaFilePage: React.FC<{}> = () => {
                         backToList={backToList}
                         baseUrl={`/persone/${personaId}/files`}
                     />
-                </IonContent>
+                </>
             )}
-        </div>
+        </>
     );
 };
 

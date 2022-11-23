@@ -8,7 +8,6 @@ import {
     IonSelect,
     IonSelectOption,
     IonButton,
-    useIonPicker,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
 import { useState, useEffect, FormEvent } from "react";
@@ -27,10 +26,11 @@ import FormInput from "../../form-components/form-input/FormInput";
 import Modal from "../../modal/Modal";
 import Selector from "../../selector/Selector";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
-import { getDayName, openTimePicker } from "../../../utils/timeUtils";
+import { getDayName, getPossibleTimeValues } from "../../../utils/timeUtils";
 import useDateHandler from "../../../hooks/use-date-handler";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormGroup from "../../form-components/form-group/FormGroup";
+import FormSelect from "../../form-components/form-select/FormSelect";
 
 const EventoForm: React.FC<{
     persona: Persona | null;
@@ -64,8 +64,6 @@ const EventoForm: React.FC<{
 
     const [isVisit, setIsVisit] = useState<boolean>(false);
 
-    const [present] = useIonPicker();
-
     const {
         datePickerIsOpen,
         setDatePickerIsOpen,
@@ -74,7 +72,10 @@ const EventoForm: React.FC<{
         inputDateReset,
     } = useDateHandler((el) => !!el, null);
 
-    const [timeValue, setTimeValue] = useState<string | null>(null);
+    const {
+        inputValue: inputTimeValue,
+        inputChangedHandler: inputTimeChangedHandler,
+    } = useInput(() => true, null);
 
     const {
         inputValue: inputLuogoValue,
@@ -113,10 +114,11 @@ const EventoForm: React.FC<{
     const queryData = useQueryData("immobili");
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeOut = setTimeout(() => {
             setImmobileInteresse(immobileInteresse);
             setModalIsOpen(false);
         }, 300);
+        return () => clearTimeout(timeOut);
     }, [immobileInteresse]);
 
     const getMessage = () =>
@@ -128,7 +130,7 @@ const EventoForm: React.FC<{
 
     const isFormInvalid =
         (props.evento && !inputNoteIsTouched) ||
-        (isVisit && (!inputDateValue || !timeValue)) ||
+        (isVisit && (!inputDateValue || !inputTimeValue)) ||
         (!isVisit &&
             !inputStatusIsTouched &&
             (!inputNoteValue || inputNoteValue.toString().trim().length === 0));
@@ -148,7 +150,9 @@ const EventoForm: React.FC<{
                 );
             } else if (isVisit) {
                 reqBody = {
-                    quando: `${inputDateValue.split("T")[0]}T${timeValue}:00`,
+                    quando: `${
+                        inputDateValue.split("T")[0]
+                    }T${inputTimeValue}:00`,
                     idPersona: props.persona?.id,
                     note: inputNoteValue.trim(),
                     idImmobile: immobileInteresse?.id,
@@ -219,17 +223,6 @@ const EventoForm: React.FC<{
         </IonItem>
     );
 
-    const getTime = () => (
-        <IonItem>
-            <IonLabel text-wrap>{timeValue}</IonLabel>
-            <IonIcon
-                slot="end"
-                icon={closeOutline}
-                onClick={() => setTimeValue(null)}
-            ></IonIcon>
-        </IonItem>
-    );
-
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
@@ -295,15 +288,19 @@ const EventoForm: React.FC<{
                     />
                 )}
                 {isVisit && !props.evento && (
-                    <ItemSelector
-                        titoloGruppo={"Orario della Visita"}
-                        titoloBottone={"Seleziona Orario"}
-                        isItemPresent={!!timeValue}
-                        getItem={() => getTime()}
-                        openSelector={() =>
-                            openTimePicker(setTimeValue, present)
-                        }
-                    />
+                    <div
+                        style={{
+                            borderRight: "1px solid gray",
+                            borderLeft: "1px solid gray",
+                        }}
+                    >
+                        <FormSelect
+                            title="Orario della Visita"
+                            value={inputTimeValue}
+                            function={inputTimeChangedHandler}
+                            possibleValues={getPossibleTimeValues()}
+                        />
+                    </div>
                 )}
                 {!props.evento && (
                     <FormGroup title="Dati opzionali">

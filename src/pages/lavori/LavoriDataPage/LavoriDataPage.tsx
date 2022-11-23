@@ -1,4 +1,4 @@
-import { IonContent, IonLoading, useIonAlert } from "@ionic/react";
+import { IonLoading, useIonAlert } from "@ionic/react";
 import { constructOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -33,12 +33,16 @@ const LavoriDataPage: React.FC<{}> = () => {
     const queryData = useQueryData("steps");
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchLavoro = async () => {
             try {
                 const res = await axiosInstance.get(`/lavori/${id}`);
+                if (!mounted) return;
                 setCurrentLavoro(res.data);
                 setShowLoading(false);
             } catch (e) {
+                if (!mounted) return;
                 errorHandler(
                     e,
                     () => {},
@@ -49,6 +53,10 @@ const LavoriDataPage: React.FC<{}> = () => {
         };
 
         fetchLavoro();
+
+        return () => {
+            mounted = false;
+        };
     }, [id, presentAlert]);
 
     const backToList = () => {
@@ -57,9 +65,9 @@ const LavoriDataPage: React.FC<{}> = () => {
     };
 
     return (
-        <div className="page">
+        <>
             {mode === "list" && (
-                <IonContent>
+                <>
                     <IonLoading cssClass="loader" isOpen={showLoading} />
                     {currentLavoro && (
                         <>
@@ -83,10 +91,10 @@ const LavoriDataPage: React.FC<{}> = () => {
                             />
                         </>
                     )}
-                </IonContent>
+                </>
             )}
             {mode === "form" && (
-                <IonContent>
+                <>
                     <div>
                         <FormTitle
                             title={
@@ -106,9 +114,9 @@ const LavoriDataPage: React.FC<{}> = () => {
                             backToList={backToList}
                         />
                     </div>
-                </IonContent>
+                </>
             )}
-        </div>
+        </>
     );
 };
 

@@ -163,12 +163,10 @@ const ListImmobili: React.FC<{
                         {getImmobile(immobile)}
                         <IonItemOptions side="end">
                             <ItemOption
-                                handler={() =>
-                                    navigate(`/immobili/${immobile.id}/files`)
-                                }
+                                handler={() => copyImmobile(immobile.id!)}
                                 colorType={"primary"}
-                                icon={cameraOutline}
-                                title={"File"}
+                                icon={copyOutline}
+                                title={"Copia"}
                             />
                             <ItemOption
                                 handler={() =>
@@ -179,10 +177,12 @@ const ListImmobili: React.FC<{
                                 title={"Storia"}
                             />
                             <ItemOption
-                                handler={() => copyImmobile(immobile.id!)}
+                                handler={() =>
+                                    navigate(`/immobili/${immobile.id}/files`)
+                                }
                                 colorType={"success"}
-                                icon={copyOutline}
-                                title={"Copia"}
+                                icon={cameraOutline}
+                                title={"File"}
                             />
                             <ItemOption
                                 handler={() => {

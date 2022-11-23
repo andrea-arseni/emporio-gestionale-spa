@@ -40,6 +40,8 @@ import FilterBar from "../bars/filter-bar/FilterBar";
 import { QueryData } from "../../entities/queryData";
 import useList from "../../hooks/use-list";
 import { useNavigate } from "react-router-dom";
+import ListVisits from "../lists/ListVisits";
+import { Visit } from "../../entities/visit.model";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
@@ -76,6 +78,8 @@ const Selector: React.FC<{
 
     const [numberOfResults, setNumberOfResults] = useState<number>(0);
 
+    const [sumOfOperations, setSumOfOperations] = useState<number>(0);
+
     const [negativeForbidden, setNegativeForbidden] = useState<boolean>(false);
 
     const [presentAlert] = useIonAlert();
@@ -86,6 +90,8 @@ const Selector: React.FC<{
 
     // definisci quale tipologia di entity vuoi cercare
     useEffect(() => {
+        let mounted = true;
+
         const getFilter = () => {
             let res = `&filter=${filter.filter}`;
             if (filter.startDate) res = `${res}&startDate=${filter.startDate}`;
@@ -106,13 +112,20 @@ const Selector: React.FC<{
                 setShowLoading(true);
                 const url = `${
                     props.baseUrl ? props.baseUrl : props.entitiesType
-                }?page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
+                }${
+                    props.baseUrl && props.baseUrl.includes("?") ? "&" : "?"
+                }page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
                 const res = await axiosInstance.get(url);
+                if (!mounted) return;
                 await new Promise((r) => setTimeout(r, 300));
+                if (!mounted) return;
                 setShowLoading(false);
                 setEntities(res.data.data);
                 setNumberOfResults(res.data.numberOfResults);
+                if (props.entitiesType === "operazioni")
+                    setSumOfOperations(res.data.sum);
             } catch (e: any) {
+                if (!mounted) return;
                 setShowLoading(false);
                 errorHandler(
                     e,
@@ -124,6 +137,10 @@ const Selector: React.FC<{
         };
 
         fetchEntities();
+
+        return () => {
+            mounted = false;
+        };
     }, [
         navigate,
         presentAlert,
@@ -140,7 +157,7 @@ const Selector: React.FC<{
             className={styles.filterButton}
             expand="full"
             mode="ios"
-            fill="outline"
+            fill="clear"
             color="dark"
             onClick={() => {
                 setFilterMode("default");
@@ -155,7 +172,12 @@ const Selector: React.FC<{
     );
 
     const confirmDeleteEntity = async (entityName: string, id: string) => {
-        const url = (props.baseUrl ? props.baseUrl : entityName) + "/" + id;
+        const url =
+            (props.baseUrl && !props.baseUrl.includes("?")
+                ? props.baseUrl
+                : entityName) +
+            "/" +
+            id;
         try {
             setShowLoading(true);
             await axiosInstance.delete(url);
@@ -215,6 +237,7 @@ const Selector: React.FC<{
                         setMode={props.setMode!}
                         setCurrentEntity={props.setCurrentEntity!}
                         deleteEntity={deleteEntity}
+                        sumOfOperations={sumOfOperations}
                     />
                 );
             case "logs":
@@ -283,17 +306,29 @@ const Selector: React.FC<{
                         closeItems={closeItemsList}
                     />
                 );
+            case "visite":
+                return (
+                    <ListVisits
+                        displayDay
+                        visits={entities as Visit[]}
+                        deleteEntity={deleteEntity}
+                    />
+                );
         }
     };
 
-    const getListHeight = () => {
+    const getListHeight: any = () => {
         if (
-            props.entitiesType === "steps" ||
-            props.entitiesType === "eventi" ||
-            props.baseUrl?.includes("files")
+            props.entitiesType === "logs" ||
+            (props.entitiesType === "visite" && props.baseUrl?.includes("?"))
         )
-            return styles.high;
-        return styles.fullOption;
+            return styles.sixOtherElements;
+        if (props.entitiesType === "eventi") {
+            return styles.sevenOtherElements;
+        }
+        if (props.entitiesType === "steps") return styles.stepsList;
+        if (props.baseUrl?.includes("files")) return styles.high;
+        return styles.fiveOtherElements;
     };
 
     if (filterMode === "dataFilter")
@@ -345,12 +380,14 @@ const Selector: React.FC<{
                     setNegativeForbidden={setNegativeForbidden}
                 />
             )}
-            {!filter.filter && entities.length > 1 && (
+            {!filter.filter && entities.length > 0 && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
                     mode="ios"
-                    fill="outline"
+                    color="primary"
+                    fill="clear"
+                    disabled={entities.length === 1}
                     onClick={() => setShowFilterActionSheet(true)}
                 >
                     <IonIcon icon={filterOutline} />
@@ -359,13 +396,14 @@ const Selector: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
-            {entities.length > 1 && (
+            {entities.length > 0 && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
                     mode="ios"
-                    fill="outline"
+                    fill="clear"
                     color="dark"
+                    disabled={entities.length === 1}
                     onClick={() => setShowSortingActionSheet(true)}
                 >
                     <IonIcon icon={layersOutline} />
@@ -392,11 +430,18 @@ const Selector: React.FC<{
                     />
                 </div>
             )}
-            <PageFooter
-                page={page}
-                setPage={setPage}
-                numberOfResults={numberOfResults}
-            />
+            {entities.length > 0 && (
+                <PageFooter
+                    page={page}
+                    setPage={setPage}
+                    numberOfResults={numberOfResults}
+                    lifted={
+                        props.entitiesType === "eventi" ||
+                        props.entitiesType === "logs" ||
+                        !!(props.baseUrl && props.baseUrl.includes("?"))
+                    }
+                />
+            )}
             <FilterActionSheet
                 showFilterActionSheet={showFilterActionSheet}
                 setShowFilterActionSheet={setShowFilterActionSheet}

@@ -5,7 +5,7 @@ import { isPlatform } from "@ionic/react";
 
 const askContactPermission = async (presentAlert: any) => {
     const permissionStatus = await Contacts.getPermissions();
-    if (!permissionStatus.granted) {
+    if (permissionStatus.granted === false) {
         presentAlert({
             header: "Attenzione",
             subHeader: "Impossibile procedere con salvataggio contatti.",

@@ -15,7 +15,6 @@ import { File as FilePlugin } from "@awesome-cordova-plugins/file";
 import { FileOpener } from "@awesome-cordova-plugins/file-opener";
 import { AndroidPermissions } from "@awesome-cordova-plugins/android-permissions";
 import { isPlatform } from "@ionic/core";
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { changeLoading } from "../store/ui-slice";
 import { addFile } from "../store/immobile-slice";
 
@@ -181,7 +180,6 @@ export const salvaDocumentoInAndroid = async (nome: string, blob: Blob) => {
         );
         alert(`File scaricato. ${messaggioChiusura}`);
     } catch (e) {
-        console.log(e);
         alert("File non scaricabile, impossibile procedere");
     }
 };
@@ -204,6 +202,7 @@ export const downloadMultipleFiles = async (
     documenti: Documento[],
     dispatch: any
 ) => {
+    if (isNativeApp) dispatch(changeLoading(true));
     if (isNativeApp && isPlatform("android")) {
         await checkAndroidPermissionsForWritingFiles();
         await checkAndCreateEmporioDirectory();
@@ -428,6 +427,19 @@ export const submitFile = async (
     dispatch?: any
 ) => {
     if (e.target.files.length === 0) return;
+    if (e.target.files.length > 1 && currentFileSpeciale) {
+        presentAlert({
+            header: "Attenzione!",
+            subHeader: `Per i file speciali puoi selezionare un file soltanto`,
+            buttons: [
+                {
+                    text: "OK",
+                    role: "cancel",
+                },
+            ],
+        });
+        return;
+    }
     setShowLoading!(true);
     await uploadFileToServer(
         setUpdate,
@@ -496,21 +508,18 @@ const uploadFileToServer = async (
         return;
     }
     let file: File | null = listFiles[currentIndex];
-    if (currentFileSpeciale) {
-        var blob = file!.slice(0, file!.size, file!.type);
-        file = new File(
-            [blob],
-            updateFileName(file!.name, currentFileSpeciale),
-            { type: file!.type }
-        );
-    }
     if (file!.type === "image/heic") {
         file = await convertHeichToJpeg(file!, presentAlert);
         if (!file) return;
     }
     const formData = new FormData();
     formData.append("file", file!);
-    if (tipologia) formData.append("name", tipologia);
+    if (tipologia) formData.append("tipologia", tipologia);
+    if (currentFileSpeciale)
+        formData.append(
+            "name",
+            updateFileName(listFiles[0].name, currentFileSpeciale)
+        );
     try {
         const res = await axiosInstance.post(url, formData);
         const newFoto = res.data;
@@ -531,6 +540,7 @@ const uploadFileToServer = async (
             dispatch
         );
     } catch (e) {
+        console.log(e);
         setShowLoading(false);
         errorHandler(
             e,

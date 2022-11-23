@@ -1,4 +1,9 @@
-import { IonApp, IonPage, IonSplitPane, setupIonicReact } from "@ionic/react";
+import {
+    IonApp,
+    IonContent,
+    IonSplitPane,
+    setupIonicReact,
+} from "@ionic/react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -19,16 +24,14 @@ import "./theme/variables.css";
 import Header from "./components/header/Header";
 import Menu from "./components/menu/Menu";
 import AuthPage from "./pages/auth/AuthPage/AuthPage";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import PasswordPage from "./pages/auth/PasswordPage/PasswordPage";
 import AppuntamentiPage from "./pages/appuntamenti/AppuntamentiPage/AppuntamentiPage";
 import ImmobiliPage from "./pages/immobili/ImmobiliPage/ImmobiliPage";
 import OperazioniPage from "./pages/operazioni/OperazioniPage/OperazioniPage";
-import LogsPage from "./pages/immobili/LogsPage/LogsPage";
 import LavoriPage from "./pages/lavori/LavoriPage/LavoriPage";
 import LavoriDataPage from "./pages/lavori/LavoriDataPage/LavoriDataPage";
 import PersonaPage from "./pages/persone/PersonaPage/PersonaPage";
-import EventsPage from "./pages/persone/EventsPage/EventsPage";
 import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
 import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
 import ImmobiliFilesPage from "./pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
@@ -37,6 +40,7 @@ import ReportsPage from "./pages/documenti/ReportsPage/ReportsPage";
 import { isUserAdmin } from "./utils/userUtils";
 import { useEffect } from "react";
 import { performAutoLogin } from "./store/auth-thunk";
+import StoriaPage from "./pages/storia/StoriaPage";
 
 setupIonicReact();
 
@@ -53,10 +57,11 @@ const App: React.FC = () => {
 
     return (
         <IonApp>
-            <Header token={token} />
             <IonSplitPane contentId="main">
                 {token && <Menu />}
-                <IonPage id="main" color="light">
+                <IonContent id="main" color="light">
+                    <Header token={token} />
+
                     <Routes>
                         {!token && (
                             <Route path="/login" element={<AuthPage />} />
@@ -94,7 +99,7 @@ const App: React.FC = () => {
                         {token && (
                             <Route
                                 path="/immobili/:id/storia"
-                                element={<LogsPage />}
+                                element={<StoriaPage type="immobile" />}
                             />
                         )}
                         {token && (
@@ -103,7 +108,7 @@ const App: React.FC = () => {
                         {token && (
                             <Route
                                 path="/persone/:id"
-                                element={<EventsPage />}
+                                element={<StoriaPage type="persona" />}
                             />
                         )}
                         {token && (
@@ -137,13 +142,16 @@ const App: React.FC = () => {
                             <Route path="/reports" element={<ReportsPage />} />
                         )}
                         <Route
-                            path="*"
+                            path="/*"
                             element={
-                                token ? <AppuntamentiPage /> : <AuthPage />
+                                <Navigate
+                                    to={token ? "/appuntamenti" : "/login"}
+                                    replace
+                                />
                             }
                         />
                     </Routes>
-                </IonPage>
+                </IonContent>
             </IonSplitPane>
         </IonApp>
     );
@@ -153,15 +161,6 @@ export default App;
 
 /*
 
-- testing foto
-- testing files
-- testing documenti
-- testing persona
-
-- commit
-
-***
- 
 - ionic capacitor add ios
 - ionic capacitor copy ios
 - ionic capacitor run ios * is 2 step, is better

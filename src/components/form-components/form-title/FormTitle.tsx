@@ -12,23 +12,28 @@ const FormTitle: React.FC<{
     const [widthScreen] = useSize();
 
     return (
-        <IonToolbar mode="ios" className={props.fixed ? "fixed" : ""}>
-            <IonButtons slot="end">
-                {widthScreen >= 500 && props.backToList && (
+        <IonToolbar
+            mode="ios"
+            className={`${props.fixed ? "fixed" : ""} bordered`}
+        >
+            {widthScreen >= 500 && props.backToList && (
+                <IonButtons slot="start">
                     <IonButton
                         color="medium"
                         fill="solid"
                         onClick={props.handler}
                     >
-                        Torna alla Lista
+                        Indietro
                     </IonButton>
-                )}
-                {(widthScreen < 500 || !props.backToList) && (
+                </IonButtons>
+            )}
+            {(widthScreen < 500 || !props.backToList) && (
+                <IonButtons slot="end">
                     <IonButton onClick={props.handler}>
                         <IonIcon slot="icon-only" icon={closeOutline} />
                     </IonButton>
-                )}
-            </IonButtons>
+                </IonButtons>
+            )}
             <Title>{props.title}</Title>
         </IonToolbar>
     );

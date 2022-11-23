@@ -8,16 +8,24 @@ const FileSpecialiList: React.FC<{ id: number }> = (props) => {
     const [isError, setIsError] = useState<boolean>(false);
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchImmobile = async () => {
             try {
                 const res = await axiosInstance.get(`/immobili/${props.id}`);
+                if (!mounted) return;
                 setFiles(res.data.files);
             } catch (e) {
+                if (!mounted) return;
                 setIsError(true);
             }
         };
 
         fetchImmobile();
+
+        return () => {
+            mounted = false;
+        };
     }, [props.id]);
 
     if (isError)

@@ -14,7 +14,7 @@ const useQueryData = (entitiesType: entitiesType) => {
             case "persone":
                 return "status";
             case "visite":
-                return "id";
+                return "quando";
             default:
                 return "data";
         }

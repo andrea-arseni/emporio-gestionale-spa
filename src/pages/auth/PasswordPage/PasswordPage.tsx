@@ -1,6 +1,5 @@
 import {
     IonButton,
-    IonContent,
     IonInput,
     IonItem,
     IonLabel,
@@ -124,7 +123,7 @@ const PasswordPage: React.FC<{}> = () => {
     };
 
     return (
-        <IonContent>
+        <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <div className="wrapper centered gray">
                 <form
@@ -185,7 +184,7 @@ const PasswordPage: React.FC<{}> = () => {
                     </IonButton>
                 </form>
             </div>
-        </IonContent>
+        </>
     );
 };
 

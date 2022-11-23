@@ -100,7 +100,7 @@ const PersoneForm: React.FC<{
                 });
         };
 
-        setTimeout(() => {
+        const timeOut = setTimeout(() => {
             if (choiceMode === "interesse" && currentImmobile) {
                 setImmobileInteresse(currentImmobile as Immobile);
                 setModalIsOpen(false);
@@ -112,6 +112,8 @@ const PersoneForm: React.FC<{
                 setModalIsOpen(false);
             }
         }, 300);
+
+        return () => clearTimeout(timeOut);
     }, [currentImmobile, choiceMode, listHouses]);
 
     const {
@@ -134,7 +136,7 @@ const PersoneForm: React.FC<{
         inputChangedHandler: inputPhoneChangedHandler,
         reset: inputPhoneReset,
     } = useInput(
-        (el) => el.toString().trim().length > 0,
+        (el) => !el || el.toString().trim().length > 0,
         props.persona ? props.persona.telefono : null
     );
 
@@ -146,7 +148,7 @@ const PersoneForm: React.FC<{
         inputChangedHandler: inputEmailChangedHandler,
         reset: inputEmailReset,
     } = useInput(
-        (el) => /.+@.+\..+/.test(el.toString()),
+        (el) => !el || /.+@.+\..+/.test(el.toString()),
         props.persona ? props.persona.email : null
     );
 
@@ -280,6 +282,7 @@ const PersoneForm: React.FC<{
                 ],
             });
         } catch (error: any) {
+            console.log(error);
             setShowLoading(false);
             errorHandler(
                 error,
@@ -457,6 +460,7 @@ const PersoneForm: React.FC<{
                     openSelector={() => openModal("locazione")}
                 />
                 <IonButton
+                    style={{ marginTop: "15px" }}
                     expand="block"
                     disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}

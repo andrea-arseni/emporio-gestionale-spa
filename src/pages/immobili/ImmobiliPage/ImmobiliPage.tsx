@@ -1,4 +1,3 @@
-import { IonContent } from "@ionic/react";
 import { homeOutline } from "ionicons/icons";
 import { useState } from "react";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
@@ -8,7 +7,6 @@ import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import useQueryData from "../../../hooks/use-query-data";
-import styles from "./ImmobiliPage.module.css";
 
 const ImmobiliPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
@@ -23,9 +21,9 @@ const ImmobiliPage: React.FC<{}> = () => {
     };
 
     return (
-        <div className="page">
+        <>
             {mode === "list" && (
-                <IonContent>
+                <>
                     <NewEntityBar
                         setMode={setMode}
                         icon={homeOutline}
@@ -37,34 +35,30 @@ const ImmobiliPage: React.FC<{}> = () => {
                         setCurrentEntity={setCurrentImmobile}
                         queryData={queryData}
                     />
-                </IonContent>
+                </>
             )}
             {mode === "form" && (
-                <IonContent>
-                    <div className={styles.fixed}>
-                        <FormTitle
-                            title={
-                                currentImmobile?.id
-                                    ? "Modifica Immobile"
-                                    : "Nuovo Immobile"
-                            }
-                            handler={backToList}
-                            backToList
-                        />
-                    </div>
-                    <div className={styles.spaceDown}>
-                        <ImmobileForm
-                            immobile={
-                                currentImmobile
-                                    ? (currentImmobile as Immobile)
-                                    : null
-                            }
-                            backToList={backToList}
-                        />
-                    </div>
-                </IonContent>
+                <>
+                    <FormTitle
+                        title={
+                            currentImmobile?.id
+                                ? "Modifica Immobile"
+                                : "Nuovo Immobile"
+                        }
+                        handler={backToList}
+                        backToList
+                    />
+                    <ImmobileForm
+                        immobile={
+                            currentImmobile
+                                ? (currentImmobile as Immobile)
+                                : null
+                        }
+                        backToList={backToList}
+                    />
+                </>
             )}
-        </div>
+        </>
     );
 };
 

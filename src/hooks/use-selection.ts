@@ -9,9 +9,13 @@ const useSelection = (
     const [onFire, isOnFire] = useState<boolean>(false);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeOut = setTimeout(() => {
             isOnFire(false);
         }, 300);
+
+        return () => {
+            clearTimeout(timeOut);
+        };
     }, [onFire]);
 
     const selectEntity = (entity: Entity) => {

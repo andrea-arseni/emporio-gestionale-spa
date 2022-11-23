@@ -31,8 +31,13 @@ import Card from "../card/Card";
 import ModalMessage from "../modal/modal-message/ModalMessage";
 import ItemOption from "./ItemOption";
 import styles from "./Lists.module.css";
+import { getDayName, isPast } from "../../utils/timeUtils";
 
-const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
+const ListVisits: React.FC<{
+    visits: Visit[];
+    displayDay?: boolean;
+    deleteEntity?: (type: string, id: string, message?: string) => void;
+}> = (props) => {
     const userData = useAppSelector((state) => state.auth.userData);
 
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
@@ -69,8 +74,16 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
     };
 
     const eliminaVisita = (visita: Visit) => {
-        dispatch(setCurrentVisit(visita));
-        dispatch(alertEliminaVisita({ presentAlert, closeItemsList }));
+        if (props.deleteEntity === undefined) {
+            dispatch(setCurrentVisit(visita));
+            dispatch(alertEliminaVisita({ presentAlert, closeItemsList }));
+        } else {
+            props.deleteEntity(
+                "visite",
+                visita.id!.toString(),
+                `Hai selezionato la cancellazione della visita selezionata. Si tratta di un processo irreversibile.`
+            );
+        }
     };
 
     const sendConfirmationMessage = async () => {
@@ -119,6 +132,9 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
         return (
             <IonItem key={visit.id} detail>
                 <IonLabel text-wrap>
+                    {props.displayDay && (
+                        <h3>{getDayName(new Date(visit.quando!), "long")}</h3>
+                    )}
                     <h3>{`Ore ${visit.quando
                         ?.split("T")[1]
                         .substring(0, 5)} - ${capitalize(
@@ -159,12 +175,14 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
                             title={"Aggiungi"}
                         />
                     )}
-                    <ItemOption
-                        handler={() => apriModale(visit)}
-                        colorType={"success"}
-                        icon={pencilOutline}
-                        title={"Scrivi"}
-                    />
+                    {!isPast(new Date(visit.quando!)) && (
+                        <ItemOption
+                            handler={() => apriModale(visit)}
+                            colorType={"success"}
+                            icon={pencilOutline}
+                            title={"Scrivi"}
+                        />
+                    )}
                     <ItemOption
                         handler={() => modificaVisita(visit)}
                         colorType={"light"}
@@ -197,7 +215,12 @@ const ListVisits: React.FC<{ visits: Visit[] }> = (props) => {
 
     return (
         <>
-            <IonList ref={list} className={styles.listVisit}>
+            <IonList
+                ref={list}
+                className={`${styles.list} ${
+                    !props.displayDay ? styles.listVisit : ""
+                }`}
+            >
                 {props.visits.map((visit) => getVisitComplete(visit))}
             </IonList>
             <ModalMessage

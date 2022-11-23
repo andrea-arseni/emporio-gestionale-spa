@@ -8,22 +8,22 @@ const FormInputBoolean: React.FC<{
     sentence: string;
 }> = (props) => {
     return (
-        <IonItem className={styles.formInputBoolean}>
-            <IonLabel position="floating" className={styles.label}>
-                {props.sentence}
-            </IonLabel>
-            <div className="toggleButton">
-                <div
-                    className={props.condition ? "active" : "inactive"}
-                    onClick={() => props.setCondition(true)}
-                >
-                    Sì
-                </div>
-                <div
-                    className={props.condition ? "inactive" : "active"}
-                    onClick={() => props.setCondition(false)}
-                >
-                    No
+        <IonItem>
+            <div className={styles.formInputBoolean}>
+                <IonLabel>{props.sentence}</IonLabel>
+                <div className="toggleButton">
+                    <div
+                        className={props.condition ? "active" : "inactive"}
+                        onClick={() => props.setCondition(true)}
+                    >
+                        Sì
+                    </div>
+                    <div
+                        className={props.condition ? "inactive" : "active"}
+                        onClick={() => props.setCondition(false)}
+                    >
+                        No
+                    </div>
                 </div>
             </div>
         </IonItem>

@@ -10,7 +10,7 @@ const StaticBar: React.FC<{
     const navigate = useNavigate();
 
     return (
-        <IonToolbar mode="ios">
+        <IonToolbar mode="ios" className="bordered">
             <IonIcon
                 slot="start"
                 icon={arrowBackOutline}

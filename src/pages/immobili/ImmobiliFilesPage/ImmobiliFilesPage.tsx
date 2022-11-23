@@ -1,5 +1,4 @@
 import {
-    IonContent,
     IonIcon,
     IonLabel,
     IonList,
@@ -36,6 +35,7 @@ import { deleteFile } from "../../../store/immobile-slice";
 import {
     fetchImmobileById,
     performRipristinaImmobile,
+    performUpdateReports,
 } from "../../../store/immobile-thunk";
 import { changeLoading, setError } from "../../../store/ui-slice";
 import { fileSpeciale } from "../../../types/file_speciali";
@@ -217,7 +217,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     const backToList = () => {
         setMode("files");
         setCurrentDocumento(null);
-        setUpdate((prevValue) => ++prevValue);
     };
 
     const confirmDeleteEntity = async (id: string) => {
@@ -226,7 +225,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             dispatch(changeLoading(true));
             await axiosInstance.delete(url);
             dispatch(changeLoading(false));
-            setUpdate((oldNumber) => ++oldNumber);
+            dispatch(deleteFile(+id));
         } catch (e) {
             dispatch(changeLoading(false));
             errorHandler(
@@ -261,27 +260,41 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         );
     };
 
+    const fermaTutto = (mode: "scaricarle" | "condividerle") => {
+        presentAlert({
+            header: "Attenzione!",
+            subHeader: `Alcune delle foto selezionate non erano presenti, pertanto l'operazione è stata annullata. Aspetta che le foto che hai selezionato siano visibili prima di ${mode}`,
+            buttons: [
+                {
+                    text: "OK",
+                    handler: () => setSelectionMode(false),
+                },
+            ],
+        });
+    };
+
     const condividiFotoSelezionate = () => {
         // get all file of photo selected
         const photoSelected = getPhotoSelected();
-        // share them
-        shareMultipleFiles(photoSelected, presentAlert);
+        const areAllThere = photoSelected.every((el) => !!el.base64String);
+        if (!areAllThere) {
+            fermaTutto("condividerle");
+        } else {
+            shareMultipleFiles(photoSelected, presentAlert);
+        }
     };
 
     const scaricaFotoSelezionate = () => {
-        dispatch(changeLoading(true));
         const photoSelected = getPhotoSelected();
-        downloadMultipleFiles(photoSelected, dispatch);
+        const areAllThere = photoSelected.every((el) => !!el.base64String);
+        if (!areAllThere) {
+            fermaTutto("scaricarle");
+        } else {
+            downloadMultipleFiles(photoSelected, dispatch);
+        }
     };
 
-    if (!immobile)
-        return (
-            <div className="page">
-                <IonContent>
-                    <IonLoading cssClass="loader" isOpen={loading} />
-                </IonContent>
-            </div>
-        );
+    if (!immobile) return <IonLoading cssClass="loader" isOpen={loading} />;
 
     const reports = immobile.files
         ? immobile.files.filter((el) => el.tipologia === "REPORT")
@@ -318,7 +331,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             );
             dispatch(changeLoading(false));
             setIsSelectingDates(false);
-            setUpdate((prevState) => ++prevState);
+            dispatch(performUpdateReports(+immobileId));
         } catch (e) {
             dispatch(changeLoading(false));
             dispatch(setError({ name: "createReport", object: e }));
@@ -327,22 +340,20 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
 
     const getSegment = () => {
         return !selectionMode ? (
-            <IonSegment mode="ios" value={mode}>
-                <IonSegmentButton
-                    value="files"
-                    onClick={() => setMode("files")}
-                >
+            <IonSegment
+                mode="ios"
+                value={mode}
+                onClick={(e) => setMode(e.currentTarget.value as fileMode)}
+            >
+                <IonSegmentButton mode="ios" value="files">
                     <IonIcon icon={documentsOutline} />
                     <IonLabel>File</IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton value="foto" onClick={() => setMode("foto")}>
+                <IonSegmentButton mode="ios" value="foto">
                     <IonIcon icon={cameraOutline} />
                     <IonLabel>Foto</IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton
-                    value="reports"
-                    onClick={() => setMode("report")}
-                >
+                <IonSegmentButton mode="ios" value="reports">
                     <IonIcon icon={podiumOutline} />
                     <IonLabel>Report</IonLabel>
                 </IonSegmentButton>
@@ -380,9 +391,9 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     };
 
     return (
-        <div className="page">
+        <>
             {mode !== "form" && (
-                <IonContent>
+                <>
                     <IonLoading cssClass="loader" isOpen={isLoading} />
                     <RiepilogoBar
                         currentEntity={immobile}
@@ -453,10 +464,10 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                             getBack={() => setIsSelectingDates(false)}
                         />
                     )}
-                </IonContent>
+                </>
             )}
             {mode === "form" && (
-                <IonContent>
+                <>
                     <FormTitle
                         title={"Rinomina File"}
                         handler={() => setMode("files")}
@@ -467,7 +478,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                         backToList={backToList}
                         baseUrl={`/immobili/${immobileId}/files`}
                     />
-                </IonContent>
+                </>
             )}
             <input
                 style={{
@@ -490,7 +501,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     );
                 }}
             />
-        </div>
+        </>
     );
 };
 

@@ -34,7 +34,9 @@ const NewFileButton: React.FC<{
             onClick={props.action}
             disabled={
                 props.selectionMode ||
-                (props.mode === "foto" && numeroFoto! >= 30)
+                (props.mode === "foto" &&
+                    !isImmobileClosed &&
+                    numeroFoto! >= 30)
             }
         >
             <IonIcon

@@ -49,7 +49,11 @@ const RiepilogoBar: React.FC<{
             : (props.currentEntity as Lavoro | Immobile);
 
     return (
-        <IonToolbar mode="ios" className={styles.toolbar} color={getColor()}>
+        <IonToolbar
+            mode="ios"
+            className={`${styles.toolbar} bordered`}
+            color={getColor()}
+        >
             <IonButtons slot="start">
                 <IonButton onClick={() => navigate(-1)}>
                     <IonIcon slot="icon-only" icon={arrowBackOutline} />

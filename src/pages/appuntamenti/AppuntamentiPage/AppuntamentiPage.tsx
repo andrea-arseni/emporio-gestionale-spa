@@ -1,6 +1,5 @@
 import {
     IonButton,
-    IonContent,
     IonIcon,
     IonLabel,
     IonLoading,
@@ -87,6 +86,8 @@ const AppuntamentiPage: React.FC<{}> = () => {
     }, [currentDay, currentWeek]);
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchVisits = async () => {
             try {
                 const url = `visite/?filter=quando&startDate=${getDateAsString(
@@ -97,9 +98,11 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     )
                 )}`;
                 const res = await axiosInstance.get(url);
+                if (!mounted) return;
                 dispatch(changeLoading(false));
                 setVisits(res.data.data);
             } catch (e: any) {
+                if (!mounted) return;
                 dispatch(changeLoading(false));
                 errorHandler(
                     e,
@@ -111,6 +114,10 @@ const AppuntamentiPage: React.FC<{}> = () => {
         };
         dispatch(changeLoading(true));
         fetchVisits();
+
+        return () => {
+            mounted = false;
+        };
     }, [currentWeek, presentAlert, trigger, dispatch]);
 
     const todaysVisits = visits
@@ -125,10 +132,10 @@ const AppuntamentiPage: React.FC<{}> = () => {
         });
 
     return (
-        <IonContent className="page">
+        <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
             {pageMode === "calendario" && !isFormActive && (
-                <>
+                <div>
                     <DaySelector
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
@@ -144,10 +151,10 @@ const AppuntamentiPage: React.FC<{}> = () => {
                         currentWeek={currentWeek}
                         openVisitForm={openVisitForm}
                     />
-                </>
+                </div>
             )}
             {pageMode === "lista" && !isFormActive && (
-                <>
+                <div>
                     <IonButton
                         color="primary"
                         expand="full"
@@ -171,7 +178,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
                         setCurrentDay={setCurrentDay}
                     />
                     <ListVisits visits={todaysVisits} />
-                </>
+                </div>
             )}
             {isFormActive && (
                 <FormVisit operationComplete={operationComplete} />
@@ -196,7 +203,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     </IonSegment>
                 </>
             )}
-        </IonContent>
+        </>
     );
 };
 

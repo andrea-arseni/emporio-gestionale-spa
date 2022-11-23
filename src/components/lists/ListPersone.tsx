@@ -53,6 +53,30 @@ const ListPersone: React.FC<{
         props.setCurrentEntity
     );
 
+    const getTelefono = (persona: Persona) => {
+        if (!persona.telefono) return <p>{"Telefono mancante"}</p>;
+        if (props.selectMode) return <p>{`Tel: ${persona.telefono}`}</p>;
+        return (
+            <p>
+                Tel:
+                <a href={`tel:${persona.telefono}`}>{persona.telefono}</a>
+            </p>
+        );
+    };
+
+    const getEmail = (persona: Persona) => {
+        if (!persona.email) return <p>{"Email mancante"}</p>;
+        if (props.selectMode) return <p>{`Email: ${persona.email}`}</p>;
+        return (
+            <p>
+                Email:{" "}
+                <a href={`mailto:${persona.email}`}>
+                    {width >= 450 ? persona.email : "Email"}
+                </a>
+            </p>
+        );
+    };
+
     const getPersona = (persona: Persona) => {
         return (
             <IonItem
@@ -71,26 +95,8 @@ const ListPersone: React.FC<{
             >
                 <IonLabel text-wrap>
                     <h2>{persona.nome} </h2>
-                    <p>
-                        Tel:{" "}
-                        {persona.telefono ? (
-                            <a href={`tel:${persona.telefono}`}>
-                                {persona.telefono}
-                            </a>
-                        ) : (
-                            "Mancante"
-                        )}
-                    </p>
-                    <p>
-                        Email:{" "}
-                        {persona.email ? (
-                            <a href={`mailto:${persona.email}`}>
-                                {width >= 450 ? persona.email : "Email"}
-                            </a>
-                        ) : (
-                            "Mancante"
-                        )}
-                    </p>
+                    {getTelefono(persona)}
+                    {getEmail(persona)}
                 </IonLabel>
                 {width > 500 &&
                     (persona.ruolo ||
@@ -108,8 +114,9 @@ const ListPersone: React.FC<{
                     slot="end"
                     className={styles.note}
                     color={
-                        persona.status === "NON_RICHIAMARE" ||
-                        persona.status === "RIPOSO"
+                        persona.status?.toUpperCase() === "NON_RICHIAMARE" ||
+                        persona.status?.toUpperCase() === "NON RICHIAMARE" ||
+                        persona.status?.toUpperCase() === "RIPOSO"
                             ? "light"
                             : "dark"
                     }

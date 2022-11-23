@@ -1,17 +1,18 @@
 import { IonSpinner, IonThumbnail } from "@ionic/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Immobile } from "../../entities/immobile.model";
 import notAvailable from "../../assets/notAvailable.png";
 import axiosInstance from "../../utils/axiosInstance";
 import styles from "./ImmobileThumbnail.module.css";
 import { getBase64StringFromByteArray } from "../../utils/fileUtils";
+import { Documento } from "../../entities/documento.model";
 
 const ImmobileThumbnail: React.FC<{
     immobile: Immobile;
 }> = (props) => {
     const [showLoading, setShowLoading] = useState<boolean>(true);
 
-    const getPrimaFoto = useCallback(() => {
+    const getPrimaFoto = () => {
         if (!props.immobile.files || props.immobile.files.length === 0)
             return null;
         const foto = props.immobile.files.filter(
@@ -19,36 +20,53 @@ const ImmobileThumbnail: React.FC<{
         );
         if (!foto || foto.length === 0) return null;
         return foto[0];
-    }, [props.immobile.files]);
+    };
+
+    const [primaFoto, setPrimaFoto] = useState<Documento | null>(
+        getPrimaFoto()
+    );
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchImmobileAvatar = async () => {
             try {
                 const url = `/immobili/${props.immobile.id}/files/${
                     primaFoto!.id
                 }`;
                 const res = await axiosInstance.get(url);
-                primaFoto!.base64String = getBase64StringFromByteArray(
-                    res.data.byteArray,
-                    primaFoto!.nome!
-                );
+                if (!mounted) return;
+                setPrimaFoto((primaFoto) => {
+                    const newPrimaFoto = new Documento(
+                        primaFoto!.id,
+                        primaFoto!.nome,
+                        primaFoto!.tipologia,
+                        primaFoto!.codiceBucket,
+                        props.immobile,
+                        undefined,
+                        getBase64StringFromByteArray(
+                            res.data.byteArray,
+                            primaFoto!.nome!
+                        )
+                    );
+                    return newPrimaFoto;
+                });
                 setShowLoading(false);
             } catch (e) {
+                if (!mounted) return;
                 setShowLoading(false);
             }
         };
-
-        const primaFoto = getPrimaFoto();
 
         if (primaFoto) {
             fetchImmobileAvatar();
         } else {
             setShowLoading(false);
         }
-        return () => {};
-    }, [props.immobile, getPrimaFoto]);
-
-    const primaFoto = getPrimaFoto();
+        return () => {
+            mounted = false;
+        };
+    }, [props.immobile, primaFoto]);
 
     return (
         <IonThumbnail>
@@ -59,7 +77,7 @@ const ImmobileThumbnail: React.FC<{
                             ? styles.active
                             : styles.inactive
                     }`}
-                    alt="Silhouette of mountains"
+                    alt="Foto non disponibile"
                     src={primaFoto ? primaFoto!.base64String : notAvailable}
                 />
             )}

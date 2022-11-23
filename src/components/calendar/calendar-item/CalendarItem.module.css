@@ -8,6 +8,14 @@
     border: 1px solid gray;
 }
 
+.above {
+    top: -40px;
+}
+
+.below {
+    top: 20px;
+}
+
 .deactivated {
     display: none;
 }

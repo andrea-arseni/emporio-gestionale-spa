@@ -1,5 +1,5 @@
 .footer {
-    height: 62px;
+    height: 62px !important;
 }
 
 .toolbar {
@@ -7,4 +7,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.lifted {
+    max-height: 50px !important;
+}
+
+.bordered {
+    border-top: 1px solid lightgray;
 }

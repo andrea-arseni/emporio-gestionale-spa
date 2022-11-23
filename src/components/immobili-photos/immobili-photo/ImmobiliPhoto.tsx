@@ -43,10 +43,13 @@ const ImmobiliPhoto: React.FC<{
     const immobile = useAppSelector((state) => state.immobile.immobile);
 
     useEffect(() => {
+        let mounted = true;
+
         const selectFile = async () => {
             const url = `immobili/${props.idImmobile}/files/${props.foto.id}`;
             try {
                 const res = await axiosInstance.get(url);
+                if (!mounted) return;
                 dispatch(
                     setPhoto({
                         id: props.foto.id!,
@@ -55,6 +58,7 @@ const ImmobiliPhoto: React.FC<{
                 );
                 setShowLoading(false);
             } catch (e) {
+                if (!mounted) return;
                 setShowLoading(false);
                 errorHandler(
                     e,
@@ -65,7 +69,7 @@ const ImmobiliPhoto: React.FC<{
             }
         };
 
-        let timeout: any = null;
+        let timeout: NodeJS.Timeout | null = null;
         if (
             !immobile?.files?.find((el) => el.id === props.foto.id)
                 ?.base64String
@@ -76,7 +80,8 @@ const ImmobiliPhoto: React.FC<{
             }, 2000);
         }
         return () => {
-            clearTimeout(timeout);
+            if (timeout) clearTimeout(timeout);
+            mounted = false;
         };
     }, [
         props.foto.id,
@@ -89,6 +94,9 @@ const ImmobiliPhoto: React.FC<{
     ]);
 
     useEffect(() => {
+        let mounted = true;
+        let timeOut: NodeJS.Timeout | null = null;
+
         const rotatePhoto = async () => {
             props.bloccaSelezione(true);
             setShowLoading(true);
@@ -96,13 +104,15 @@ const ImmobiliPhoto: React.FC<{
                 const reqBody = { rotating: +rotating! };
                 const url = `/immobili/${props.idImmobile}/files/${props.foto.id}`;
                 await axiosSecondaryApi.patch(url, reqBody);
+                if (!mounted) return;
                 setRotating(null);
                 dispatch(erasePhoto({ id: props.foto.id! }));
-                setTimeout(() => {
+                timeOut = setTimeout(() => {
                     setUpdate((prevState) => ++prevState);
                     props.bloccaSelezione(false);
                 }, 2000);
             } catch (e) {
+                if (!mounted) return;
                 setRotating(null);
                 setShowLoading(false);
                 props.bloccaSelezione(false);
@@ -116,6 +126,11 @@ const ImmobiliPhoto: React.FC<{
         };
 
         if (rotating) rotatePhoto();
+
+        return () => {
+            mounted = false;
+            if (timeOut) clearTimeout(timeOut);
+        };
     }, [rotating, props, presentAlert, dispatch]);
 
     const [, dragRef] = useDrag({
