@@ -59,7 +59,7 @@ export default React.forwardRef<
         };
 
         return (
-            <IonList ref={ref} className={`${styles.list} ${styles.simple}`}>
+            <IonList ref={ref} className={`${styles.list}`}>
                 <ItemSelector
                     color
                     titoloGruppo={"Planimetria"}

@@ -1,8 +1,5 @@
 .list {
     overflow: scroll;
     padding: 0;
-}
-
-.simple {
-    height: calc(100vh - 44px - 100px - 62px);
+    height: calc(100% - 44px - 50px - 45px - 62px);
 }

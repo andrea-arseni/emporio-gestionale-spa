@@ -192,10 +192,7 @@ const PersonaFilePage: React.FC<{}> = () => {
                             )
                         }
                     />
-                    <IonList
-                        ref={list}
-                        className={`${styles.list} ${styles.simple}`}
-                    >
+                    <IonList ref={list} className={`${styles.list}`}>
                         <ItemSelector
                             color
                             titoloGruppo={"Documento Identificativo"}
@@ -246,7 +243,7 @@ const PersonaFilePage: React.FC<{}> = () => {
                             {(!persona ||
                                 !persona.files ||
                                 persona.files.length === 0) && (
-                                <div className={`${styles.simple} centered`}>
+                                <div className={`centered`}>
                                     <Card
                                         subTitle={`Questa persona non ha file associati`}
                                         title={

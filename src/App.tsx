@@ -161,6 +161,9 @@ export default App;
 
 /*
 
+- node lambda speakeasy - crea profilo su Google Authenticator
+- studia la dipendenza 
+
 - ionic capacitor add ios
 - ionic capacitor copy ios
 - ionic capacitor run ios * is 2 step, is better
