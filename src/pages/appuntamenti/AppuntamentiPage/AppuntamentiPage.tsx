@@ -135,7 +135,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
             {pageMode === "calendario" && !isFormActive && (
-                <div>
+                <div className="wrapper">
                     <DaySelector
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
@@ -154,7 +154,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 </div>
             )}
             {pageMode === "lista" && !isFormActive && (
-                <div>
+                <div className="wrapper">
                     <IonButton
                         color="primary"
                         expand="full"

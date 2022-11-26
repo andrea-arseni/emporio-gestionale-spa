@@ -1,9 +1,9 @@
 .heightLow {
-    height: calc(100vh - 44px - 44px - 62px - 58px);
+    height: calc(100% - 44px - 44px - 62px - 58px);
 }
 
 .heightHigh {
-    height: calc(100vh - 44px - 44px - 62px - 58px - 44px) !important;
+    height: calc(100% - 44px - 44px - 62px - 58px - 44px) !important;
 }
 
 .row {

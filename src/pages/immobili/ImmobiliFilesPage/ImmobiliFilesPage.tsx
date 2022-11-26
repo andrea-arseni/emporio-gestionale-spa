@@ -353,7 +353,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     <IonIcon icon={cameraOutline} />
                     <IonLabel>Foto</IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton mode="ios" value="reports">
+                <IonSegmentButton mode="ios" value="report">
                     <IonIcon icon={podiumOutline} />
                     <IonLabel>Report</IonLabel>
                 </IonSegmentButton>

@@ -1,10 +1,10 @@
 .bigGrid {
-    height: calc(100% - 48px - 62px - 62px - 44px);
+    height: calc(100% - 48px - 62px - 62px - 4px);
     overflow: scroll;
 }
 
 .littleGrid {
-    height: calc(100% - 48px - 62px - 62px - 44px - 48px);
+    height: calc(100% - 48px - 62px - 62px - 44px - 6px);
     overflow: scroll;
 }
 

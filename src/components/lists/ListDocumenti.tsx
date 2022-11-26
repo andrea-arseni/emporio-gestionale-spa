@@ -5,6 +5,7 @@ import {
     IonItemOptions,
     IonThumbnail,
     useIonAlert,
+    isPlatform,
 } from "@ionic/react";
 import {
     downloadOutline,
@@ -167,19 +168,22 @@ const ListDocumenti: React.FC<{
                         {(isNativeApp ||
                             getFileType(documento.nome!) === "image" ||
                             getFileType(documento.nome!) === "pdf" ||
-                            getFileType(documento.nome!) === "text") && (
-                            <ItemOption
-                                handler={() => getFileAndOpen(documento)}
-                                colorType={"dark"}
-                                icon={openOutline}
-                                title={"Leggi"}
-                            />
-                        )}
+                            getFileType(documento.nome!) === "text") &&
+                            !isPlatform("mobileweb") && (
+                                <ItemOption
+                                    handler={() => getFileAndOpen(documento)}
+                                    colorType={"dark"}
+                                    icon={openOutline}
+                                    title={"Leggi"}
+                                />
+                            )}
                         <ItemOption
                             handler={() => getFileAndDownload(documento)}
                             colorType={"primary"}
                             icon={downloadOutline}
-                            title={"Scarica"}
+                            title={
+                                isPlatform("mobileweb") ? "Leggi" : "Scarica"
+                            }
                         />
                         <ItemOption
                             handler={() =>

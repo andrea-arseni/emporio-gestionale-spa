@@ -23,6 +23,10 @@
     margin: 10px;
 }
 
+.progressDiv {
+    margin-bottom: 30px;
+}
+
 .button {
     margin: 10px;
 }
@@ -33,6 +37,10 @@
 
 .mainButton {
     margin-bottom: 20px;
+}
+
+.timeSentence {
+    line-height: 20px;
 }
 
 @media (max-width: 600px) {
