@@ -137,7 +137,7 @@ const AuthPage: React.FC<{}> = () => {
             errorHandler(
                 e,
                 () => {
-                    window.location.reload();
+                    if (firstStepAccomplished) window.location.reload();
                 },
                 `${
                     mode === "login" ? "Login" : "Richiesta recupero password"

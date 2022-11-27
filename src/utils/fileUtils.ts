@@ -219,6 +219,7 @@ export const downloadMultipleFiles = async (
                     blob
                 );
             } catch (e) {
+                console.log(e);
                 error = `'${documenti[i]
                     .nome!}' non scaricabile, impossibile procedere`;
                 break;
