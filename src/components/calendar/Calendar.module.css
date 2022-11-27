@@ -8,6 +8,16 @@
     overflow: scroll;
 }
 
+.bigGridIos {
+    height: calc(100vh - 48px - 62px - 62px - 4px);
+    overflow: scroll;
+}
+
+.littleGridIos {
+    height: calc(100vh - 48px - 62px - 62px - 44px - 6px);
+    overflow: scroll;
+}
+
 .upperGrid {
     max-height: 48px;
 }

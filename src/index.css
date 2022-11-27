@@ -17,6 +17,11 @@
     height: calc(100% - 44px);
 }
 
+.iosWrapper {
+    width: 100%;
+    height: calc(100% - 44px - 46px);
+}
+
 .alignedCenter {
     text-align: center;
 }

@@ -6,6 +6,7 @@ import {
     IonIcon,
     IonLabel,
     useIonAlert,
+    isPlatform,
 } from "@ionic/react";
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { DndProvider } from "react-dnd";
@@ -19,6 +20,7 @@ import axiosSecondaryApi from "../../utils/axiosSecondaryApi";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { changeLoading } from "../../store/ui-slice";
 import { fetchFotoFirmata } from "../../store/immobile-thunk";
+import { isNativeApp } from "../../utils/contactUtils";
 
 const ImmobiliPhotos: React.FC<{
     selectionMode: boolean;
@@ -140,7 +142,13 @@ const ImmobiliPhotos: React.FC<{
             });
 
     return (
-        <div>
+        <div
+            className={`${
+                isNativeApp && isPlatform("ios")
+                    ? styles.heightIos
+                    : styles.height
+            }`}
+        >
             {!isPhotoSignedPresent && (
                 <IonButton
                     color="dark"
@@ -156,7 +164,7 @@ const ImmobiliPhotos: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
-            <IonGrid className={styles.grid}>
+            <IonGrid>
                 {!selectionStop && (
                     <button
                         className={`${styles.fabButton} ${styles.selectionButton}`}
@@ -175,13 +183,7 @@ const ImmobiliPhotos: React.FC<{
                         SELEZIONA TUTTE
                     </button>
                 )}
-                <IonRow
-                    className={`${styles.row} ${
-                        isPhotoSignedPresent
-                            ? styles.heightLow
-                            : styles.heightHigh
-                    }`}
-                >
+                <IonRow className={`${styles.row}`}>
                     <DndProvider backend={HTML5Backend}>
                         {getFrames()}
                     </DndProvider>

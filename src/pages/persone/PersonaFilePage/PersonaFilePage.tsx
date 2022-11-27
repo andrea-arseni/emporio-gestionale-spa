@@ -4,6 +4,7 @@ import {
     IonLabel,
     IonList,
     IonLoading,
+    isPlatform,
     useIonAlert,
 } from "@ionic/react";
 import { documentsSharp } from "ionicons/icons";
@@ -24,6 +25,7 @@ import { Persona } from "../../../entities/persona.model";
 import useList from "../../../hooks/use-list";
 import { fileSpeciale } from "../../../types/file_speciali";
 import axiosInstance from "../../../utils/axiosInstance";
+import { isNativeApp } from "../../../utils/contactUtils";
 import errorHandler from "../../../utils/errorHandler";
 import {
     getFilesNonSpeciali,
@@ -192,7 +194,14 @@ const PersonaFilePage: React.FC<{}> = () => {
                             )
                         }
                     />
-                    <IonList ref={list} className={`${styles.list}`}>
+                    <IonList
+                        ref={list}
+                        className={`${
+                            isNativeApp && isPlatform("ios")
+                                ? styles.iosList
+                                : styles.list
+                        }`}
+                    >
                         <ItemSelector
                             color
                             titoloGruppo={"Documento Identificativo"}

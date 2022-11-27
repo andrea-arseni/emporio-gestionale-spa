@@ -4,6 +4,7 @@ import {
     IonLabel,
     IonList,
     IonLoading,
+    isPlatform,
     useIonAlert,
 } from "@ionic/react";
 import { filterOutline, layersOutline, listOutline } from "ionicons/icons";
@@ -42,6 +43,7 @@ import useList from "../../hooks/use-list";
 import { useNavigate } from "react-router-dom";
 import ListVisits from "../lists/ListVisits";
 import { Visit } from "../../entities/visit.model";
+import { isNativeApp } from "../../utils/contactUtils";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
@@ -322,13 +324,21 @@ const Selector: React.FC<{
             props.entitiesType === "logs" ||
             (props.entitiesType === "visite" && props.baseUrl?.includes("?"))
         )
-            return styles.sixOtherElements;
+            return isNativeApp && isPlatform("ios")
+                ? styles.sixOtherElementsIos
+                : styles.sixOtherElements;
         if (props.entitiesType === "eventi") {
-            return styles.sevenOtherElements;
+            return isNativeApp && isPlatform("ios")
+                ? styles.sevenOtherElementsIos
+                : styles.sevenOtherElements;
         }
-        if (props.entitiesType === "steps") return styles.stepsList;
-        if (props.baseUrl?.includes("files")) return styles.high;
-        return styles.fiveOtherElements;
+        if (props.entitiesType === "steps")
+            return isNativeApp && isPlatform("ios")
+                ? styles.stepListIos
+                : styles.stepList;
+        return isNativeApp && isPlatform("ios")
+            ? styles.fiveOtherElementsIos
+            : styles.fiveOtherElements;
     };
 
     if (filterMode === "dataFilter")

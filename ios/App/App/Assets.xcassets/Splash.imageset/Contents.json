@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "LaunchImage-1242@3x~iphoneXsMax-portrait_1242x2688.png",
+      "filename" : "LaunchImage-828@2x~iphoneXr-portrait_828x1792 4.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "LaunchImage-Landscape@2x~ipad_2048x1536.png",
+      "filename" : "LaunchImage 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -14,6 +14,78 @@
       "filename" : "LaunchImage-1792@2x~iphoneXr-landscape_1792x828.png",
       "idiom" : "universal",
       "scale" : "3x"
+    },
+    {
+      "filename" : "LaunchImage-828@2x~iphoneXr-portrait_828x1792.png",
+      "idiom" : "iphone",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "LaunchImage.png",
+      "idiom" : "iphone",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "LaunchImage-2688@3x~iphoneXsMax-landscape_2688x1242.png",
+      "idiom" : "iphone",
+      "scale" : "3x"
+    },
+    {
+      "filename" : "LaunchImage-828@2x~iphoneXr-portrait_828x1792 2.png",
+      "idiom" : "ipad",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "LaunchImage-1792@2x~iphoneXr-landscape_1792x828 1.png",
+      "idiom" : "ipad",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "LaunchImage-828@2x~iphoneXr-portrait_828x1792 3.png",
+      "idiom" : "ipad",
+      "scale" : "1x",
+      "subtype" : "mac-catalyst"
+    },
+    {
+      "filename" : "LaunchImage-1792@2x~iphoneXr-landscape_1792x828 2.png",
+      "idiom" : "ipad",
+      "scale" : "2x",
+      "subtype" : "mac-catalyst"
+    },
+    {
+      "filename" : "LaunchImage-1125@3x~iphoneX-portrait_1125x2436.png",
+      "idiom" : "car",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "LaunchImage-2436@3x~iphoneX-landscape_2436x1125.png",
+      "idiom" : "car",
+      "scale" : "3x"
+    },
+    {
+      "filename" : "LaunchImage-1125@3x~iphoneX-portrait_1125x2436 1.png",
+      "idiom" : "mac",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "LaunchImage-2436@3x~iphoneX-landscape_2436x1125 1.png",
+      "idiom" : "mac",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "LaunchImage-Portrait@2x~ipad_1536x2048.png",
+      "idiom" : "watch",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "LaunchImage~iphone_640x960.png",
+      "idiom" : "tv",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "LaunchImage-Landscape~ipad_1024x748.png",
+      "idiom" : "tv",
+      "scale" : "2x"
     }
   ],
   "info" : {

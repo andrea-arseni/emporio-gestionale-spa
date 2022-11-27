@@ -19,16 +19,20 @@
     height: calc(100% - 88px - 88px - 65px - 48px);
 }
 
-.high {
-    height: calc(100% - 45px - 45px - 45px - 61px - 50px);
+.fiveOtherElementsIos {
+    height: calc(100% - 46px - 88px - 88px - 65px);
 }
 
-.fullOption {
-    height: calc(100% - 45px - 45px - 45px - 61px);
+.sixOtherElementsIos {
+    height: calc(100% - 46px - 88px - 88px - 65px - 62px);
 }
 
-.simple {
-    height: calc(100% - 45px - 61px);
+.sevenOtherElementsIos {
+    height: calc(100% - 46px - 88px - 88px - 65px - 62px - 40px);
+}
+
+.stepsListIos {
+    height: calc(100% - 46px - 88px - 88px - 65px - 48px);
 }
 
 .filterButton {

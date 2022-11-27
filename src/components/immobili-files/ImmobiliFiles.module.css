@@ -3,3 +3,9 @@
     padding: 0;
     height: calc(100% - 44px - 50px - 45px - 62px);
 }
+
+.iosList {
+    overflow: scroll;
+    padding: 0;
+    height: calc(100% - 44px - 50px - 45px - 62px -48px);
+}

@@ -1,18 +1,15 @@
-.heightLow {
+.height {
     height: calc(100% - 44px - 44px - 62px - 58px);
+    overflow: scroll;
 }
 
-.heightHigh {
-    height: calc(100% - 44px - 44px - 62px - 58px - 44px) !important;
+.heightIos {
+    height: calc(100% - 44px - 44px - 62px - 58px - 46px);
+    overflow: scroll;
 }
 
 .row {
-    overflow: scroll;
     background: linear-gradient(to left, azure, white, rgb(255, 244, 244));
-}
-
-.grid {
-    position: relative;
 }
 
 .fabButton {

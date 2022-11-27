@@ -1,9 +1,10 @@
-import { IonList } from "@ionic/react";
+import { IonList, isPlatform } from "@ionic/react";
 import React, { Dispatch, SetStateAction } from "react";
 import { Documento } from "../../entities/documento.model";
 import { Entity } from "../../entities/entity";
 import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
 import { fileSpeciale } from "../../types/file_speciali";
+import { isNativeApp } from "../../utils/contactUtils";
 import {
     getFilesNonSpeciali,
     getFileSpeciale,
@@ -59,7 +60,14 @@ export default React.forwardRef<
         };
 
         return (
-            <IonList ref={ref} className={`${styles.list}`}>
+            <IonList
+                ref={ref}
+                className={`${
+                    isNativeApp && isPlatform("ios")
+                        ? styles.iosList
+                        : styles.list
+                }`}
+            >
                 <ItemSelector
                     color
                     titoloGruppo={"Planimetria"}

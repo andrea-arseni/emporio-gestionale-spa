@@ -5,6 +5,7 @@ import {
     IonLoading,
     IonSegment,
     IonSegmentButton,
+    isPlatform,
     useIonAlert,
 } from "@ionic/react";
 import { calendarOutline, listOutline, peopleOutline } from "ionicons/icons";
@@ -32,6 +33,7 @@ import {
 } from "../../../store/appuntamenti-slice";
 import { changeLoading } from "../../../store/ui-slice";
 import ListVisits from "../../../components/lists/ListVisits";
+import { isNativeApp } from "../../../utils/contactUtils";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
@@ -135,7 +137,13 @@ const AppuntamentiPage: React.FC<{}> = () => {
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
             {pageMode === "calendario" && !isFormActive && (
-                <div className="wrapper">
+                <div
+                    className={
+                        isNativeApp && isPlatform("ios")
+                            ? "iosWrapper"
+                            : "wrapper"
+                    }
+                >
                     <DaySelector
                         currentDay={currentDay}
                         setCurrentDay={setCurrentDay}
@@ -154,7 +162,13 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 </div>
             )}
             {pageMode === "lista" && !isFormActive && (
-                <div className="wrapper">
+                <div
+                    className={
+                        isNativeApp && isPlatform("ios")
+                            ? "iosWrapper"
+                            : "wrapper"
+                    }
+                >
                     <IonButton
                         color="primary"
                         expand="full"
