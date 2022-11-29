@@ -334,8 +334,8 @@ const Selector: React.FC<{
         }
         if (props.entitiesType === "steps")
             return isNativeApp && isPlatform("ios")
-                ? styles.stepListIos
-                : styles.stepList;
+                ? styles.stepsListIos
+                : styles.stepsList;
         return isNativeApp && isPlatform("ios")
             ? styles.fiveOtherElementsIos
             : styles.fiveOtherElements;
@@ -422,6 +422,7 @@ const Selector: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
+            {console.log(getListHeight())}
             {entities.length > 0 && (
                 <IonList
                     ref={list}
