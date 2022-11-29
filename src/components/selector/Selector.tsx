@@ -422,7 +422,6 @@ const Selector: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
-            {console.log(getListHeight())}
             {entities.length > 0 && (
                 <IonList
                     ref={list}
