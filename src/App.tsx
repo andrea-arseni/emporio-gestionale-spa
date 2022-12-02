@@ -41,6 +41,10 @@ import { isUserAdmin } from "./utils/userUtils";
 import { useEffect } from "react";
 import { performAutoLogin } from "./store/auth-thunk";
 import StoriaPage from "./pages/storia/StoriaPage";
+import EmporioPage from "./pages/emporio/EmporioPage";
+import ServiziPage from "./pages/servizi/ServiziPage";
+import PublicImmobiliPage from "./pages/immobili/publicImmobiliPage/PublicImmobiliPage";
+import ContattiPage from "./pages/contatti/ContattiPage";
 
 setupIonicReact();
 
@@ -58,7 +62,7 @@ const App: React.FC = () => {
     return (
         <IonApp>
             <IonSplitPane contentId="main">
-                {token && <Menu />}
+                <Menu />
                 <IonContent id="main" color="light">
                     <Header token={token} />
 
@@ -76,6 +80,27 @@ const App: React.FC = () => {
                             <Route
                                 path="/rinnova-password"
                                 element={<PasswordPage />}
+                            />
+                        )}
+                        {!token && (
+                            <Route path="/emporio" element={<EmporioPage />} />
+                        )}
+                        {!token && (
+                            <Route
+                                path="/i-nostri-servizi"
+                                element={<ServiziPage />}
+                            />
+                        )}
+                        {!token && (
+                            <Route
+                                path="/i-nostri-immobili"
+                                element={<PublicImmobiliPage />}
+                            />
+                        )}
+                        {!token && (
+                            <Route
+                                path="/contattaci"
+                                element={<ContattiPage />}
                             />
                         )}
                         {token && (
@@ -145,7 +170,7 @@ const App: React.FC = () => {
                             path="/*"
                             element={
                                 <Navigate
-                                    to={token ? "/appuntamenti" : "/login"}
+                                    to={token ? "/appuntamenti" : "/emporio"}
                                     replace
                                 />
                             }

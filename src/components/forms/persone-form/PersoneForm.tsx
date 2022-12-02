@@ -282,7 +282,6 @@ const PersoneForm: React.FC<{
                 ],
             });
         } catch (error: any) {
-            console.log(error);
             setShowLoading(false);
             errorHandler(
                 error,

@@ -115,7 +115,6 @@ const immobileSlice = createSlice({
                 (el) => el.id === action.payload.id
             );
             if (index === -1) return;
-            console.log(index);
             state.immobile.files[index].nome = action.payload.newName;
         },
     },

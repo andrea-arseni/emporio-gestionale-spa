@@ -22,6 +22,7 @@ const SortActionSheet: React.FC<{
     setSort: Dispatch<SetStateAction<string>>;
     setPage: Dispatch<SetStateAction<number>>;
     entity: entitiesType;
+    public?: boolean;
 }> = (props) => {
     const buttonHandler = (sortType: string) => {
         props.setPage(1);
@@ -74,16 +75,6 @@ const SortActionSheet: React.FC<{
             case "immobili":
                 buttons = [
                     {
-                        text: "Riferimento",
-                        icon: calendarNumberOutline,
-                        handler: () => buttonHandler("ref"),
-                    },
-                    {
-                        text: "Riferimento Decrescente",
-                        icon: calendarNumberOutline,
-                        handler: () => buttonHandler("ref-desc"),
-                    },
-                    {
                         text: "Superficie",
                         icon: squareOutline,
                         handler: () => buttonHandler("superficie"),
@@ -102,36 +93,6 @@ const SortActionSheet: React.FC<{
                         text: "Prezzo Decrescente",
                         icon: logoEuro,
                         handler: () => buttonHandler("prezzo-desc"),
-                    },
-                    {
-                        text: "Prima vendita e poi affitto",
-                        icon: documentsOutline,
-                        handler: () => buttonHandler("contratto-desc"),
-                    },
-                    {
-                        text: "Prima affitto e poi vendita",
-                        icon: documentsOutline,
-                        handler: () => buttonHandler("contratto"),
-                    },
-                    {
-                        text: "Prima residenziali e poi commerciali",
-                        icon: layersOutline,
-                        handler: () => buttonHandler("categoria-desc"),
-                    },
-                    {
-                        text: "Prima commerciali e poi residenziali",
-                        icon: layersOutline,
-                        handler: () => buttonHandler("categoria"),
-                    },
-                    {
-                        text: "Prima attivi e poi disattivi",
-                        icon: checkmarkCircleOutline,
-                        handler: () => buttonHandler("status"),
-                    },
-                    {
-                        text: "Prima disattivi e poi attivi",
-                        icon: closeCircleOutline,
-                        handler: () => buttonHandler("status-desc"),
                     },
                 ];
                 break;
@@ -199,6 +160,52 @@ const SortActionSheet: React.FC<{
                 break;
             case "visite":
                 buttons = getSortingTemporale("quando");
+        }
+
+        if (props.entity === "immobili" && !props.public) {
+            buttons.unshift({
+                text: "Riferimento Decrescente",
+                icon: calendarNumberOutline,
+                handler: () => buttonHandler("ref-desc"),
+            });
+            buttons.unshift({
+                text: "Riferimento",
+                icon: calendarNumberOutline,
+                handler: () => buttonHandler("ref"),
+            });
+            buttons = [
+                ...buttons,
+                {
+                    text: "Prima vendita e poi affitto",
+                    icon: documentsOutline,
+                    handler: () => buttonHandler("contratto-desc"),
+                },
+                {
+                    text: "Prima affitto e poi vendita",
+                    icon: documentsOutline,
+                    handler: () => buttonHandler("contratto"),
+                },
+                {
+                    text: "Prima residenziali e poi commerciali",
+                    icon: layersOutline,
+                    handler: () => buttonHandler("categoria-desc"),
+                },
+                {
+                    text: "Prima commerciali e poi residenziali",
+                    icon: layersOutline,
+                    handler: () => buttonHandler("categoria"),
+                },
+                {
+                    text: "Prima attivi e poi disattivi",
+                    icon: checkmarkCircleOutline,
+                    handler: () => buttonHandler("status"),
+                },
+                {
+                    text: "Prima disattivi e poi attivi",
+                    icon: closeCircleOutline,
+                    handler: () => buttonHandler("status-desc"),
+                },
+            ];
         }
 
         buttons!.push({

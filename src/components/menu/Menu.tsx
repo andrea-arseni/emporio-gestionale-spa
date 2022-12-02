@@ -15,6 +15,9 @@ import {
     logOutOutline,
     golfOutline,
     podiumOutline,
+    businessOutline,
+    layersOutline,
+    lockOpenOutline,
 } from "ionicons/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -28,52 +31,84 @@ interface AppPage {
     title: string;
 }
 
+const reservedPages: AppPage[] = [
+    {
+        title: "Appuntamenti",
+        url: "/appuntamenti",
+        icon: calendarOutline,
+    },
+    {
+        title: "Immobili",
+        url: "/immobili",
+        icon: homeOutline,
+    },
+    {
+        title: "Persone",
+        url: "/persone",
+        icon: peopleOutline,
+    },
+    {
+        title: "Obiettivi",
+        url: "/obiettivi",
+        icon: golfOutline,
+    },
+    {
+        title: "Operazioni",
+        url: "/operazioni",
+        icon: cardOutline,
+    },
+    {
+        title: "Documenti",
+        url: "/documenti",
+        icon: documentsOutline,
+    },
+    {
+        title: "Report",
+        url: "/reports",
+        icon: podiumOutline,
+    },
+];
+
+const publicPages: AppPage[] = [
+    {
+        title: "Emporio",
+        url: "/emporio",
+        icon: homeOutline,
+    },
+    {
+        title: "Servizi",
+        url: "/i-nostri-servizi",
+        icon: layersOutline,
+    },
+    {
+        title: "Immobili",
+        url: "/i-nostri-immobili",
+        icon: businessOutline,
+    },
+    {
+        title: "Contattaci",
+        url: "/contattaci",
+        icon: peopleOutline,
+    },
+    {
+        title: "Area Riservata",
+        url: "/login",
+        icon: lockOpenOutline,
+    },
+];
+
 const Menu: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
 
     const userData = useAppSelector((state) => state.auth.userData);
 
-    const appPages: AppPage[] = [
-        {
-            title: "Appuntamenti",
-            url: "/appuntamenti",
-            icon: calendarOutline,
-        },
-        {
-            title: "Immobili",
-            url: "/immobili",
-            icon: homeOutline,
-        },
-        {
-            title: "Persone",
-            url: "/persone",
-            icon: peopleOutline,
-        },
-        {
-            title: "Obiettivi",
-            url: "/obiettivi",
-            icon: golfOutline,
-        },
-        {
-            title: "Operazioni",
-            url: "/operazioni",
-            icon: cardOutline,
-        },
-        {
-            title: "Documenti",
-            url: "/documenti",
-            icon: documentsOutline,
-        },
-        {
-            title: "Report",
-            url: "/reports",
-            icon: podiumOutline,
-        },
-    ];
+    const token = useAppSelector((state) => state.auth.authToken);
+
+    const appPages: AppPage[] = token ? reservedPages : publicPages;
 
     const location = useLocation();
 
-    if (!isUserAdmin(userData)) {
+    if (token && !isUserAdmin(userData)) {
         const indexOperazioni = appPages.findIndex(
             (el) => el.title === "Operazioni"
         );
@@ -127,17 +162,24 @@ const Menu: React.FC<{}> = () => {
                             </IonMenuToggle>
                         );
                     })}
-                    <IonMenuToggle className={`${style.itemWrapper} centered`}>
-                        <div className={`${style.itemWrapper} centered`}>
-                            <div
-                                className={`${style.link} centered ${style.inactive}`}
-                                onClick={() => dispatch(performLogout())}
-                            >
-                                <IonIcon slot="start" icon={logOutOutline} />
-                                <IonLabel>LOGOUT</IonLabel>
+                    {token && (
+                        <IonMenuToggle
+                            className={`${style.itemWrapper} centered`}
+                        >
+                            <div className={`${style.itemWrapper} centered`}>
+                                <div
+                                    className={`${style.link} centered ${style.inactive}`}
+                                    onClick={() => dispatch(performLogout())}
+                                >
+                                    <IonIcon
+                                        slot="start"
+                                        icon={logOutOutline}
+                                    />
+                                    <IonLabel>LOGOUT</IonLabel>
+                                </div>
                             </div>
-                        </div>
-                    </IonMenuToggle>
+                        </IonMenuToggle>
+                    )}
                 </IonList>
             </IonContent>
         </IonMenu>

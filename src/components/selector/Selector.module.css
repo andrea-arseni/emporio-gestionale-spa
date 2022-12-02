@@ -3,6 +3,14 @@
     padding: 0;
 }
 
+.immobiliList {
+    height: calc(100% - 88px - 88px - 20px);
+}
+
+.immobiliListIos {
+    height: calc(100% - 88px - 88px - 20px - 46px);
+}
+
 .fiveOtherElements {
     height: calc(100% - 88px - 88px - 65px);
 }

@@ -19,7 +19,11 @@ const useInput = (
     const [virginInput, setVirginInput] = useState<boolean>(false);
 
     const inputTouchedHandler = () => {
-        virginInput ? setVirginInput(false) : setInputIsTouched(true);
+        inputValue.toString().length === 0
+            ? setInputIsTouched(false)
+            : virginInput
+            ? setVirginInput(false)
+            : setInputIsTouched(true);
     };
 
     const inputChangedHandler = (event: any, directValue?: string | null) => {

@@ -11,6 +11,7 @@ import {
     copyOutline,
     createOutline,
     newspaperOutline,
+    peopleOutline,
     trashOutline,
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
@@ -39,6 +40,7 @@ const ListImmobili: React.FC<{
     setUpdate: Dispatch<SetStateAction<number>>;
     closeItems: () => void;
     selectMode: boolean;
+    public?: boolean;
 }> = (props) => {
     const navigate = useNavigate();
 
@@ -103,11 +105,8 @@ const ListImmobili: React.FC<{
                 }
                 color={entitySelected === immobile.id ? "secondary" : undefined}
             >
-                {width >= 480 && <ImmobileThumbnail immobile={immobile} />}
-                <IonLabel
-                    text-wrap
-                    className={width >= 480 ? styles.label : ""}
-                >
+                <ImmobileThumbnail immobile={immobile} />
+                <IonLabel text-wrap className={styles.label}>
                     <h3
                         style={{
                             color:
@@ -133,7 +132,7 @@ const ListImmobili: React.FC<{
                         {immobile.superficie} mq
                     </p>
                 </IonLabel>
-                {width >= 750 && (
+                {width >= 750 && !props.public && (
                     <IonNote slot="end" className={styles.note}>
                         <FileSpecialiList id={immobile.id!} />
                     </IonNote>
@@ -151,6 +150,31 @@ const ListImmobili: React.FC<{
 
     if (props.selectMode)
         return <>{props.immobili.map((el) => getImmobile(el))}</>;
+
+    if (props.public) {
+        return (
+            <>
+                {props.immobili.map((immobile: Immobile) => {
+                    return (
+                        <IonItemSliding
+                            key={immobile.id!}
+                            id={immobile.id?.toString()}
+                        >
+                            {getImmobile(immobile)}
+                            <IonItemOptions side="end">
+                                <ItemOption
+                                    handler={() => navigate("/contattaci")}
+                                    colorType={"primary"}
+                                    icon={peopleOutline}
+                                    title={"Chiedi"}
+                                />
+                            </IonItemOptions>
+                        </IonItemSliding>
+                    );
+                })}
+            </>
+        );
+    }
 
     return (
         <>

@@ -8,6 +8,7 @@ import {
 } from "@ionic/react";
 import { reorderFourOutline } from "ionicons/icons";
 import { useLocation } from "react-router-dom";
+import capitalize from "../../utils/capitalize";
 
 const Header: React.FC<{ token: string | null }> = (props) => {
     const location = useLocation();
@@ -21,13 +22,25 @@ const Header: React.FC<{ token: string | null }> = (props) => {
               "/operazioni",
               "/documenti",
           ]
-        : ["/login", "/primo-accesso", "/rinnova-password"];
+        : [
+              "/login",
+              "/primo-accesso",
+              "/rinnova-password",
+              "/i-nostri-servizi",
+              "/i-nostri-immobili",
+              "contattaci",
+          ];
 
     const nome = routes.find((el) =>
         el.includes(location.pathname.split("/")[1].toLowerCase())
     )
-        ? location.pathname.split("/")[1].toLowerCase().replace("-", " ")
-        : "Gestionale Emporio Case";
+        ? location.pathname
+              .split("/")[1]
+              .toLowerCase()
+              .split("-")
+              .map((el) => capitalize(el))
+              .join(" ")
+        : "Emporio Case";
 
     return (
         <IonHeader collapse="fade" translucent={true} color="light">

@@ -132,7 +132,6 @@ const AuthPage: React.FC<{}> = () => {
                 ? submitLoginCall()
                 : submitForgotPasswordCall());
         } catch (e: any) {
-            console.log(e);
             setShowLoading(false);
             errorHandler(
                 e,

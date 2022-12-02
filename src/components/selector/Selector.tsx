@@ -52,6 +52,7 @@ const Selector: React.FC<{
     setMode?: Dispatch<SetStateAction<"list" | "form">>;
     baseUrl?: string;
     selectMode?: boolean;
+    public?: boolean;
 }> = (props) => {
     const {
         page,
@@ -230,6 +231,7 @@ const Selector: React.FC<{
                         setUpdate={setUpdate}
                         closeItems={closeItemsList}
                         selectMode={!!props.selectMode}
+                        public={props.public}
                     />
                 );
             case "operazioni":
@@ -336,6 +338,10 @@ const Selector: React.FC<{
             return isNativeApp && isPlatform("ios")
                 ? styles.stepsListIos
                 : styles.stepsList;
+        if (props.public)
+            return isNativeApp && isPlatform("ios")
+                ? styles.immobiliListIos
+                : styles.immobiliList;
         return isNativeApp && isPlatform("ios")
             ? styles.fiveOtherElementsIos
             : styles.fiveOtherElements;
@@ -445,6 +451,7 @@ const Selector: React.FC<{
                     page={page}
                     setPage={setPage}
                     numberOfResults={numberOfResults}
+                    public={props.public}
                     lifted={
                         props.entitiesType === "eventi" ||
                         props.entitiesType === "logs" ||
@@ -460,6 +467,7 @@ const Selector: React.FC<{
                 setPage={setPage}
                 setNegativeForbidden={setNegativeForbidden}
                 entity={props.entitiesType}
+                public={props.public}
             />
             <SortActionSheet
                 showSortingActionSheet={showSortingActionSheet}
@@ -467,6 +475,7 @@ const Selector: React.FC<{
                 setSort={setSort}
                 setPage={setPage}
                 entity={props.entitiesType}
+                public={props.public}
             />
         </>
     );

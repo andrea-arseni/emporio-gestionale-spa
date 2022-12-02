@@ -164,7 +164,7 @@ const ImmobiliPhotos: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
-            <IonGrid>
+            <IonGrid className={styles.grid}>
                 {!selectionStop && (
                     <button
                         className={`${styles.fabButton} ${styles.selectionButton}`}

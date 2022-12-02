@@ -21,7 +21,9 @@
 
 .label {
     position: relative;
-    left: 75px;
+    left: 65px;
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
 
 .large {
@@ -61,4 +63,18 @@
     margin: 0;
     padding: 0;
     overflow: scroll;
+}
+
+@media (max-width: 500px) {
+    .label {
+        transform: scale(0.88);
+        left: 30px;
+    }
+}
+
+@media (max-width: 450px) {
+    .label {
+        transform: scale(0.78);
+        left: 25px;
+    }
 }

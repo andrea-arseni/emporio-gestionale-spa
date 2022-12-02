@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.692307aa.css",
-    "main.js": "/static/js/main.55eee6ca.js",
+    "main.css": "/static/css/main.81bf154a.css",
+    "main.js": "/static/js/main.49f7f9f1.js",
     "static/js/1336.0f66ef6d.chunk.js": "/static/js/1336.0f66ef6d.chunk.js",
     "static/js/8261.3eb6d1eb.chunk.js": "/static/js/8261.3eb6d1eb.chunk.js",
     "static/js/6027.fc84f947.chunk.js": "/static/js/6027.fc84f947.chunk.js",
@@ -81,12 +81,25 @@
     "static/js/2171.4bbdfaad.chunk.js": "/static/js/2171.4bbdfaad.chunk.js",
     "static/js/1015.7fdc399c.chunk.js": "/static/js/1015.7fdc399c.chunk.js",
     "static/js/6532.3071a6d1.chunk.js": "/static/js/6532.3071a6d1.chunk.js",
+    "static/js/6229.52e14db2.chunk.js": "/static/js/6229.52e14db2.chunk.js",
     "static/js/9810.c279dc6d.chunk.js": "/static/js/9810.c279dc6d.chunk.js",
     "static/js/5922.d9b6124b.chunk.js": "/static/js/5922.d9b6124b.chunk.js",
     "static/js/9153.d72ba272.chunk.js": "/static/js/9153.d72ba272.chunk.js",
     "static/js/9782.d0a18b7c.chunk.js": "/static/js/9782.d0a18b7c.chunk.js",
     "static/js/4662.a6ced9af.chunk.js": "/static/js/4662.a6ced9af.chunk.js",
+    "static/media/tribunale.jpeg": "/static/media/tribunale.f06e386ef0017709ec50.jpeg",
+    "static/media/capannone.jpg": "/static/media/capannone.246fd67f5ae4b17c89c0.jpg",
+    "static/media/attivita.jpg": "/static/media/attivita.84fe388d64569633d3b9.jpg",
+    "static/media/condominio.jpeg": "/static/media/condominio.c76006e40cb44c71bc41.jpeg",
+    "static/media/ape.jpeg": "/static/media/ape.1a0849a1fe3d7053c3f2.jpeg",
+    "static/media/renovate.jpg": "/static/media/renovate.ef17a5ef5a5661d9df0a.jpg",
+    "static/media/money.jpeg": "/static/media/money.fbed44d9f684c078f09e.jpeg",
     "static/media/logo.png": "/static/media/logo.a345f6c2ba1b4a73ea6d.png",
+    "static/media/services.jpeg": "/static/media/services.d0b3836c1c53571a7df0.jpeg",
+    "static/media/bed.jpg": "/static/media/bed.276db45425b71dc50041.jpg",
+    "static/media/kitchen.jpeg": "/static/media/kitchen.1e3670478542e8dccfe6.jpeg",
+    "static/media/living.jpeg": "/static/media/living.7cdc06ae535adde4ecab.jpeg",
+    "static/media/disegno.jpeg": "/static/media/disegno.9cb293b4f07b8705d3c9.jpeg",
     "service-worker.js": "/service-worker.js",
     "static/media/excel.png": "/static/media/excel.5b54e07c3f5063af7c14.png",
     "static/media/word.png": "/static/media/word.c5d9314821d0e55d2244.png",
@@ -95,7 +108,7 @@
     "index.html": "/index.html"
   },
   "entrypoints": [
-    "static/css/main.692307aa.css",
-    "static/js/main.55eee6ca.js"
+    "static/css/main.81bf154a.css",
+    "static/js/main.49f7f9f1.js"
   ]
 }

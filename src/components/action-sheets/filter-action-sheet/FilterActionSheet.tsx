@@ -55,6 +55,7 @@ const FilterActionSheet: React.FC<{
         }>
     >;
     entity: entitiesType;
+    public?: boolean;
 }> = (props) => {
     const buttonHandler = (
         filterMode: "default" | "numberFilter" | "stringFilter" | "dataFilter",
@@ -129,28 +130,6 @@ const FilterActionSheet: React.FC<{
                 break;
             case "immobili":
                 buttons = [
-                    {
-                        text: "Titolo",
-                        icon: textOutline,
-                        handler: () => {
-                            buttonHandler("stringFilter", {
-                                filter: "titolo",
-                            });
-                        },
-                    },
-                    {
-                        text: "Riferimento",
-                        icon: calendarNumberOutline,
-                        handler: () => {
-                            buttonHandler(
-                                "numberFilter",
-                                {
-                                    filter: "ref",
-                                },
-                                true
-                            );
-                        },
-                    },
                     {
                         text: "Superficie",
                         icon: squareOutline,
@@ -232,26 +211,6 @@ const FilterActionSheet: React.FC<{
                             buttonHandler("default", {
                                 filter: "categoria",
                                 value: "commerciale",
-                            });
-                        },
-                    },
-                    {
-                        text: "Attivi",
-                        icon: checkmarkCircleOutline,
-                        handler: () => {
-                            buttonHandler("default", {
-                                filter: "status",
-                                value: "attivo",
-                            });
-                        },
-                    },
-                    {
-                        text: "Disattivi",
-                        icon: closeCircleOutline,
-                        handler: () => {
-                            buttonHandler("default", {
-                                filter: "status",
-                                value: "disattivo",
                             });
                         },
                     },
@@ -550,6 +509,54 @@ const FilterActionSheet: React.FC<{
             icon: closeOutline,
             role: "cancel",
         });
+
+        if (!props.public && props.entity === "immobili") {
+            buttons.unshift({
+                text: "Riferimento",
+                icon: calendarNumberOutline,
+                handler: () => {
+                    buttonHandler(
+                        "numberFilter",
+                        {
+                            filter: "ref",
+                        },
+                        true
+                    );
+                },
+            });
+            buttons.push({
+                text: "Attivi",
+                icon: checkmarkCircleOutline,
+                handler: () => {
+                    buttonHandler("default", {
+                        filter: "status",
+                        value: "attivo",
+                    });
+                },
+            });
+            buttons.push({
+                text: "Disattivi",
+                icon: closeCircleOutline,
+                handler: () => {
+                    buttonHandler("default", {
+                        filter: "status",
+                        value: "disattivo",
+                    });
+                },
+            });
+        }
+
+        if (props.entity === "immobili")
+            buttons.unshift({
+                text: "Titolo",
+                icon: textOutline,
+                handler: () => {
+                    buttonHandler("stringFilter", {
+                        filter: "titolo",
+                    });
+                },
+            });
+
         return buttons;
     };
 

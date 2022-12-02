@@ -1,0 +1,86 @@
+.form {
+    margin: 0 auto;
+    width: 60%;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 6px;
+    padding: 10px;
+    flex-flow: column;
+}
+
+.form * {
+    width: 80%;
+}
+
+.logo {
+    max-width: 280px;
+    width: 100%;
+    margin: 20px auto;
+}
+
+.inputWrapper {
+    padding: 0 10px 10px 10px;
+    margin: 10px;
+}
+
+.progressDiv {
+    margin-bottom: 30px;
+}
+
+.button {
+    margin: 10px;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.mainButton {
+    margin-bottom: 20px;
+}
+
+.privacySection {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: small;
+    transition: all 1s;
+    width: 79%;
+    border-radius: 6px;
+    border: 1px solid lightgray;
+}
+
+.privacySectionEvidence {
+    border: 1px solid red;
+    background-color: rgb(250, 238, 238);
+}
+
+.evidence {
+    transition: all 1s;
+    color: red;
+}
+
+.notEvidence {
+    transition: all 1s;
+    color: color;
+}
+
+.privacyCheckButton {
+    width: 12px;
+    margin: 12px;
+    color: white !important;
+    background-color: white !important;
+}
+
+@media (max-width: 600px) {
+    .form {
+        margin: 0;
+        width: 80%;
+    }
+}
+
+@media (max-width: 400px) {
+    .form {
+        width: 96%;
+    }
+}

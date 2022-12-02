@@ -13,10 +13,10 @@ import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
 import { SocialSharingOptions } from "../types/social-sharing-options";
 import { File as FilePlugin } from "@awesome-cordova-plugins/file";
 import { FileOpener } from "@awesome-cordova-plugins/file-opener";
-import { AndroidPermissions } from "@awesome-cordova-plugins/android-permissions";
 import { isPlatform } from "@ionic/core";
 import { changeLoading } from "../store/ui-slice";
 import { addFile } from "../store/immobile-slice";
+import { Mediastore } from "@agorapulse/capacitor-mediastore";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -81,30 +81,6 @@ export const getBase64StringFromByteArray = (
     return `data:${mimeType};base64,${byteArray}`;
 };
 
-export const checkAndroidPermissionsForWritingFiles = async () => {
-    try {
-        await AndroidPermissions.checkPermission(
-            AndroidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-        );
-    } catch (e) {
-        await AndroidPermissions.requestPermission(
-            AndroidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-        );
-    }
-};
-
-export const checkAndCreateEmporioDirectory = async () => {
-    try {
-        await FilePlugin.createDir(
-            FilePlugin.externalRootDirectory + "Pictures",
-            "Emporio",
-            false
-        );
-    } catch (e: any) {
-        if (e.message !== "PATH_EXISTS_ERR") console.log(e);
-    }
-};
-
 const getImageName = (nome: string) => {
     const extension = getFileExtension(nome);
     const today = new Date();
@@ -165,23 +141,48 @@ export const salvaDocumentoInIos = async (documento: Documento, blob: Blob) => {
 };
 
 export const salvaDocumentoInAndroid = async (nome: string, blob: Blob) => {
-    const isImage = getFileType(nome) === "image";
-    if (isImage) await checkAndCreateEmporioDirectory();
-    const directory = !isImage ? "Download" : "Pictures/Emporio";
-    const messaggioChiusura = !isImage
-        ? `Si trova al seguente percorso Archivio/Memoria interna/Download/${nome}`
-        : `Si trova in Galleria`;
-    const usedName = !isImage ? nome : getImageName(nome);
+    // 1. salvi il file nella cache directory
     try {
-        await FilePlugin.writeFile(
-            FilePlugin.externalRootDirectory + directory,
-            usedName,
-            blob
-        );
-        alert(`File scaricato. ${messaggioChiusura}`);
+        await FilePlugin.writeFile(FilePlugin.cacheDirectory, nome, blob, {
+            replace: true,
+        });
     } catch (e) {
-        alert("File non scaricabile, impossibile procedere");
+        alert("File non salvabile, impossibile procedere");
     }
+
+    // 2. definisci se è una immagine oppure un file generico
+    const isImage = getFileType(nome) === "image";
+
+    // 3. salvi in galleria o download
+    if (isImage) {
+        try {
+            Mediastore.savePicture({
+                album: "Emporio Case",
+                filename: nome,
+                path: `${FilePlugin.cacheDirectory}${nome}`,
+            });
+            alert(`File scaricato. Si trova in Galleria`);
+        } catch (e) {
+            console.log(e);
+            alert("Errore nel salvataggio in Galleria, impossibile procedere");
+        }
+    } else {
+        try {
+            Mediastore.saveToDownloads({
+                filename: nome,
+                path: `${FilePlugin.cacheDirectory}${nome}`,
+            });
+            alert(`File scaricato. Si trova in Downloads`);
+        } catch (e) {
+            console.log(e);
+            alert("Errore nel salvataggio in Download, impossibile procedere");
+        }
+    }
+
+    // 4. elimini il file in cache
+    setTimeout(async () => {
+        await FilePlugin.removeFile(FilePlugin.cacheDirectory, nome);
+    }, 120000);
 };
 
 export const downloadFile = async (byteArray: string, documento: Documento) => {
@@ -191,7 +192,6 @@ export const downloadFile = async (byteArray: string, documento: Documento) => {
     if (isNativeApp && isPlatform("ios")) {
         salvaDocumentoInIos(documento, blob);
     } else if (isNativeApp && isPlatform("android")) {
-        await checkAndroidPermissionsForWritingFiles();
         await salvaDocumentoInAndroid(documento.nome!, blob);
     } else {
         FileSaver.saveAs(base64File, documento.nome!);
@@ -204,26 +204,48 @@ export const downloadMultipleFiles = async (
 ) => {
     if (isNativeApp) dispatch(changeLoading(true));
     if (isNativeApp && isPlatform("android")) {
-        await checkAndroidPermissionsForWritingFiles();
-        await checkAndCreateEmporioDirectory();
         let error = null;
+
         for (let i = 0; i < documenti.length; i++) {
             const blob = await getBlobFromBase64String(
                 documenti[i].base64String!
             );
             const usedName = await getImageName(documenti[i].codiceBucket!);
+
+            // 1. scrivi il file nella cache
             try {
                 await FilePlugin.writeFile(
-                    FilePlugin.externalRootDirectory + "Pictures/Emporio",
+                    FilePlugin.cacheDirectory,
                     usedName,
-                    blob
+                    blob,
+                    {
+                        replace: true,
+                    }
                 );
             } catch (e) {
-                console.log(e);
-                error = `'${documenti[i]
-                    .nome!}' non scaricabile, impossibile procedere`;
+                error = `'${usedName}' non salvabile, procedura interrotta`;
                 break;
             }
+
+            // 2. salvi in galleria o download
+            try {
+                Mediastore.savePicture({
+                    album: "Emporio Case",
+                    filename: usedName,
+                    path: `${FilePlugin.cacheDirectory}${usedName}`,
+                });
+            } catch (e) {
+                error = `'${usedName}' non salvato in Galleria, procedura interrotta`;
+                break;
+            }
+
+            // 3. elimini il file in cache
+            setTimeout(async () => {
+                await FilePlugin.removeFile(
+                    FilePlugin.cacheDirectory,
+                    usedName
+                );
+            }, 120000);
         }
         dispatch(changeLoading(false));
         alert(
@@ -541,7 +563,6 @@ const uploadFileToServer = async (
             dispatch
         );
     } catch (e) {
-        console.log(e);
         setShowLoading(false);
         errorHandler(
             e,

@@ -11,6 +11,7 @@ const PageFooter: React.FC<{
     numberOfResults: number;
     simple?: boolean;
     lifted?: boolean;
+    public?: boolean;
 }> = (props) => {
     const [width] = useWindowSize();
 
@@ -27,11 +28,16 @@ const PageFooter: React.FC<{
         );
     }
 
-    const text = `Pagina ${props.page} di ${Math.ceil(
+    let text = `Pagina ${props.page} di ${Math.ceil(
         props.numberOfResults / 20
-    )} ( ${props.numberOfResults} risultat${
-        props.numberOfResults === 1 ? "o" : "i"
-    } )`;
+    )} `;
+
+    if (!props.public)
+        text =
+            text +
+            `( ${props.numberOfResults} risultat${
+                props.numberOfResults === 1 ? "o" : "i"
+            } )`;
 
     const content = (
         <>
