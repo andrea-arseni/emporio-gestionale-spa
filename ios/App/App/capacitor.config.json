@@ -1,6 +1,6 @@
 {
-	"appId": "it.emporiocase.gestionale",
-	"appName": "Emporio Case",
-	"webDir": "build",
-	"bundledWebRuntime": false
+    "appId": "it.emporiocase.nativeapp",
+    "appName": "Emporio Case",
+    "webDir": "build",
+    "bundledWebRuntime": false
 }

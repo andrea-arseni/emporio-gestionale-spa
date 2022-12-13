@@ -1,4 +1,4 @@
-package it.emporiocase.gestionale;
+package it.emporiocase.nativeapp;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;

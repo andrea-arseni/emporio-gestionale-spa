@@ -850,7 +850,6 @@ const ImmobileForm: React.FC<{
         inputPrezzoIsInvalid ||
         !inputRiscaldamentoValue ||
         !inputClasseEnergeticaValue ||
-        !inputConsumoValue ||
         inputConsumoIsInvalid ||
         !inputContrattoValue ||
         !inputCategoriaValue ||
@@ -1287,18 +1286,20 @@ const ImmobileForm: React.FC<{
                         function={inputClasseEnergeticaChangedHandler}
                         possibleValues={possibleEnergeticClasses}
                     />
-                    <FormInput
-                        title={"Consumo espresso in KWh/m³a"}
-                        inputValue={inputConsumoValue}
-                        type={"text"}
-                        inputIsInvalid={inputConsumoIsInvalid}
-                        inputChangeHandler={inputConsumoChangedHandler}
-                        inputTouchHandler={inputConsumoTouchedHandler}
-                        errorMessage={
-                            "Il consumo deve essere maggiore di 0 KWh/m³a"
-                        }
-                        reset={inputConsumoReset}
-                    />
+                    {inputClasseEnergeticaValue !== "esente" && (
+                        <FormInput
+                            title={"Consumo espresso in KWh/m³a"}
+                            inputValue={inputConsumoValue}
+                            type={"text"}
+                            inputIsInvalid={inputConsumoIsInvalid}
+                            inputChangeHandler={inputConsumoChangedHandler}
+                            inputTouchHandler={inputConsumoTouchedHandler}
+                            errorMessage={
+                                "Il consumo deve essere maggiore di 0 KWh/m³a"
+                            }
+                            reset={inputConsumoReset}
+                        />
+                    )}
                     <FormSelect
                         title="Contratto"
                         value={inputContrattoValue}
