@@ -32,7 +32,11 @@ const CalendarNavigator: React.FC<{
                 : +1000 * 60 * 60 * 24;
 
         if (mode === "week") offset = offset * 7;
-        let newDay = new Date(props.currentDay.getTime() + offset);
+        let newDay = new Date(
+            props.currentDay.getTime() +
+                1000 * 60 * new Date().getTimezoneOffset() +
+                offset
+        );
         if (newDay.getDay() === 0)
             newDay = new Date(
                 newDay.getTime() +

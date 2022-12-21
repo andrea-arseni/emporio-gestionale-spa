@@ -5,7 +5,10 @@ import {
     IonItem,
     IonLabel,
     IonList,
+    IonButton,
+    IonIcon,
 } from "@ionic/react";
+import { peopleOutline } from "ionicons/icons";
 import { memo, useEffect, useRef } from "react";
 import { Visit } from "../../entities/visit.model";
 import useSize from "../../hooks/use-size";
@@ -144,16 +147,31 @@ const Calendar: React.FC<{
         return <IonRow>{cols}</IonRow>;
     };
 
-    return widthScreen < 700 ? (
-        <IonGrid className={styles.bigGrid}>
-            <IonRow>{getDayGrid()}</IonRow>
-            <CalendarModal />
-        </IonGrid>
-    ) : (
+    return (
         <>
-            <IonGrid className={styles.upperGrid}>{getDayWeekNames()}</IonGrid>
+            <IonGrid className={styles.upperGrid}>
+                {widthScreen < 700 ? (
+                    <IonButton
+                        color="primary"
+                        expand="full"
+                        mode="ios"
+                        fill="solid"
+                        style={{ margin: 0 }}
+                        onClick={() => props.openVisitForm(null)}
+                    >
+                        <IonIcon icon={peopleOutline} />
+                        <IonLabel style={{ paddingLeft: "16px" }}>
+                            Nuova Visita
+                        </IonLabel>
+                    </IonButton>
+                ) : (
+                    getDayWeekNames()
+                )}
+            </IonGrid>
             <IonGrid className={styles.littleGrid}>
-                <IonRow>{getWeekGrid()}</IonRow>
+                <IonRow>
+                    {widthScreen < 700 ? getDayGrid() : getWeekGrid()}
+                </IonRow>
                 <CalendarModal />
             </IonGrid>
         </>

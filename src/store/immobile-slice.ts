@@ -57,6 +57,12 @@ const immobileSlice = createSlice({
                 )
             );
         },
+        blockPhoto(state, action: PayloadAction<{ id: number }>) {
+            const photo = state.immobile!.files?.find(
+                (el) => el.id === action.payload.id
+            );
+            photo!.base64String = "fetching";
+        },
         setPhoto(
             state,
             action: PayloadAction<{ id: number; byteArray: string }>
@@ -131,5 +137,6 @@ export const {
     addFile,
     renameFile,
     updateReports,
+    blockPhoto,
 } = immobileSlice.actions;
 export default immobileSlice.reducer;

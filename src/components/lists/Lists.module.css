@@ -59,6 +59,10 @@
     height: calc(100% - 48px - 62px - 62px - 44px - 6px);
 }
 
+.filteredListVisit {
+    height: calc(100% - 60px - 60px - 32px) !important;
+}
+
 .list {
     margin: 0;
     padding: 0;

@@ -14,9 +14,11 @@ import { useEffect, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Documento } from "../../../entities/documento.model";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
-import { erasePhoto, setPhoto } from "../../../store/immobile-slice";
-import { swapPhotoPositions } from "../../../store/immobile-thunk";
-import axiosInstance from "../../../utils/axiosInstance";
+import { erasePhoto } from "../../../store/immobile-slice";
+import {
+    fetchFileById,
+    swapPhotoPositions,
+} from "../../../store/immobile-thunk";
 import axiosSecondaryApi from "../../../utils/axiosSecondaryApi";
 import errorHandler from "../../../utils/errorHandler";
 import styles from "./ImmobiliPhoto.module.css";
@@ -38,60 +40,16 @@ const ImmobiliPhoto: React.FC<{
 
     const [rotating, setRotating] = useState<null | "90" | "-90">(null);
 
-    const [update, setUpdate] = useState<number>(0);
-
-    const immobile = useAppSelector((state) => state.immobile.immobile);
+    const base64String = useAppSelector(
+        (state) =>
+            state.immobile.immobile?.files?.find(
+                (el) => el.id === props.foto.id
+            )?.base64String
+    );
 
     useEffect(() => {
-        let mounted = true;
-
-        const selectFile = async () => {
-            const url = `immobili/${props.idImmobile}/files/${props.foto.id}`;
-            try {
-                const res = await axiosInstance.get(url);
-                if (!mounted) return;
-                dispatch(
-                    setPhoto({
-                        id: props.foto.id!,
-                        byteArray: res.data.byteArray,
-                    })
-                );
-                setShowLoading(false);
-            } catch (e) {
-                if (!mounted) return;
-                setShowLoading(false);
-                errorHandler(
-                    e,
-                    () => {},
-                    "Apertura della foto non riuscita",
-                    presentAlert
-                );
-            }
-        };
-
-        let timeout: NodeJS.Timeout | null = null;
-        if (
-            !immobile?.files?.find((el) => el.id === props.foto.id)
-                ?.base64String
-        ) {
-            setShowLoading(true);
-            timeout = setTimeout(() => {
-                selectFile();
-            }, 2000);
-        }
-        return () => {
-            if (timeout) clearTimeout(timeout);
-            mounted = false;
-        };
-    }, [
-        props.foto.id,
-        props.foto.codiceBucket,
-        props.idImmobile,
-        presentAlert,
-        dispatch,
-        update,
-        immobile?.files,
-    ]);
+        setShowLoading(base64String === "fetching");
+    }, [base64String]);
 
     useEffect(() => {
         let mounted = true;
@@ -108,7 +66,12 @@ const ImmobiliPhoto: React.FC<{
                 setRotating(null);
                 dispatch(erasePhoto({ id: props.foto.id! }));
                 timeOut = setTimeout(() => {
-                    setUpdate((prevState) => ++prevState);
+                    setShowLoading(false);
+                    dispatch(
+                        fetchFileById(
+                            `/immobili/${props.idImmobile}/files/${props.foto.id}`
+                        )
+                    );
                     props.bloccaSelezione(false);
                 }, 2000);
             } catch (e) {
@@ -182,11 +145,7 @@ const ImmobiliPhoto: React.FC<{
                                 ? props.deselectPhoto(props.foto.id!)
                                 : props.selectPhoto(props.foto.id!)
                         }
-                        src={
-                            immobile?.files?.find(
-                                (el) => el.id === props.foto.id
-                            )?.base64String
-                        }
+                        src={base64String}
                         className={`${styles.image} ${
                             props.isSelected
                                 ? styles.isSelected

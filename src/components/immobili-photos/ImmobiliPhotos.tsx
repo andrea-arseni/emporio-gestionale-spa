@@ -8,7 +8,13 @@ import {
     useIonAlert,
     isPlatform,
 } from "@ionic/react";
-import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Card from "../card/Card";
@@ -19,7 +25,7 @@ import errorHandler from "../../utils/errorHandler";
 import axiosSecondaryApi from "../../utils/axiosSecondaryApi";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { changeLoading } from "../../store/ui-slice";
-import { fetchFotoFirmata } from "../../store/immobile-thunk";
+import { fetchFileById, fetchFotoFirmata } from "../../store/immobile-thunk";
 import { isNativeApp } from "../../utils/contactUtils";
 
 const ImmobiliPhotos: React.FC<{
@@ -36,22 +42,32 @@ const ImmobiliPhotos: React.FC<{
 
     const immobile = useAppSelector((state) => state.immobile.immobile);
 
-    const foto = !immobile
-        ? []
-        : immobile.files
-        ? immobile.files.filter((el) => el.tipologia === "FOTO")
-        : [];
+    const foto = useAppSelector((state) =>
+        state.immobile.immobile?.files
+            ?.filter((el) => el.tipologia === "FOTO")
+            .sort((a, b) => +a.nome! - +b.nome!)
+    );
+
+    const immobileId = immobile ? immobile.id : 0;
 
     const excludeFirstFotoIfSigned = () => {
-        if (foto.find((el) => el.nome === "0")) {
-            foto.sort((a, b) => +a.nome! - +b.nome!);
-            foto.splice(1, 1);
-        }
+        if (foto && foto.find((el) => el.nome === "0")) foto.splice(1, 1);
     };
 
     excludeFirstFotoIfSigned();
 
-    const showSelectAll = foto.length !== props.listIdPhotoSelected?.length;
+    useEffect(() => {
+        if (immobileId && foto)
+            foto.forEach((el) => {
+                if (!el.base64String && el.base64String !== "blockPhoto")
+                    dispatch(
+                        fetchFileById(`/immobili/${immobileId}/files/${el.id}`)
+                    );
+            });
+    }, [immobileId, foto, dispatch]);
+
+    const showSelectAll =
+        foto && foto.length !== props.listIdPhotoSelected?.length;
 
     const bloccaSelezione = useCallback(
         (input: boolean) => setSelectionStop(input),
@@ -59,7 +75,7 @@ const ImmobiliPhotos: React.FC<{
     );
 
     const selectAllPhotos = () => {
-        props.setListIdPhotoSelected(foto.map((el) => el.id!));
+        if (foto) props.setListIdPhotoSelected(foto.map((el) => el.id!));
     };
 
     const selectPhoto = (id: number) =>
@@ -92,7 +108,7 @@ const ImmobiliPhotos: React.FC<{
         }
     };
 
-    if (foto.length === 0)
+    if (foto && foto.length === 0)
         return (
             <Card
                 subTitle={`Questo immobile non ha ancora foto associate`}
@@ -101,45 +117,44 @@ const ImmobiliPhotos: React.FC<{
         );
 
     const getSize = (type: "xl" | "lg" | "md" | "sm" | "xs") => {
-        if (foto.length === 1 || type === "xs") return "12";
-        if (foto.length === 2 || type === "sm") return "6";
-        if (foto.length === 3 || type === "md") return "4";
+        if ((foto && foto.length === 1) || type === "xs") return "12";
+        if ((foto && foto.length === 2) || type === "sm") return "6";
+        if ((foto && foto.length === 3) || type === "md") return "4";
         return "3";
     };
 
-    const isPhotoSignedPresent = foto.find((el) => el.nome === "0");
+    const isPhotoSignedPresent = foto && foto.find((el) => el.nome === "0");
 
-    const getFrames = () =>
-        foto
-            .sort((a, b) => +a.nome! - +b.nome!)
-            .map((el) => {
-                return (
-                    <IonCol
-                        className="centered"
-                        key={el.id}
-                        sizeXl={getSize("xl")}
-                        sizeLg={getSize("lg")}
-                        sizeMd={getSize("md")}
-                        sizeSm={getSize("sm")}
-                        sizeXs={getSize("xs")}
-                    >
-                        <ImmobiliPhoto
-                            foto={el}
-                            idImmobile={immobile!.id!.toString()}
-                            selectionMode={props.selectionMode}
-                            selectPhoto={selectPhoto}
-                            deselectPhoto={deselectPhoto}
-                            isSelected={
-                                !!props.listIdPhotoSelected &&
-                                !!props.listIdPhotoSelected.find(
-                                    (id) => el.id === id
-                                )
-                            }
-                            bloccaSelezione={bloccaSelezione}
-                        />
-                    </IonCol>
-                );
-            });
+    const getPhotoCards = () =>
+        foto &&
+        foto.map((el) => {
+            return (
+                <IonCol
+                    className="centered"
+                    key={el.id}
+                    sizeXl={getSize("xl")}
+                    sizeLg={getSize("lg")}
+                    sizeMd={getSize("md")}
+                    sizeSm={getSize("sm")}
+                    sizeXs={getSize("xs")}
+                >
+                    <ImmobiliPhoto
+                        foto={el}
+                        idImmobile={immobile!.id!.toString()}
+                        selectionMode={props.selectionMode}
+                        selectPhoto={selectPhoto}
+                        deselectPhoto={deselectPhoto}
+                        isSelected={
+                            !!props.listIdPhotoSelected &&
+                            !!props.listIdPhotoSelected.find(
+                                (id) => el.id === id
+                            )
+                        }
+                        bloccaSelezione={bloccaSelezione}
+                    />
+                </IonCol>
+            );
+        });
 
     return (
         <div
@@ -185,7 +200,7 @@ const ImmobiliPhotos: React.FC<{
                 )}
                 <IonRow className={`${styles.row}`}>
                     <DndProvider backend={HTML5Backend}>
-                        {getFrames()}
+                        {getPhotoCards()}
                     </DndProvider>
                 </IonRow>
             </IonGrid>

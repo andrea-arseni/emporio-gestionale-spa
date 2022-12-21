@@ -1,5 +1,6 @@
-import { IonModal } from "@ionic/react";
+import { IonModal, isPlatform } from "@ionic/react";
 import { Dispatch, SetStateAction } from "react";
+import { isNativeApp } from "../../utils/contactUtils";
 import FormTitle from "../form-components/form-title/FormTitle";
 import styles from "./Modal.module.css";
 
@@ -11,6 +12,7 @@ const Modal: React.FC<{
 }> = (props) => {
     return (
         <IonModal
+            className={isNativeApp && isPlatform("ios") ? styles.iosModal : ""}
             isOpen={props.isOpen}
             showBackdrop
             onDidDismiss={() => props.setIsOpen(false)}

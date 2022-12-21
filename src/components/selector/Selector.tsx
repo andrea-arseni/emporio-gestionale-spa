@@ -340,8 +340,9 @@ const Selector: React.FC<{
                 : styles.stepsList;
         if (props.public)
             return isNativeApp && isPlatform("ios")
-                ? styles.immobiliListIos
-                : styles.immobiliList;
+                ? styles.publicListIos
+                : styles.publicList;
+        if (props.selectMode) return styles.fourOtherElements;
         return isNativeApp && isPlatform("ios")
             ? styles.fiveOtherElementsIos
             : styles.fiveOtherElements;

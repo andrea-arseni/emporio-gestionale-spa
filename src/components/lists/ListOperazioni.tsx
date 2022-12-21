@@ -61,15 +61,17 @@ const ListOperazioni: React.FC<{
     return (
         <>
             {operazioni}
-            <IonItem color="tertiary">
-                <IonLabel>
-                    <h2
-                        style={{ textAlign: "center" }}
-                    >{`Saldo totale della lista: ${numberAsPrice(
-                        props.sumOfOperations
-                    )}`}</h2>
-                </IonLabel>
-            </IonItem>
+            {(props.sumOfOperations || props.sumOfOperations === 0) && (
+                <IonItem color="tertiary">
+                    <IonLabel>
+                        <h2
+                            style={{ textAlign: "center" }}
+                        >{`Saldo totale della lista: ${numberAsPrice(
+                            props.sumOfOperations
+                        )}`}</h2>
+                    </IonLabel>
+                </IonItem>
+            )}
         </>
     );
 };

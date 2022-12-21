@@ -14,6 +14,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import errorHandler from "../../utils/errorHandler";
 import styles from "./ContattiPage.module.css";
 import logo from "../../assets/logo.png";
+import { AxiosRequestHeaders } from "axios";
 
 const ContattiPage: React.FC<{}> = () => {
     const {
@@ -83,17 +84,25 @@ const ContattiPage: React.FC<{}> = () => {
 
         setShowLoading(true);
         try {
-            await axiosInstance.post(`/persone/private`, {
-                nome: inputNameValue,
-                email:
-                    inputEmailValue && inputEmailValue.toString().length > 0
-                        ? inputEmailValue
-                        : null,
-                telefono:
-                    inputPhoneValue && inputPhoneValue.toString().length > 0
-                        ? inputPhoneValue
-                        : null,
-            });
+            const headers: AxiosRequestHeaders = {
+                recaptchaToken: process.env.REACT_APP_RECAPTCHA_KEY!,
+                "Content-Type": "application/json",
+            };
+            await axiosInstance.post(
+                `/persone/private`,
+                {
+                    nome: inputNameValue,
+                    email:
+                        inputEmailValue && inputEmailValue.toString().length > 0
+                            ? inputEmailValue
+                            : null,
+                    telefono:
+                        inputPhoneValue && inputPhoneValue.toString().length > 0
+                            ? inputPhoneValue
+                            : null,
+                },
+                { headers }
+            );
             setShowLoading(false);
             // call successfull, check email
             presentAlert({
@@ -127,7 +136,10 @@ const ContattiPage: React.FC<{}> = () => {
                         possibile`}
                     </IonLabel>
                     <IonItem className={styles.inputWrapper}>
-                        <IonLabel position="floating">
+                        <IonLabel
+                            position="floating"
+                            color={inputPhoneIsInvalid ? "danger" : "dark"}
+                        >
                             Nome
                             {inputNameIsInvalid && (
                                 <IonNote color="danger">
@@ -150,7 +162,10 @@ const ContattiPage: React.FC<{}> = () => {
                         ></IonInput>
                     </IonItem>
                     <IonItem className={styles.inputWrapper}>
-                        <IonLabel position="floating">
+                        <IonLabel
+                            position="floating"
+                            color={inputPhoneIsInvalid ? "danger" : "dark"}
+                        >
                             Telefono
                             {inputPhoneIsInvalid && (
                                 <IonNote color="danger">
@@ -173,7 +188,10 @@ const ContattiPage: React.FC<{}> = () => {
                         ></IonInput>
                     </IonItem>
                     <IonItem className={styles.inputWrapper}>
-                        <IonLabel position="floating">
+                        <IonLabel
+                            position="floating"
+                            color={inputPhoneIsInvalid ? "danger" : "dark"}
+                        >
                             Email
                             {inputEmailIsInvalid && (
                                 <IonNote color="danger">{`: Valore Non Valido`}</IonNote>
@@ -195,11 +213,14 @@ const ContattiPage: React.FC<{}> = () => {
                             outlinePrivacy ? styles.privacySectionEvidence : ""
                         }`}
                     >
-                        <IonCheckbox
-                            className={styles.privacyCheckButton}
-                            id="privacy"
-                            onIonChange={privacyCheckHandler}
-                        />
+                        <div className={`centered ${styles.checkButtonFrame}`}>
+                            <IonCheckbox
+                                mode="md"
+                                className={styles.privacyCheckButton}
+                                id="privacy"
+                                onIonChange={privacyCheckHandler}
+                            />
+                        </div>
                         <p
                             className={
                                 outlinePrivacy

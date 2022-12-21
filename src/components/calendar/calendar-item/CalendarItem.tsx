@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Visit } from "../../../entities/visit.model";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { setTooltip } from "../../../store/appuntamenti-slice";
@@ -18,6 +18,8 @@ const CalendarItem: React.FC<{
         (state) => state.appuntamenti.tooltipActivated
     );
 
+    const [hourClicked, setHourClicked] = useState<string | null>(null);
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -31,8 +33,22 @@ const CalendarItem: React.FC<{
         };
     }, [tooltipActivated, dispatch, props.dateAsString]);
 
-    const setVisit = (e: any, visit: Visit | null) => {
-        if (e.detail === 2) props.openVisitForm(visit);
+    useEffect(() => {
+        let timeOut: NodeJS.Timeout | null = null;
+        if (hourClicked) {
+            timeOut = setTimeout(() => {
+                setHourClicked(null);
+            }, 400);
+        }
+        return () => {
+            if (timeOut) clearTimeout(timeOut);
+        };
+    }, [hourClicked]);
+
+    const setVisit = (orario: string, visit: Visit | null) => {
+        orario === hourClicked
+            ? props.openVisitForm(visit)
+            : setHourClicked(orario);
     };
 
     return (
@@ -41,9 +57,9 @@ const CalendarItem: React.FC<{
                 onClick={
                     isPast(date) || props.visits.length >= 2
                         ? () => dispatch(setTooltip(props.dateAsString))
-                        : (e) =>
+                        : () =>
                               setVisit(
-                                  e,
+                                  props.dateAsString.split("T")[1],
                                   new Visit(
                                       null,
                                       null,

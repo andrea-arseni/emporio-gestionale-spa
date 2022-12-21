@@ -45,10 +45,15 @@ import EmporioPage from "./pages/emporio/EmporioPage";
 import ServiziPage from "./pages/servizi/ServiziPage";
 import PublicImmobiliPage from "./pages/immobili/publicImmobiliPage/PublicImmobiliPage";
 import ContattiPage from "./pages/contatti/ContattiPage";
+import { isNativeApp } from "./utils/contactUtils";
+import { ScreenOrientation } from "@awesome-cordova-plugins/screen-orientation";
 
 setupIonicReact();
 
 const App: React.FC = () => {
+    if (isNativeApp)
+        ScreenOrientation.lock(ScreenOrientation.ORIENTATIONS.PORTRAIT);
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -62,7 +67,7 @@ const App: React.FC = () => {
     return (
         <IonApp>
             <IonSplitPane contentId="main">
-                <Menu />
+                {(token || isNativeApp) && <Menu />}
                 <IonContent id="main" color="light">
                     <Header token={token} />
 
@@ -170,7 +175,13 @@ const App: React.FC = () => {
                             path="/*"
                             element={
                                 <Navigate
-                                    to={token ? "/appuntamenti" : "/emporio"}
+                                    to={
+                                        token
+                                            ? "/appuntamenti"
+                                            : isNativeApp
+                                            ? "/emporio"
+                                            : "/login"
+                                    }
                                     replace
                                 />
                             }
@@ -183,21 +194,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-/*
-
-- ionic capacitor add ios
-- ionic capacitor copy ios
-- ionic capacitor run ios * is 2 step, is better
-- npx cap run android
-
-<uses-permission android:name="android.permission.READ_CONTACTS" />
-<uses-permission android:name="android.permission.WRITE_CONTACTS"/>
-
-// Initializes the Bridge
-@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.registerPlugin(Contacts.class);
-    }
-*/

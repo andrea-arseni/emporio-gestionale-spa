@@ -5,7 +5,7 @@ import styles from "./EmporioPage.module.css";
 
 const EmporioPage: React.FC<{}> = () => {
     return (
-        <div style={{ backgroundColor: "white" }} className="centered vertical">
+        <div className={`centered vertical ${styles.background}`}>
             <img src={logo} alt="" className={styles.logo} />
             <div className={`${styles.text}`}>
                 <h3>Chi Siamo</h3>

@@ -3,16 +3,20 @@
     padding: 0;
 }
 
-.immobiliList {
+.publicList {
     height: calc(100% - 88px - 88px - 20px);
 }
 
-.immobiliListIos {
+.publicListIos {
     height: calc(100% - 88px - 88px - 20px - 46px);
 }
 
 .fiveOtherElements {
     height: calc(100% - 88px - 88px - 65px);
+}
+
+.fourOtherElements {
+    height: calc(100% - 46px - 88px - 62px);
 }
 
 .sixOtherElements {
@@ -25,6 +29,10 @@
 
 .stepsList {
     height: calc(100% - 88px - 88px - 65px - 48px);
+}
+
+.fourOtherElements {
+    height: calc(100% - 46px - 88px - 62px);
 }
 
 .fiveOtherElementsIos {

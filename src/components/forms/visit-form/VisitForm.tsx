@@ -34,6 +34,7 @@ import FormTitle from "../../form-components/form-title/FormTitle";
 import { backToList } from "../../../store/appuntamenti-slice";
 import { setModalOpened } from "../../../store/ui-slice";
 import { isNativeApp, saveContact } from "../../../utils/contactUtils";
+import styles from "./VisitForm.module.css";
 
 const FormVisit: React.FC<{
     readonly?: boolean;
@@ -339,12 +340,19 @@ const FormVisit: React.FC<{
                             borderLeft: "1px solid gray",
                         }}
                     >
-                        <FormSelect
-                            title="Orario della Visita"
-                            value={inputTimeValue}
-                            function={inputTimeChangedHandler}
-                            possibleValues={getPossibleTimeValues()}
-                        />
+                        {!props.readonly && (
+                            <FormSelect
+                                title="Orario della Visita"
+                                value={inputTimeValue}
+                                function={inputTimeChangedHandler}
+                                possibleValues={getPossibleTimeValues()}
+                            />
+                        )}
+                        {props.readonly && (
+                            <p
+                                className={styles.staticHours}
+                            >{`Orario della Visita: ${inputTimeValue}`}</p>
+                        )}
                     </div>
                     <ItemSelector
                         strict={props.readonly}

@@ -45,9 +45,9 @@
     justify-content: flex-start;
     font-size: small;
     transition: all 1s;
-    width: 79%;
     border-radius: 6px;
     border: 1px solid lightgray;
+    padding: 12px;
 }
 
 .privacySectionEvidence {
@@ -60,14 +60,17 @@
     color: red;
 }
 
+.checkButtonFrame {
+    width: 20%;
+}
+
 .notEvidence {
     transition: all 1s;
     color: color;
 }
 
 .privacyCheckButton {
-    width: 12px;
-    margin: 12px;
+    max-width: 20px;
     color: white !important;
     background-color: white !important;
 }

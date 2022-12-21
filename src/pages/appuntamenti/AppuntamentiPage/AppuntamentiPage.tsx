@@ -34,6 +34,10 @@ import {
 import { changeLoading } from "../../../store/ui-slice";
 import ListVisits from "../../../components/lists/ListVisits";
 import { isNativeApp } from "../../../utils/contactUtils";
+import styles from "./AppuntamentiPage.module.css";
+import StringFilter from "../../../components/filters/string-filter/StringFilter";
+import useQueryData from "../../../hooks/use-query-data";
+import FilterBar from "../../../components/bars/filter-bar/FilterBar";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
@@ -43,10 +47,17 @@ const AppuntamentiPage: React.FC<{}> = () => {
     const [currentWeek, setCurrentWeek] = useState<Giorno[]>(
         setWeek(new Date())
     );
+
     const [currentDay, setCurrentDay] = useState<Date>(
-        new Date().getDay() === 0
-            ? new Date(new Date().getTime() - 1000 * 60 * 60 * 24)
-            : new Date()
+        new Date(
+            Date.now() + 1000 * 60 * new Date().getTimezoneOffset()
+        ).getDay() === 0
+            ? new Date(
+                  Date.now() +
+                      1000 * 60 * new Date().getTimezoneOffset() -
+                      1000 * 60 * 60 * 24
+              )
+            : new Date(Date.now() + 1000 * 60 * new Date().getTimezoneOffset())
     );
 
     const [visits, setVisits] = useState<Visit[]>([]);
@@ -60,6 +71,12 @@ const AppuntamentiPage: React.FC<{}> = () => {
     const isFormActive = useAppSelector(
         (state) => state.appuntamenti.isFormActive
     );
+
+    const [filterMode, setFilterMode] = useState<
+        "default" | "stringFilter" | "dataFilter" | "numberFilter"
+    >("default");
+
+    const { filter, setFilter } = useQueryData("visite");
 
     const openVisitForm = (visit: Visit | null) => {
         dispatch(setCurrentVisit(visit));
@@ -91,15 +108,20 @@ const AppuntamentiPage: React.FC<{}> = () => {
         let mounted = true;
 
         const fetchVisits = async () => {
+            dispatch(changeLoading(true));
             try {
-                const url = `visite/?filter=quando&startDate=${getDateAsString(
+                let url = `/visite?filter=quando&startDate=${getDateAsString(
                     currentWeek[0].date
                 )}&endDate=${getDateAsString(
                     new Date(
                         currentWeek[5].date.getTime() + 1000 * 60 * 60 * 24
                     )
                 )}`;
+                if (filter.filter && filter.value) {
+                    url = `/visite?filter=${filter.filter}&value=${filter.value}`;
+                }
                 const res = await axiosInstance.get(url);
+                console.log(res);
                 if (!mounted) return;
                 dispatch(changeLoading(false));
                 setVisits(res.data.data);
@@ -114,13 +136,13 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 );
             }
         };
-        dispatch(changeLoading(true));
+        if (filter.filter && !filter.value) return;
         fetchVisits();
 
         return () => {
             mounted = false;
         };
-    }, [currentWeek, presentAlert, trigger, dispatch]);
+    }, [currentWeek, presentAlert, trigger, dispatch, filter]);
 
     const todaysVisits = visits
         .filter((visit) => {
@@ -132,6 +154,42 @@ const AppuntamentiPage: React.FC<{}> = () => {
             const secondDate: Date = new Date(b.quando!);
             return firstDate.getTime() - secondDate.getTime();
         });
+
+    const handleFilter = () => {
+        if (filter.value) {
+            setFilter({ filter: undefined, value: undefined });
+        } else {
+            setFilter({ filter: "note" });
+            setFilterMode("stringFilter");
+        }
+    };
+
+    if (filterMode === "stringFilter")
+        return (
+            <>
+                <IonButton
+                    className={styles.filterButton}
+                    expand="full"
+                    mode="ios"
+                    fill="clear"
+                    color="dark"
+                    onClick={() => {
+                        setFilterMode("default");
+                        setFilter({ filter: undefined });
+                    }}
+                >
+                    <IonIcon icon={listOutline} />
+                    <IonLabel style={{ paddingLeft: "16px" }}>
+                        Torna alla Lista
+                    </IonLabel>
+                </IonButton>
+                <StringFilter
+                    filter={filter}
+                    setFilter={setFilter}
+                    setFilterMode={setFilterMode}
+                />
+            </>
+        );
 
     return (
         <>
@@ -163,13 +221,23 @@ const AppuntamentiPage: React.FC<{}> = () => {
             )}
             {pageMode === "lista" && !isFormActive && (
                 <div
-                    className={
+                    className={`${
                         isNativeApp && isPlatform("ios")
                             ? "iosWrapper"
                             : "wrapper"
-                    }
+                    } ${styles.page}
+                    `}
                 >
                     <IonButton
+                        size="small"
+                        color="medium"
+                        className={`${styles.fabButton}`}
+                        onClick={handleFilter}
+                    >
+                        {filter.value ? `Annulla Filtro` : `Filtra per Note`}
+                    </IonButton>
+                    <IonButton
+                        disabled={!!filter.value}
                         color="primary"
                         expand="full"
                         mode="ios"
@@ -182,16 +250,30 @@ const AppuntamentiPage: React.FC<{}> = () => {
                             Nuova Visita
                         </IonLabel>
                     </IonButton>
-                    <DaySelector
-                        currentDay={currentDay}
-                        setCurrentDay={setCurrentDay}
+                    {filter.value && (
+                        <FilterBar
+                            entitiesType={"visite"}
+                            filter={filter}
+                            setFilter={setFilter}
+                        />
+                    )}
+                    {!filter.value && (
+                        <DaySelector
+                            currentDay={currentDay}
+                            setCurrentDay={setCurrentDay}
+                        />
+                    )}
+                    {!filter.value && (
+                        <CalendarNavigator
+                            mode="day"
+                            currentDay={currentDay}
+                            setCurrentDay={setCurrentDay}
+                        />
+                    )}
+                    <ListVisits
+                        filter={!!filter.value}
+                        visits={filter.value ? visits : todaysVisits}
                     />
-                    <CalendarNavigator
-                        mode="day"
-                        currentDay={currentDay}
-                        setCurrentDay={setCurrentDay}
-                    />
-                    <ListVisits visits={todaysVisits} />
                 </div>
             )}
             {isFormActive && (

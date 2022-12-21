@@ -1,0 +1,13 @@
+.fabButton {
+    bottom: 80px;
+    right: 20px;
+    width: 140px;
+    height: 30px;
+    position: fixed;
+    z-index: 9999;
+    border-radius: 6px;
+}
+
+.page {
+    position: relative;
+}

@@ -4,6 +4,15 @@
     margin: 20px auto;
 }
 
+.background {
+    background: linear-gradient(
+        to left,
+        rgb(228, 252, 237),
+        white,
+        rgb(228, 252, 237)
+    );
+}
+
 .text {
     flex-flow: column;
     text-align: center;
@@ -20,7 +29,6 @@
     align-items: center;
     justify-content: center;
     color: #444;
-    background: linear-gradient(rgb(228, 252, 237), white, rgb(228, 252, 237));
 }
 
 .upper {

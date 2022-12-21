@@ -15,8 +15,8 @@ const FilterBar: React.FC<{
     entitiesType: entitiesType;
     filter: Filtro;
     setFilter: Dispatch<SetStateAction<Filtro>>;
-    setPage: Dispatch<SetStateAction<number>>;
-    setNegativeForbidden: Dispatch<SetStateAction<boolean>>;
+    setPage?: Dispatch<SetStateAction<number>>;
+    setNegativeForbidden?: Dispatch<SetStateAction<boolean>>;
 }> = (props) => {
     const [width] = useWindowSize();
 
@@ -136,27 +136,29 @@ const FilterBar: React.FC<{
         <IonToolbar className={styles.filterToolbar} mode="ios">
             <Title>{getFilterTitle()}</Title>
 
-            <IonButton
-                slot="end"
-                size="small"
-                color="dark"
-                mode="ios"
-                onClick={() => {
-                    props.setFilter({
-                        filter: undefined,
-                        value: undefined,
-                        startDate: undefined,
-                        endDate: undefined,
-                        max: undefined,
-                        min: undefined,
-                    });
-                    props.setPage(1);
-                    props.setNegativeForbidden(false);
-                }}
-            >
-                <IonIcon icon={closeOutline} color="light"></IonIcon>
-                {width >= 450 ? "Annulla Filtro" : ""}
-            </IonButton>
+            {props.setPage && props.setNegativeForbidden && (
+                <IonButton
+                    slot="end"
+                    size="small"
+                    color="dark"
+                    mode="ios"
+                    onClick={() => {
+                        props.setFilter({
+                            filter: undefined,
+                            value: undefined,
+                            startDate: undefined,
+                            endDate: undefined,
+                            max: undefined,
+                            min: undefined,
+                        });
+                        props.setPage!(1);
+                        props.setNegativeForbidden!(false);
+                    }}
+                >
+                    <IonIcon icon={closeOutline} color="light"></IonIcon>
+                    {width >= 450 ? "Annulla Filtro" : ""}
+                </IonButton>
+            )}
         </IonToolbar>
     );
 };

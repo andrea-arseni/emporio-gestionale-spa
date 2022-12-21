@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../utils/axiosInstance";
 import {
     addSignedPhoto,
+    blockPhoto,
     ripristinaImmobile,
     setImmobile,
     setPhoto,
@@ -59,10 +60,10 @@ export const fetchFotoFirmata = createAsyncThunk(
 export const fetchFileById = createAsyncThunk(
     "fileDaId",
     async (url: string, { dispatch }) => {
-        dispatch(changeLoading(true));
+        const id = +url.split("/").pop()!;
+        dispatch(blockPhoto({ id }));
         try {
             const res = await axiosInstance.get(url);
-            dispatch(changeLoading(false));
             dispatch(
                 setPhoto({
                     byteArray: res.data.byteArray,
@@ -70,7 +71,6 @@ export const fetchFileById = createAsyncThunk(
                 })
             );
         } catch (e) {
-            dispatch(changeLoading(false));
             dispatch(setError({ name: "fetchFileById", object: e }));
         }
     }

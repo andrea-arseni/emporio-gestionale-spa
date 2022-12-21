@@ -36,6 +36,7 @@ import { getDayName, isPast } from "../../utils/timeUtils";
 const ListVisits: React.FC<{
     visits: Visit[];
     displayDay?: boolean;
+    filter?: boolean;
     deleteEntity?: (type: string, id: string, message?: string) => void;
 }> = (props) => {
     const userData = useAppSelector((state) => state.auth.userData);
@@ -132,27 +133,24 @@ const ListVisits: React.FC<{
         return (
             <IonItem key={visit.id} detail>
                 <IonLabel text-wrap>
-                    {props.displayDay && (
+                    {(props.displayDay || props.filter) && (
                         <h3>{getDayName(new Date(visit.quando!), "long")}</h3>
                     )}
-                    <h3>{`Ore ${visit.quando
-                        ?.split("T")[1]
-                        .substring(0, 5)} - ${capitalize(
-                        visit.user!.name!
-                    )}`}</h3>
+                    <h3>{`Ore ${visit.quando?.split("T")[1].substring(0, 5)} ${
+                        visit.user ? ` - ${capitalize(visit.user!.name!)}` : ""
+                    }`}</h3>
                     <h2>
                         {`${
                             visit.persona ? capitalize(visit.persona.nome!) : ""
                         }${
                             visit.immobile
-                                ? ` visita ref. ${
-                                      visit.immobile.ref
-                                  } - ${getLuogo(visit)}`
+                                ? ` visita ref. ${visit.immobile.ref}`
                                 : ""
                         }`}
                     </h2>
                     {visit.persona && getPersonaContatto(visit.persona)}
                     {visit.note && <p>{visit.note}</p>}
+                    {visit.dove && <p>{getLuogo(visit)}</p>}
                     {!visit.persona && <br />}
                     {!visit.note && <br />}
                 </IonLabel>
@@ -172,7 +170,7 @@ const ListVisits: React.FC<{
                             }
                             colorType={"dark"}
                             icon={personAddOutline}
-                            title={"Aggiungi"}
+                            title={"Rubrica"}
                         />
                     )}
                     {!isPast(new Date(visit.quando!)) && (
@@ -219,7 +217,7 @@ const ListVisits: React.FC<{
                 ref={list}
                 className={`${styles.list} ${
                     !props.displayDay ? styles.listVisit : ""
-                }`}
+                } ${props.filter ? styles.filteredListVisit : ""}`}
             >
                 {props.visits.map((visit) => getVisitComplete(visit))}
             </IonList>

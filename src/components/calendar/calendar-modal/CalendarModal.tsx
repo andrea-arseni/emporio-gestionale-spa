@@ -7,6 +7,7 @@ import {
     IonSegmentButton,
     useIonAlert,
     IonButton,
+    isPlatform,
 } from "@ionic/react";
 import {
     createOutline,
@@ -28,6 +29,8 @@ import FormTextArea from "../../form-components/form-text-area/FormTextArea";
 import FormTitle from "../../form-components/form-title/FormTitle";
 import FormVisit from "../../forms/visit-form/VisitForm";
 import { isPast } from "../../../utils/timeUtils";
+import { isNativeApp } from "../../../utils/contactUtils";
+import styles from "./CalendarModal.module.css";
 
 const CalendarModal: React.FC<{}> = () => {
     const modalIsOpen = useAppSelector((state) => state.ui.isModalOpened);
@@ -107,7 +110,12 @@ const CalendarModal: React.FC<{}> = () => {
     };
 
     return (
-        <IonModal showBackdrop isOpen={modalIsOpen} onDidDismiss={smontaModale}>
+        <IonModal
+            showBackdrop
+            isOpen={modalIsOpen}
+            onDidDismiss={smontaModale}
+            className={isNativeApp && isPlatform("ios") ? styles.iosModal : ""}
+        >
             {modalMode === "visit" && (
                 <IonContent>
                     <FormTitle

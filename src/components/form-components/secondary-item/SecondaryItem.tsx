@@ -49,9 +49,9 @@ const SecondaryItem: React.FC<{
                 {props.addAction && (
                     <ItemOption
                         handler={() => props.addAction!()}
-                        colorType={"light"}
+                        colorType={"primary"}
                         icon={personAddOutline}
-                        title={"Aggiungi"}
+                        title={"Rubrica"}
                     />
                 )}
                 <ItemOption

@@ -158,7 +158,7 @@ const ListEventi: React.FC<{
                                     }}
                                     colorType={"dark"}
                                     icon={personAddOutline}
-                                    title={"Aggiungi"}
+                                    title={"Rubrica"}
                                 />
                             )}
                             {evento.immobile && (
