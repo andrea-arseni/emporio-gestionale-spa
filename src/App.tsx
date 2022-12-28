@@ -71,8 +71,7 @@ const App: React.FC = () => {
     return (
         <IonApp>
             <IonSplitPane contentId="main">
-                <Menu />
-                {/* {(token || isNativeApp) && <Menu />} */}
+                {(token || isNativeApp) && <Menu />}
                 <IonContent id="main" color="light">
                     <Header token={token} />
 
@@ -220,7 +219,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-/* 
-- correct PWS 
-*/
