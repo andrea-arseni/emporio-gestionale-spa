@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.e3644826.css",
-    "main.js": "/static/js/main.5312a714.js",
+    "main.css": "/static/css/main.b2813661.css",
+    "main.js": "/static/js/main.be4bfe8e.js",
     "static/js/1336.0f66ef6d.chunk.js": "/static/js/1336.0f66ef6d.chunk.js",
     "static/js/8261.3eb6d1eb.chunk.js": "/static/js/8261.3eb6d1eb.chunk.js",
     "static/js/6027.fc84f947.chunk.js": "/static/js/6027.fc84f947.chunk.js",
@@ -87,6 +87,8 @@
     "static/js/9153.d72ba272.chunk.js": "/static/js/9153.d72ba272.chunk.js",
     "static/js/9782.d0a18b7c.chunk.js": "/static/js/9782.d0a18b7c.chunk.js",
     "static/js/4662.a6ced9af.chunk.js": "/static/js/4662.a6ced9af.chunk.js",
+    "static/media/no_houses.jpg": "/static/media/no_houses.2ca94a16aed875699fe0.jpg",
+    "static/media/ufficio.jpg": "/static/media/ufficio.135eab4229a68efb39fd.jpg",
     "static/media/tribunale.jpeg": "/static/media/tribunale.f06e386ef0017709ec50.jpeg",
     "static/media/capannone.jpg": "/static/media/capannone.246fd67f5ae4b17c89c0.jpg",
     "static/media/attivita.jpg": "/static/media/attivita.84fe388d64569633d3b9.jpg",
@@ -96,19 +98,29 @@
     "static/media/money.jpeg": "/static/media/money.fbed44d9f684c078f09e.jpeg",
     "static/media/logo.png": "/static/media/logo.a345f6c2ba1b4a73ea6d.png",
     "static/media/services.jpeg": "/static/media/services.d0b3836c1c53571a7df0.jpeg",
+    "static/media/bootstrap-icons.woff?": "/static/media/bootstrap-icons.6959d0d983ee318f8880.woff",
     "static/media/bed.jpg": "/static/media/bed.276db45425b71dc50041.jpg",
     "static/media/kitchen.jpeg": "/static/media/kitchen.1e3670478542e8dccfe6.jpeg",
+    "static/media/bootstrap-icons.woff2?": "/static/media/bootstrap-icons.b2e5aab643c6f0fd2da6.woff2",
     "static/media/living.jpeg": "/static/media/living.7cdc06ae535adde4ecab.jpeg",
     "static/media/disegno.jpeg": "/static/media/disegno.9cb293b4f07b8705d3c9.jpeg",
+    "static/media/eccellenza.png": "/static/media/eccellenza.d588e76d17da6bae8ac1.png",
+    "static/media/fimaa.png": "/static/media/fimaa.38fe6127cb826076c6be.png",
     "service-worker.js": "/service-worker.js",
     "static/media/excel.png": "/static/media/excel.5b54e07c3f5063af7c14.png",
     "static/media/word.png": "/static/media/word.c5d9314821d0e55d2244.png",
     "static/media/pdf.png": "/static/media/pdf.3a8818e569ad5d35502c.png",
     "static/media/notAvailable.png": "/static/media/notAvailable.f95faa8d8ea346deeef3.png",
-    "index.html": "/index.html"
+    "static/media/planimetry.svg": "/static/media/planimetry.20a97e4f41dde931429b9b4e5d8c2642.svg",
+    "index.html": "/index.html",
+    "static/media/white-arrow.svg": "/static/media/white-arrow.48f8716eae2847cd93546da4ea40e503.svg",
+    "static/media/euro.svg": "/static/media/euro.2e9138828186bf9af59e50aab74c85ab.svg",
+    "static/media/house.svg": "/static/media/house.649c117a93bd295523edd81a2d97867e.svg",
+    "static/media/building.svg": "/static/media/building.59909702a516d77d9ad7c5651a91eff4.svg",
+    "static/media/arrow.svg": "/static/media/arrow.e2e9c73bea2de7d2ccddd9fb0c5bb3a1.svg"
   },
   "entrypoints": [
-    "static/css/main.e3644826.css",
-    "static/js/main.5312a714.js"
+    "static/css/main.b2813661.css",
+    "static/js/main.be4bfe8e.js"
   ]
 }

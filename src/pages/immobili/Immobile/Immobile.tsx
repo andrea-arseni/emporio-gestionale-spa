@@ -42,6 +42,19 @@ const Immobile: React.FC<{}> = () => {
 
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
+    const addLocali = () => {
+        const tipologia = house!.tipologia?.toLowerCase();
+        return !tipologia ||
+            tipologia === "box" ||
+            tipologia === "camera singola" ||
+            tipologia === "loft" ||
+            tipologia === "posto auto" ||
+            tipologia === "posto letto in camera condivisa" ||
+            tipologia === "uffici open space"
+            ? ""
+            : ` di ${house!.locali} local${house!.locali === "1" ? "e" : "i"}`;
+    };
+
     useEffect(() => {
         const fetchImmobile = async () => {
             dispatch(changeLoading(true));
@@ -492,6 +505,7 @@ const Immobile: React.FC<{}> = () => {
                                     {capitalize(
                                         house.tipologia ? house.tipologia : ""
                                     )}
+                                    {addLocali()}
                                 </div>
                                 <div>
                                     <SquareMetersIcon className={styles.icon} />{" "}

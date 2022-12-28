@@ -1,3 +1,7 @@
 .col {
     height: 200px;
 }
+
+.container {
+    padding-bottom: 30px;
+}

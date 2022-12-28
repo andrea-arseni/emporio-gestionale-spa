@@ -8,6 +8,25 @@
     color: #333;
 }
 
+.title {
+    border: 1px solid red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.title * {
+    border: 1px solid violet;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 20px !important;
+    transform: scale(1.5);
+    position: relative;
+    left: -8px;
+}
+
 .dati {
     display: flex;
     align-items: flex-start;
@@ -37,12 +56,10 @@
     margin-right: 8px;
 }
 
-@media screen and (max-width: 766px) {
-    .mapCol {
-        padding-top: 30px;
-        padding-bottom: 30px;
-        padding-left: 10px;
-        padding-right: 10px;
-        min-height: 400px;
-    }
+.mapCol {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    min-height: 400px;
 }

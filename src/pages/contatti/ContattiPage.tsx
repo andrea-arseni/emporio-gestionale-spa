@@ -1,6 +1,7 @@
 import { IonCol, IonGrid, IonRow } from "@ionic/react";
 import Map from "../../components/map/Map";
 import styles from "./ContattiPage.module.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Contatti: React.FC = () => {
     return (

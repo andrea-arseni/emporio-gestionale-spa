@@ -6,12 +6,14 @@ import {
     IonButtons,
     IonTitle,
 } from "@ionic/react";
-import { reorderFourOutline } from "ionicons/icons";
-import { useLocation } from "react-router-dom";
+import { closeOutline, reorderFourOutline } from "ionicons/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 import { capitalize } from "../../utils/stringUtils";
+import styles from "./Header.module.css";
 
 const Header: React.FC<{ token: string | null }> = (props) => {
     const location = useLocation();
+    const navigate = useNavigate();
 
     const routes = props.token
         ? [
@@ -28,7 +30,8 @@ const Header: React.FC<{ token: string | null }> = (props) => {
               "/rinnova-password",
               "/i-nostri-servizi",
               "/i-nostri-immobili",
-              "contattaci",
+              "/contatti",
+              "/contattaci",
           ];
 
     const nome = routes.find((el) =>
@@ -41,6 +44,15 @@ const Header: React.FC<{ token: string | null }> = (props) => {
               .map((el) => capitalize(el))
               .join(" ")
         : "Emporio Case";
+
+    const isSpecificPage = () => {
+        const urlPieces = location.pathname.split("/");
+        const name = urlPieces[1].toLowerCase();
+        return (
+            urlPieces.length === 3 &&
+            (name === "i-nostri-immobili" || name === "i-nostri-servizi")
+        );
+    };
 
     return (
         <IonHeader collapse="fade" translucent={true} color="light">
@@ -58,6 +70,17 @@ const Header: React.FC<{ token: string | null }> = (props) => {
                 <IonTitle>
                     {nome.charAt(0).toUpperCase() + nome.substring(1)}
                 </IonTitle>
+
+                {isSpecificPage() && (
+                    <IonButtons slot="end" className={styles.close}>
+                        <IonIcon
+                            onClick={() => navigate(-1)}
+                            color="dark"
+                            slot="icon-only"
+                            icon={closeOutline}
+                        ></IonIcon>
+                    </IonButtons>
+                )}
             </IonToolbar>
         </IonHeader>
     );

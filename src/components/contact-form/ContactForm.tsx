@@ -123,23 +123,28 @@ const ContactForm: React.FC<{}> = () => {
 
         if (isFormInvalid) {
             if (inputNameValue.trim() === "") {
-                alert("Nome obbligatorio");
-                inputNameRef.current!.setFocus();
+                alertError("Nome obbligatorio", () =>
+                    inputNameRef.current!.setFocus()
+                );
             } else if (inputNameIsInvalid) {
-                alert("Nome da correggere");
-                inputNameRef.current!.setFocus();
+                alertError("Nome da correggere", () =>
+                    inputNameRef.current!.setFocus()
+                );
             } else if (inputTelefonoIsInvalid) {
-                alert("Telefono da correggere");
-                inputTelefonoRef.current?.setFocus();
+                alertError("Telefono da correggere", () =>
+                    inputTelefonoRef.current!.setFocus()
+                );
             } else if (inputEmailIsInvalid) {
-                alert("Email da correggere");
-                inputEmailRef.current?.setFocus();
+                alertError("Email da correggere", () =>
+                    inputEmailRef.current!.setFocus()
+                );
             } else if (
                 inputTelefonoValue.trim() === "" &&
                 inputEmailValue.trim() === ""
             ) {
-                alert("Inserire almeno uno tra telefono ed email");
-                inputTelefonoRef.current?.setFocus();
+                alertError("Inserire almeno uno tra telefono ed email", () =>
+                    inputTelefonoRef.current!.setFocus()
+                );
             }
             return;
         }
@@ -181,6 +186,22 @@ const ContactForm: React.FC<{}> = () => {
                 presentErrorModal("Errore, invio dati non riuscito!");
             }
         }
+    };
+
+    const alertError = (message: string, action: () => void) => {
+        presentAlert({
+            header: "Attenzione!",
+            message,
+            buttons: [
+                {
+                    text: "Ok",
+                    handler: () =>
+                        setTimeout(() => {
+                            action();
+                        }, 300),
+                },
+            ],
+        });
     };
 
     const presentErrorModal = (message: string) => {

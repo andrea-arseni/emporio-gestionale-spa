@@ -2,6 +2,8 @@ import styles from "./HouseCard.module.css";
 import notAvailable from "../../../assets/notAvailable.png";
 import { ReactComponent as SquareMetersIcon } from "../../../assets/icons/planimetry.svg";
 import { ReactComponent as TownIcon } from "../../../assets/icons/building.svg";
+import { ReactComponent as EuroIcon } from "../../../assets/icons/euro.svg";
+import { ReactComponent as HouseIcon } from "../../../assets/icons/house.svg";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -135,14 +137,12 @@ const HouseCard: React.FC<{
                         </p>
                     )}
                     <span>
-                        <i className="bi bi-currency-euro rightSpace"></i>
-                        {`${capitalize(
-                            props.house.contratto!
-                        )} a ${stringifyNumber(props.house.prezzo!)} €
+                        <EuroIcon className={styles.euroicon} />{" "}
+                        {`${stringifyNumber(props.house.prezzo!)} 
                     ${props.house.contratto === "affitto" ? " al mese" : ""}`}
                     </span>
                     <span>
-                        <i className="bi bi-house-door rightSpace"></i>
+                        <HouseIcon className={styles.icon} />{" "}
                         {`${
                             props.house.tipologia
                                 ? capitalize(props.house.tipologia)

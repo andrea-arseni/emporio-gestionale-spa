@@ -1,5 +1,5 @@
 import styles from "./HousePhoto.module.css";
-import { ReactComponent as ArrowIcon } from "../../assets/icons/left-arrow.svg";
+import { ReactComponent as ArrowIcon } from "../../assets/icons/white-arrow.svg";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks";
