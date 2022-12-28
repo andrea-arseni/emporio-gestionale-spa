@@ -40,7 +40,7 @@ import { possibleStato } from "../../../types/stato";
 import { possibleStatus, status } from "../../../types/status";
 import { possibleTipologies } from "../../../types/tipologia";
 import axiosInstance from "../../../utils/axiosInstance";
-import capitalize from "../../../utils/capitalize";
+import { capitalize } from "../../../utils/stringUtils";
 import errorHandler from "../../../utils/errorHandler";
 import { genericaDescrizione } from "../../../utils/genericaDescrizione";
 import FormGroup from "../../form-components/form-group/FormGroup";

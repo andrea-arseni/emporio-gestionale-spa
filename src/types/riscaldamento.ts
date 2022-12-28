@@ -1,3 +1,12 @@
-export type riscaldamento = "centralizzato" | "autonomo" | "esente";
+export type riscaldamento =
+    | "centralizzato"
+    | "centralizzato con termovalvole"
+    | "autonomo"
+    | "esente";
 
-export const possibleRiscaldamenti = ["centralizzato", "autonomo", "esente"];
+export const possibleRiscaldamenti = [
+    "centralizzato",
+    "centralizzato con termovalvole",
+    "autonomo",
+    "esente",
+];

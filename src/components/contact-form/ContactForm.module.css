@@ -1,0 +1,117 @@
+.frame {
+    min-height: 500px;
+    height: 87%;
+}
+
+.form * {
+    width: 80%;
+    margin-top: 10px;
+}
+
+.form {
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: linear-gradient(
+        to left,
+        rgb(224, 224, 224),
+        rgb(240, 240, 240),
+        rgb(214, 214, 214)
+    );
+    z-index: 9999;
+    flex-flow: column;
+    justify-content: space-around;
+    border: 1px solid gray;
+    max-width: 500px;
+    width: 90%;
+    height: 100%;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: smaller;
+}
+
+.privacySection {
+    border: 1px solid gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: x-small;
+    transition: all 1s;
+}
+
+.evidence {
+    transition: all 1s;
+    color: red;
+    background-color: rgb(250, 189, 189);
+    border: 1px solid red;
+}
+
+.privacyButtonArea {
+    width: 8%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkBox {
+    position: relative;
+    top: -5px;
+}
+
+.inputWrapper {
+    padding: 0 10px 10px 10px;
+    margin: 10px;
+    border-radius: 6px;
+}
+
+.inputWrapper * {
+    margin: 0;
+    padding: 0;
+}
+
+.privacyTextArea {
+    width: 80%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title {
+    color: rgb(52, 52, 52);
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+@media screen and (max-width: 600px) {
+    .form {
+        padding-left: 20px;
+        padding-right: 20px;
+        max-width: 450px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .form {
+        padding-left: 10px;
+        padding-right: 10px;
+        max-width: 400px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .form {
+        padding-left: 5px;
+        padding-right: 5px;
+        max-width: 375px;
+        font-size: small;
+    }
+}

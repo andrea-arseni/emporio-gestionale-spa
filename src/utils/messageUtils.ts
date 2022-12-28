@@ -3,7 +3,7 @@ import { Persona } from "../entities/persona.model";
 import { Visit } from "../entities/visit.model";
 import { userData } from "../store/auth-slice";
 import { tipologia } from "../types/tipologia";
-import capitalize from "./capitalize";
+import { capitalize } from "./stringUtils";
 import { getDayName } from "./timeUtils";
 
 const getNome = (nome: string | null) =>

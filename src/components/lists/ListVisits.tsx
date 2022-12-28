@@ -20,7 +20,7 @@ import useInput from "../../hooks/use-input";
 import useList from "../../hooks/use-list";
 import { setCurrentVisit, setFormActive } from "../../store/appuntamenti-slice";
 import { alertEliminaVisita } from "../../store/appuntamenti-thunk";
-import capitalize from "../../utils/capitalize";
+import { capitalize } from "../../utils/stringUtils";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import errorHandler from "../../utils/errorHandler";
 import { checkShareability } from "../../utils/fileUtils";

@@ -8,7 +8,11 @@ export type tipologia =
     | "box"
     | "posto auto"
     | "magazzino"
-    | "capannone";
+    | "capannone"
+    | "uffici"
+    | "uffici open space"
+    | "camera singola"
+    | "posto letto in camera condivisa";
 
 export const possibleTipologies = [
     "appartamento",
@@ -21,4 +25,8 @@ export const possibleTipologies = [
     "posto auto",
     "magazzino",
     "capannone",
+    "uffici",
+    "uffici open space",
+    "camera singola",
+    "posto letto in camera condivisa",
 ];

@@ -8,7 +8,7 @@ import {
 } from "@ionic/react";
 import { reorderFourOutline } from "ionicons/icons";
 import { useLocation } from "react-router-dom";
-import capitalize from "../../utils/capitalize";
+import { capitalize } from "../../utils/stringUtils";
 
 const Header: React.FC<{ token: string | null }> = (props) => {
     const location = useLocation();

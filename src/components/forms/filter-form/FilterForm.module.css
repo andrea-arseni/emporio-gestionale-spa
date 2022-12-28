@@ -1,0 +1,37 @@
+.formWrapper {
+    border-radius: 6px;
+    border: 1px solid gray;
+    background: linear-gradient(
+        to left,
+        rgb(239, 239, 239),
+        rgb(230, 230, 230)
+    );
+    min-height: 520px;
+    width: 100%;
+    height: 100%;
+}
+
+.titolo {
+    font-weight: 200;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.select {
+    background-color: white;
+    border-radius: 6px;
+    padding: 4px;
+    margin-bottom: 20px;
+    margin-top: 6px;
+}
+
+.form * {
+    width: 80%;
+}
+
+.form {
+    height: 80%;
+    width: 80%;
+    flex-flow: column;
+    justify-content: space-around;
+}

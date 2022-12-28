@@ -5,6 +5,7 @@ import authReducer from "./auth-slice";
 import immobileReducer from "./immobile-slice";
 import personaSlice from "./persona-slice";
 import uiSlice from "./ui-slice";
+import publicImmobileReducer from "./public-immobile-slice";
 
 const store = configureStore({
     reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
         ui: uiSlice,
         persona: personaSlice,
         appuntamenti: appuntamentiSlice,
+        publicImmobile: publicImmobileReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

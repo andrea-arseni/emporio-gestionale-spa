@@ -1,0 +1,7 @@
+.map {
+    height: 100%;
+    width: 100% !important;
+    border-radius: 6px;
+    border: 1px solid gray;
+    min-height: 300px;
+}

@@ -1,0 +1,42 @@
+.immobili {
+    background: linear-gradient(
+        to left,
+        rgb(251, 251, 251),
+        rgb(232, 232, 232)
+    );
+}
+
+.housePart {
+    flex-flow: column;
+    min-height: 500px;
+}
+
+.withoutFooter {
+    height: calc(100vh -44px -36px);
+}
+
+.withFooter {
+    min-height: calc(100vh -44px -36px -62px) !important;
+}
+
+.filterButton {
+    width: 100%;
+    text-transform: capitalize;
+    margin: 0;
+    padding: 0;
+}
+
+.filterFormWrapper {
+    width: 100%;
+    margin: 12px 0px;
+    height: 400px;
+}
+
+.row {
+    height: calc(100vh - 80px);
+    padding-bottom: 44px;
+}
+
+.filterFormWrapper * {
+    max-width: 400px;
+}

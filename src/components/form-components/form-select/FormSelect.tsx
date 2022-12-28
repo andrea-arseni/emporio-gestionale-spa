@@ -1,5 +1,5 @@
 import { IonItem, IonLabel, IonSelect, IonSelectOption } from "@ionic/react";
-import capitalize from "../../../utils/capitalize";
+import { capitalize } from "../../../utils/stringUtils";
 
 const FormSelect: React.FC<{
     title: string;

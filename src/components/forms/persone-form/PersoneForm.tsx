@@ -23,7 +23,7 @@ import useInput from "../../../hooks/use-input";
 import { possibiliPersoneTypes } from "../../../types/persona_types";
 import { possibiliProvenienzePersona } from "../../../types/provenienza_persona";
 import axiosInstance from "../../../utils/axiosInstance";
-import capitalize from "../../../utils/capitalize";
+import { capitalize } from "../../../utils/stringUtils";
 import errorHandler from "../../../utils/errorHandler";
 import FormInput from "../../form-components/form-input/FormInput";
 import Modal from "../../modal/Modal";

@@ -1,0 +1,9 @@
+.gradient {
+    background: linear-gradient(
+        to right,
+        rgb(177, 177, 177),
+        rgb(223, 223, 223),
+        rgb(177, 177, 177)
+    );
+    height: calc(100% - 44px);
+}

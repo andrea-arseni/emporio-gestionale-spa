@@ -38,6 +38,7 @@ export class Immobile {
         public caratteristiche: Caratteristiche | null,
         public logs: Log[] | null,
         public files: Documento[] | null,
-        public inquilini: Persona[] | null
+        public inquilini: Persona[] | null,
+        public fileFetched?: boolean | null
     ) {}
 }

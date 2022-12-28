@@ -42,11 +42,15 @@ import { useEffect } from "react";
 import { performAutoLogin } from "./store/auth-thunk";
 import StoriaPage from "./pages/storia/StoriaPage";
 import EmporioPage from "./pages/emporio/EmporioPage";
-import ServiziPage from "./pages/servizi/ServiziPage";
-import PublicImmobiliPage from "./pages/immobili/publicImmobiliPage/PublicImmobiliPage";
+import ServiziPage from "./pages/servizi/Servizi";
 import ContattiPage from "./pages/contatti/ContattiPage";
 import { isNativeApp } from "./utils/contactUtils";
 import { ScreenOrientation } from "@awesome-cordova-plugins/screen-orientation";
+import Servizio from "./pages/servizio/Servizio";
+import Contattaci from "./pages/contattaci/Contattaci";
+import Immobili from "./pages/immobili/Immobili/Immobili";
+import Immobile from "./pages/immobili/Immobile/Immobile";
+import Filtra from "./pages/immobili/FiltraPage/Filtra";
 
 setupIonicReact();
 
@@ -67,7 +71,8 @@ const App: React.FC = () => {
     return (
         <IonApp>
             <IonSplitPane contentId="main">
-                {(token || isNativeApp) && <Menu />}
+                <Menu />
+                {/* {(token || isNativeApp) && <Menu />} */}
                 <IonContent id="main" color="light">
                     <Header token={token} />
 
@@ -98,13 +103,34 @@ const App: React.FC = () => {
                         )}
                         {!token && (
                             <Route
+                                path="/i-nostri-servizi/:serviceName"
+                                element={<Servizio />}
+                            />
+                        )}
+                        {!token && (
+                            <Route
                                 path="/i-nostri-immobili"
-                                element={<PublicImmobiliPage />}
+                                element={<Immobili />}
+                            />
+                        )}
+                        {!token && (
+                            <Route path="/filtra" element={<Filtra />} />
+                        )}
+                        {!token && (
+                            <Route
+                                path="/i-nostri-immobili/:id"
+                                element={<Immobile />}
                             />
                         )}
                         {!token && (
                             <Route
                                 path="/contattaci"
+                                element={<Contattaci />}
+                            />
+                        )}
+                        {!token && (
+                            <Route
+                                path="/contatti"
                                 element={<ContattiPage />}
                             />
                         )}
@@ -194,3 +220,7 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+/* 
+- correct PWS 
+*/

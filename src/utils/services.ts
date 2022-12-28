@@ -78,8 +78,7 @@ export const services: service[] = [
         image: attivitaImage,
         title: "CESSIONE ATTIVITA'",
         message: [
-            "Quando si decide di terminare un'attività il rischio è quello di perdere un capitale consistente solo perché non si è stati adeguatamente assistiti.",
-            "Noi effettuiamo una valutazione del valore sul mercato della vostra attività, tenendo conto della sua posizione, del parco clienti in essere, della sua potenzialità e del valore delle eventuali macchine/attrezzature presenti.",
+            "Effettuiamo una valutazione del valore sul mercato della vostra attività, tenendo conto della sua posizione, del parco clienti in essere, della sua potenzialità e del valore delle eventuali macchine/attrezzature presenti.",
             "Infine ci occupiamo della cessione in modo che questa sia venduta ad un giusto prezzo di mercato.",
         ],
     },

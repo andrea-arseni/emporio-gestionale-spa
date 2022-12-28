@@ -1,0 +1,61 @@
+.section {
+    padding: 50px;
+    box-sizing: border-box;
+}
+
+.section:hover .imgWrapper {
+    transform: scale(1.1);
+}
+
+.white {
+    background: linear-gradient(
+        to left,
+        rgb(206, 206, 206),
+        rgb(255, 255, 255),
+        rgb(206, 206, 206)
+    );
+    color: #333;
+}
+
+.black {
+    background: linear-gradient(to left, rgb(5, 67, 36), rgb(0, 91, 46));
+    color: white;
+}
+
+.imgWrapper {
+    transition: all 0.4s;
+    height: 200px;
+    width: 200px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    border: 1px solid gray;
+    background-color: white;
+}
+
+.img {
+    height: 100%;
+    width: 100%;
+}
+
+.text {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.aligner {
+    margin-left: 50px;
+    width: 40%;
+}
+
+@media screen and (min-width: 992px) {
+    .textWrapper {
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .textWrapper {
+        font-size: small;
+    }
+}

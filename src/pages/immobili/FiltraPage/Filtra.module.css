@@ -1,0 +1,13 @@
+.gradient {
+    background: linear-gradient(
+        to right,
+        rgb(25, 25, 25),
+        rgb(141, 141, 141),
+        rgb(25, 25, 25)
+    );
+    height: calc(100% - 44px);
+}
+
+.column {
+    width: 90%;
+}

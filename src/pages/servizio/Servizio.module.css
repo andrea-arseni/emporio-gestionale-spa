@@ -1,0 +1,61 @@
+.dati {
+    margin: 30px;
+    padding: 30px;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 6px;
+}
+
+.row {
+    z-index: 10;
+}
+
+.image {
+    height: 100% !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    animation-duration: 10s;
+    opacity: 0;
+    animation-name: backdrop;
+    animation-fill-mode: forwards;
+}
+
+.container {
+    position: relative;
+    height: calc(100% - 44px) !important;
+}
+
+.button {
+    text-transform: capitalize;
+}
+
+@keyframes backdrop {
+    0% {
+        opacity: 0;
+        transform: translate(-40px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@media screen and (max-width: 990px) {
+    .dati {
+        font-size: small;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .dati {
+        font-size: medium;
+    }
+}
+
+@media screen and (max-width: 492px) {
+    .dati {
+        font-size: small;
+    }
+}

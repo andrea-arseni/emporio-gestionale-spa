@@ -121,7 +121,6 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     url = `/visite?filter=${filter.filter}&value=${filter.value}`;
                 }
                 const res = await axiosInstance.get(url);
-                console.log(res);
                 if (!mounted) return;
                 dispatch(changeLoading(false));
                 setVisits(res.data.data);

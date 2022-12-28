@@ -1,0 +1,198 @@
+.houseCard {
+    border: 1px solid gray;
+    width: 90%;
+    height: 250px;
+    background-color: rgb(242, 242, 242);
+    border-radius: 6px;
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: 20px;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+}
+
+.houseCard:hover {
+    color: black;
+    background-color: white;
+}
+
+.houseCard:hover img {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.wrapper {
+    height: 200px;
+    width: 90%;
+}
+
+.spinnerWrapper {
+    width: 300px;
+}
+
+.imgWrapper {
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    background: linear-gradient(rgb(255, 255, 255), rgb(215, 215, 215));
+    border: 1px solid lightgray;
+}
+
+.imgWrapper img {
+    opacity: 0.9;
+    transform: scale(1.1);
+    min-height: 100%;
+    min-width: 100%;
+    transition: 0.6s all;
+}
+
+.textPart {
+    width: 50%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    flex-flow: column;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    color: rgb(56, 56, 56);
+    transition: all 0.6s;
+}
+
+.textPart * {
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.textPart:hover {
+    color: black;
+}
+
+.titolo {
+    color: rgb(5, 89, 215);
+    position: relative;
+    top: -10px;
+}
+
+.ref {
+    position: relative;
+    top: 2px;
+    padding: 2px 6px 2px 6px;
+    border: 1px solid rgb(5, 89, 215);
+    border-radius: 10px;
+    margin-right: 6px;
+}
+
+.ref:hover {
+    text-decoration: none !important;
+}
+
+.icon {
+    margin-right: 6px;
+    transform: scale(0.8);
+    position: relative;
+    left: -4px;
+}
+
+.sup {
+    vertical-align: super;
+    font-size: xx-small;
+}
+
+@media screen and (max-width: 1050px) {
+    .imgWrapper {
+        max-width: 250px;
+    }
+    .spinnerWrapper {
+        width: 250px;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .textPart {
+        font-size: small;
+    }
+}
+
+@media screen and (max-width: 850px) {
+    .imgWrapper {
+        height: 70%;
+        max-width: 200px;
+    }
+    .spinnerWrapper {
+        width: 200px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .textPart {
+        font-size: medium;
+    }
+    .imgWrapper {
+        height: 100%;
+        max-width: 300px;
+    }
+    .spinnerWrapper {
+        width: 300px;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .imgWrapper {
+        max-width: 250px;
+    }
+    .spinnerWrapper {
+        width: 250px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .textPart {
+        font-size: small;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .imgWrapper {
+        max-width: 200px;
+    }
+    .spinnerWrapper {
+        width: 200px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .imgWrapper {
+        max-width: 160px;
+        height: 160px;
+    }
+    .spinnerWrapper {
+        width: 160px;
+    }
+    .houseCard {
+        height: 300px;
+        width: 95%;
+    }
+    .titolo {
+        text-align: center;
+        padding-left: 20px;
+        padding-right: 20px;
+        font-weight: bold;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .imgWrapper {
+        max-width: 140px;
+    }
+    .spinnerWrapper {
+        width: 140px;
+    }
+}

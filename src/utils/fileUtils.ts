@@ -5,7 +5,6 @@ import axiosInstance from "./axiosInstance";
 import errorHandler from "./errorHandler";
 import heic2any from "heic2any";
 import Resizer from "react-image-file-resizer";
-import capitalize from "./capitalize";
 import { fileSpeciale, listFileSpeciali } from "../types/file_speciali";
 import { getDayName, getTwoDigitString } from "./timeUtils";
 import { isNativeApp } from "./contactUtils";
@@ -17,6 +16,7 @@ import { isPlatform } from "@ionic/core";
 import { changeLoading } from "../store/ui-slice";
 import { addFile } from "../store/immobile-slice";
 import { Mediastore } from "@agorapulse/capacitor-mediastore";
+import { capitalize } from "./stringUtils";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -163,7 +163,6 @@ export const salvaDocumentoInAndroid = async (nome: string, blob: Blob) => {
             });
             alert(`File scaricato. Si trova in Galleria`);
         } catch (e) {
-            console.log(e);
             alert("Errore nel salvataggio in Galleria, impossibile procedere");
         }
     } else {
@@ -174,7 +173,6 @@ export const salvaDocumentoInAndroid = async (nome: string, blob: Blob) => {
             });
             alert(`File scaricato. Si trova in Downloads`);
         } catch (e) {
-            console.log(e);
             alert("Errore nel salvataggio in Download, impossibile procedere");
         }
     }

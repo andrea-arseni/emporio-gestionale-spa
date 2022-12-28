@@ -1,6 +1,6 @@
 import { IonItem, IonLabel } from "@ionic/react";
 import { Log } from "../../entities/log.model";
-import capitalize from "../../utils/capitalize";
+import { capitalize } from "../../utils/stringUtils";
 import { getDateAndTime } from "../../utils/timeUtils";
 
 const ListLogs: React.FC<{

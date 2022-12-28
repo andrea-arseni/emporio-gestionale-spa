@@ -1,89 +1,48 @@
-.form {
-    margin: 0 auto;
-    width: 60%;
-    background-color: white;
-    border: 1px solid gray;
-    border-radius: 6px;
-    padding: 10px;
-    flex-flow: column;
+.contatti {
+    background: linear-gradient(
+        to left,
+        rgb(206, 206, 206),
+        rgb(255, 255, 255),
+        rgb(237, 237, 237)
+    );
+    color: #333;
 }
 
-.form * {
-    width: 80%;
-}
-
-.logo {
-    max-width: 280px;
-    width: 100%;
-    margin: 20px auto;
-}
-
-.inputWrapper {
-    padding: 0 10px 10px 10px;
-    margin: 10px;
-}
-
-.progressDiv {
-    margin-bottom: 30px;
-}
-
-.button {
-    margin: 10px;
-}
-
-.link:hover {
-    text-decoration: underline;
-}
-
-.mainButton {
-    margin-bottom: 20px;
-}
-
-.privacySection {
+.dati {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    font-size: small;
-    transition: all 1s;
-    border-radius: 6px;
-    border: 1px solid lightgray;
-    padding: 12px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    top: -20px;
 }
 
-.privacySectionEvidence {
-    border: 1px solid red;
-    background-color: rgb(250, 238, 238);
+.content {
+    position: relative;
+    top: 6px;
+    font-style: italic;
+    color: rgb(7, 96, 250);
+    line-height: 160%;
 }
 
-.evidence {
-    transition: all 1s;
-    color: red;
+.dati * {
+    margin-bottom: 20px;
+    width: 90%;
 }
 
-.checkButtonFrame {
-    width: 20%;
+.icon {
+    height: 17px;
+    width: 17px;
+    margin-right: 8px;
 }
 
-.notEvidence {
-    transition: all 1s;
-    color: color;
-}
-
-.privacyCheckButton {
-    max-width: 20px;
-    color: white !important;
-    background-color: white !important;
-}
-
-@media (max-width: 600px) {
-    .form {
-        margin: 0;
-        width: 80%;
-    }
-}
-
-@media (max-width: 400px) {
-    .form {
-        width: 96%;
+@media screen and (max-width: 766px) {
+    .mapCol {
+        padding-top: 30px;
+        padding-bottom: 30px;
+        padding-left: 10px;
+        padding-right: 10px;
+        min-height: 400px;
     }
 }

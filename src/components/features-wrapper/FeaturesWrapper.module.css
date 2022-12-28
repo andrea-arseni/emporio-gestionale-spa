@@ -1,0 +1,51 @@
+.featureWrapper {
+    margin-top: 20px;
+    border: 1px solid gray;
+    border-radius: 6px;
+}
+
+.titleFrame {
+    margin: 5px;
+    padding: 12px;
+    color: #444;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: medium;
+}
+
+.title {
+    padding-right: 10px;
+}
+
+.arrowWrapper {
+    transition: 0.4s all;
+    transform: scale(1.4);
+    color: #0b63f2;
+}
+
+.changed {
+    transform: scale(1.4) rotate(90deg);
+}
+
+.childrenWrapper {
+    padding: 16px;
+}
+
+.frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+@media screen and (max-width: 500px) {
+    .featureWrapper {
+        font-size: small;
+    }
+}

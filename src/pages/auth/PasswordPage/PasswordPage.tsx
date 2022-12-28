@@ -14,7 +14,7 @@ import { useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
 import { performLogin } from "../../../store/auth-thunk";
 import axiosInstance from "../../../utils/axiosInstance";
-import capitalize from "../../../utils/capitalize";
+import { capitalize } from "../../../utils/stringUtils";
 import styles from "./PasswordPage.module.css";
 
 const PasswordPage: React.FC<{}> = () => {

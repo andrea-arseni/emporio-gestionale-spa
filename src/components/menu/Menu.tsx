@@ -18,6 +18,8 @@ import {
     businessOutline,
     layersOutline,
     lockOpenOutline,
+    mapOutline,
+    pencilOutline,
 } from "ionicons/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -86,9 +88,14 @@ const publicPages: AppPage[] = [
         icon: businessOutline,
     },
     {
-        title: "Contattaci",
+        title: "Contatti",
+        url: "/contatti",
+        icon: mapOutline,
+    },
+    {
+        title: "Scrivici",
         url: "/contattaci",
-        icon: peopleOutline,
+        icon: pencilOutline,
     },
     {
         title: "Area Riservata",

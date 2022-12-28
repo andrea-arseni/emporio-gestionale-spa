@@ -15,7 +15,7 @@ import useInput from "../../../hooks/use-input";
 import useList from "../../../hooks/use-list";
 import useQueryData from "../../../hooks/use-query-data";
 import axiosInstance from "../../../utils/axiosInstance";
-import capitalize from "../../../utils/capitalize";
+import { capitalize } from "../../../utils/stringUtils";
 import errorHandler from "../../../utils/errorHandler";
 import FormInput from "../../form-components/form-input/FormInput";
 import FormSelect from "../../form-components/form-select/FormSelect";
