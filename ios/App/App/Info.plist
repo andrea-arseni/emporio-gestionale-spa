@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.1</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -28,9 +28,9 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Permetti l&apos;utilizzo della camera?</string>
+	<string>Permetti l'utilizzo della camera?</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Permetti l&apos;interazione della App con i tuoi contatti?</string>
+	<string>Permetti l'interazione della App con i tuoi contatti?</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Permetti la scrittura di foto nella galleria?</string>
 	<key>NSPhotoLibraryUsageDescription</key>
