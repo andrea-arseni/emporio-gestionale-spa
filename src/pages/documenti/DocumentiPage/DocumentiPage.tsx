@@ -6,13 +6,14 @@ import {
     useIonAlert,
 } from "@ionic/react";
 import { documentsSharp } from "ionicons/icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
 import DocumentoForm from "../../../components/forms/documento-form/DocumentoForm";
 import Selector from "../../../components/selector/Selector";
 import { Documento } from "../../../entities/documento.model";
 import { Entity } from "../../../entities/entity";
-import useQueryData from "../../../hooks/use-query-data";
+import { useAppDispatch } from "../../../hooks";
+import { triggerDocumentiUpdate } from "../../../store/documenti-slice";
 import { submitFile } from "../../../utils/fileUtils";
 
 const DocumentiPage: React.FC<{}> = () => {
@@ -24,8 +25,6 @@ const DocumentiPage: React.FC<{}> = () => {
 
     const inputFileRef = useRef<any>();
 
-    const queryData = useQueryData("documenti");
-
     const [currentDocumento, setCurrentDocumento] = useState<Entity | null>(
         null
     );
@@ -34,6 +33,14 @@ const DocumentiPage: React.FC<{}> = () => {
         setMode("list");
         setCurrentDocumento(null);
     };
+
+    const dispatch = useAppDispatch();
+
+    const [update, triggerUpdate] = useState<number>(0);
+
+    useEffect(() => {
+        dispatch(triggerDocumentiUpdate());
+    }, [update, dispatch]);
 
     return (
         <>
@@ -66,7 +73,7 @@ const DocumentiPage: React.FC<{}> = () => {
                                 setShowLoading,
                                 presentAlert,
                                 `/documenti`,
-                                queryData.setUpdate
+                                triggerUpdate
                             )
                         }
                     />
@@ -75,7 +82,6 @@ const DocumentiPage: React.FC<{}> = () => {
                         setMode={setMode}
                         entitiesType="documenti"
                         setCurrentEntity={setCurrentDocumento}
-                        queryData={queryData}
                     />
                 </>
             )}

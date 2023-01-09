@@ -8,7 +8,6 @@ import { Entity } from "../../../entities/entity";
 import { Evento } from "../../../entities/evento.model";
 import { Persona } from "../../../entities/persona.model";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
-import useQueryData from "../../../hooks/use-query-data";
 import { fetchPersonaById } from "../../../store/persona.thunk";
 
 const EventsPage: React.FC<{ id: string }> = (props) => {
@@ -19,8 +18,6 @@ const EventsPage: React.FC<{ id: string }> = (props) => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const [currentEvent, setCurrentEvent] = useState<Entity | null>(null);
-
-    const queryData = useQueryData("eventi");
 
     const backToList = () => {
         setMode("list");
@@ -39,10 +36,10 @@ const EventsPage: React.FC<{ id: string }> = (props) => {
                     />
 
                     <Selector
+                        localQuery
                         setMode={setMode}
                         entitiesType="eventi"
                         setCurrentEntity={setCurrentEvent}
-                        queryData={queryData}
                         baseUrl={`/persone/${currentPersona.id}/eventi`}
                     />
                 </>

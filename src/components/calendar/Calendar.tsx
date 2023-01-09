@@ -11,6 +11,7 @@ import {
 import { peopleOutline } from "ionicons/icons";
 import { memo, useEffect, useRef } from "react";
 import { Visit } from "../../entities/visit.model";
+import { useAppSelector } from "../../hooks";
 import useSize from "../../hooks/use-size";
 import { areDateEquals, getDateAsString, Giorno } from "../../utils/timeUtils";
 import CalendarItem from "./calendar-item/CalendarItem";
@@ -26,6 +27,10 @@ const Calendar: React.FC<{
 }> = (props) => {
     const timeRef = useRef<HTMLDivElement>(null);
 
+    const trigger = useAppSelector(
+        (state) => state.appuntamenti.queryData.update
+    );
+
     useEffect(() => {
         const timeOut = setTimeout(() => {
             if (timeRef.current) {
@@ -36,7 +41,7 @@ const Calendar: React.FC<{
             }
         }, 400);
         return () => clearTimeout(timeOut);
-    }, [timeRef, props.currentWeek]);
+    }, [timeRef, props.currentWeek, trigger]);
 
     const isToday = (dayProposed: Date) =>
         areDateEquals(new Date(), dayProposed);

@@ -8,8 +8,10 @@ import FormVisit from "../../components/forms/visit-form/VisitForm";
 import Selector from "../../components/selector/Selector";
 import { Immobile } from "../../entities/immobile.model";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import useQueryData from "../../hooks/use-query-data";
-import { backToList, refresh } from "../../store/appuntamenti-slice";
+import {
+    backToList,
+    triggerAppuntamentiUpdate,
+} from "../../store/appuntamenti-slice";
 import { fetchImmobileById } from "../../store/immobile-thunk";
 import { fetchPersonaById } from "../../store/persona.thunk";
 import LogsPage from "../immobili/LogsPage/LogsPage";
@@ -29,8 +31,6 @@ const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
             ? state.immobile.immobile
             : state.persona.persona
     );
-
-    const queryData = useQueryData("visite");
 
     const isFormActive = useAppSelector(
         (state) => state.appuntamenti.isFormActive
@@ -52,7 +52,7 @@ const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
         );
 
     const operationComplete = () => {
-        dispatch(refresh());
+        dispatch(triggerAppuntamentiUpdate());
         dispatch(backToList());
     };
 
@@ -60,11 +60,7 @@ const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
         return isFormActive ? (
             <FormVisit operationComplete={operationComplete} />
         ) : (
-            <Selector
-                queryData={queryData}
-                entitiesType="visite"
-                baseUrl={baseUrl}
-            />
+            <Selector localQuery entitiesType="visite" baseUrl={baseUrl} />
         );
     };
 

@@ -12,9 +12,13 @@ import {
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { Documento } from "../../../entities/documento.model";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
-import { erasePhoto } from "../../../store/immobile-slice";
+import {
+    deselectPhoto,
+    erasePhoto,
+    selectPhoto,
+    setIsSelectionModeAllowed,
+} from "../../../store/immobile-slice";
 import {
     fetchFileById,
     swapPhotoPositions,
@@ -24,61 +28,72 @@ import errorHandler from "../../../utils/errorHandler";
 import styles from "./ImmobiliPhoto.module.css";
 
 const ImmobiliPhoto: React.FC<{
-    foto: Documento;
-    idImmobile: string;
-    selectionMode: boolean;
-    selectPhoto: (id: number) => void;
-    deselectPhoto: (id: number) => void;
-    isSelected: boolean;
-    bloccaSelezione: (input: boolean) => void;
+    id: number;
 }> = (props) => {
+    console.log("Rendered");
+
     const [presentAlert] = useIonAlert();
 
     const dispatch = useAppDispatch();
 
+    const isSelectionModeActivated = useAppSelector(
+        (state) => state.immobile.isSelectionModeActivated
+    );
+
+    const idImmobile = useAppSelector((state) => state.immobile.immobile?.id);
+
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
-    const [rotating, setRotating] = useState<null | "90" | "-90">(null);
+    const [rotatingSense, setRotatingSense] = useState<null | "90" | "-90">(
+        null
+    );
 
-    const base64String = useAppSelector(
+    const [isRotating, setIsRotating] = useState<boolean>(false);
+
+    const foto = useAppSelector(
         (state) =>
-            state.immobile.immobile?.files?.find(
-                (el) => el.id === props.foto.id
-            )?.base64String
+            state.immobile.immobile?.files?.find((el) => el.id === props.id)!
+    );
+
+    const isSelected = useAppSelector((state) =>
+        state.immobile.listIdPhotoSelected.find((id) => props.id === id)
     );
 
     useEffect(() => {
-        setShowLoading(base64String === "fetching");
-    }, [base64String]);
+        setShowLoading(foto.base64String === "fetching");
+    }, [foto.base64String]);
 
     useEffect(() => {
         let mounted = true;
         let timeOut: NodeJS.Timeout | null = null;
 
         const rotatePhoto = async () => {
-            props.bloccaSelezione(true);
+            setIsRotating(true);
+            dispatch(setIsSelectionModeAllowed(false));
             setShowLoading(true);
             try {
-                const reqBody = { rotating: +rotating! };
-                const url = `/immobili/${props.idImmobile}/files/${props.foto.id}`;
+                const reqBody = { rotating: +rotatingSense! };
+                const url = `/immobili/${idImmobile}/files/${props.id}`;
                 await axiosSecondaryApi.patch(url, reqBody);
                 if (!mounted) return;
-                setRotating(null);
-                dispatch(erasePhoto({ id: props.foto.id! }));
+                setRotatingSense(null);
+                dispatch(erasePhoto({ id: props.id! }));
                 timeOut = setTimeout(() => {
                     setShowLoading(false);
+                    setIsRotating(false);
                     dispatch(
                         fetchFileById(
-                            `/immobili/${props.idImmobile}/files/${props.foto.id}`
+                            `/immobili/${idImmobile}/files/${props.id}`
                         )
                     );
-                    props.bloccaSelezione(false);
-                }, 2000);
+                    dispatch(setIsSelectionModeAllowed(true));
+                }, 4000);
             } catch (e) {
                 if (!mounted) return;
-                setRotating(null);
+                setRotatingSense(null);
+                setIsRotating(false);
                 setShowLoading(false);
-                props.bloccaSelezione(false);
+                dispatch(setIsSelectionModeAllowed(true));
                 errorHandler(
                     e,
                     () => {},
@@ -88,23 +103,30 @@ const ImmobiliPhoto: React.FC<{
             }
         };
 
-        if (rotating) rotatePhoto();
+        if (rotatingSense) rotatePhoto();
 
         return () => {
             mounted = false;
             if (timeOut) clearTimeout(timeOut);
         };
-    }, [rotating, props, presentAlert, dispatch]);
+    }, [
+        rotatingSense,
+        isRotating,
+        props.id,
+        presentAlert,
+        dispatch,
+        idImmobile,
+    ]);
 
     const [, dragRef] = useDrag({
         type: "photo",
-        item: { id: props.foto.id, name: props.foto.nome },
+        item: { id: props.id, name: foto.nome },
     });
 
     const [{ isOver }, dropRef] = useDrop({
         accept: "photo",
         drop: (item: { id: number; name: string }) => {
-            if (props.foto.nome === "0" || item.name === "0") {
+            if (foto.nome === "0" || item.name === "0") {
                 presentAlert({
                     header: "Scambio non permesso",
                     message: `Non è possibile spostare una foto con la scritta.`,
@@ -115,11 +137,11 @@ const ImmobiliPhoto: React.FC<{
                         },
                     ],
                 });
-            } else if (item.id !== props.foto.id)
+            } else if (item.id !== foto.id)
                 dispatch(
                     swapPhotoPositions({
-                        url: `/immobili/${props.idImmobile}/files/${item.id}`,
-                        name: props.foto.nome!,
+                        url: `/immobili/${idImmobile}/files/${item.id}`,
+                        name: foto.nome!,
                     })
                 );
         },
@@ -131,7 +153,7 @@ const ImmobiliPhoto: React.FC<{
     return (
         <div
             className={`${styles.frame} centered ${isOver ? styles.over : ""}`}
-            ref={!props.selectionMode ? dropRef : undefined}
+            ref={!isSelectionModeActivated ? dropRef : undefined}
         >
             {showLoading && <IonSpinner color="primary"></IonSpinner>}
             {!showLoading && (
@@ -139,23 +161,23 @@ const ImmobiliPhoto: React.FC<{
                     <img
                         ref={dragRef}
                         onClick={() =>
-                            !props.selectionMode
+                            !isSelectionModeActivated
                                 ? null
-                                : props.isSelected
-                                ? props.deselectPhoto(props.foto.id!)
-                                : props.selectPhoto(props.foto.id!)
+                                : isSelected
+                                ? dispatch(deselectPhoto(foto.id!))
+                                : dispatch(selectPhoto(foto.id!))
                         }
-                        src={base64String}
+                        src={foto.base64String}
                         className={`${styles.image} ${
-                            props.isSelected
+                            isSelected
                                 ? styles.isSelected
-                                : props.selectionMode
+                                : isSelectionModeActivated
                                 ? styles.isNotSelected
                                 : ""
                         } `}
                         alt="Immagine non disponibile 😱😱😱"
                     />
-                    {!props.selectionMode && props.foto.nome !== "0" && (
+                    {!isSelectionModeActivated && foto.nome !== "0" && (
                         <>
                             <IonFab
                                 vertical="bottom"
@@ -165,7 +187,7 @@ const ImmobiliPhoto: React.FC<{
                                 <IonFabButton
                                     size="small"
                                     color="light"
-                                    onClick={() => setRotating("-90")}
+                                    onClick={() => setRotatingSense("-90")}
                                 >
                                     <IonIcon icon={arrowUndoOutline} />
                                 </IonFabButton>
@@ -178,17 +200,17 @@ const ImmobiliPhoto: React.FC<{
                                 <IonFabButton
                                     size="small"
                                     color="light"
-                                    onClick={() => setRotating("90")}
+                                    onClick={() => setRotatingSense("90")}
                                 >
                                     <IonIcon icon={arrowRedoOutline} />
                                 </IonFabButton>
                             </IonFab>
                         </>
                     )}
-                    {props.selectionMode && (
+                    {isSelectionModeActivated && (
                         <IonFab vertical="bottom" horizontal="end" slot="fixed">
                             <IonFabButton size="small" color="light">
-                                {props.isSelected && (
+                                {isSelected && (
                                     <IonIcon
                                         color="primary"
                                         icon={checkmarkSharp}

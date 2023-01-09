@@ -13,7 +13,6 @@ import { Persona } from "../../../entities/persona.model";
 import { User } from "../../../entities/user.model";
 import useInput from "../../../hooks/use-input";
 import useList from "../../../hooks/use-list";
-import useQueryData from "../../../hooks/use-query-data";
 import axiosInstance from "../../../utils/axiosInstance";
 import { capitalize } from "../../../utils/stringUtils";
 import errorHandler from "../../../utils/errorHandler";
@@ -35,11 +34,15 @@ import { backToList } from "../../../store/appuntamenti-slice";
 import { setModalOpened } from "../../../store/ui-slice";
 import { isNativeApp, saveContact } from "../../../utils/contactUtils";
 import styles from "./VisitForm.module.css";
+import { useNavigate } from "react-router-dom";
+import { navigateToSpecificItem } from "../../../utils/navUtils";
 
 const FormVisit: React.FC<{
     readonly?: boolean;
     operationComplete?: () => void;
 }> = (props) => {
+    const navigate = useNavigate();
+
     const visit = useAppSelector((state) => state.appuntamenti.currentVisit);
 
     const dispatch = useAppDispatch();
@@ -121,10 +124,6 @@ const FormVisit: React.FC<{
 
     const { list: personeItemsList, closeItemsList: closePersoneItemsList } =
         useList();
-
-    const queryDataImmobili = useQueryData("immobili");
-
-    const queryDataPersone = useQueryData("persone");
 
     useEffect(() => {
         const closeModal = () => {
@@ -234,17 +233,27 @@ const FormVisit: React.FC<{
                 style={{ padding: "0", margin: "0" }}
                 ref={immobileItemsList}
             >
-                {props.readonly && <IonItem>{immobileData}</IonItem>}
-                {!props.readonly && (
-                    <SecondaryItem
-                        directDeleting
-                        key={immobileValue!.id}
-                        deleteAction={() => setImmobileValue(null)}
-                        closeItems={closeImmobileItemsList}
-                    >
-                        {immobileData}
-                    </SecondaryItem>
-                )}
+                <SecondaryItem
+                    directDeleting
+                    key={immobileValue!.id}
+                    visualizeAction={async () => {
+                        dispatch(setModalOpened(false));
+                        await new Promise((r) => setTimeout(r, 400));
+                        navigateToSpecificItem(
+                            "immobili",
+                            immobileValue!.id!.toString(),
+                            navigate
+                        );
+                    }}
+                    deleteAction={
+                        props.readonly
+                            ? undefined
+                            : () => setImmobileValue(null)
+                    }
+                    closeItems={closeImmobileItemsList}
+                >
+                    {immobileData}
+                </SecondaryItem>
             </IonList>
         );
     };
@@ -276,21 +285,29 @@ const FormVisit: React.FC<{
                 style={{ padding: "0", margin: "0" }}
                 ref={personeItemsList}
             >
-                {props.readonly && <IonItem>{personaData}</IonItem>}
-                {!props.readonly && (
-                    <SecondaryItem
-                        directDeleting
-                        addAction={
-                            isNativeApp
-                                ? () => saveContact(presentAlert, personaValue!)
-                                : undefined
-                        }
-                        closeItems={closePersoneItemsList}
-                        deleteAction={() => setPersonaValue(null)}
-                    >
-                        {personaData}
-                    </SecondaryItem>
-                )}
+                <SecondaryItem
+                    directDeleting
+                    visualizeAction={async () => {
+                        dispatch(setModalOpened(false));
+                        await new Promise((r) => setTimeout(r, 400));
+                        navigateToSpecificItem(
+                            "persone",
+                            personaValue!.id!.toString(),
+                            navigate
+                        );
+                    }}
+                    addAction={
+                        isNativeApp
+                            ? () => saveContact(presentAlert, personaValue!)
+                            : undefined
+                    }
+                    closeItems={closePersoneItemsList}
+                    deleteAction={
+                        props.readonly ? undefined : () => setPersonaValue(null)
+                    }
+                >
+                    {personaData}
+                </SecondaryItem>
             </IonList>
         );
     };
@@ -454,11 +471,7 @@ const FormVisit: React.FC<{
                             }
                             setCurrentEntity={setCurrentEntity}
                             selectMode
-                            queryData={
-                                modalContentType === "persona"
-                                    ? queryDataPersone
-                                    : queryDataImmobili
-                            }
+                            localQuery
                         />
                     )}
                 </Modal>

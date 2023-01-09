@@ -16,7 +16,6 @@ import { Evento } from "../../../entities/evento.model";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
 import useInput from "../../../hooks/use-input";
-import useQueryData from "../../../hooks/use-query-data";
 import { possibiliPersoneTypes } from "../../../types/persona_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
@@ -110,8 +109,6 @@ const EventoForm: React.FC<{
         inputIsInvalid: inputNoteIsInvalid,
         reset: inputNoteReset,
     } = useInput(() => true, eventDescription);
-
-    const queryData = useQueryData("immobili");
 
     useEffect(() => {
         const timeOut = setTimeout(() => {
@@ -360,7 +357,7 @@ const EventoForm: React.FC<{
                     entitiesType="immobili"
                     setCurrentEntity={setImmobileInteresse}
                     selectMode
-                    queryData={queryData}
+                    localQuery
                 />
             </Modal>
             {datePickerIsOpen && (

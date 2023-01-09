@@ -15,18 +15,26 @@ import {
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { entitiesType } from "../../../entities/entity";
+import { useAppDispatch } from "../../../hooks";
 
 const SortActionSheet: React.FC<{
     showSortingActionSheet: boolean;
     setShowSortingActionSheet: Dispatch<SetStateAction<boolean>>;
-    setSort: Dispatch<SetStateAction<string>>;
-    setPage: Dispatch<SetStateAction<number>>;
-    entity: entitiesType;
+    entitiesType: entitiesType;
+    setSorting: any;
+    setPaging: any;
     public?: boolean;
+    localQuery?: boolean;
 }> = (props) => {
-    const buttonHandler = (sortType: string) => {
-        props.setPage(1);
-        props.setSort(sortType);
+    const dispatch = useAppDispatch();
+
+    const buttonHandler = async (sortType: string) => {
+        props.setShowSortingActionSheet(false);
+        await new Promise((r) => setTimeout(r, 300));
+        props.localQuery
+            ? props.setSorting(sortType)
+            : dispatch(props.setSorting(sortType));
+        props.localQuery ? props.setPaging(1) : dispatch(props.setPaging(1));
     };
 
     const getSortingTemporale = (nameParam?: string) => {
@@ -47,7 +55,7 @@ const SortActionSheet: React.FC<{
 
     const getButtons = () => {
         let buttons: any[] = [];
-        switch (props.entity) {
+        switch (props.entitiesType) {
             case "operazioni":
                 buttons = [
                     {
@@ -162,7 +170,7 @@ const SortActionSheet: React.FC<{
                 buttons = getSortingTemporale("quando");
         }
 
-        if (props.entity === "immobili" && !props.public) {
+        if (props.entitiesType === "immobili" && !props.public) {
             buttons.unshift({
                 text: "Riferimento Decrescente",
                 icon: calendarNumberOutline,
@@ -219,7 +227,6 @@ const SortActionSheet: React.FC<{
     return (
         <IonActionSheet
             isOpen={props.showSortingActionSheet}
-            onDidDismiss={() => props.setShowSortingActionSheet(false)}
             header="Ordina per:"
             buttons={getButtons()}
         />

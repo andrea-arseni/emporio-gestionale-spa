@@ -138,7 +138,6 @@ const ReportsPage: React.FC<{}> = (props) => {
                                 documenti={reports}
                                 deleteEntity={deleteEntity}
                                 setShowLoading={setShowLoading}
-                                setUpdate={setUpdate}
                                 baseUrl={`/documenti`}
                                 closeItems={closeItemsList}
                             />

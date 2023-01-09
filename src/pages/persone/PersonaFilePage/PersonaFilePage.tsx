@@ -144,7 +144,6 @@ const PersonaFilePage: React.FC<{}> = () => {
                 documenti={getFileSpeciale(persona!.files!, input)}
                 deleteEntity={deleteEntity}
                 setShowLoading={setShowLoading}
-                setUpdate={setUpdate}
                 baseUrl={`/persone/${personaId}/files`}
                 closeItems={closeItemsList}
             />
@@ -243,7 +242,6 @@ const PersonaFilePage: React.FC<{}> = () => {
                                         setMode={setMode}
                                         setCurrentEntity={setCurrentDocumento}
                                         setShowLoading={setShowLoading}
-                                        setUpdate={setUpdate}
                                         baseUrl={`/persone/${personaId}/files`}
                                         closeItems={closeItemsList}
                                         deleteEntity={deleteEntity}

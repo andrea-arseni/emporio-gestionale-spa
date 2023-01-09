@@ -31,7 +31,11 @@ import { Documento } from "../../../entities/documento.model";
 import { Entity } from "../../../entities/entity";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import useList from "../../../hooks/use-list";
-import { deleteFile } from "../../../store/immobile-slice";
+import {
+    deleteFile,
+    setIsSelectionModeActivated,
+    setListIdPhotoSelected,
+} from "../../../store/immobile-slice";
 import {
     fetchImmobileById,
     performRipristinaImmobile,
@@ -79,9 +83,15 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
 
     const [update, setUpdate] = useState<number>(0);
 
-    const [selectionMode, setSelectionMode] = useState<boolean>(false);
+    const isSelectionModeActivated = useAppSelector(
+        (state) => state.immobile.isSelectionModeActivated
+    );
 
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(setIsSelectionModeActivated(false));
+    }, [dispatch]);
 
     const loading = useAppSelector((state) => state.ui.isLoading);
 
@@ -89,9 +99,9 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
 
     const immobile = useAppSelector((state) => state.immobile.immobile);
 
-    const [listIdPhotoSelected, setListIdPhotoSelected] = useState<
-        number[] | null
-    >(null);
+    const listIdPhotoSelected = useAppSelector(
+        (state) => state.immobile.listIdPhotoSelected
+    );
 
     const [isLoading, setShowLoading] = useState<boolean>(false);
 
@@ -173,8 +183,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
 
     const confermaCancellazioneAvvenuta = () => {
         dispatch(changeLoading(false));
-        setListIdPhotoSelected(null);
-        setSelectionMode(false);
+        dispatch(setListIdPhotoSelected([]));
+        dispatch(setIsSelectionModeActivated(false));
         presentAlert({
             header: "Cancellazione completata",
             subHeader: `La cancellazione delle foto è avvenuta con successo.`,
@@ -211,8 +221,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     };
 
     useEffect(() => {
-        if (!selectionMode) setListIdPhotoSelected(null);
-    }, [selectionMode]);
+        if (!isSelectionModeActivated) dispatch(setListIdPhotoSelected([]));
+    }, [isSelectionModeActivated, dispatch]);
 
     const backToList = () => {
         setMode("files");
@@ -267,7 +277,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             buttons: [
                 {
                     text: "OK",
-                    handler: () => setSelectionMode(false),
+                    handler: () => dispatch(setIsSelectionModeActivated(false)),
                 },
             ],
         });
@@ -338,8 +348,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         }
     };
 
-    const getSegment = () => {
-        return !selectionMode ? (
+    const getSegment = (isSelectionModeActivated: boolean) => {
+        return !isSelectionModeActivated ? (
             <IonSegment
                 mode="ios"
                 value={mode}
@@ -401,7 +411,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     />
                     <NewFileButton
                         mode={mode}
-                        selectionMode={selectionMode}
                         listIdPhotoSelected={listIdPhotoSelected}
                         action={() =>
                             mode === "report"
@@ -426,14 +435,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                             closeItemsList={closeItemsList}
                         />
                     )}
-                    {!isSelectingDates && mode === "foto" && (
-                        <ImmobiliPhotos
-                            selectionMode={selectionMode}
-                            setSelectionMode={setSelectionMode}
-                            listIdPhotoSelected={listIdPhotoSelected}
-                            setListIdPhotoSelected={setListIdPhotoSelected}
-                        />
-                    )}
+                    {!isSelectingDates && mode === "foto" && <ImmobiliPhotos />}
                     {!isSelectingDates && mode === "report" && (
                         <IonList ref={list} className={styles.list}>
                             <ListDocumenti
@@ -441,7 +443,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                                 setCurrentEntity={setCurrentDocumento}
                                 deleteEntity={deleteEntity}
                                 setShowLoading={setShowLoading}
-                                setUpdate={setUpdate}
                                 baseUrl={`/immobili/${immobileId}/files`}
                                 closeItems={closeItemsList}
                             />
@@ -454,7 +455,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                             )}
                         </IonList>
                     )}
-                    {!isSelectingDates && getSegment()}
+                    {!isSelectingDates && getSegment(isSelectionModeActivated)}
                     {isSelectingDates && (
                         <TwoDates
                             action={creaReport}

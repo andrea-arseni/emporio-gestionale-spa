@@ -18,7 +18,6 @@ import {
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
-import useQueryData from "../../../hooks/use-query-data";
 import useInput from "../../../hooks/use-input";
 import { possibiliPersoneTypes } from "../../../types/persona_types";
 import { possibiliProvenienzePersona } from "../../../types/provenienza_persona";
@@ -33,12 +32,16 @@ import TextArea from "../../form-components/form-text-area/FormTextArea";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
 import SecondaryItem from "../../form-components/secondary-item/SecondaryItem";
 import useList from "../../../hooks/use-list";
+import { navigateToSpecificItem } from "../../../utils/navUtils";
+import { useNavigate } from "react-router-dom";
 
 const PersoneForm: React.FC<{
     persona: Persona | null;
     backToList: () => void;
     setCurrentPersona: Dispatch<SetStateAction<Entity | null>>;
 }> = (props) => {
+    const navigate = useNavigate();
+
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
@@ -189,8 +192,6 @@ const PersoneForm: React.FC<{
         reset: inputNoteReset,
     } = useInput(() => true);
 
-    const queryData = useQueryData("immobili");
-
     const getPhoneValue = () => {
         let phoneValue: string = inputPhoneValue
             .trim()
@@ -213,39 +214,6 @@ const PersoneForm: React.FC<{
         inputRuoloIsInvalid ||
         inputProvenienzaIsInvalid ||
         inputStatusIsInvalid;
-
-    const changePersona = async (id: number) => {
-        setShowLoading(true);
-        try {
-            const res = await axiosInstance.get(`persone/${id}`);
-            const persona = res.data as Persona;
-            props.setCurrentPersona(persona);
-            inputNameChangedHandler(null, persona.nome);
-            inputPhoneChangedHandler(null, persona.telefono);
-            inputEmailChangedHandler(null, persona.email);
-            inputRuoloChangedHandler(null, persona.ruolo);
-            inputProvenienzaChangedHandler(
-                null,
-                persona.provenienza &&
-                    persona.provenienza.toLowerCase().replace("_", " ")
-            );
-            inputStatusChangedHandler(null, persona.status);
-            setImmobileLocato(
-                persona.immobileInquilino
-                    ? (persona.immobileInquilino as Immobile)
-                    : null
-            );
-            setListHouses(
-                persona && persona.immobili
-                    ? (persona.immobili as Immobile[])
-                    : []
-            );
-            setShowLoading(false);
-        } catch (e) {
-            setShowLoading(false);
-            errorHandler(e, () => {}, "Procedura non riuscita", presentAlert);
-        }
-    };
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
@@ -283,13 +251,40 @@ const PersoneForm: React.FC<{
             });
         } catch (error: any) {
             setShowLoading(false);
-            errorHandler(
-                error,
-                () => {},
-                "Procedura non riuscita",
-                presentAlert,
-                changePersona
-            );
+
+            if (
+                error &&
+                error.response &&
+                error.response.data &&
+                error.response.data.message &&
+                error.response.data.message.includes("E' la persona con id ")
+            ) {
+                const [message, id] = error.response.data.message.split(
+                    "E' la persona con id "
+                );
+                presentAlert({
+                    header: "Attenzione!",
+                    message,
+                    buttons: [
+                        {
+                            text: "Vai alla persona",
+                            handler: () =>
+                                navigateToSpecificItem("persone", id, navigate),
+                        },
+                        {
+                            text: "Chiudi",
+                            role: "cancel",
+                        },
+                    ],
+                });
+            } else {
+                errorHandler(
+                    error,
+                    () => {},
+                    "Procedura non riuscita",
+                    presentAlert
+                );
+            }
         }
     };
 
@@ -309,6 +304,13 @@ const PersoneForm: React.FC<{
                 <SecondaryItem
                     key={el!.id}
                     deleteAction={() => deleteHouse(el!.id!, mode)}
+                    visualizeAction={() =>
+                        navigateToSpecificItem(
+                            "immobili",
+                            el!.id!.toString(),
+                            navigate
+                        )
+                    }
                     closeItems={closeItemsList}
                 >
                     <IonLabel text-wrap>
@@ -477,7 +479,7 @@ const PersoneForm: React.FC<{
                     entitiesType="immobili"
                     setCurrentEntity={setCurrentImmobile}
                     selectMode
-                    queryData={queryData}
+                    localQuery
                 />
             </Modal>
         </form>

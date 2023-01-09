@@ -12,6 +12,17 @@
     margin-right: 6px;
 }
 
+.lightLink {
+    color: rgb(234, 235, 255);
+}
+
+.backButton {
+    position: absolute;
+    top: 48px;
+    right: 30px;
+    z-index: 9998;
+}
+
 .vertical {
     flex-flow: column;
 }

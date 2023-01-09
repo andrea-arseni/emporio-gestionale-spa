@@ -1,14 +1,14 @@
 export type personaType =
-    | "ATTIVA"
-    | "RIPOSO"
-    | "RICHIAMA_LEI"
-    | "NON_RICHIAMARE"
-    | "ASPETTA";
+    | "A_ATTIVA"
+    | "D_DISATTIVA"
+    | "B_RICHIAMA_LEI"
+    | "E_EVITA"
+    | "C_ASPETTA";
 
 export const possibiliPersoneTypes = [
-    { value: "ATTIVA", text: "Da Sentire" },
-    { value: "RIPOSO", text: "Disattiva" },
-    { value: "RICHIAMA_LEI", text: "Richiama Lei" },
-    { value: "NON_RICHIAMARE", text: "Da Non Richiamare" },
-    { value: "ASPETTA", text: "Da Aspettare" },
+    { value: "A_ATTIVA", text: "Attiva" },
+    { value: "B_RICHIAMA_LEI", text: "Richiama Lei" },
+    { value: "C_ASPETTA", text: "Aspetta" },
+    { value: "D_DISATTIVA", text: "Disattiva" },
+    { value: "E_EVITA", text: "Evita" },
 ];

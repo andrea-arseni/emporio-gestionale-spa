@@ -3,6 +3,7 @@ import { closeOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { entitiesType } from "../../../entities/entity";
 import { Filtro } from "../../../entities/filtro.model";
+import { useAppDispatch } from "../../../hooks";
 import useWindowSize from "../../../hooks/use-size";
 import { numberAsPrice } from "../../../utils/numberUtils";
 import { getStatusText } from "../../../utils/statusHandler";
@@ -13,12 +14,13 @@ import styles from "./FilterBar.module.css";
 
 const FilterBar: React.FC<{
     entitiesType: entitiesType;
+    resetQueryData: any;
     filter: Filtro;
-    setFilter: Dispatch<SetStateAction<Filtro>>;
-    setPage?: Dispatch<SetStateAction<number>>;
     setNegativeForbidden?: Dispatch<SetStateAction<boolean>>;
+    localQuery?: boolean;
 }> = (props) => {
     const [width] = useWindowSize();
+    const dispatch = useAppDispatch();
 
     const getFilterTitleWithDates = () => {
         let output = "Risultati ";
@@ -132,28 +134,24 @@ const FilterBar: React.FC<{
         return getFilterTitleWithString();
     };
 
+    const azzeraFiltro = () => {
+        props.setNegativeForbidden!(false);
+        props.localQuery
+            ? props.resetQueryData()
+            : dispatch(props.resetQueryData());
+    };
+
     return (
         <IonToolbar className={styles.filterToolbar} mode="ios">
             <Title>{getFilterTitle()}</Title>
 
-            {props.setPage && props.setNegativeForbidden && (
+            {props.setNegativeForbidden && (
                 <IonButton
                     slot="end"
                     size="small"
                     color="dark"
                     mode="ios"
-                    onClick={() => {
-                        props.setFilter({
-                            filter: undefined,
-                            value: undefined,
-                            startDate: undefined,
-                            endDate: undefined,
-                            max: undefined,
-                            min: undefined,
-                        });
-                        props.setPage!(1);
-                        props.setNegativeForbidden!(false);
-                    }}
+                    onClick={azzeraFiltro}
                 >
                     <IonIcon icon={closeOutline} color="light"></IonIcon>
                     {width >= 450 ? "Annulla Filtro" : ""}

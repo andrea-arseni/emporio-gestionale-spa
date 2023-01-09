@@ -53,16 +53,19 @@ import { possibiliTipiContratti } from "../../../types/tipo_contratti";
 import { possibiliCauzioni } from "../../../types/cauzioni";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
 import { Entity } from "../../../entities/entity";
-import useQueryData from "../../../hooks/use-query-data";
 import Selector from "../../selector/Selector";
 import SecondaryItem from "../../form-components/secondary-item/SecondaryItem";
 import useList from "../../../hooks/use-list";
 import { getPhoneValue } from "../../../utils/numberUtils";
+import { navigateToSpecificItem } from "../../../utils/navUtils";
+import { useNavigate } from "react-router-dom";
 
 const ImmobileForm: React.FC<{
     immobile: Immobile | null;
     backToList: () => void;
 }> = (props) => {
+    const navigate = useNavigate();
+
     const [isAutomaticRef, setIsAutomaticRef] = useState<boolean | null>(
         !!!props.immobile
     );
@@ -1026,8 +1029,6 @@ const ImmobileForm: React.FC<{
         }
     };
 
-    const queryData = useQueryData("persone");
-
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
     const [choiceMode, setChoiceMode] = useState<
@@ -1099,6 +1100,13 @@ const ImmobileForm: React.FC<{
                     if (type === "proprietario")
                         setNewProprietarioPartOpened(false);
                 }}
+                visualizeAction={() =>
+                    navigateToSpecificItem(
+                        "persone",
+                        el!.id!.toString(),
+                        navigate
+                    )
+                }
             >
                 <IonLabel text-wrap>
                     <h2>{capitalize(el.nome!)}</h2>
@@ -1746,7 +1754,7 @@ const ImmobileForm: React.FC<{
                     entitiesType="persone"
                     setCurrentEntity={setCurrentPersona}
                     selectMode
-                    queryData={queryData}
+                    localQuery
                 />
             </Modal>
         </form>

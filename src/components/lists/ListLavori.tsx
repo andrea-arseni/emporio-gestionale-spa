@@ -24,7 +24,6 @@ const ListLavori: React.FC<{
     deleteEntity: (type: string, id: string, message?: string) => void;
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
-    setUpdate: Dispatch<SetStateAction<number>>;
 }> = (props) => {
     const navigate = useNavigate();
 
@@ -45,7 +44,7 @@ const ListLavori: React.FC<{
                             <h2>{lavoro.titolo} </h2>
                             {width < 600 && (
                                 <IonText>
-                                    {lavoro.status?.replace("_", " ")}
+                                    {lavoro.status?.split("_")[1]}
                                 </IonText>
                             )}
                         </IonLabel>
@@ -54,7 +53,7 @@ const ListLavori: React.FC<{
                                 slot="end"
                                 className={`${styles.note} ${styles.large}`}
                             >
-                                {lavoro.status?.replace("_", " ")}
+                                {lavoro.status?.split("_")[1]}
                             </IonText>
                         )}
                     </IonItem>

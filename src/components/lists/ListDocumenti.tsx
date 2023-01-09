@@ -49,7 +49,6 @@ const ListDocumenti: React.FC<{
         | Dispatch<SetStateAction<fileMode>>;
     deleteEntity: (type: string, id: string, message?: string) => void;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
-    setUpdate: Dispatch<SetStateAction<number>>;
     baseUrl: string;
     closeItems: () => void;
 }> = (props) => {

@@ -5,13 +5,13 @@ import {
     IonLabel,
 } from "@ionic/react";
 import { calendarOutline } from "ionicons/icons";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import DatePicker from "../date-picker/DatePicker";
 import styles from "./DaySelector.module.css";
 
 const DaySelector: React.FC<{
     currentDay: Date;
-    setCurrentDay: Dispatch<SetStateAction<Date>>;
+    setCurrentDay: (input: Date) => void;
 }> = (props) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 

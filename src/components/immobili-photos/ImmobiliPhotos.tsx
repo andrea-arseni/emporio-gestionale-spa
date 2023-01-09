@@ -8,13 +8,7 @@ import {
     useIonAlert,
     isPlatform,
 } from "@ionic/react";
-import {
-    Dispatch,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useState,
-} from "react";
+import { useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Card from "../card/Card";
@@ -27,20 +21,25 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import { changeLoading } from "../../store/ui-slice";
 import { fetchFileById, fetchFotoFirmata } from "../../store/immobile-thunk";
 import { isNativeApp } from "../../utils/contactUtils";
+import {
+    setIsSelectionModeActivated,
+    setListIdPhotoSelected,
+} from "../../store/immobile-slice";
 
-const ImmobiliPhotos: React.FC<{
-    selectionMode: boolean;
-    setSelectionMode: Dispatch<SetStateAction<boolean>>;
-    listIdPhotoSelected: number[] | null;
-    setListIdPhotoSelected: Dispatch<SetStateAction<number[] | null>>;
-}> = (props) => {
-    const [selectionStop, setSelectionStop] = useState<boolean>(false);
-
+const ImmobiliPhotos: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
 
     const dispatch = useAppDispatch();
 
     const immobile = useAppSelector((state) => state.immobile.immobile);
+
+    const isSelectionModeAllowed = useAppSelector(
+        (state) => state.immobile.isSelectionModeAllowed
+    );
+
+    const isSelectionModeActivated = useAppSelector(
+        (state) => state.immobile.isSelectionModeActivated
+    );
 
     const foto = useAppSelector((state) =>
         state.immobile.immobile?.files
@@ -56,39 +55,13 @@ const ImmobiliPhotos: React.FC<{
 
     excludeFirstFotoIfSigned();
 
-    useEffect(() => {
-        if (immobileId && foto)
-            foto.forEach((el) => {
-                if (!el.base64String && el.base64String !== "blockPhoto")
-                    dispatch(
-                        fetchFileById(`/immobili/${immobileId}/files/${el.id}`)
-                    );
-            });
-    }, [immobileId, foto, dispatch]);
-
-    const showSelectAll =
-        foto && foto.length !== props.listIdPhotoSelected?.length;
-
-    const bloccaSelezione = useCallback(
-        (input: boolean) => setSelectionStop(input),
-        []
+    const listIdPhotoSelected = useAppSelector(
+        (state) => state.immobile.listIdPhotoSelected
     );
 
     const selectAllPhotos = () => {
-        if (foto) props.setListIdPhotoSelected(foto.map((el) => el.id!));
+        if (foto) dispatch(setListIdPhotoSelected(foto.map((el) => el.id!)));
     };
-
-    const selectPhoto = (id: number) =>
-        props.setListIdPhotoSelected((prevList) => {
-            if (!prevList) return [id];
-            const alreadyThere = prevList.find((el) => el === id);
-            return alreadyThere ? [...prevList] : [...prevList, id];
-        });
-
-    const deselectPhoto = (id: number) =>
-        props.setListIdPhotoSelected((prevList) =>
-            prevList!.filter((el) => el !== id)
-        );
 
     const dichiaraConcluso = async () => {
         try {
@@ -107,6 +80,18 @@ const ImmobiliPhotos: React.FC<{
             errorHandler(e, () => {}, "Procedura non riuscita", presentAlert);
         }
     };
+
+    useEffect(() => {
+        if (immobileId && foto)
+            foto.forEach((el) => {
+                if (!el.base64String && el.base64String !== "blockPhoto")
+                    dispatch(
+                        fetchFileById(`/immobili/${immobileId}/files/${el.id}`)
+                    );
+            });
+    }, [immobileId, foto, dispatch]);
+
+    const showSelectAll = foto && foto.length !== listIdPhotoSelected?.length;
 
     if (foto && foto.length === 0)
         return (
@@ -138,20 +123,7 @@ const ImmobiliPhotos: React.FC<{
                     sizeSm={getSize("sm")}
                     sizeXs={getSize("xs")}
                 >
-                    <ImmobiliPhoto
-                        foto={el}
-                        idImmobile={immobile!.id!.toString()}
-                        selectionMode={props.selectionMode}
-                        selectPhoto={selectPhoto}
-                        deselectPhoto={deselectPhoto}
-                        isSelected={
-                            !!props.listIdPhotoSelected &&
-                            !!props.listIdPhotoSelected.find(
-                                (id) => el.id === id
-                            )
-                        }
-                        bloccaSelezione={bloccaSelezione}
-                    />
+                    <ImmobiliPhoto id={el.id!} />
                 </IonCol>
             );
         });
@@ -180,24 +152,30 @@ const ImmobiliPhotos: React.FC<{
                 </IonButton>
             )}
             <IonGrid className={styles.grid}>
-                {!selectionStop && (
+                {isSelectionModeAllowed && (
                     <button
                         className={`${styles.fabButton} ${styles.selectionButton}`}
-                        onClick={() =>
-                            props.setSelectionMode((prevState) => !prevState)
-                        }
+                        onClick={() => {
+                            dispatch(
+                                setIsSelectionModeActivated(
+                                    !isSelectionModeActivated
+                                )
+                            );
+                        }}
                     >
-                        {props.selectionMode ? "ANNULLA" : "SELEZIONA"}
+                        {isSelectionModeActivated ? "ANNULLA" : "SELEZIONA"}
                     </button>
                 )}
-                {!selectionStop && props.selectionMode && showSelectAll && (
-                    <button
-                        className={`${styles.fabButton} ${styles.otherButton}`}
-                        onClick={selectAllPhotos}
-                    >
-                        SELEZIONA TUTTE
-                    </button>
-                )}
+                {isSelectionModeAllowed &&
+                    isSelectionModeActivated &&
+                    showSelectAll && (
+                        <button
+                            className={`${styles.fabButton} ${styles.otherButton}`}
+                            onClick={selectAllPhotos}
+                        >
+                            SELEZIONA TUTTE
+                        </button>
+                    )}
                 <IonRow className={`${styles.row}`}>
                     <DndProvider backend={HTML5Backend}>
                         {getPhotoCards()}

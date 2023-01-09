@@ -4,7 +4,10 @@ import {
     IonLabel,
     IonList,
     IonLoading,
+    IonRefresher,
+    IonRefresherContent,
     isPlatform,
+    RefresherEventDetail,
     useIonAlert,
 } from "@ionic/react";
 import { filterOutline, layersOutline, listOutline } from "ionicons/icons";
@@ -38,32 +41,76 @@ import { Evento } from "../../entities/evento.model";
 import ListDocumenti from "../lists/ListDocumenti";
 import { Documento } from "../../entities/documento.model";
 import FilterBar from "../bars/filter-bar/FilterBar";
-import { QueryData } from "../../entities/queryData";
 import useList from "../../hooks/use-list";
 import { useNavigate } from "react-router-dom";
 import ListVisits from "../lists/ListVisits";
 import { Visit } from "../../entities/visit.model";
 import { isNativeApp } from "../../utils/contactUtils";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { Filtro } from "../../entities/filtro.model";
+import { RootState } from "../../store";
+import {
+    getQueryDataUtils,
+    resetQueryDataUtils,
+    setFilterUtils,
+    setPagingUtils,
+    setSortingUtils,
+    triggerUpdateUtils,
+} from "../../utils/queryUtils";
+import useQueryData from "../../hooks/use-query-data";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
-    queryData: QueryData;
     setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
     setMode?: Dispatch<SetStateAction<"list" | "form">>;
     baseUrl?: string;
     selectMode?: boolean;
     public?: boolean;
+    localQuery?: boolean;
+    specific?: boolean;
 }> = (props) => {
-    const {
-        page,
-        setPage,
-        filter,
-        setFilter,
-        sort,
-        setSort,
-        update,
-        setUpdate,
-    } = props.queryData;
+    let { filter, sort, page, update } = useAppSelector((state: RootState) =>
+        getQueryDataUtils(state, props.entitiesType)
+    );
+
+    let setFilter: any = (filter: Filtro) =>
+        setFilterUtils(filter, props.entitiesType);
+
+    let setSort: any = (sort: string) =>
+        setSortingUtils(sort, props.entitiesType);
+
+    let setPage: any = (page: number) =>
+        setPagingUtils(page, props.entitiesType);
+
+    let setUpdate: any = () => triggerUpdateUtils(props.entitiesType);
+
+    let resetQueryData: any = () => resetQueryDataUtils(props.entitiesType);
+
+    let {
+        localFilter,
+        localSort,
+        localPage,
+        localUpdate,
+        localSetFilter,
+        localSetSort,
+        localSetPage,
+        localSetUpdate,
+        localResetQueryData,
+    } = useQueryData(props.entitiesType);
+
+    if (props.localQuery) {
+        filter = localFilter;
+        sort = localSort;
+        page = localPage;
+        update = localUpdate;
+        setFilter = localSetFilter;
+        setSort = localSetSort;
+        setPage = localSetPage;
+        setUpdate = localSetUpdate;
+        resetQueryData = localResetQueryData;
+    }
+
+    const dispatch = useAppDispatch();
 
     const [filterMode, setFilterMode] = useState<
         "default" | "stringFilter" | "dataFilter" | "numberFilter"
@@ -118,12 +165,11 @@ const Selector: React.FC<{
                 }${
                     props.baseUrl && props.baseUrl.includes("?") ? "&" : "?"
                 }page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
+                console.log(url);
                 const res = await axiosInstance.get(url);
                 if (!mounted) return;
-                await new Promise((r) => setTimeout(r, 300));
-                if (!mounted) return;
                 setShowLoading(false);
-                setEntities(res.data.data);
+                setEntities(props.specific ? [res.data] : res.data.data);
                 setNumberOfResults(res.data.numberOfResults);
                 if (props.entitiesType === "operazioni")
                     setSumOfOperations(res.data.sum);
@@ -139,7 +185,16 @@ const Selector: React.FC<{
             }
         };
 
-        fetchEntities();
+        if (
+            !filter.filter ||
+            (filter.filter &&
+                (filter.value ||
+                    filter.max ||
+                    filter.min ||
+                    filter.startDate ||
+                    filter.endDate))
+        )
+            fetchEntities();
 
         return () => {
             mounted = false;
@@ -153,7 +208,14 @@ const Selector: React.FC<{
         sort,
         update,
         props.baseUrl,
+        props.specific,
     ]);
+
+    const eraseFilter = () => {
+        const filterObj = { filter: undefined };
+        setFilterMode("default");
+        dispatch(setFilter(filterObj));
+    };
 
     const filterBar = (
         <IonButton
@@ -162,10 +224,7 @@ const Selector: React.FC<{
             mode="ios"
             fill="clear"
             color="dark"
-            onClick={() => {
-                setFilterMode("default");
-                setFilter({ filter: undefined });
-            }}
+            onClick={eraseFilter}
         >
             <IonIcon icon={listOutline} />
             <IonLabel style={{ paddingLeft: "16px" }}>
@@ -175,7 +234,7 @@ const Selector: React.FC<{
     );
 
     const confirmDeleteEntity = async (entityName: string, id: string) => {
-        const url =
+        let url =
             (props.baseUrl && !props.baseUrl.includes("?")
                 ? props.baseUrl
                 : entityName) +
@@ -183,12 +242,14 @@ const Selector: React.FC<{
             id;
         try {
             setShowLoading(true);
-            await axiosInstance.delete(url);
+            await axiosInstance.delete(
+                props.specific && props.baseUrl ? props.baseUrl : url
+            );
             setEntities((prevEntities) =>
                 prevEntities.filter((el) => el.id?.toString() !== id)
             );
             setShowLoading(false);
-            setUpdate((oldNumber) => ++oldNumber);
+            props.localQuery ? setUpdate() : dispatch(setUpdate());
         } catch (e) {
             setShowLoading(false);
             errorHandler(
@@ -228,7 +289,6 @@ const Selector: React.FC<{
                         deleteEntity={deleteEntity}
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
-                        setUpdate={setUpdate}
                         closeItems={closeItemsList}
                         selectMode={!!props.selectMode}
                         public={props.public}
@@ -255,7 +315,6 @@ const Selector: React.FC<{
                         deleteEntity={deleteEntity}
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
-                        setUpdate={setUpdate}
                     />
                 );
             case "steps":
@@ -267,7 +326,6 @@ const Selector: React.FC<{
                         deleteEntity={deleteEntity}
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
-                        setUpdate={setUpdate}
                     />
                 );
             case "persone":
@@ -279,7 +337,6 @@ const Selector: React.FC<{
                         deleteEntity={deleteEntity}
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
-                        setUpdate={setUpdate}
                         closeItems={closeItemsList}
                         selectMode={!!props.selectMode}
                     />
@@ -293,7 +350,6 @@ const Selector: React.FC<{
                         deleteEntity={deleteEntity}
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
-                        setUpdate={setUpdate}
                         closeItems={closeItemsList}
                     />
                 );
@@ -305,7 +361,6 @@ const Selector: React.FC<{
                         setCurrentEntity={props.setCurrentEntity!}
                         deleteEntity={deleteEntity}
                         setShowLoading={setShowLoading}
-                        setUpdate={setUpdate}
                         baseUrl="/documenti"
                         closeItems={closeItemsList}
                     />
@@ -348,13 +403,19 @@ const Selector: React.FC<{
             : styles.fiveOtherElements;
     };
 
+    const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        props.localQuery ? setUpdate() : dispatch(setUpdate());
+        event.detail.complete();
+    };
+
     if (filterMode === "dataFilter")
         return (
             <>
                 {filterBar}
                 <DateFilter
-                    filter={filter}
+                    localQuery={props.localQuery}
                     setFilter={setFilter}
+                    filter={filter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -365,9 +426,10 @@ const Selector: React.FC<{
             <>
                 {filterBar}
                 <NumberFilter
+                    localQuery={props.localQuery}
+                    setFilter={setFilter}
                     negativeForbidden={negativeForbidden}
                     filter={filter}
-                    setFilter={setFilter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -378,8 +440,9 @@ const Selector: React.FC<{
             <>
                 {filterBar}
                 <StringFilter
-                    filter={filter}
+                    localQuery={props.localQuery}
                     setFilter={setFilter}
+                    filter={filter}
                     setFilterMode={setFilterMode}
                 />
             </>
@@ -388,12 +451,17 @@ const Selector: React.FC<{
     return (
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
+            {!props.selectMode && (
+                <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
+            )}
             {filter.filter && (
                 <FilterBar
+                    localQuery={props.localQuery}
                     entitiesType={props.entitiesType}
+                    resetQueryData={resetQueryData}
                     filter={filter}
-                    setFilter={setFilter}
-                    setPage={setPage}
                     setNegativeForbidden={setNegativeForbidden}
                 />
             )}
@@ -404,7 +472,7 @@ const Selector: React.FC<{
                     mode="ios"
                     color="primary"
                     fill="clear"
-                    disabled={entities.length === 1}
+                    disabled={entities.length === 1 || props.specific}
                     onClick={() => setShowFilterActionSheet(true)}
                 >
                     <IonIcon icon={filterOutline} />
@@ -420,7 +488,7 @@ const Selector: React.FC<{
                     mode="ios"
                     fill="clear"
                     color="dark"
-                    disabled={entities.length === 1}
+                    disabled={entities.length === 1 || props.specific}
                     onClick={() => setShowSortingActionSheet(true)}
                 >
                     <IonIcon icon={layersOutline} />
@@ -438,7 +506,7 @@ const Selector: React.FC<{
                 </IonList>
             )}
             {entities.length === 0 && !showLoading && (
-                <div className={`${getListHeight()} centered`}>
+                <div className={`centered`} style={{ height: "500px" }}>
                     <Card
                         subTitle={`Non sono presenti ${props.entitiesType}`}
                         title={
@@ -449,8 +517,11 @@ const Selector: React.FC<{
             )}
             {entities.length > 0 && (
                 <PageFooter
+                    entitiesType={
+                        props.localQuery ? undefined : props.entitiesType
+                    }
+                    setPage={props.localQuery ? setPage : undefined}
                     page={page}
-                    setPage={setPage}
                     numberOfResults={numberOfResults}
                     public={props.public}
                     lifted={
@@ -461,21 +532,23 @@ const Selector: React.FC<{
                 />
             )}
             <FilterActionSheet
+                localQuery={props.localQuery}
+                entitiesType={props.entitiesType}
+                setPage={setPage}
+                setFilter={setFilter}
                 showFilterActionSheet={showFilterActionSheet}
                 setShowFilterActionSheet={setShowFilterActionSheet}
                 setFilterMode={setFilterMode}
-                setFilter={setFilter}
-                setPage={setPage}
                 setNegativeForbidden={setNegativeForbidden}
-                entity={props.entitiesType}
                 public={props.public}
             />
             <SortActionSheet
+                localQuery={props.localQuery}
+                setSorting={setSort}
+                setPaging={setPage}
                 showSortingActionSheet={showSortingActionSheet}
                 setShowSortingActionSheet={setShowSortingActionSheet}
-                setSort={setSort}
-                setPage={setPage}
-                entity={props.entitiesType}
+                entitiesType={props.entitiesType}
                 public={props.public}
             />
         </>

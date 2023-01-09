@@ -1,11 +1,10 @@
-import { Dispatch, SetStateAction } from "react";
 import useSize from "../../hooks/use-size";
 import { getDayName, setWeek } from "../../utils/timeUtils";
 import ArrowsBar from "../bars/arrows-bar/ArrowsBar";
 
 const CalendarNavigator: React.FC<{
     currentDay: Date;
-    setCurrentDay: Dispatch<SetStateAction<Date>>;
+    setCurrentDay: (input: Date) => void;
     mode: "day" | "day-week";
 }> = (props) => {
     const [widthScreen] = useSize();

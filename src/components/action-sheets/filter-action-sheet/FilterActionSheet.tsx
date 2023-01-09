@@ -33,38 +33,37 @@ import {
 } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { entitiesType } from "../../../entities/entity";
+import { useAppDispatch } from "../../../hooks";
 
 const FilterActionSheet: React.FC<{
+    entitiesType: entitiesType;
+    setFilter: any;
+    setPage: any;
     showFilterActionSheet: boolean;
     setShowFilterActionSheet: Dispatch<SetStateAction<boolean>>;
-    setPage: Dispatch<SetStateAction<number>>;
     setNegativeForbidden: Dispatch<SetStateAction<boolean>>;
     setFilterMode: Dispatch<
         SetStateAction<
             "default" | "stringFilter" | "dataFilter" | "numberFilter"
         >
     >;
-    setFilter: Dispatch<
-        SetStateAction<{
-            filter: string | undefined;
-            value?: string | undefined;
-            min?: number | undefined;
-            max?: number | undefined;
-            startDate?: string | undefined;
-            endDate?: string | undefined;
-        }>
-    >;
-    entity: entitiesType;
     public?: boolean;
+    localQuery?: boolean;
 }> = (props) => {
-    const buttonHandler = (
+    const dispatch = useAppDispatch();
+
+    const buttonHandler = async (
         filterMode: "default" | "numberFilter" | "stringFilter" | "dataFilter",
         filter: any,
         negativeForbidden?: boolean
     ) => {
-        props.setPage(1);
+        props.setShowFilterActionSheet(false);
+        await new Promise((r) => setTimeout(r, 300));
         props.setFilterMode(filterMode);
-        props.setFilter(filter);
+        props.localQuery
+            ? props.setFilter(filter)
+            : dispatch(props.setFilter(filter));
+        props.localQuery ? props.setPage(1) : dispatch(props.setPage(1));
         if (negativeForbidden) props.setNegativeForbidden(true);
     };
 
@@ -93,7 +92,7 @@ const FilterActionSheet: React.FC<{
 
     const getButtons = () => {
         let buttons: any[] = [];
-        switch (props.entity) {
+        switch (props.entitiesType) {
             case "operazioni":
                 buttons = [
                     {
@@ -219,12 +218,22 @@ const FilterActionSheet: React.FC<{
             case "persone":
                 buttons = [
                     {
-                        text: "Persone Da Sentire",
+                        text: "Persone Attive",
                         icon: peopleOutline,
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "status",
-                                value: "attiva",
+                                value: "a_attiva",
+                            });
+                        },
+                    },
+                    {
+                        text: "Persone Che Richiamano",
+                        icon: alertCircleOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "b_richiama_lei",
                             });
                         },
                     },
@@ -234,17 +243,7 @@ const FilterActionSheet: React.FC<{
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "status",
-                                value: "aspetta",
-                            });
-                        },
-                    },
-                    {
-                        text: "Persone che Richiamano Loro",
-                        icon: alertCircleOutline,
-                        handler: () => {
-                            buttonHandler("default", {
-                                filter: "status",
-                                value: "richiama_lei",
+                                value: "c_aspetta",
                             });
                         },
                     },
@@ -254,7 +253,7 @@ const FilterActionSheet: React.FC<{
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "status",
-                                value: "riposo",
+                                value: "d_disattiva",
                             });
                         },
                     },
@@ -264,7 +263,7 @@ const FilterActionSheet: React.FC<{
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "status",
-                                value: "non_richiamare",
+                                value: "e_evita",
                             });
                         },
                     },
@@ -510,7 +509,7 @@ const FilterActionSheet: React.FC<{
             role: "cancel",
         });
 
-        if (!props.public && props.entity === "immobili") {
+        if (!props.public && props.entitiesType === "immobili") {
             buttons.unshift({
                 text: "Riferimento",
                 icon: calendarNumberOutline,
@@ -546,7 +545,7 @@ const FilterActionSheet: React.FC<{
             });
         }
 
-        if (props.entity === "immobili")
+        if (props.entitiesType === "immobili")
             buttons.unshift({
                 text: "Titolo",
                 icon: textOutline,
@@ -563,7 +562,6 @@ const FilterActionSheet: React.FC<{
     return (
         <IonActionSheet
             isOpen={props.showFilterActionSheet}
-            onDidDismiss={() => props.setShowFilterActionSheet(false)}
             header="Filtra per:"
             buttons={getButtons()}
         />

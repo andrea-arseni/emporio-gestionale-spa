@@ -72,7 +72,11 @@ const App: React.FC = () => {
         <IonApp>
             <IonSplitPane contentId="main">
                 {(token || isNativeApp) && <Menu />}
-                <IonContent id="main" color="light">
+                <IonContent
+                    id="main"
+                    color="light"
+                    style={{ backgroundColor: "white !important" }}
+                >
                     <Header token={token} />
 
                     <Routes>
@@ -147,6 +151,12 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route
+                                path="/immobili/:id"
+                                element={<ImmobiliPage specific />}
+                            />
+                        )}
+                        {token && (
+                            <Route
                                 path="/immobili/:id/files"
                                 element={<ImmobiliFilesPage />}
                             />
@@ -163,6 +173,12 @@ const App: React.FC = () => {
                         {token && (
                             <Route
                                 path="/persone/:id"
+                                element={<PersonaPage specific />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/persone/:id/storia"
                                 element={<StoriaPage type="persona" />}
                             />
                         )}

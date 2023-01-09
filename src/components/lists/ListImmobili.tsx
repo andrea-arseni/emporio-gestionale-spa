@@ -27,8 +27,9 @@ import ItemOption from "./ItemOption";
 import ImmobileThumbnail from "../immobile-thumbnail/ImmobileThumbnail";
 import FileSpecialiList from "../file-speciali-list/FileSpecialiList";
 import { isUserAdmin } from "../../utils/userUtils";
-import { useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { useNavigate } from "react-router-dom";
+import { triggerImmobiliUpdate } from "../../store/immobile-slice";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -37,12 +38,13 @@ const ListImmobili: React.FC<{
     deleteEntity: (type: string, id: string, message?: string) => void;
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
-    setUpdate: Dispatch<SetStateAction<number>>;
     closeItems: () => void;
     selectMode: boolean;
     public?: boolean;
 }> = (props) => {
     const navigate = useNavigate();
+
+    const dispatch = useAppDispatch();
 
     const [width] = useWindowSize();
 
@@ -72,7 +74,7 @@ const ListImmobili: React.FC<{
                         text: "Torna alla lista",
                         handler: () => {
                             props.closeItems();
-                            props.setUpdate((prevValue) => ++prevValue);
+                            dispatch(triggerImmobiliUpdate());
                         },
                     },
                 ],

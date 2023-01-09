@@ -5,9 +5,11 @@ const NewEntityBar: React.FC<{
     setMode: Dispatch<SetStateAction<"form" | "list">>;
     icon: string;
     title: string;
+    disabled?: boolean;
 }> = (props) => {
     return (
         <IonButton
+            disabled={props.disabled}
             color="primary"
             expand="full"
             mode="ios"

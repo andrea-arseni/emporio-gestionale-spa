@@ -10,7 +10,6 @@ import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
-import useQueryData from "../../../hooks/use-query-data";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
 
@@ -29,8 +28,6 @@ const LavoriDataPage: React.FC<{}> = () => {
     const [currentLavoro, setCurrentLavoro] = useState<Lavoro | null>(null);
 
     const [currentStep, setCurrentStep] = useState<Entity | null>(null);
-
-    const queryData = useQueryData("steps");
 
     useEffect(() => {
         let mounted = true;
@@ -83,11 +80,11 @@ const LavoriDataPage: React.FC<{}> = () => {
                             />
 
                             <Selector
+                                localQuery
                                 setMode={setMode}
                                 entitiesType="steps"
                                 setCurrentEntity={setCurrentStep}
                                 baseUrl={baseUrl}
-                                queryData={queryData}
                             />
                         </>
                     )}

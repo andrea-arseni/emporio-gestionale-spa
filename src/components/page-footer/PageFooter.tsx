@@ -1,11 +1,15 @@
 import { IonFooter, IonToolbar, IonButton, IonIcon } from "@ionic/react";
 import { arrowBackOutline, arrowForwardOutline } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
+import { entitiesType } from "../../entities/entity";
+import { useAppDispatch } from "../../hooks";
 import useWindowSize from "../../hooks/use-size";
+import { setPagingUtils } from "../../utils/queryUtils";
 import Title from "../title/Title";
 import styles from "./PageFooter.module.css";
 
 const PageFooter: React.FC<{
+    entitiesType?: entitiesType;
     page?: number;
     setPage?: Dispatch<SetStateAction<number>>;
     numberOfResults: number;
@@ -14,6 +18,8 @@ const PageFooter: React.FC<{
     public?: boolean;
 }> = (props) => {
     const [width] = useWindowSize();
+
+    const dispatch = useAppDispatch();
 
     if (props.simple) {
         const text = `${props.numberOfResults} risultat${
@@ -39,6 +45,16 @@ const PageFooter: React.FC<{
                 props.numberOfResults === 1 ? "o" : "i"
             } )`;
 
+    const changePage = (type: "backward" | "forward") => {
+        const newPage = type === "backward" ? props.page! - 1 : props.page! + 1;
+        if (props.setPage) props.setPage(newPage);
+        if (props.entitiesType) {
+            const setPage = (page: number) =>
+                setPagingUtils(page, props.entitiesType!);
+            dispatch(setPage(newPage));
+        }
+    };
+
     const content = (
         <>
             {props.page! > 1 && (
@@ -46,7 +62,7 @@ const PageFooter: React.FC<{
                     slot="start"
                     fill="clear"
                     color="light"
-                    onClick={() => props.setPage!((page) => page - 1)}
+                    onClick={() => changePage("backward")}
                 >
                     <IonIcon
                         size={width < 400 ? "small" : undefined}
@@ -62,7 +78,7 @@ const PageFooter: React.FC<{
                     slot="end"
                     fill="clear"
                     color="light"
-                    onClick={() => props.setPage!((page) => page + 1)}
+                    onClick={() => changePage("forward")}
                 >
                     <IonIcon
                         size={width < 400 ? "small" : undefined}

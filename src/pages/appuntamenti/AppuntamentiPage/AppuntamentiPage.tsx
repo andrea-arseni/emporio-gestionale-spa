@@ -3,9 +3,12 @@ import {
     IonIcon,
     IonLabel,
     IonLoading,
+    IonRefresher,
+    IonRefresherContent,
     IonSegment,
     IonSegmentButton,
     isPlatform,
+    RefresherEventDetail,
     useIonAlert,
 } from "@ionic/react";
 import { calendarOutline, listOutline, peopleOutline } from "ionicons/icons";
@@ -26,21 +29,28 @@ import errorHandler from "../../../utils/errorHandler";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import {
     backToList,
-    refresh,
+    setAppuntamentiFilter,
+    setCurrentDay,
     setCurrentVisit,
     setFormActive,
     setPageMode,
+    triggerAppuntamentiUpdate,
 } from "../../../store/appuntamenti-slice";
 import { changeLoading } from "../../../store/ui-slice";
 import ListVisits from "../../../components/lists/ListVisits";
 import { isNativeApp } from "../../../utils/contactUtils";
 import styles from "./AppuntamentiPage.module.css";
 import StringFilter from "../../../components/filters/string-filter/StringFilter";
-import useQueryData from "../../../hooks/use-query-data";
 import FilterBar from "../../../components/bars/filter-bar/FilterBar";
+import { resetQueryDataUtils, setFilterUtils } from "../../../utils/queryUtils";
+import { Filtro } from "../../../entities/filtro.model";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
+
+    const resetQueryData = () => resetQueryDataUtils("visite");
+
+    const setFilter = (filter: Filtro) => setFilterUtils(filter, "visite");
 
     const showLoading = useAppSelector((state) => state.ui.isLoading);
 
@@ -48,23 +58,19 @@ const AppuntamentiPage: React.FC<{}> = () => {
         setWeek(new Date())
     );
 
-    const [currentDay, setCurrentDay] = useState<Date>(
-        new Date(
-            Date.now() + 1000 * 60 * new Date().getTimezoneOffset()
-        ).getDay() === 0
-            ? new Date(
-                  Date.now() +
-                      1000 * 60 * new Date().getTimezoneOffset() -
-                      1000 * 60 * 60 * 24
-              )
-            : new Date(Date.now() + 1000 * 60 * new Date().getTimezoneOffset())
-    );
+    const currentDay = useAppSelector((state) => state.appuntamenti.currentDay);
+
+    const dispatch = useAppDispatch();
+
+    const updateCurrentDay = (inputDate: Date) => {
+        dispatch(setCurrentDay(inputDate));
+    };
 
     const [visits, setVisits] = useState<Visit[]>([]);
 
-    const trigger = useAppSelector((state) => state.appuntamenti.trigger);
-
-    const dispatch = useAppDispatch();
+    const trigger = useAppSelector(
+        (state) => state.appuntamenti.queryData.update
+    );
 
     const pageMode = useAppSelector((state) => state.appuntamenti.pageMode);
 
@@ -76,7 +82,9 @@ const AppuntamentiPage: React.FC<{}> = () => {
         "default" | "stringFilter" | "dataFilter" | "numberFilter"
     >("default");
 
-    const { filter, setFilter } = useQueryData("visite");
+    const filter = useAppSelector(
+        (state) => state.appuntamenti.queryData.filter
+    );
 
     const openVisitForm = (visit: Visit | null) => {
         dispatch(setCurrentVisit(visit));
@@ -84,7 +92,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
     };
 
     const operationComplete = () => {
-        dispatch(refresh());
+        dispatch(triggerAppuntamentiUpdate());
         dispatch(backToList());
     };
 
@@ -156,9 +164,11 @@ const AppuntamentiPage: React.FC<{}> = () => {
 
     const handleFilter = () => {
         if (filter.value) {
-            setFilter({ filter: undefined, value: undefined });
+            dispatch(
+                setAppuntamentiFilter({ filter: undefined, value: undefined })
+            );
         } else {
-            setFilter({ filter: "note" });
+            dispatch(setAppuntamentiFilter({ filter: "note" }));
             setFilterMode("stringFilter");
         }
     };
@@ -174,7 +184,12 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     color="dark"
                     onClick={() => {
                         setFilterMode("default");
-                        setFilter({ filter: undefined });
+                        dispatch(
+                            setAppuntamentiFilter({
+                                filter: undefined,
+                                value: undefined,
+                            })
+                        );
                     }}
                 >
                     <IonIcon icon={listOutline} />
@@ -183,16 +198,28 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     </IonLabel>
                 </IonButton>
                 <StringFilter
-                    filter={filter}
                     setFilter={setFilter}
+                    filter={filter}
                     setFilterMode={setFilterMode}
                 />
             </>
         );
 
+    const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        dispatch(triggerAppuntamentiUpdate());
+        event.detail.complete();
+    };
+
     return (
         <>
             <IonLoading cssClass="loader" isOpen={showLoading} />
+            <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+                <IonRefresherContent
+                    pullingText="Rinfresca il contenuto"
+                    refreshingSpinner="circles"
+                    refreshingText="Rinfrescando..."
+                ></IonRefresherContent>
+            </IonRefresher>
             {pageMode === "calendario" && !isFormActive && (
                 <div
                     className={
@@ -203,12 +230,12 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 >
                     <DaySelector
                         currentDay={currentDay}
-                        setCurrentDay={setCurrentDay}
+                        setCurrentDay={updateCurrentDay}
                     />
                     <CalendarNavigator
                         mode="day-week"
                         currentDay={currentDay}
-                        setCurrentDay={setCurrentDay}
+                        setCurrentDay={updateCurrentDay}
                     />
                     <Calendar
                         visits={visits}
@@ -251,26 +278,26 @@ const AppuntamentiPage: React.FC<{}> = () => {
                     </IonButton>
                     {filter.value && (
                         <FilterBar
+                            resetQueryData={resetQueryData}
                             entitiesType={"visite"}
                             filter={filter}
-                            setFilter={setFilter}
                         />
                     )}
                     {!filter.value && (
                         <DaySelector
                             currentDay={currentDay}
-                            setCurrentDay={setCurrentDay}
+                            setCurrentDay={updateCurrentDay}
                         />
                     )}
                     {!filter.value && (
                         <CalendarNavigator
                             mode="day"
                             currentDay={currentDay}
-                            setCurrentDay={setCurrentDay}
+                            setCurrentDay={updateCurrentDay}
                         />
                     )}
                     <ListVisits
-                        filter={!!filter.value}
+                        filter={filter.value}
                         visits={filter.value ? visits : todaysVisits}
                     />
                 </div>

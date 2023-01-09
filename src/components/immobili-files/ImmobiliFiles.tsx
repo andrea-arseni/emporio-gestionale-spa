@@ -52,7 +52,6 @@ export default React.forwardRef<
                     documenti={getFileSpeciale(props.files, input)}
                     deleteEntity={props.deleteEntity}
                     setShowLoading={props.setShowLoading}
-                    setUpdate={props.setUpdate}
                     baseUrl={`/immobili/${props.immobileId}/files`}
                     closeItems={props.closeItemsList}
                 />
@@ -158,7 +157,6 @@ export default React.forwardRef<
                         setCurrentEntity={props.setCurrentDocumento}
                         deleteEntity={props.deleteEntity}
                         setShowLoading={props.setShowLoading}
-                        setUpdate={props.setUpdate}
                         baseUrl={`/immobili/${props.immobileId}/files`}
                         closeItems={props.closeItemsList}
                     />

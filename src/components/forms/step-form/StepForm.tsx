@@ -1,4 +1,13 @@
-import { useIonAlert, IonLoading, IonList, IonButton } from "@ionic/react";
+import {
+    useIonAlert,
+    IonLoading,
+    IonList,
+    IonButton,
+    IonItem,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+} from "@ionic/react";
 import { useState, FormEvent, SetStateAction, Dispatch } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
@@ -6,7 +15,6 @@ import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
-import FormSelect from "../../form-components/form-select/FormSelect";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 
 const StepForm: React.FC<{
@@ -104,20 +112,30 @@ const StepForm: React.FC<{
         setStatusChanged(true);
     };
 
-    const getPossibleStatusValues = () =>
-        possibiliLavoroTypes.filter((el) => el !== "APERTO");
-
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
                 {!props.step && (
-                    <FormSelect
-                        title="Status"
-                        value={status}
-                        function={changeLavoroType}
-                        possibleValues={getPossibleStatusValues()}
-                    />
+                    <IonItem>
+                        <IonLabel position="floating">Status</IonLabel>
+                        <IonSelect
+                            cancelText="Torna Indietro"
+                            mode="ios"
+                            interface="action-sheet"
+                            value={status}
+                            onIonChange={changeLavoroType}
+                        >
+                            {possibiliLavoroTypes.map((el) => (
+                                <IonSelectOption
+                                    key={el.value.toLowerCase()}
+                                    value={el.value}
+                                >
+                                    {el.text}
+                                </IonSelectOption>
+                            ))}
+                        </IonSelect>
+                    </IonItem>
                 )}
                 <TextArea
                     title="Descrizione Aggiornamento"

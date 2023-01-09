@@ -6,7 +6,6 @@ import { Entity } from "../../../entities/entity";
 import { Operazione } from "../../../entities/operazione.model";
 import Selector from "../../../components/selector/Selector";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
-import useQueryData from "../../../hooks/use-query-data";
 
 const OperazioniPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
@@ -19,8 +18,6 @@ const OperazioniPage: React.FC<{}> = () => {
         setMode("list");
         setCurrentOperation(null);
     };
-
-    const queryData = useQueryData("operazioni");
 
     return (
         <>
@@ -36,7 +33,6 @@ const OperazioniPage: React.FC<{}> = () => {
                         setMode={setMode}
                         entitiesType="operazioni"
                         setCurrentEntity={setCurrentOperation}
-                        queryData={queryData}
                     />
                 </>
             )}

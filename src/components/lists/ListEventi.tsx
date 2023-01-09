@@ -34,7 +34,6 @@ const ListEventi: React.FC<{
     deleteEntity: (type: string, id: string, message?: string) => void;
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
-    setUpdate: Dispatch<SetStateAction<number>>;
     closeItems: () => void;
 }> = (props) => {
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);

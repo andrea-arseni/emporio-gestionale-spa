@@ -8,8 +8,7 @@ const errorHandler = (
     presentAlert: {
         (message: string, buttons?: AlertButton[] | undefined): Promise<void>;
         (options: AlertOptions & HookOverlayOptions): Promise<any>;
-    },
-    secondHandler?: (id: number) => void
+    }
 ) => {
     const originalErrorMessage =
         e && e.response && e.response.data && e.response.data.message

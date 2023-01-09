@@ -11,3 +11,10 @@ export interface QueryData {
     update: number;
     setUpdate: Dispatch<SetStateAction<number>>;
 }
+
+export interface queryData {
+    filter: Filtro;
+    sort: string;
+    page: number;
+    update: number;
+}

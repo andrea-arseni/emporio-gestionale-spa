@@ -1,14 +1,12 @@
 export type lavoroType =
-    | "APERTO"
-    | "IN_CORSO"
-    | "ASPETTA"
-    | "ANNULLATO"
-    | "CONCLUSO";
+    | "A_APERTO"
+    | "B_ASPETTA"
+    | "C_CONCLUSO"
+    | "D_ANNULLATO";
 
 export const possibiliLavoroTypes = [
-    "APERTO",
-    "IN_CORSO",
-    "ASPETTA",
-    "ANNULLATO",
-    "CONCLUSO",
+    { value: "A_APERTO", text: "Aperto" },
+    { value: "B_ASPETTA", text: "Aspetta" },
+    { value: "C_CONCLUSO", text: "Concluso" },
+    { value: "D_ANNULLATO", text: "Annullato" },
 ];

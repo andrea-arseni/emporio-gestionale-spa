@@ -36,7 +36,7 @@ import { getDayName, isPast } from "../../utils/timeUtils";
 const ListVisits: React.FC<{
     visits: Visit[];
     displayDay?: boolean;
-    filter?: boolean;
+    filter?: string;
     deleteEntity?: (type: string, id: string, message?: string) => void;
 }> = (props) => {
     const userData = useAppSelector((state) => state.auth.userData);
@@ -205,7 +205,11 @@ const ListVisits: React.FC<{
             <div className={`centered`} style={{ height: "200px" }}>
                 <Card
                     subTitle={`Non sono presenti visite`}
-                    title={"Non sono state trovate visite per questo giorno"}
+                    title={`Non sono state trovate visite ${
+                        props.filter
+                            ? `con "${props.filter}" nel testo`
+                            : "per questo giorno"
+                    }`}
                 />
             </div>
         );

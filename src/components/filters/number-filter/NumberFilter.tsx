@@ -1,8 +1,10 @@
 import { IonList, IonItem, IonLabel, IonButton, IonInput } from "@ionic/react";
 import { Dispatch, SetStateAction, useState } from "react";
+import { useAppDispatch } from "../../../hooks";
 import styles from "../Filter.module.css";
 
 const NumberFilter: React.FC<{
+    setFilter: any;
     filter: {
         filter: string | undefined;
         value?: string | undefined;
@@ -11,33 +13,29 @@ const NumberFilter: React.FC<{
         startDate?: string | undefined;
         endDate?: string | undefined;
     };
-    setFilter: Dispatch<
-        SetStateAction<{
-            filter: string | undefined;
-            value?: string | undefined;
-            min?: number | undefined;
-            max?: number | undefined;
-            startDate?: string | undefined;
-            endDate?: string | undefined;
-        }>
-    >;
     setFilterMode: Dispatch<
         SetStateAction<
             "default" | "stringFilter" | "dataFilter" | "numberFilter"
         >
     >;
     negativeForbidden?: boolean;
+    localQuery?: boolean;
 }> = (props) => {
+    const dispatch = useAppDispatch();
+
     const [minValue, setMinValue] = useState<string | null>(null);
 
     const [maxValue, setMaxValue] = useState<string | null>(null);
 
     const submitForm = async () => {
-        props.setFilter({
+        const filterObj = {
             filter: props.filter.filter,
             min: minValue ? +minValue : undefined,
             max: maxValue ? +maxValue : undefined,
-        });
+        };
+        props.localQuery
+            ? props.setFilter(filterObj)
+            : dispatch(props.setFilter(filterObj));
         props.setFilterMode("default");
     };
 

@@ -20,25 +20,35 @@ const useQueryData = (entitiesType: entitiesType) => {
         }
     };
 
-    const [sort, setSort] = useState<string>(getInitialSorting());
+    const [localSort, localSetSort] = useState<string>(getInitialSorting());
 
-    const [filter, setFilter] = useState<Filtro>({
+    const [localFilter, localSetFilter] = useState<Filtro>({
         filter: undefined,
     });
 
-    const [page, setPage] = useState<number>(1);
+    const [localPage, localSetPage] = useState<number>(1);
 
-    const [update, setUpdate] = useState<number>(0);
+    const [localUpdate, localSetUpdate] = useState<number>(0);
+
+    const localResetQueryData = () => {
+        localSetSort(getInitialSorting());
+        localSetFilter({
+            filter: undefined,
+        });
+        localSetPage(1);
+        localSetUpdate((update) => ++update);
+    };
 
     return {
-        filter,
-        setFilter,
-        sort,
-        setSort,
-        page,
-        setPage,
-        update,
-        setUpdate,
+        localFilter,
+        localSetFilter,
+        localSort,
+        localSetSort,
+        localPage,
+        localSetPage,
+        localUpdate,
+        localSetUpdate,
+        localResetQueryData,
     };
 };
 

@@ -9,7 +9,7 @@ import ItemOption from "../../lists/ItemOption";
 import styles from "./SecondaryItem.module.css";
 
 const SecondaryItem: React.FC<{
-    deleteAction: () => void;
+    deleteAction?: () => void;
     visualizeAction?: () => void;
     addAction?: () => void;
     closeItems: () => void;
@@ -24,7 +24,7 @@ const SecondaryItem: React.FC<{
             buttons: [
                 {
                     text: "Conferma",
-                    handler: () => props.deleteAction(),
+                    handler: () => props.deleteAction!(),
                 },
                 {
                     text: "Annulla",
@@ -38,6 +38,14 @@ const SecondaryItem: React.FC<{
         <IonItemSliding className={styles.item}>
             <IonItem detail>{props.children}</IonItem>
             <IonItemOptions side="end">
+                {props.addAction && (
+                    <ItemOption
+                        handler={() => props.addAction!()}
+                        colorType={"dark"}
+                        icon={personAddOutline}
+                        title={"Rubrica"}
+                    />
+                )}
                 {props.visualizeAction && (
                     <ItemOption
                         handler={() => props.visualizeAction!()}
@@ -46,24 +54,18 @@ const SecondaryItem: React.FC<{
                         title={"Apri"}
                     />
                 )}
-                {props.addAction && (
+                {props.deleteAction && (
                     <ItemOption
-                        handler={() => props.addAction!()}
-                        colorType={"primary"}
-                        icon={personAddOutline}
-                        title={"Rubrica"}
+                        handler={() =>
+                            props.directDeleting
+                                ? props.deleteAction!()
+                                : alertDeleteEntity()
+                        }
+                        colorType={"danger"}
+                        icon={closeOutline}
+                        title={"Elimina"}
                     />
                 )}
-                <ItemOption
-                    handler={() =>
-                        props.directDeleting
-                            ? props.deleteAction()
-                            : alertDeleteEntity()
-                    }
-                    colorType={"danger"}
-                    icon={closeOutline}
-                    title={"Elimina"}
-                />
             </IonItemOptions>
         </IonItemSliding>
     );

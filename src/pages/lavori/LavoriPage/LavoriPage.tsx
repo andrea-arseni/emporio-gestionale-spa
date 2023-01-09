@@ -6,14 +6,11 @@ import LavoroForm from "../../../components/forms/lavoro-form/Lavoro-form";
 import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Lavoro } from "../../../entities/lavoro.model";
-import useQueryData from "../../../hooks/use-query-data";
 
 const LavoriPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const [currentLavoro, setCurrentLavoro] = useState<Entity | null>(null);
-
-    const queryData = useQueryData("lavori");
 
     const backToList = () => {
         setMode("list");
@@ -33,7 +30,6 @@ const LavoriPage: React.FC<{}> = () => {
                         setMode={setMode}
                         entitiesType="lavori"
                         setCurrentEntity={setCurrentLavoro}
-                        queryData={queryData}
                     />
                 </>
             )}

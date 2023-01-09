@@ -20,7 +20,6 @@ const ListSteps: React.FC<{
     deleteEntity: (type: string, id: string, message?: string) => void;
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
-    setUpdate: Dispatch<SetStateAction<number>>;
 }> = (props) => {
     const userData = useAppSelector((state) => state.auth.userData);
 

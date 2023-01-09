@@ -33,7 +33,6 @@ const ListPersone: React.FC<{
     deleteEntity: (type: string, id: string, message?: string) => void;
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
-    setUpdate: Dispatch<SetStateAction<number>>;
     closeItems: () => void;
     selectMode: boolean;
 }> = (props) => {
@@ -46,7 +45,7 @@ const ListPersone: React.FC<{
     const userData = useAppSelector((state) => state.auth.userData);
 
     const goToData = (id: number) => {
-        navigate(`/persone/${id.toString()}`);
+        navigate(`/persone/${id.toString()}/storia`);
     };
 
     const { selectEntity, entitySelected } = useSelection(
@@ -58,8 +57,18 @@ const ListPersone: React.FC<{
         if (props.selectMode) return <p>{`Tel: ${persona.telefono}`}</p>;
         return (
             <p>
-                Tel:
-                <a href={`tel:${persona.telefono}`}>{persona.telefono}</a>
+                Tel:{" "}
+                <a
+                    className={
+                        persona.status?.toUpperCase() === "E_EVITA" ||
+                        persona.status?.toUpperCase() === "D_DISATTIVA"
+                            ? "lightLink"
+                            : ""
+                    }
+                    href={`tel:${persona.telefono}`}
+                >
+                    {persona.telefono}
+                </a>
             </p>
         );
     };
@@ -70,7 +79,15 @@ const ListPersone: React.FC<{
         return (
             <p>
                 Email:{" "}
-                <a href={`mailto:${persona.email}`}>
+                <a
+                    className={
+                        persona.status?.toUpperCase() === "E_EVITA" ||
+                        persona.status?.toUpperCase() === "D_DISATTIVA"
+                            ? "lightLink"
+                            : ""
+                    }
+                    href={`mailto:${persona.email}`}
+                >
                     {width >= 450 ? persona.email : "Email"}
                 </a>
             </p>
@@ -114,16 +131,14 @@ const ListPersone: React.FC<{
                     slot="end"
                     className={styles.note}
                     color={
-                        persona.status?.toUpperCase() === "NON_RICHIAMARE" ||
-                        persona.status?.toUpperCase() === "NON RICHIAMARE" ||
-                        persona.status?.toUpperCase() === "RIPOSO"
+                        !props.selectMode &&
+                        (persona.status?.toUpperCase() === "E_EVITA" ||
+                            persona.status?.toUpperCase() === "D_DISATTIVA")
                             ? "light"
                             : "dark"
                     }
                 >
-                    {persona.status === "RIPOSO"
-                        ? "DISATTIVA"
-                        : persona.status!.toUpperCase().replace("_", " ")}
+                    {persona.status!.toUpperCase().split("_")[1]}
                     <br />
                     {persona.provenienza &&
                         persona.provenienza.toUpperCase().replace("_", " ")}

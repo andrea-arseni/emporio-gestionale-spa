@@ -1,15 +1,13 @@
 export const getLavoroTitleColor = (input: string) => {
-    input = input.toLowerCase().replace("_", " ");
+    input = input.toLowerCase();
     switch (input) {
-        case "in corso":
-            return "light";
-        case "aspetta":
-            return "warning";
-        case "aperto":
+        case "a_aperto":
             return "secondary";
-        case "concluso":
+        case "b_aspetta":
+            return "warning";
+        case "c_concluso":
             return "dark";
-        case "annullato":
+        case "d_annullato":
             return "danger";
         default:
             return "";
@@ -17,37 +15,22 @@ export const getLavoroTitleColor = (input: string) => {
 };
 
 export const getPersonaNameColor = (input: string) => {
-    input = input.toLowerCase().replace("_", " ");
+    input = input.toLowerCase();
     switch (input) {
-        case "attiva":
+        case "a_attiva":
             return "light";
-        case "riposo":
+        case "d_disattiva":
             return "dark";
-        case "richiama lei":
+        case "b_richiama_lei":
             return "secondary";
-        case "non richiamare":
+        case "e_evita":
             return "danger";
-        case "aspetta":
+        case "c_aspetta":
             return "warning";
         default:
             return "";
     }
 };
 
-export const getStatusText = (input: string) => {
-    input = input.replace("_", " ").toUpperCase();
-    switch (input) {
-        case "ATTIVA":
-            return "Da Sentire";
-        case "ASPETTA":
-            return "Da Aspettare";
-        case "RICHIAMA LEI":
-            return "Richiamano Loro";
-        case "RIPOSO":
-            return "Disattive";
-        case "NON RICHIAMARE":
-            return "Da Non Richiamare";
-        default:
-            return input;
-    }
-};
+export const getStatusText = (input: string) =>
+    input.toLowerCase().split("_")[1];

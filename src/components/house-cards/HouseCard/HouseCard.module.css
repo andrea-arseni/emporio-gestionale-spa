@@ -112,31 +112,6 @@
     font-size: xx-small;
 }
 
-@media screen and (max-width: 1050px) {
-    .imgWrapper {
-        max-width: 250px;
-    }
-    .spinnerWrapper {
-        width: 250px;
-    }
-}
-
-@media screen and (max-width: 900px) {
-    .textPart {
-        font-size: small;
-    }
-}
-
-@media screen and (max-width: 850px) {
-    .imgWrapper {
-        height: 70%;
-        max-width: 200px;
-    }
-    .spinnerWrapper {
-        width: 200px;
-    }
-}
-
 @media screen and (max-width: 767px) {
     .textPart {
         font-size: medium;
@@ -193,7 +168,12 @@
         text-align: center;
         padding-left: 20px;
         padding-right: 20px;
+        margin-bottom: 0;
+        padding-bottom: 0;
         font-weight: bold;
+        line-height: 180%;
+        position: relative;
+        top: 3px;
     }
 }
 

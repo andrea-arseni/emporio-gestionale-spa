@@ -1,11 +1,19 @@
-import { IonList, useIonAlert, IonLoading, IonButton } from "@ionic/react";
+import {
+    IonList,
+    useIonAlert,
+    IonLoading,
+    IonButton,
+    IonItem,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+} from "@ionic/react";
 import { FormEvent, useState } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import errorHandler from "../../../utils/errorHandler";
-import FormSelect from "../../form-components/form-select/FormSelect";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormInput from "../../form-components/form-input/FormInput";
 
@@ -41,7 +49,7 @@ const LavoroForm: React.FC<{
     } = useInput(() => true);
 
     const [status, setStatus] = useState<lavoroType>(
-        props.lavoro ? (props.lavoro.status as lavoroType) : "APERTO"
+        props.lavoro ? (props.lavoro.status as lavoroType) : "A_APERTO"
     );
 
     const isFormValid =
@@ -93,11 +101,6 @@ const LavoroForm: React.FC<{
 
     const changeLavoroType = (e: any) => setStatus(e.detail.value);
 
-    const getPossibleStatusValues = () =>
-        !props.lavoro
-            ? possibiliLavoroTypes
-            : possibiliLavoroTypes.filter((el) => el !== "APERTO");
-
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
@@ -113,12 +116,25 @@ const LavoroForm: React.FC<{
                     reset={inputTitoloReset}
                 />
                 {props.lavoro && (
-                    <FormSelect
-                        title="Status"
-                        value={status}
-                        function={changeLavoroType}
-                        possibleValues={getPossibleStatusValues()}
-                    />
+                    <IonItem>
+                        <IonLabel position="floating">Status</IonLabel>
+                        <IonSelect
+                            cancelText="Torna Indietro"
+                            mode="ios"
+                            interface="action-sheet"
+                            value={status}
+                            onIonChange={changeLavoroType}
+                        >
+                            {possibiliLavoroTypes.map((el) => (
+                                <IonSelectOption
+                                    key={el.value.toLowerCase()}
+                                    value={el.value}
+                                >
+                                    {el.text}
+                                </IonSelectOption>
+                            ))}
+                        </IonSelect>
+                    </IonItem>
                 )}
                 {!props.lavoro && (
                     <TextArea

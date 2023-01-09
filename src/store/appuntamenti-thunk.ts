@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from ".";
 import axiosInstance from "../utils/axiosInstance";
-import { refresh } from "./appuntamenti-slice";
+import { triggerAppuntamentiUpdate } from "./appuntamenti-slice";
 import { changeLoading, setError, setModalOpened } from "./ui-slice";
 
 export const eliminaVisita = createAsyncThunk<any, any, { state: RootState }>(
@@ -12,7 +12,7 @@ export const eliminaVisita = createAsyncThunk<any, any, { state: RootState }>(
         try {
             await axiosInstance.delete(`/visite/${currentVisit!.id}`);
             dispatch(setModalOpened(false));
-            dispatch(refresh());
+            dispatch(triggerAppuntamentiUpdate());
         } catch (e) {
             dispatch(changeLoading(false));
             setTimeout(() => {

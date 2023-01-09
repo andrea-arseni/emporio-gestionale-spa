@@ -61,7 +61,9 @@ const RiepilogoBar: React.FC<{
             </IonButtons>
             {props.tipologia !== "immobile" && (
                 <IonTitle size="small" className={styles.smallTitle}>
-                    {entity!.status?.replace("_", " ")}
+                    {props.tipologia === "persona"
+                        ? entity!.status!.split("_")[1]
+                        : entity!.status?.replace("_", " ")}
                 </IonTitle>
             )}
             <IonTitle

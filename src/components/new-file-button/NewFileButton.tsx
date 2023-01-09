@@ -6,10 +6,13 @@ import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPa
 const NewFileButton: React.FC<{
     mode: fileMode;
     action: () => void;
-    selectionMode: boolean;
     listIdPhotoSelected: number[] | null;
 }> = (props) => {
     const immobile = useAppSelector((state) => state.immobile.immobile);
+
+    const isSelectionModeActivated = useAppSelector(
+        (state) => state.immobile.isSelectionModeActivated
+    );
 
     const isImmobileClosed = immobile?.files?.find(
         (el) => el.nome === "0" && el.tipologia === "FOTO"
@@ -22,7 +25,7 @@ const NewFileButton: React.FC<{
     return (
         <IonButton
             color={
-                props.selectionMode ||
+                isSelectionModeActivated ||
                 (isImmobileClosed && props.mode === "foto")
                     ? "dark"
                     : "primary"
@@ -33,7 +36,7 @@ const NewFileButton: React.FC<{
             style={{ margin: 0 }}
             onClick={props.action}
             disabled={
-                props.selectionMode ||
+                isSelectionModeActivated ||
                 (props.mode === "foto" &&
                     !isImmobileClosed &&
                     numeroFoto! >= 30)
@@ -49,7 +52,7 @@ const NewFileButton: React.FC<{
                 }
             />
             <IonLabel style={{ paddingLeft: "16px" }}>
-                {props.selectionMode
+                {isSelectionModeActivated
                     ? `Foto Selezionate: ${
                           props.listIdPhotoSelected &&
                           props.listIdPhotoSelected.length
