@@ -30,8 +30,6 @@ import styles from "./ImmobiliPhoto.module.css";
 const ImmobiliPhoto: React.FC<{
     id: number;
 }> = (props) => {
-    console.log("Rendered");
-
     const [presentAlert] = useIonAlert();
 
     const dispatch = useAppDispatch();

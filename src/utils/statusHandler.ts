@@ -32,5 +32,7 @@ export const getPersonaNameColor = (input: string) => {
     }
 };
 
-export const getStatusText = (input: string) =>
-    input.toLowerCase().split("_")[1];
+export const getStatusText = (input: string) => {
+    if (!input.includes("_")) return input;
+    return input.toLowerCase().split("_")[1];
+};

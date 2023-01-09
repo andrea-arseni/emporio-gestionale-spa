@@ -165,7 +165,6 @@ const Selector: React.FC<{
                 }${
                     props.baseUrl && props.baseUrl.includes("?") ? "&" : "?"
                 }page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
-                console.log(url);
                 const res = await axiosInstance.get(url);
                 if (!mounted) return;
                 setShowLoading(false);

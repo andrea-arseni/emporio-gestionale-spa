@@ -14,7 +14,6 @@ import {
     discOutline,
     documentTextOutline,
     folderOpenOutline,
-    folderOutline,
     homeOutline,
     imagesOutline,
     logoEuro,
@@ -371,17 +370,7 @@ const FilterActionSheet: React.FC<{
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "status",
-                                value: "aperto",
-                            });
-                        },
-                    },
-                    {
-                        text: "Lavori In Corso",
-                        icon: folderOutline,
-                        handler: () => {
-                            buttonHandler("default", {
-                                filter: "status",
-                                value: "in_corso",
+                                value: "a_aperto",
                             });
                         },
                     },
@@ -391,17 +380,7 @@ const FilterActionSheet: React.FC<{
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "status",
-                                value: "aspetta",
-                            });
-                        },
-                    },
-                    {
-                        text: "Lavori Annullati",
-                        icon: trashOutline,
-                        handler: () => {
-                            buttonHandler("default", {
-                                filter: "status",
-                                value: "annullato",
+                                value: "b_aspetta",
                             });
                         },
                     },
@@ -411,7 +390,17 @@ const FilterActionSheet: React.FC<{
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "status",
-                                value: "concluso",
+                                value: "c_concluso",
+                            });
+                        },
+                    },
+                    {
+                        text: "Lavori Annullati",
+                        icon: trashOutline,
+                        handler: () => {
+                            buttonHandler("default", {
+                                filter: "status",
+                                value: "d_annullato",
                             });
                         },
                     },
