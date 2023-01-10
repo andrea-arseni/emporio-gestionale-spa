@@ -119,7 +119,7 @@ const Menu: React.FC<{}> = () => {
         const indexOperazioni = appPages.findIndex(
             (el) => el.title === "Operazioni"
         );
-        appPages.splice(indexOperazioni, 1);
+        if (indexOperazioni !== -1) appPages.splice(indexOperazioni, 1);
     }
 
     return (

@@ -147,11 +147,14 @@ const AuthPage: React.FC<{}> = () => {
     };
 
     const submitLoginCall = async () => {
-        const res = await axiosInstance.post(`users/login`, {
+        const reqBody = {
             nameOrEmail: inputNameValue.trim(),
             password: inputPasswordValue,
-            code: inputCodeValue.trim().length > 0 ? inputCodeValue : null,
-        });
+            code: inputCodeValue.trim().length > 0 ? +inputCodeValue : null,
+        };
+        console.log(reqBody);
+        const res = await axiosInstance.post(`users/login`, reqBody);
+        console.log(res);
         setShowLoading(false);
         const loginData: loginData = res.data;
         if (loginData.token) {
