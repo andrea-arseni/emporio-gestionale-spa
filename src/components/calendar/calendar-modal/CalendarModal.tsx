@@ -14,7 +14,6 @@ import {
     trashBinOutline,
     chatboxEllipsesOutline,
 } from "ionicons/icons";
-import { Share } from "@capacitor/share";
 import { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
@@ -31,6 +30,7 @@ import FormVisit from "../../forms/visit-form/VisitForm";
 import { isPast } from "../../../utils/timeUtils";
 import { isNativeApp } from "../../../utils/contactUtils";
 import styles from "./CalendarModal.module.css";
+import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
 
 const CalendarModal: React.FC<{}> = () => {
     const modalIsOpen = useAppSelector((state) => state.ui.isModalOpened);
@@ -69,17 +69,18 @@ const CalendarModal: React.FC<{}> = () => {
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await Share.share({
-                text: inputNoteValue,
-                url: visit?.immobile
-                    ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
-                      visit.immobile.id!
-                    : undefined,
-                dialogTitle: "Conferma Visita",
-                title: "Messaggio",
+            await SocialSharing.shareWithOptions({
+                message: inputNoteValue,
+                url:
+                    visit && visit.immobile && visit.immobile.id
+                        ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
+                          visit.immobile.id
+                        : undefined,
+                subject: "Conferma Visita",
             });
             smontaModale();
         } catch (error) {
+            console.log(error);
             errorHandler(
                 null,
                 () => {},

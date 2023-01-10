@@ -21,11 +21,11 @@ import { getInterestMessage } from "../../utils/messageUtils";
 import { useAppSelector } from "../../hooks";
 import { Immobile } from "../../entities/immobile.model";
 import { checkShareability } from "../../utils/fileUtils";
-import { Share } from "@capacitor/share";
 import errorHandler from "../../utils/errorHandler";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import ModalMessage from "../modal/modal-message/ModalMessage";
 import { isUserAdmin } from "../../utils/userUtils";
+import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -52,15 +52,15 @@ const ListEventi: React.FC<{
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await Share.share({
-                text: inputNoteValue,
+            await SocialSharing.shareWithOptions({
+                message: inputNoteValue,
                 url:
                     process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
                     currentImmobile!.id!,
-                dialogTitle: "Interessamento Immobile",
-                title: "Messaggio",
+                subject: "Interessamento Immobile",
             });
         } catch (error) {
+            console.log(error);
             errorHandler(
                 null,
                 () => {},

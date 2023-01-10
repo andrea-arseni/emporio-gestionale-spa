@@ -24,7 +24,6 @@ import { capitalize } from "../../utils/stringUtils";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import errorHandler from "../../utils/errorHandler";
 import { checkShareability } from "../../utils/fileUtils";
-import { Share } from "@capacitor/share";
 import { getConfermaVisitaMessage } from "../../utils/messageUtils";
 import { isUserAdmin } from "../../utils/userUtils";
 import Card from "../card/Card";
@@ -32,6 +31,7 @@ import ModalMessage from "../modal/modal-message/ModalMessage";
 import ItemOption from "./ItemOption";
 import styles from "./Lists.module.css";
 import { getDayName, isPast } from "../../utils/timeUtils";
+import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
 
 const ListVisits: React.FC<{
     visits: Visit[];
@@ -91,16 +91,16 @@ const ListVisits: React.FC<{
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await Share.share({
-                text: inputNoteValue,
+            await SocialSharing.shareWithOptions({
+                message: inputNoteValue,
                 url: currentVisit!.immobile
                     ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
                       currentVisit!.immobile.id!
                     : undefined,
-                dialogTitle: "Conferma Visita",
-                title: "Messaggio",
+                subject: "Conferma Visita",
             });
         } catch (error) {
+            console.log(error);
             errorHandler(
                 null,
                 () => {},
@@ -175,7 +175,10 @@ const ListVisits: React.FC<{
                     )}
                     {!isPast(new Date(visit.quando!)) && (
                         <ItemOption
-                            handler={() => apriModale(visit)}
+                            handler={() => {
+                                dispatch(setCurrentVisit(visit));
+                                apriModale(visit);
+                            }}
                             colorType={"success"}
                             icon={pencilOutline}
                             title={"Scrivi"}
