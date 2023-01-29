@@ -235,3 +235,20 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+/*
+
+STRONG IMPROVEMENTS GESTIONALE
+
+- Descrizione non rossa - usa invece il messaggio sul bottone - VINTO
+- Footer basso anche dopo che hai usato un filtro
+- Se una persona è interessata ad un immobile, al prossimo form automaticamente seleziona quell'immobile
+- Immobili default già sorted per attivo e per prezzo
+- Televisione sempre attiva
+- Creazione file zip su backend da lista di immagini
+- Call che restituisce il file zip
+- Frontend che effettua la call per il download immagini
+- Chat GPT test crea descrizione da dati
+- Chat GPT test call API
+- Test integrazione Caht GPT in gestionale
+*/

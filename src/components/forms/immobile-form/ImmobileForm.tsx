@@ -626,6 +626,14 @@ const ImmobileForm: React.FC<{
             /.+@.+\..+/.test(el.toString())
     );
 
+    const getErrorDescrizione = () => {
+        if (!inputDescrizioneIsTouched && !props.immobile) return "DA CAMBIARE";
+        if (!inputDescrizioneIsInvalid) return "";
+        return `TROPPO ${
+            inputDescrizioneValue.toString().length < 100 ? "CORTA" : "LUNGA"
+        }`;
+    };
+
     useEffect(() => {
         if (!isSpeseExtra) inputSpeseExtraChangedHandler("");
     }, [isSpeseExtra, inputSpeseExtraChangedHandler]);
@@ -869,6 +877,43 @@ const ImmobileForm: React.FC<{
         (newProprietarioPartOpened && inputNameIsInvalid) ||
         (newProprietarioPartOpened && inputPhoneIsInvalid) ||
         (newProprietarioPartOpened && inputEmailIsInvalid);
+
+    const getSubmitText = () => {
+        if (!inputTitleValue) return "Titolo campo obbligatorio";
+        if (inputTitleIsInvalid) return "Titolo da correggere";
+        if (!inputSuperficieValue) return "Superficie campo obbligatorio";
+        if (inputSuperficieIsInvalid) return "Superficie da correggere";
+        if (!inputTipologiaValue) return "Tipologia campo obbligatorio";
+        if (!inputLocaliValue) return "Locali campo obbligatorio";
+        if (!inputComuneValue) return "Comune campo obbligatorio";
+        if (!inputIndirizzoValue) return "Indirizzo campo obbligatorio";
+        if (!inputPrezzoValue) return "Prezzo campo obbligatorio";
+        if (inputPrezzoIsInvalid) return "Prezzo da correggere";
+        if (!inputRiscaldamentoValue) return "Riscaldamento campo obbligatorio";
+        if (!inputClasseEnergeticaValue)
+            return "Classe Energetica campo obbligatorio";
+        if (inputConsumoIsInvalid) return "Consumo da correggere";
+        if (!inputContrattoValue) return "Contratto campo obbligatorio";
+        if (!inputCategoriaValue) return "Categoria campo obbligatorio";
+        if (!inputStatoValue) return "Stato campo obbligatorio";
+        if (!inputStatusValue) return "Status campo obbligatorio";
+        if (!inputLiberoValue) return "Libero campo obbligatorio";
+        if (!inputPianoValue) return "Piano campo obbligatorio";
+        if (inputSpeseCondominialiIsInvalid)
+            return "Spese condominiali da correggere";
+        if (inputSpeseRiscaldamentoIsInvalid)
+            return "Spese riscaldamento da correggere";
+        if (inputRenditaIsInvalid) return "Rendita da correggere";
+        if (inputAnnoCostruzioneIsInvalid)
+            return "Anno di costruzione da correggere";
+        if (inputDescrizioneIsInvalid)
+            return inputDescrizioneValue.toString().length < 100
+                ? "Descrizione troppo corta"
+                : "Descrizione troppo lunga";
+        if (!props.immobile && !inputDescrizioneIsTouched)
+            return "Descrizione da cambiare";
+        return `${props.immobile ? "Modifica" : "Aggiungi"} immobile`;
+    };
 
     const getProprietario = () => {
         // if newpart is open create new object
@@ -1357,23 +1402,11 @@ const ImmobileForm: React.FC<{
                         reset={inputTotalePianiReset}
                     />
                     <TextArea
-                        title={`Descrizione ${
-                            !inputDescrizioneIsTouched && !props.immobile
-                                ? "DA CAMBIARE"
-                                : ""
-                        }`}
+                        title={`Descrizione ${getErrorDescrizione()}`}
                         inputValue={inputDescrizioneValue}
                         inputChangeHandler={inputDescrizioneChangedHandler}
                         inputTouchHandler={inputDescrizioneTouchedHandler}
                         reset={inputDescrizioneReset}
-                        inputIsInvalid={inputDescrizioneIsInvalid}
-                        errorMessage={
-                            inputDescrizioneValue === genericaDescrizione
-                                ? "Descrizione da cambiare"
-                                : inputDescrizioneValue.toString().length < 100
-                                ? "Descrizione troppo corta"
-                                : "Descrizione troppo lunga"
-                        }
                     />
                 </FormGroup>
                 <FormGroup title="Caratteristiche - Opzionali">
@@ -1741,7 +1774,7 @@ const ImmobileForm: React.FC<{
                     disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}
                 >
-                    {props.immobile ? "Modifica" : "Aggiungi"} immobile
+                    {getSubmitText()}
                 </IonButton>
             </IonList>
             <Modal

@@ -16,8 +16,9 @@ const FormTitle: React.FC<{
             mode="ios"
             className={`${props.fixed ? "fixed" : ""} bordered`}
         >
+            <Title>{props.title}</Title>
             {widthScreen >= 500 && props.backToList && (
-                <IonButtons slot="start">
+                <IonButtons slot="end">
                     <IonButton
                         color="medium"
                         fill="solid"
@@ -34,7 +35,6 @@ const FormTitle: React.FC<{
                     </IonButton>
                 </IonButtons>
             )}
-            <Title>{props.title}</Title>
         </IonToolbar>
     );
 };

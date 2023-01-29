@@ -80,7 +80,6 @@ const CalendarModal: React.FC<{}> = () => {
             });
             smontaModale();
         } catch (error) {
-            console.log(error);
             errorHandler(
                 null,
                 () => {},

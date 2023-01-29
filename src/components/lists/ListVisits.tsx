@@ -100,7 +100,6 @@ const ListVisits: React.FC<{
                 subject: "Conferma Visita",
             });
         } catch (error) {
-            console.log(error);
             errorHandler(
                 null,
                 () => {},

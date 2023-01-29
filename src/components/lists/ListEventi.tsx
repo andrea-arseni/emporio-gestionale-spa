@@ -60,7 +60,6 @@ const ListEventi: React.FC<{
                 subject: "Interessamento Immobile",
             });
         } catch (error) {
-            console.log(error);
             errorHandler(
                 null,
                 () => {},
