@@ -1,5 +1,7 @@
 .footer {
     height: 62px !important;
+    position: sticky;
+    bottom: 0;
 }
 
 .toolbar {
