@@ -212,8 +212,28 @@ const PersoneForm: React.FC<{
         inputPhoneIsInvalid ||
         inputEmailIsInvalid ||
         inputRuoloIsInvalid ||
+        !inputProvenienzaValue ||
         inputProvenienzaIsInvalid ||
         inputStatusIsInvalid;
+
+    const getSubmitText = () => {
+        if (!props.persona && !inputNameIsTouched) return "Nome obbligatorio";
+        if (inputNameIsInvalid) return "Nome da correggere";
+
+        if (
+            (!props.persona && !inputPhoneIsTouched && !inputEmailIsTouched) ||
+            (inputEmailValue.trim().length === 0 &&
+                (getPhoneValue() === null || getPhoneValue()!.length === 0))
+        )
+            return "Indicare uno tra telefono e email";
+        if (inputPhoneIsInvalid) return "Telefono da correggere";
+        if (inputEmailIsInvalid) return "Email da correggere";
+        if (inputRuoloIsInvalid) return "Ruolo da correggere";
+        if (!inputProvenienzaValue) return "Provenienza obbligatoria";
+        if (inputProvenienzaIsInvalid) return "Provenienza da correggere";
+        if (inputStatusIsInvalid) return "Status da correggere";
+        return `${props.persona ? "Modifica" : "Aggiungi"} persona`;
+    };
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
@@ -466,7 +486,7 @@ const PersoneForm: React.FC<{
                     disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}
                 >
-                    {props.persona ? "Modifica" : "Aggiungi"} persona
+                    {getSubmitText()}
                 </IonButton>
             </IonList>
             <Modal

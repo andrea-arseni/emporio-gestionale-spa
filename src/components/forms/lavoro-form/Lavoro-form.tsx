@@ -62,6 +62,15 @@ const LavoroForm: React.FC<{
             inputDescrizioneValue &&
             status);
 
+    const getSubmitText = () => {
+        if (!props.lavoro && !inputTitoloIsTouched)
+            return "Titolo obbligatorio";
+        if (!props.lavoro && inputTitoloIsInvalid) return "Titolo invalido";
+        if (!props.lavoro && !inputDescrizioneValue)
+            return "Descrizione obbligatoria";
+        return `${props.lavoro ? "Modifica" : "Aggiungi"} Obiettivo`;
+    };
+
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
         const reqBody = {
@@ -152,7 +161,7 @@ const LavoroForm: React.FC<{
                     disabled={!isFormValid}
                     onClick={(e) => submitForm(e)}
                 >
-                    {props.lavoro ? "Modifica" : "Aggiungi"} Obiettivo
+                    {getSubmitText()}
                 </IonButton>
             </IonList>
         </form>

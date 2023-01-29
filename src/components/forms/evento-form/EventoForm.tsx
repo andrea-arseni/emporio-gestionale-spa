@@ -132,6 +132,24 @@ const EventoForm: React.FC<{
             !inputStatusIsTouched &&
             (!inputNoteValue || inputNoteValue.toString().trim().length === 0));
 
+    const getSubmitText = () => {
+        if (props.evento && !inputNoteIsTouched) return "Note è obbligatorio";
+        if (
+            !isVisit &&
+            !inputStatusIsTouched &&
+            (!inputNoteValue || inputNoteValue.toString().trim().length === 0)
+        )
+            return "Cambiare Note o Status";
+        if (isVisit && !inputDateValue) return "Data obbligatoria";
+        if (isVisit && !inputTimeValue) return "Orario obbligatorio";
+
+        return props.evento
+            ? "Aggiorna Evento"
+            : isVisit
+            ? "Fissa Visita"
+            : "Aggiorna Persona";
+    };
+
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
         setShowLoading(true);
@@ -340,11 +358,7 @@ const EventoForm: React.FC<{
                     disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}
                 >
-                    {props.evento
-                        ? "Aggiorna Evento"
-                        : isVisit
-                        ? "Fissa Visita"
-                        : "Aggiorna Persona"}
+                    {getSubmitText()}
                 </IonButton>
             </IonList>
             <Modal

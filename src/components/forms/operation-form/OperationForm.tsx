@@ -43,7 +43,7 @@ const FormOperation: React.FC<{
         inputChangedHandler: inputImportoChangedHandler,
         reset: inputImportoReset,
     } = useInput(
-        (el) => +el % 1 === 0,
+        (el) => +el % 1 === 0 && +el !== 0,
         props.operation && props.operation.importo !== undefined
             ? props.operation.importo
             : null
@@ -115,9 +115,22 @@ const FormOperation: React.FC<{
                 !inputDateValue ||
                 !inputImportoIsTouched ||
                 inputImportoIsInvalid)) ||
+        (props.operation &&
+            !inputDescrizioneIsTouched &&
+            !inputImportoIsTouched) ||
         !inputDateValue ||
         !inputDescrizioneValue ||
         !inputImportoValue;
+
+    const getSubmitText = () => {
+        if (!inputDateValue) return "Data obbligatoria";
+        if (!inputImportoValue) return "Importo obbligatorio";
+        if (inputImportoIsInvalid) return "Importo invalido";
+        if (!inputDescrizioneValue) return "Descrizione obbligatoria";
+        if (inputDescrizioneIsInvalid) return "Descrizione invalida";
+
+        return `${props.operation ? "Modifica " : "Crea nuova "} operazione`;
+    };
 
     return (
         <form onSubmit={submitForm} className="form">
@@ -168,9 +181,7 @@ const FormOperation: React.FC<{
                     type="submit"
                     disabled={isFormDisabled}
                 >
-                    {`${
-                        props.operation ? "Modifica " : "Crea nuova "
-                    } operazione`}
+                    {getSubmitText()}
                 </IonButton>
             </IonList>
         </form>

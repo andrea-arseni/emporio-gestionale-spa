@@ -176,6 +176,22 @@ const FormVisit: React.FC<{
         (immobileValue && !personaValue) ||
         (!personaValue && !immobileValue && !inputDoveValue && !inputNoteValue);
 
+    const getSubmitText = () => {
+        if (!inputDateValue) return "Data obbligatoria";
+        if (!inputTimeValue) return "Orario obbligatorio";
+        if (!inputUserValue) return "Incaricato obbligatorio";
+        if (immobileValue && !personaValue) return "Persona obbligatoria";
+        if (
+            !personaValue &&
+            !immobileValue &&
+            !inputDoveValue &&
+            !inputNoteValue
+        )
+            return "Dati insufficienti";
+        return `${visit && visit.id ? "Modifica " : "Aggiungi "}
+                            Visita`;
+    };
+
     const submitVisit = async (e: FormEvent) => {
         e.preventDefault();
         const mode = visit && visit.id ? "update" : "insert";
@@ -451,8 +467,7 @@ const FormVisit: React.FC<{
                             disabled={isFormDisabled}
                             onClick={(e) => submitVisit(e)}
                         >
-                            {visit && visit.id ? "Modifica " : "Aggiungi "}
-                            Visita
+                            {getSubmitText()}
                         </IonButton>
                     )}
                 </IonList>
