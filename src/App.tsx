@@ -244,14 +244,14 @@ STRONG IMPROVEMENTS GESTIONALE
 - Footer basso anche dopo che hai usato un filtro - VINTO
 - Correzione altri form - VINTO
 
-- Se una persona è interessata ad un immobile, al prossimo form automaticamente seleziona quell'immobile
+- Se una persona è interessata ad un immobile, al prossimo form automaticamente seleziona quell'immobile - VINTO
 - Immobili default già sorted per attivo e per prezzo
 
 - Televisione sempre attiva
 - Creazione file zip su backend da lista di immagini
 
 - Call che restituisce il file zip
-- Frontend che effettua la call per il download immagini
+- Frontend che effettua la call per il download immagini solo su Web
 
 - Chat GPT test crea descrizione da dati
 - Chat GPT test call API
@@ -263,6 +263,6 @@ STRONG IMPROVEMENTS GESTIONALE
 */
 
 /*
-- visita form dopo che hai aggiunto la persona check se è interessata ad un immobile, nel caso automaticamente associa
-- evento form la persona check se è interessata ad un immobile, nel caso automaticamente associa
+- apply 'default' sorting on both calls way
+- on backend 'default' translate to 'sort firstly by active and later by price'
 */

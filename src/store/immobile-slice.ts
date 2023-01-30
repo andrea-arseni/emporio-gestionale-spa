@@ -9,7 +9,7 @@ const INITIAL_QUERY_DATA: queryData = {
     filter: {
         filter: undefined,
     },
-    sort: "ref",
+    sort: "default",
     page: 1,
     update: 0,
 };

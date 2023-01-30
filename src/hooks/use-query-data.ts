@@ -8,7 +8,7 @@ const useQueryData = (entitiesType: entitiesType) => {
             case "lavori":
                 return "status";
             case "immobili":
-                return "ref";
+                return "default";
             case "documenti":
                 return "nome";
             case "persone":
