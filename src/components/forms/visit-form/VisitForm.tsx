@@ -36,6 +36,7 @@ import { isNativeApp, saveContact } from "../../../utils/contactUtils";
 import styles from "./VisitForm.module.css";
 import { useNavigate } from "react-router-dom";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
+import { Evento } from "../../../entities/evento.model";
 
 const FormVisit: React.FC<{
     readonly?: boolean;
@@ -168,6 +169,43 @@ const FormVisit: React.FC<{
             mounted = false;
         };
     }, [presentAlert]);
+
+    useEffect(() => {
+        let mounted = true;
+
+        const sortEventsByDate = (events: Evento[]) =>
+            events.sort(
+                (a, b) =>
+                    new Date(b.data!).getTime() - new Date(a.data!).getTime()
+            );
+
+        const getLastInterestedHouseEvent = (events: Evento[]) =>
+            events.find((el) => el.immobile);
+
+        const retrieveEvents = async (id: number) => {
+            try {
+                const res = await axiosInstance.get(`/persone/${id}/eventi`);
+                if (!mounted) return;
+                const events: Evento[] = res.data.data;
+                sortEventsByDate(events);
+                const lastInterestedHouseEvent =
+                    getLastInterestedHouseEvent(events);
+                const lastInterestedHouse = lastInterestedHouseEvent
+                    ? lastInterestedHouseEvent.immobile
+                    : null;
+                if (lastInterestedHouse) setImmobileValue(lastInterestedHouse);
+            } catch (e) {
+                if (!mounted) return;
+                return null;
+            }
+        };
+        if (personaValue) {
+            retrieveEvents(personaValue.id!);
+        }
+        return () => {
+            mounted = false;
+        };
+    }, [personaValue]);
 
     const isFormDisabled =
         !inputDateValue ||

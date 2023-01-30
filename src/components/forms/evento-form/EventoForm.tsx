@@ -32,7 +32,7 @@ import FormGroup from "../../form-components/form-group/FormGroup";
 import FormSelect from "../../form-components/form-select/FormSelect";
 
 const EventoForm: React.FC<{
-    persona: Persona | null;
+    persona: Persona;
     evento: Evento | null;
     backToList: () => void;
 }> = (props) => {
@@ -118,6 +118,46 @@ const EventoForm: React.FC<{
         return () => clearTimeout(timeOut);
     }, [immobileInteresse]);
 
+    useEffect(() => {
+        let mounted = true;
+
+        const sortEventsByDate = (events: Evento[]) =>
+            events.sort(
+                (a, b) =>
+                    new Date(b.data!).getTime() - new Date(a.data!).getTime()
+            );
+
+        const getLastInterestedHouseEvent = (events: Evento[]) =>
+            events.find((el) => el.immobile);
+
+        const retrieveEvents = async () => {
+            try {
+                const res = await axiosInstance.get(
+                    `/persone/${props.persona.id}/eventi`
+                );
+                if (!mounted) return;
+                const events: Evento[] = res.data.data;
+                sortEventsByDate(events);
+                const lastInterestedHouseEvent =
+                    getLastInterestedHouseEvent(events);
+                const lastInterestedHouse = lastInterestedHouseEvent
+                    ? lastInterestedHouseEvent.immobile
+                    : null;
+                if (lastInterestedHouse)
+                    setImmobileInteresse(lastInterestedHouse);
+            } catch (e) {
+                if (!mounted) return;
+                return null;
+            }
+        };
+
+        retrieveEvents();
+
+        return () => {
+            mounted = false;
+        };
+    }, [props.persona.id]);
+
     const getMessage = () =>
         `${isVisit ? "Visita Fissata" : "Persona Aggiornata"}`;
 
@@ -160,7 +200,7 @@ const EventoForm: React.FC<{
                     descrizione: getDescrizioneCompleta.trim(),
                 };
                 await axiosInstance.patch(
-                    `/persone/${props.persona!.id}/eventi/${props.evento.id}`,
+                    `/persone/${props.persona.id}/eventi/${props.evento.id}`,
                     reqBody
                 );
             } else if (isVisit) {
@@ -168,7 +208,7 @@ const EventoForm: React.FC<{
                     quando: `${
                         inputDateValue.split("T")[0]
                     }T${inputTimeValue}:00`,
-                    idPersona: props.persona?.id,
+                    idPersona: props.persona.id,
                     note: inputNoteValue.trim(),
                     idImmobile: immobileInteresse?.id,
                     dove: inputLuogoValue,
@@ -183,7 +223,7 @@ const EventoForm: React.FC<{
                     idImmobile: immobileInteresse?.id,
                 };
                 await axiosInstance.post(
-                    `/persone/${props.persona?.id}/eventi`,
+                    `/persone/${props.persona.id}/eventi`,
                     reqBody
                 );
             }
