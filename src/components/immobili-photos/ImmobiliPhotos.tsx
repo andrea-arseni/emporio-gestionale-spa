@@ -151,32 +151,32 @@ const ImmobiliPhotos: React.FC<{}> = () => {
                     </IonLabel>
                 </IonButton>
             )}
-            <IonGrid className={styles.grid}>
-                {isSelectionModeAllowed && (
-                    <button
-                        className={`${styles.fabButton} ${styles.selectionButton}`}
-                        onClick={() => {
-                            dispatch(
-                                setIsSelectionModeActivated(
-                                    !isSelectionModeActivated
-                                )
-                            );
-                        }}
-                    >
-                        {isSelectionModeActivated ? "ANNULLA" : "SELEZIONA"}
-                    </button>
-                )}
-                {isSelectionModeAllowed &&
-                    isSelectionModeActivated &&
-                    showSelectAll && (
+            <IonGrid>
+                <IonRow className={`${styles.row}`}>
+                    {isSelectionModeAllowed && (
                         <button
-                            className={`${styles.fabButton} ${styles.otherButton}`}
-                            onClick={selectAllPhotos}
+                            className={`${styles.fabButton} ${styles.selectionButton}`}
+                            onClick={() => {
+                                dispatch(
+                                    setIsSelectionModeActivated(
+                                        !isSelectionModeActivated
+                                    )
+                                );
+                            }}
                         >
-                            SELEZIONA TUTTE
+                            {isSelectionModeActivated ? "ANNULLA" : "SELEZIONA"}
                         </button>
                     )}
-                <IonRow className={`${styles.row}`}>
+                    {isSelectionModeAllowed &&
+                        isSelectionModeActivated &&
+                        showSelectAll && (
+                            <button
+                                className={`${styles.fabButton} ${styles.otherButton}`}
+                                onClick={selectAllPhotos}
+                            >
+                                SELEZIONA TUTTE
+                            </button>
+                        )}
                     <DndProvider backend={HTML5Backend}>
                         {getPhotoCards()}
                     </DndProvider>

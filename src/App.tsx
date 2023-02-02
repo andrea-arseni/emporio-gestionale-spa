@@ -245,24 +245,20 @@ STRONG IMPROVEMENTS GESTIONALE
 - Correzione altri form - VINTO
 
 - Se una persona è interessata ad un immobile, al prossimo form automaticamente seleziona quell'immobile - VINTO
-- Immobili default già sorted per attivo e per prezzo
+- Immobili default già sorted per attivo e per prezzo - VINTO
 
-- Televisione sempre attiva
-- Creazione file zip su backend da lista di immagini
+- Televisione sempre attiva - VINTO
+- Creazione file zip su backend da lista di immagini - VINTO
 
-- Call che restituisce il file zip
-- Frontend che effettua la call per il download immagini solo su Web
+- Call che restituisce il file zip - VINTO
+- Frontend che effettua la call per il download immagini solo su Web - VINTO
+- Seleziona fixed - VINTO
 
 - Chat GPT test crea descrizione da dati
 - Chat GPT test call API
 
 - Test integrazione Chat GPT in gestionale
-- Filtro persone prima per cose poi per status
+- Filtro persone prima per cose poi per status - Filtri better?
 
 - VERSIONE FINALE DEPLOYED
-*/
-
-/*
-- apply 'default' sorting on both calls way
-- on backend 'default' translate to 'sort firstly by active and later by price'
 */

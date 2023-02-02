@@ -198,7 +198,9 @@ export const downloadFile = async (byteArray: string, documento: Documento) => {
 
 export const downloadMultipleFiles = async (
     documenti: Documento[],
-    dispatch: any
+    dispatch: any,
+    immobileId: string,
+    presentAlert: any
 ) => {
     if (isNativeApp) dispatch(changeLoading(true));
     if (isNativeApp && isPlatform("android")) {
@@ -269,10 +271,25 @@ export const downloadMultipleFiles = async (
             alert("Errore nel salvataggio delle foto, procedura annullata.");
         }
     } else {
-        documenti.forEach((el) => {
-            const extension = getFileExtension(el.codiceBucket!);
-            FileSaver.saveAs(el.base64String!, el.nome! + "." + extension);
-        });
+        try {
+            const reqBody = documenti.map((el) => el.id);
+            const res = await axiosInstance.post(
+                `/immobili/${immobileId}/files/zip`,
+                reqBody
+            );
+            FileSaver.saveAs(
+                `data:application/zip;base64,${res.data.byteArray}`,
+                `Lista foto`
+            );
+        } catch (e) {
+            errorHandler(
+                e,
+                () => {},
+                "Non è riuscita la conversione dell'immagine HEIC fornita",
+                presentAlert
+            );
+            return null;
+        }
     }
 };
 

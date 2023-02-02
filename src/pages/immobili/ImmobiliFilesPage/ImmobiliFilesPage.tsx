@@ -300,7 +300,12 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         if (!areAllThere) {
             fermaTutto("scaricarle");
         } else {
-            downloadMultipleFiles(photoSelected, dispatch);
+            downloadMultipleFiles(
+                photoSelected,
+                dispatch,
+                immobileId,
+                presentAlert
+            );
         }
     };
 

@@ -10,10 +10,11 @@
 
 .row {
     background: linear-gradient(to left, azure, white, rgb(255, 244, 244));
+    position: relative;
 }
 
 .fabButton {
-    position: absolute;
+    position: fixed;
     right: 20px;
     z-index: 9999;
     width: 140px;
@@ -25,14 +26,14 @@
 }
 
 .otherButton {
-    top: 50px;
+    top: 240px;
     color: rgb(241, 241, 241);
     border: #3880ff 1px solid;
     background-color: rgb(66, 66, 66);
 }
 
 .selectionButton {
-    top: 20px;
+    top: 210px;
     background-color: rgb(241, 241, 241);
     border: #3880ff 1px solid;
     color: rgb(66, 66, 66);
@@ -41,8 +42,4 @@
 .selectionButton:hover {
     background-color: white;
     color: #3880ff;
-}
-
-.grid {
-    position: relative;
 }
