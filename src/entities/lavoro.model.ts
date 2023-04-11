@@ -5,6 +5,7 @@ export class Lavoro {
         public id: number | null,
         public titolo: string | null,
         public status: string | null,
-        public steps: Step[] | null
+        public steps: Step[] | null,
+        public data: string | null
     ) {}
 }

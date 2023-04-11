@@ -8,6 +8,7 @@ export type tipologia =
     | "box"
     | "posto auto"
     | "magazzino"
+    | "laboratorio"
     | "capannone"
     | "uffici"
     | "uffici open space"
@@ -24,6 +25,7 @@ export const possibleTipologies = [
     "box",
     "posto auto",
     "magazzino",
+    "laboratorio",
     "capannone",
     "uffici",
     "uffici open space",

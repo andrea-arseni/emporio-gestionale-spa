@@ -23,7 +23,6 @@ import { alertEliminaVisita } from "../../store/appuntamenti-thunk";
 import { capitalize } from "../../utils/stringUtils";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import errorHandler from "../../utils/errorHandler";
-import { checkShareability } from "../../utils/fileUtils";
 import { getConfermaVisitaMessage } from "../../utils/messageUtils";
 import { isUserAdmin } from "../../utils/userUtils";
 import Card from "../card/Card";
@@ -31,7 +30,7 @@ import ModalMessage from "../modal/modal-message/ModalMessage";
 import ItemOption from "./ItemOption";
 import styles from "./Lists.module.css";
 import { getDayName, isPast } from "../../utils/timeUtils";
-import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
+import { checkShareability, shareObject } from "../../utils/shareUtils";
 
 const ListVisits: React.FC<{
     visits: Visit[];
@@ -91,14 +90,11 @@ const ListVisits: React.FC<{
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await SocialSharing.shareWithOptions({
-                message: inputNoteValue,
-                url: currentVisit!.immobile
-                    ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
-                      currentVisit!.immobile.id!
-                    : undefined,
-                subject: "Conferma Visita",
-            });
+            const url = currentVisit!.immobile
+                ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
+                  currentVisit!.immobile.id!
+                : undefined;
+            await shareObject(inputNoteValue, url, "Conferma Visita");
         } catch (error) {
             errorHandler(
                 null,

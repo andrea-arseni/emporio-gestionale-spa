@@ -55,23 +55,23 @@ const CalendarItem: React.FC<{
         <>
             <div
                 onClick={
-                    isPast(date) || props.visits.length >= 2
-                        ? () => dispatch(setTooltip(props.dateAsString))
-                        : () =>
-                              setVisit(
-                                  props.dateAsString.split("T")[1],
-                                  new Visit(
-                                      null,
-                                      null,
-                                      null,
-                                      null,
-                                      null,
-                                      props.dateAsString,
-                                      null
-                                  )
-                              )
+                    /* isPast(date) || props.visits.length >= 2
+                        ? () => dispatch(setTooltip(props.dateAsString)) : */
+                    () =>
+                        setVisit(
+                            props.dateAsString.split("T")[1],
+                            new Visit(
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                props.dateAsString,
+                                null
+                            )
+                        )
                 }
-                className={`${styles.app} ${isPast(date) ? styles.past : ""}`}
+                className={`${styles.app} `} //${isPast(date) ? styles.past : ""}
                 slot="start"
             >
                 {props.dateAsString.split("T")[1]}

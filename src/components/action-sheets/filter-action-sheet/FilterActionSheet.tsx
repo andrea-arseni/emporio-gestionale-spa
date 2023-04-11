@@ -216,6 +216,43 @@ const FilterActionSheet: React.FC<{
                 break;
             case "persone":
                 buttons = [
+                    getDataButton(),
+                    {
+                        text: "Nome",
+                        icon: textOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "nome",
+                            });
+                        },
+                    },
+                    {
+                        text: "Telefono",
+                        icon: phonePortraitOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "telefono",
+                            });
+                        },
+                    },
+                    {
+                        text: "Email",
+                        icon: mailOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "email",
+                            });
+                        },
+                    },
+                    {
+                        text: "Ruolo",
+                        icon: buildOutline,
+                        handler: () => {
+                            buttonHandler("stringFilter", {
+                                filter: "ruolo",
+                            });
+                        },
+                    },
                     {
                         text: "Persone Attive",
                         icon: peopleOutline,
@@ -266,42 +303,7 @@ const FilterActionSheet: React.FC<{
                             });
                         },
                     },
-                    {
-                        text: "Nome",
-                        icon: textOutline,
-                        handler: () => {
-                            buttonHandler("stringFilter", {
-                                filter: "nome",
-                            });
-                        },
-                    },
-                    {
-                        text: "Telefono",
-                        icon: phonePortraitOutline,
-                        handler: () => {
-                            buttonHandler("stringFilter", {
-                                filter: "telefono",
-                            });
-                        },
-                    },
-                    {
-                        text: "Email",
-                        icon: mailOutline,
-                        handler: () => {
-                            buttonHandler("stringFilter", {
-                                filter: "email",
-                            });
-                        },
-                    },
-                    {
-                        text: "Ruolo",
-                        icon: buildOutline,
-                        handler: () => {
-                            buttonHandler("stringFilter", {
-                                filter: "ruolo",
-                            });
-                        },
-                    },
+
                     {
                         text: "Provenienza",
                         icon: discOutline,
@@ -355,6 +357,7 @@ const FilterActionSheet: React.FC<{
                 break;
             case "lavori":
                 buttons = [
+                    getDataButton(),
                     {
                         text: "Filtra per Titolo",
                         icon: textOutline,

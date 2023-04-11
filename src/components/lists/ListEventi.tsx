@@ -20,12 +20,11 @@ import ItemOption from "./ItemOption";
 import { getInterestMessage } from "../../utils/messageUtils";
 import { useAppSelector } from "../../hooks";
 import { Immobile } from "../../entities/immobile.model";
-import { checkShareability } from "../../utils/fileUtils";
 import errorHandler from "../../utils/errorHandler";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import ModalMessage from "../modal/modal-message/ModalMessage";
 import { isUserAdmin } from "../../utils/userUtils";
-import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
+import { checkShareability, shareObject } from "../../utils/shareUtils";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -52,13 +51,10 @@ const ListEventi: React.FC<{
         if (!checkShareability(presentAlert)) return;
 
         try {
-            await SocialSharing.shareWithOptions({
-                message: inputNoteValue,
-                url:
-                    process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
-                    currentImmobile!.id!,
-                subject: "Interessamento Immobile",
-            });
+            const url =
+                process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
+                currentImmobile!.id!;
+            await shareObject(inputNoteValue, url, "Conferma Visita");
         } catch (error) {
             errorHandler(
                 null,

@@ -25,6 +25,7 @@ import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import { isUserAdmin } from "../../utils/userUtils";
 import { useAppSelector } from "../../hooks";
 import { useNavigate } from "react-router-dom";
+import { getDayName } from "../../utils/timeUtils";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -94,6 +95,15 @@ const ListPersone: React.FC<{
         );
     };
 
+    const getData = (data: Date) => {
+        return (
+            <p>
+                Ultimo contatto:{" "}
+                {getDayName(data, width >= 450 ? "long" : "short")}
+            </p>
+        );
+    };
+
     const getPersona = (persona: Persona) => {
         return (
             <IonItem
@@ -114,6 +124,7 @@ const ListPersone: React.FC<{
                     <h2>{persona.nome} </h2>
                     {getTelefono(persona)}
                     {getEmail(persona)}
+                    {getData(new Date(persona.data!))}
                 </IonLabel>
                 {width > 500 &&
                     (persona.ruolo ||

@@ -16,6 +16,7 @@ import ItemOption from "./ItemOption";
 import { isUserAdmin } from "../../utils/userUtils";
 import { useAppSelector } from "../../hooks";
 import { useNavigate } from "react-router-dom";
+import { getDayName } from "../../utils/timeUtils";
 
 const ListLavori: React.FC<{
     lavori: Lavoro[];
@@ -35,6 +36,15 @@ const ListLavori: React.FC<{
         navigate(`/obiettivi/${id.toString()}`);
     };
 
+    const getData = (data: Date) => {
+        return (
+            <p>
+                Ultimo aggiornamento:{" "}
+                {getDayName(data, width >= 450 ? "long" : "short")}
+            </p>
+        );
+    };
+
     return (
         <>
             {props.lavori.map((lavoro: Lavoro) => (
@@ -42,6 +52,7 @@ const ListLavori: React.FC<{
                     <IonItem detail color={getLavoroTitleColor(lavoro.status!)}>
                         <IonLabel text-wrap>
                             <h2>{lavoro.titolo} </h2>
+                            {getData(new Date(lavoro.data!))}
                             {width < 600 && (
                                 <IonText>
                                     {lavoro.status?.split("_")[1]}

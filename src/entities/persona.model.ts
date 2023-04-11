@@ -14,6 +14,7 @@ export class Persona {
         public eventi: Evento[] | null,
         public files: Documento[] | null,
         public provenienza: string | null,
-        public status: string | null
+        public status: string | null,
+        public data: string | null
     ) {}
 }

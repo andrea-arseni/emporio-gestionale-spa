@@ -238,27 +238,55 @@ export default App;
 
 /*
 
-STRONG IMPROVEMENTS GESTIONALE
+STRONG IMPROVEMENTS 
 
-- Descrizione non rossa - usa invece il messaggio sul bottone - VINTO
-- Footer basso anche dopo che hai usato un filtro - VINTO
-- Correzione altri form - VINTO
+- GESTIONALE
+- Rimuovi funzionalità aggiungi app passato - VINTO
+- Vendendo / affittando su messaggio evento - VINTO
+- Laboratorio - VINTO
+- Data con persona - VINTO
+- Data con lavoro - VINTO
+- Filtri con data su lavoro - VINTO 
+- Filtri con data su persona - VINTO
+- Persona con data - VINTO
+- Lavoro con data - VINTO
+- Filtro persone prima per cose poi per status - Filtri better? - VINTO
+- Filtro per data su persona - VINTO
+- Filtro per data su lavoro  - VINTO
+- Sorting per data su persona - VINTO
+- Sorting per data su lavoro - VINTO
+LA QUERY E' SBAGLIATA 
+- Problema - Quando filtri mettendo endDate molto vecchia, prende record con date più alte e ti fornisce il dato con la data vecchia
+- La Where Clause fornisce la data ma non indica di prendere la data più avanzata di quel record.
+- Persona - VINTO
+- Lavoro - VINTO
+- Testing - VINTO
+- Share Messaggio sempre su dispositivo da browser - VINTO
 
-- Se una persona è interessata ad un immobile, al prossimo form automaticamente seleziona quell'immobile - VINTO
-- Immobili default già sorted per attivo e per prezzo - VINTO
+Tasks 11 Aprile 2023
 
-- Televisione sempre attiva - VINTO
-- Creazione file zip su backend da lista di immagini - VINTO
+- Check la condivisione meglio, mettendo già il link dentro alla prima versione
+- Dopo messaggio automatico evento - cambio stato + scritto messaggio
+- Retrieve foto firmate o foto originali
+- Navigazione su singolo immobile rivista
 
-- Call che restituisce il file zip - VINTO
-- Frontend che effettua la call per il download immagini solo su Web - VINTO
-- Seleziona fixed - VINTO
+*********************
 
-- Chat GPT test crea descrizione da dati
-- Chat GPT test call API
+- Deploy ed enjoy nuova versione
 
-- Test integrazione Chat GPT in gestionale
-- Filtro persone prima per cose poi per status - Filtri better?
+- NATIVEAPPS ONLINE
 
-- VERSIONE FINALE DEPLOYED
+- WEBSITE
+
+- Classe Eenergetica Maiuscola
+- Spese Extra non previste
+- Rendita su PWS
+
+- OPTIMAL ARCHITECTURE
+
+- Reserved EC2 1 years
+- IAM Roles sul DB
+- Cloudfront Price Class 100
+
+- FINITO PER SEMPRE
 */

@@ -17,6 +17,7 @@ import { changeLoading } from "../store/ui-slice";
 import { addFile } from "../store/immobile-slice";
 import { Mediastore } from "@agorapulse/capacitor-mediastore";
 import { capitalize } from "./stringUtils";
+import { checkShareability, checkSpecificFileShareability } from "./shareUtils";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -325,32 +326,6 @@ export const openFile = async (byteArray: string, documento: Documento) => {
     } else {
         window.open(url);
     }
-};
-
-export const checkShareability = (presentAlert: any) => {
-    if (!isNativeApp && !navigator.canShare) {
-        errorHandler(
-            null,
-            () => {},
-            "Questo Browser non permette la condivisione di file.",
-            presentAlert
-        );
-        return false;
-    }
-    return true;
-};
-
-const checkSpecificFileShareability = (presentAlert: any, file: File) => {
-    if (!isNativeApp && !navigator.canShare({ files: [file] })) {
-        errorHandler(
-            null,
-            () => {},
-            `${file.name} non può essere condiviso.`,
-            presentAlert
-        );
-        return false;
-    }
-    return true;
 };
 
 const getFilesFromBase64Strings = async (listBase64Strings: Documento[]) => {

@@ -106,6 +106,7 @@ const SortActionSheet: React.FC<{
                 break;
             case "lavori":
                 buttons = [
+                    ...getSortingTemporale(),
                     {
                         text: "Alfabetico Crescente",
                         icon: textOutline,
@@ -130,6 +131,7 @@ const SortActionSheet: React.FC<{
                 break;
             case "persone":
                 buttons = [
+                    ...getSortingTemporale(),
                     {
                         text: "Alfabetico Crescente",
                         icon: textOutline,
