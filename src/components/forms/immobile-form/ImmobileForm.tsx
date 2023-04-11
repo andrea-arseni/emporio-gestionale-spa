@@ -84,7 +84,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputRefChangedHandler,
         reset: inputRefReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => (el as number) > 0,
         props.immobile ? props.immobile.ref : undefined
     );
 
@@ -106,7 +106,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputSuperficieChangedHandler,
         reset: inputSuperficieReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => (el as number) > 0,
         props.immobile ? props.immobile.superficie : undefined
     );
 
@@ -160,7 +160,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputPrezzoChangedHandler,
         reset: inputPrezzoReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => (el as number) > 0,
         props.immobile && props.immobile.prezzo
             ? +props.immobile.prezzo
             : undefined
@@ -189,7 +189,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputConsumoChangedHandler,
         reset: inputConsumoReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => (el as number) > 0,
         props.immobile ? props.immobile.consumo : undefined
     );
 
@@ -197,7 +197,7 @@ const ImmobileForm: React.FC<{
         inputValue: inputContrattoValue,
         inputChangedHandler: inputContrattoChangedHandler,
     } = useInput(
-        (el) => el > 0,
+        () => true,
         props.immobile ? props.immobile.contratto : undefined
     );
 
@@ -205,23 +205,20 @@ const ImmobileForm: React.FC<{
         inputValue: inputCategoriaValue,
         inputChangedHandler: inputCategoriaChangedHandler,
     } = useInput(
-        (el) => el > 0,
+        () => true,
         props.immobile ? props.immobile.categoria : undefined
     );
 
     const {
         inputValue: inputStatoValue,
         inputChangedHandler: inputStatoChangedHandler,
-    } = useInput(
-        (el) => el > 0,
-        props.immobile ? props.immobile.stato : undefined
-    );
+    } = useInput(() => true, props.immobile ? props.immobile.stato : undefined);
 
     const {
         inputValue: inputLiberoValue,
         inputChangedHandler: inputLiberoChangedHandler,
     } = useInput(
-        (el) => el > 0,
+        () => true,
         props.immobile ? props.immobile.libero : undefined
     );
 
@@ -229,17 +226,14 @@ const ImmobileForm: React.FC<{
         inputValue: inputStatusValue,
         inputChangedHandler: inputStatusChangedHandler,
     } = useInput(
-        (el) => el > 0,
+        () => true,
         props.immobile ? props.immobile.status : undefined
     );
 
     const {
         inputValue: inputPianoValue,
         inputChangedHandler: inputPianoChangedHandler,
-    } = useInput(
-        (el) => el > 0,
-        props.immobile ? props.immobile.piano : undefined
-    );
+    } = useInput(() => true, props.immobile ? props.immobile.piano : undefined);
 
     const {
         inputValue: inputTotalePianiValue,
@@ -248,7 +242,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputTotalePianiChangedHandler,
         reset: inputTotalePianiReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => (el as number) > 0,
         props.immobile ? props.immobile.caratteristiche?.totalePiani : undefined
     );
 
@@ -284,7 +278,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputSpeseCondominialiChangedHandler,
         reset: inputSpeseCondominialiReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => (el as number) > 0,
         props.immobile
             ? props.immobile.caratteristiche?.speseCondominiali
             : undefined
@@ -405,7 +399,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputSpeseRiscaldamentoChangedHandler,
         reset: inputSpeseRiscaldamentoReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => true,
         props.immobile
             ? props.immobile.caratteristiche?.speseRiscaldamento
             : undefined
@@ -446,7 +440,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputRenditaChangedHandler,
         reset: inputRenditaReset,
     } = useInput(
-        (el) => el > 0,
+        (el) => true,
         props.immobile ? props.immobile.caratteristiche?.rendita : undefined
     );
 
@@ -533,7 +527,9 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputAnnoCostruzioneChangedHandler,
         reset: inputAnnoCostruzioneReset,
     } = useInput(
-        (el) => el >= 1800 && el <= new Date().getFullYear(),
+        (el) =>
+            (el as number) >= 1800 &&
+            (el as number) <= new Date().getFullYear(),
         props.immobile
             ? props.immobile.caratteristiche?.annoCostruzione
             : undefined
@@ -593,7 +589,7 @@ const ImmobileForm: React.FC<{
         inputChangedHandler: inputAltezzaChangedHandler,
         reset: inputAltezzaReset,
     } = useInput(
-        (el) => el >= 1,
+        (el) => (el as number) >= 1,
         props.immobile ? props.immobile.caratteristiche?.altezza : undefined
     );
 

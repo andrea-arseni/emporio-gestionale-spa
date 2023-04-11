@@ -86,7 +86,6 @@ export const getInterestMessage = (
     immobile: Immobile,
     userData: userData
 ) => {
-    console.log(immobile);
     return `${getPresentazione(
         persona.nome,
         userData

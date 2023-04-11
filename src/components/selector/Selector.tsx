@@ -68,6 +68,7 @@ const Selector: React.FC<{
     public?: boolean;
     localQuery?: boolean;
     specific?: boolean;
+    backToList?: () => void;
 }> = (props) => {
     let { filter, sort, page, update } = useAppSelector((state: RootState) =>
         getQueryDataUtils(state, props.entitiesType)
@@ -248,7 +249,7 @@ const Selector: React.FC<{
                 prevEntities.filter((el) => el.id?.toString() !== id)
             );
             setShowLoading(false);
-            props.localQuery ? setUpdate() : dispatch(setUpdate());
+            props.localQuery ? setUpdate(++update) : dispatch(setUpdate());
         } catch (e) {
             setShowLoading(false);
             errorHandler(
@@ -278,6 +279,11 @@ const Selector: React.FC<{
     };
 
     const getEntities = () => {
+        const performAction = () => {
+            props.backToList!();
+            setUpdate(++update);
+        };
+
         switch (props.entitiesType) {
             case "immobili":
                 return (
@@ -350,6 +356,7 @@ const Selector: React.FC<{
                         showLoading={showLoading}
                         setShowLoading={setShowLoading}
                         closeItems={closeItemsList}
+                        backToList={performAction}
                     />
                 );
             case "documenti":

@@ -25,6 +25,7 @@ import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import ModalMessage from "../modal/modal-message/ModalMessage";
 import { isUserAdmin } from "../../utils/userUtils";
 import { checkShareability, shareObject } from "../../utils/shareUtils";
+import axiosInstance from "../../utils/axiosInstance";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -34,6 +35,7 @@ const ListEventi: React.FC<{
     showLoading: boolean;
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     closeItems: () => void;
+    backToList: () => void;
 }> = (props) => {
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
@@ -47,6 +49,19 @@ const ListEventi: React.FC<{
 
     const userData = useAppSelector((state) => state.auth.userData);
 
+    const aggiornaPersona = async (id: number) => {
+        const reqBody = {
+            descrizione: "Scritto messaggio. Richiama lei.",
+            statusPersona: "B_RICHIAMA_LEI",
+        };
+        try {
+            await axiosInstance.post(`/persone/${id}/eventi`, reqBody);
+            props.backToList();
+        } catch (e) {
+            alert("Aggiornamento non riuscito");
+        }
+    };
+
     const sendInterestMessage = async () => {
         if (!checkShareability(presentAlert)) return;
 
@@ -55,13 +70,34 @@ const ListEventi: React.FC<{
                 process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
                 currentImmobile!.id!;
             await shareObject(inputNoteValue, url, "Conferma Visita");
-        } catch (error) {
-            errorHandler(
-                null,
-                () => {},
-                `Condivisione testo non riuscita.`,
-                presentAlert
-            );
+            setModalIsOpen(false);
+            // modale con domanda se aggiornare stato della persona
+            await presentAlert({
+                header: "Condivisione riuscita",
+                message: `Aggiornare stato di ${persona?.nome}?`,
+                buttons: [
+                    {
+                        text: "Sì",
+                        // sì call con messaggio "Scritto messaggio. Richiama lei" e status
+                        handler: () => aggiornaPersona(persona!.id!),
+                    },
+                    {
+                        text: "No",
+                        role: "cancel",
+                    },
+                ],
+            });
+        } catch (error: any) {
+            if (
+                error &&
+                error.message !== "Abort due to cancellation of share."
+            )
+                errorHandler(
+                    null,
+                    () => {},
+                    `Condivisione testo non riuscita.`,
+                    presentAlert
+                );
         }
     };
 

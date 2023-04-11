@@ -95,6 +95,7 @@ const ListVisits: React.FC<{
                   currentVisit!.immobile.id!
                 : undefined;
             await shareObject(inputNoteValue, url, "Conferma Visita");
+            setModalIsOpen(false);
         } catch (error) {
             errorHandler(
                 null,

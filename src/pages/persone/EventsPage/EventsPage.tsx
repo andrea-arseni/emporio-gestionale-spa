@@ -40,6 +40,7 @@ const EventsPage: React.FC<{ id: string }> = (props) => {
                         setMode={setMode}
                         entitiesType="eventi"
                         setCurrentEntity={setCurrentEvent}
+                        backToList={backToList}
                         baseUrl={`/persone/${currentPersona.id}/eventi`}
                     />
                 </>

@@ -262,12 +262,19 @@ LA QUERY E' SBAGLIATA
 - Lavoro - VINTO
 - Testing - VINTO
 - Share Messaggio sempre su dispositivo da browser - VINTO
+- Quando va in ok - VINTO
+- Quando va in ko - VINTO
+- Quando annulli te - VINTO
+- Dopo messaggio automatico evento - cambio stato + scritto messaggio - VINTO
+- Dopo ogni cambio stato - cancellazione evento - inserimento evento - refresh query - VINTO
+- Native solo su Native, gesù - VINTO
 
-Tasks 11 Aprile 2023
+Tasks 12 Aprile 2023
 
-- Check la condivisione meglio, mettendo già il link dentro alla prima versione
-- Dopo messaggio automatico evento - cambio stato + scritto messaggio
-- Retrieve foto firmate o foto originali
+- Filtri vanno in leak, correggere
+- Con i filtri ed i form il tasto "Invio" effettua l'azione
+
+- Retrieve foto firmate oppure foto originali
 - Navigazione su singolo immobile rivista
 
 *********************

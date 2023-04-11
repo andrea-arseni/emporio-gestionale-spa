@@ -123,4 +123,6 @@ export const saveContact = async (presentAlert: any, persona: Persona) => {
 };
 
 export const isNativeApp =
-    (isPlatform("ios") || isPlatform("android")) && !isPlatform("mobileweb");
+    (isPlatform("ios") || isPlatform("android")) &&
+    !isPlatform("mobileweb") &&
+    isPlatform("mobile");
