@@ -217,22 +217,6 @@ const Selector: React.FC<{
         dispatch(setFilter(filterObj));
     };
 
-    const filterBar = (
-        <IonButton
-            className={styles.filterButton}
-            expand="full"
-            mode="ios"
-            fill="clear"
-            color="dark"
-            onClick={eraseFilter}
-        >
-            <IonIcon icon={listOutline} />
-            <IonLabel style={{ paddingLeft: "16px" }}>
-                Torna alla Lista
-            </IonLabel>
-        </IonButton>
-    );
-
     const confirmDeleteEntity = async (entityName: string, id: string) => {
         let url =
             (props.baseUrl && !props.baseUrl.includes("?")
@@ -414,23 +398,33 @@ const Selector: React.FC<{
         event.detail.complete();
     };
 
-    if (filterMode === "dataFilter")
-        return (
-            <>
-                {filterBar}
-                <DateFilter
+    return (
+        <>
+            <IonLoading cssClass="loader" isOpen={showLoading} />
+            {filterMode !== "default" && (
+                <IonButton
+                    className={styles.filterButton}
+                    expand="full"
+                    mode="ios"
+                    fill="clear"
+                    color="dark"
+                    onClick={eraseFilter}
+                >
+                    <IonIcon icon={listOutline} />
+                    <IonLabel style={{ paddingLeft: "16px" }}>
+                        Torna alla Lista
+                    </IonLabel>
+                </IonButton>
+            )}
+            {filterMode === "stringFilter" && (
+                <StringFilter
                     localQuery={props.localQuery}
                     setFilter={setFilter}
                     filter={filter}
                     setFilterMode={setFilterMode}
                 />
-            </>
-        );
-
-    if (filterMode === "numberFilter")
-        return (
-            <>
-                {filterBar}
+            )}
+            {filterMode === "numberFilter" && (
                 <NumberFilter
                     localQuery={props.localQuery}
                     setFilter={setFilter}
@@ -438,31 +432,21 @@ const Selector: React.FC<{
                     filter={filter}
                     setFilterMode={setFilterMode}
                 />
-            </>
-        );
-
-    if (filterMode === "stringFilter")
-        return (
-            <>
-                {filterBar}
-                <StringFilter
+            )}
+            {filterMode === "dataFilter" && (
+                <DateFilter
                     localQuery={props.localQuery}
                     setFilter={setFilter}
                     filter={filter}
                     setFilterMode={setFilterMode}
                 />
-            </>
-        );
-
-    return (
-        <>
-            <IonLoading cssClass="loader" isOpen={showLoading} />
-            {!props.selectMode && (
+            )}
+            {!props.selectMode && filterMode === "default" && (
                 <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
                     <IonRefresherContent></IonRefresherContent>
                 </IonRefresher>
             )}
-            {filter.filter && (
+            {filter.filter && filterMode === "default" && (
                 <FilterBar
                     localQuery={props.localQuery}
                     entitiesType={props.entitiesType}
@@ -471,23 +455,25 @@ const Selector: React.FC<{
                     setNegativeForbidden={setNegativeForbidden}
                 />
             )}
-            {!filter.filter && entities.length > 0 && (
-                <IonButton
-                    className={styles.filterButton}
-                    expand="full"
-                    mode="ios"
-                    color="primary"
-                    fill="clear"
-                    disabled={entities.length === 1 || props.specific}
-                    onClick={() => setShowFilterActionSheet(true)}
-                >
-                    <IonIcon icon={filterOutline} />
-                    <IonLabel style={{ paddingLeft: "16px" }}>
-                        Filtra la Lista
-                    </IonLabel>
-                </IonButton>
-            )}
-            {entities.length > 0 && (
+            {!filter.filter &&
+                entities.length > 0 &&
+                filterMode === "default" && (
+                    <IonButton
+                        className={styles.filterButton}
+                        expand="full"
+                        mode="ios"
+                        color="primary"
+                        fill="clear"
+                        disabled={entities.length === 1 || props.specific}
+                        onClick={() => setShowFilterActionSheet(true)}
+                    >
+                        <IonIcon icon={filterOutline} />
+                        <IonLabel style={{ paddingLeft: "16px" }}>
+                            Filtra la Lista
+                        </IonLabel>
+                    </IonButton>
+                )}
+            {entities.length > 0 && filterMode === "default" && (
                 <IonButton
                     className={styles.filterButton}
                     expand="full"
@@ -503,7 +489,7 @@ const Selector: React.FC<{
                     </IonLabel>
                 </IonButton>
             )}
-            {entities.length > 0 && (
+            {entities.length > 0 && filterMode === "default" && (
                 <IonList
                     ref={list}
                     className={`${styles.list} ${getListHeight()}`}
@@ -511,17 +497,19 @@ const Selector: React.FC<{
                     {getEntities()}
                 </IonList>
             )}
-            {entities.length === 0 && !showLoading && (
-                <div className={`centered`} style={{ height: "500px" }}>
-                    <Card
-                        subTitle={`Non sono presenti ${props.entitiesType}`}
-                        title={
-                            "Non sono stati trovati risultati per la ricerca effettuata"
-                        }
-                    />
-                </div>
-            )}
-            {entities.length > 0 && (
+            {entities.length === 0 &&
+                !showLoading &&
+                filterMode === "default" && (
+                    <div className={`centered`} style={{ height: "500px" }}>
+                        <Card
+                            subTitle={`Non sono presenti ${props.entitiesType}`}
+                            title={
+                                "Non sono stati trovati risultati per la ricerca effettuata"
+                            }
+                        />
+                    </div>
+                )}
+            {entities.length > 0 && filterMode === "default" && (
                 <PageFooter
                     entitiesType={
                         props.localQuery ? undefined : props.entitiesType

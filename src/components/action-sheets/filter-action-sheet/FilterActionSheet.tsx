@@ -51,13 +51,13 @@ const FilterActionSheet: React.FC<{
 }> = (props) => {
     const dispatch = useAppDispatch();
 
-    const buttonHandler = async (
+    const buttonHandler = (
         filterMode: "default" | "numberFilter" | "stringFilter" | "dataFilter",
         filter: any,
         negativeForbidden?: boolean
     ) => {
         props.setShowFilterActionSheet(false);
-        await new Promise((r) => setTimeout(r, 300));
+        //await new Promise((r) => setTimeout(r, 300));
         props.setFilterMode(filterMode);
         props.localQuery
             ? props.setFilter(filter)

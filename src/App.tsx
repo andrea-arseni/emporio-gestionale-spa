@@ -269,18 +269,17 @@ LA QUERY E' SBAGLIATA
 - Dopo ogni cambio stato - cancellazione evento - inserimento evento - refresh query - VINTO
 - Native solo su Native, gesù - VINTO
 - Zong must work - VINTO
+- Aggiungi link al testo on demand - VINTO
+- Filtri vanno in leak, correggere -    VINTO
 
 Tasks 12 Aprile 2023
 
-- Aggiungi link al testo on demand
-- Filtri vanno in leak, correggere
 - Con i filtri ed i form il tasto "Invio" effettua l'azione
-
 - Retrieve foto firmate oppure foto originali
+
+*****
+
 - Navigazione su singolo immobile rivista
-
-*********************
-
 - Deploy ed enjoy nuova versione
 
 - NATIVEAPPS ONLINE

@@ -87,7 +87,7 @@ const ListVisits: React.FC<{
     };
 
     const produceUrl = () =>
-        currentVisit!.immobile
+        currentVisit && currentVisit.immobile
             ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
               currentVisit!.immobile.id!
             : undefined;
