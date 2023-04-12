@@ -64,16 +64,20 @@ const CalendarModal: React.FC<{}> = () => {
         setModalMode("visit");
     };
 
+    const [urlAdded, setUrlAdded] = useState<boolean>(false);
+
+    const isUrlAvailable = visit && visit.immobile && visit.immobile.id;
+
+    const produceUrl = () =>
+        isUrlAvailable
+            ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! + visit.immobile!.id
+            : undefined;
+
     const condividiConferma = async () => {
         if (!checkShareability(presentAlert)) return;
 
         try {
-            const url =
-                visit && visit.immobile && visit.immobile.id
-                    ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
-                      visit.immobile.id
-                    : undefined;
-            await shareObject(inputNoteValue, url, "Conferma Visita");
+            await shareObject(inputNoteValue, produceUrl(), "Conferma Visita");
             smontaModale();
         } catch (error) {
             errorHandler(
@@ -171,6 +175,21 @@ const CalendarModal: React.FC<{}> = () => {
                     <IonButton expand="full" onClick={condividiConferma}>
                         Invia Messaggio
                     </IonButton>
+                    {isUrlAvailable && !urlAdded && (
+                        <IonButton
+                            expand="full"
+                            color="dark"
+                            onClick={() => {
+                                inputNoteChangedHandler(
+                                    null,
+                                    inputNoteValue + " " + produceUrl()
+                                );
+                                setUrlAdded(true);
+                            }}
+                        >
+                            Aggiungi link al testo
+                        </IonButton>
+                    )}
                     <IonButton
                         color="light"
                         expand="full"

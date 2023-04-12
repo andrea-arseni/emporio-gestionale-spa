@@ -86,14 +86,17 @@ const ListVisits: React.FC<{
         }
     };
 
+    const produceUrl = () =>
+        currentVisit!.immobile
+            ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
+              currentVisit!.immobile.id!
+            : undefined;
+
     const sendConfirmationMessage = async () => {
         if (!checkShareability(presentAlert)) return;
 
         try {
-            const url = currentVisit!.immobile
-                ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
-                  currentVisit!.immobile.id!
-                : undefined;
+            const url = produceUrl();
             await shareObject(inputNoteValue, url, "Conferma Visita");
             setModalIsOpen(false);
         } catch (error) {
@@ -225,6 +228,7 @@ const ListVisits: React.FC<{
                 {props.visits.map((visit) => getVisitComplete(visit))}
             </IonList>
             <ModalMessage
+                url={produceUrl()}
                 modalIsOpen={modalIsOpen}
                 setModalIsOpen={setModalIsOpen}
                 handler={sendConfirmationMessage}

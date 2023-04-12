@@ -268,9 +268,11 @@ LA QUERY E' SBAGLIATA
 - Dopo messaggio automatico evento - cambio stato + scritto messaggio - VINTO
 - Dopo ogni cambio stato - cancellazione evento - inserimento evento - refresh query - VINTO
 - Native solo su Native, gesù - VINTO
+- Zong must work - VINTO
 
 Tasks 12 Aprile 2023
 
+- Aggiungi link al testo on demand
 - Filtri vanno in leak, correggere
 - Con i filtri ed i form il tasto "Invio" effettua l'azione
 

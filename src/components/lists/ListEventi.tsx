@@ -62,14 +62,16 @@ const ListEventi: React.FC<{
         }
     };
 
+    const produceUrl = () =>
+        currentImmobile
+            ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! + currentImmobile!.id!
+            : undefined;
+
     const sendInterestMessage = async () => {
         if (!checkShareability(presentAlert)) return;
 
         try {
-            const url =
-                process.env.REACT_APP_PUBLIC_WEBSITE_URL! +
-                currentImmobile!.id!;
-            await shareObject(inputNoteValue, url, "Conferma Visita");
+            await shareObject(inputNoteValue, produceUrl(), "Conferma Visita");
             setModalIsOpen(false);
             // modale con domanda se aggiornare stato della persona
             await presentAlert({
@@ -227,6 +229,7 @@ const ListEventi: React.FC<{
                 );
             })}
             <ModalMessage
+                url={produceUrl()}
                 modalIsOpen={modalIsOpen}
                 setModalIsOpen={setModalIsOpen}
                 handler={sendInterestMessage}
