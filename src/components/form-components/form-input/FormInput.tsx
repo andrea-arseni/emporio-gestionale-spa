@@ -1,5 +1,6 @@
 import { IonIcon, IonInput, IonItem, IonLabel, IonNote } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
+import { useEffect, useRef } from "react";
 
 const FormInput: React.FC<{
     title: string;
@@ -11,7 +12,29 @@ const FormInput: React.FC<{
     reset: () => void;
     errorMessage: string;
     readonly?: boolean;
+    autofocus?: boolean;
 }> = (props) => {
+    const ref = useRef<HTMLIonInputElement>(null);
+
+    useEffect(() => {
+        const focus = async () => {
+            await new Promise((r) => setTimeout(r, 300));
+            ref.current!.setFocus();
+        };
+
+        if (props.autofocus) {
+            focus();
+        }
+    }, [props.autofocus]);
+
+    useEffect(() => {
+        ref.current?.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+            }
+        });
+    }, []);
+
     return (
         <IonItem>
             <IonLabel
@@ -21,6 +44,7 @@ const FormInput: React.FC<{
                 {props.title}
             </IonLabel>
             <IonInput
+                ref={ref}
                 readonly={props.readonly}
                 autocomplete="off"
                 color={props.inputIsInvalid ? "danger" : "dark"}

@@ -271,15 +271,35 @@ LA QUERY E' SBAGLIATA
 - Zong must work - VINTO
 - Aggiungi link al testo on demand - VINTO
 - Filtri vanno in leak, correggere -    VINTO
-
-Tasks 12 Aprile 2023
-
-- Con i filtri ed i form il tasto "Invio" effettua l'azione
-- Retrieve foto firmate oppure foto originali
+- Bug rinomina file persona - VINTO
+- Lavoro ha lettera - VINTO
+- Il lavoro non deve submit senza titolo - VINTO
+- Non è possibile attivare le actionbar più volte - VINTO
+- no props as dependency - VINTO
+- Filtri gestibili con keyboard - VINTO
+- if immagine non disponibile don't show girini - VINTO
+- if immagine non disponibile show foto non disponibile - VINTO
+- Error handler gestibile con tastiera - VINTO
 
 *****
 
+- Double click per submit form
+- Anche AuthPage
+- Password visibile con occhio
+
+*****
+
+- Quando disattivi una persona lascia il focus sul select
+- Proprietari non si vedono immobili aprendo da persona
+- Doppio indietro e proprietario inesistente
+- 1970 primo contatto è falso
+- Retrieve foto firmate oppure foto originali
 - Navigazione su singolo immobile rivista
+- Navigazione su singola persona rivista
+- Disattiva button su persona
+- Note private su Immobile
+- Parenti tra persone
+
 - Deploy ed enjoy nuova versione
 
 - NATIVEAPPS ONLINE
@@ -288,7 +308,7 @@ Tasks 12 Aprile 2023
 
 - Classe Eenergetica Maiuscola
 - Spese Extra non previste
-- Rendita su PWS
+- Rendita
 
 - OPTIMAL ARCHITECTURE
 
@@ -296,5 +316,5 @@ Tasks 12 Aprile 2023
 - IAM Roles sul DB
 - Cloudfront Price Class 100
 
-- FINITO PER SEMPRE
+- FINITO PER SEMPRE per adesso
 */

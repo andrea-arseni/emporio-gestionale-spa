@@ -1,6 +1,5 @@
 import { SocialSharing } from "@awesome-cordova-plugins/social-sharing";
 import { isNativeApp } from "./contactUtils";
-import errorHandler from "./errorHandler";
 
 export const shareObject = async (
     message: string,
@@ -22,30 +21,17 @@ export const shareObject = async (
     }
 };
 
-export const checkShareability = (presentAlert: any) => {
-    if (!isNativeApp && !navigator.canShare) {
-        errorHandler(
-            null,
-            () => {},
-            "Questo Browser non permette la condivisione di file.",
-            presentAlert
-        );
-        return false;
-    }
-    return true;
-};
+export const isSharingAvailable = () => isNativeApp || navigator.canShare;
+
+export const NOT_SHAREABLE_MSG =
+    "Questo Browser non permette la condivisione di file.";
 
 export const checkSpecificFileShareability = (
-    presentAlert: any,
+    errorHandler: any,
     file: File
 ) => {
     if (!isNativeApp && !navigator.canShare({ files: [file] })) {
-        errorHandler(
-            null,
-            () => {},
-            `${file.name} non può essere condiviso.`,
-            presentAlert
-        );
+        errorHandler(null, `${file.name} non può essere condiviso.`);
         return false;
     }
     return true;

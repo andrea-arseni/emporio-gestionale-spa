@@ -1,5 +1,5 @@
 import { IonList, IonItem, IonLabel, IonButton, IonInput } from "@ionic/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "../../../hooks";
 import styles from "../Filter.module.css";
 
@@ -27,6 +27,16 @@ const NumberFilter: React.FC<{
 
     const [maxValue, setMaxValue] = useState<string | null>(null);
 
+    const inputRef = useRef<HTMLIonInputElement>(null);
+
+    useEffect(() => {
+        const focus = async () => {
+            await new Promise((r) => setTimeout(r, 300));
+            inputRef.current!.setFocus();
+        };
+        focus();
+    }, [inputRef]);
+
     const submitForm = async () => {
         const filterObj = {
             filter: props.filter.filter,
@@ -39,12 +49,40 @@ const NumberFilter: React.FC<{
         props.setFilterMode("default");
     };
 
+    useEffect(() => {
+        const formIsValid = minValue || maxValue;
+
+        const submitForm = async () => {
+            const filterObj = {
+                filter: props.filter.filter,
+                min: minValue ? +minValue : undefined,
+                max: maxValue ? +maxValue : undefined,
+            };
+            props.localQuery
+                ? props.setFilter(filterObj)
+                : dispatch(props.setFilter(filterObj));
+            props.setFilterMode("default");
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (formIsValid && e.key === "Enter") {
+                await submitForm();
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [props, dispatch, maxValue, minValue]);
+
     return (
         <div className={styles.form}>
             <IonList className={styles.list}>
                 <IonItem>
                     <IonLabel position="floating">Valore minimo</IonLabel>
                     <IonInput
+                        ref={inputRef}
                         lang="it-IT"
                         type="number"
                         value={minValue}

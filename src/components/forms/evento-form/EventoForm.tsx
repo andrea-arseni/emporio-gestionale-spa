@@ -1,5 +1,4 @@
 import {
-    useIonAlert,
     IonItem,
     IonLabel,
     IonIcon,
@@ -18,7 +17,6 @@ import { Persona } from "../../../entities/persona.model";
 import useInput from "../../../hooks/use-input";
 import { possibiliPersoneTypes } from "../../../types/persona_types";
 import axiosInstance from "../../../utils/axiosInstance";
-import errorHandler from "../../../utils/errorHandler";
 import DatePicker from "../../date-picker/DatePicker";
 import FormInputBoolean from "../../form-components/form-input-boolean/FormInputBoolean";
 import FormInput from "../../form-components/form-input/FormInput";
@@ -30,6 +28,7 @@ import useDateHandler from "../../../hooks/use-date-handler";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormGroup from "../../form-components/form-group/FormGroup";
 import FormSelect from "../../form-components/form-select/FormSelect";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const EventoForm: React.FC<{
     persona: Persona;
@@ -59,7 +58,10 @@ const EventoForm: React.FC<{
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
-    const [presentAlert] = useIonAlert();
+    const [nameUpdated, isNameUpdated] = useState<boolean>(false);
+
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
 
     const [isVisit, setIsVisit] = useState<boolean>(false);
 
@@ -228,6 +230,7 @@ const EventoForm: React.FC<{
                 );
             }
             setShowLoading(false);
+            isNameUpdated(true);
             presentAlert({
                 header: "Ottimo",
                 subHeader: getMessage(),
@@ -240,14 +243,106 @@ const EventoForm: React.FC<{
             });
         } catch (error: any) {
             setShowLoading(false);
-            errorHandler(
-                error,
-                () => {},
-                "Procedura non riuscita",
-                presentAlert
-            );
+            errorHandler(error, "Procedura non riuscita");
         }
     };
+
+    useEffect(() => {
+        const isFormInvalid =
+            (isVisit && (!inputDateValue || !inputTimeValue)) ||
+            (!isVisit &&
+                !inputStatusIsTouched &&
+                (!inputNoteValue ||
+                    inputNoteValue.toString().trim().length === 0));
+
+        const eseguiForm = async () => {
+            setShowLoading(true);
+            try {
+                let reqBody = null;
+                if (props.evento) {
+                    reqBody = {
+                        descrizione: getDescrizioneCompleta.trim(),
+                    };
+                    await axiosInstance.patch(
+                        `/persone/${props.persona.id}/eventi/${props.evento.id}`,
+                        reqBody
+                    );
+                } else if (isVisit) {
+                    reqBody = {
+                        quando: `${
+                            inputDateValue.split("T")[0]
+                        }T${inputTimeValue}:00`,
+                        idPersona: props.persona.id,
+                        note: inputNoteValue.trim(),
+                        idImmobile: immobileInteresse?.id,
+                        dove: inputLuogoValue,
+                    };
+                    await axiosInstance.post(`/visite`, reqBody);
+                } else {
+                    reqBody = {
+                        descrizione: inputNoteValue.trim(),
+                        statusPersona: inputStatusValue
+                            .toUpperCase()
+                            .replace(" ", "_"),
+                        idImmobile: immobileInteresse?.id,
+                    };
+                    await axiosInstance.post(
+                        `/persone/${props.persona.id}/eventi`,
+                        reqBody
+                    );
+                }
+                setShowLoading(false);
+                isNameUpdated(true);
+                presentAlert({
+                    header: "Ottimo",
+                    subHeader: `${
+                        isVisit ? "Visita Fissata" : "Persona Aggiornata"
+                    }`,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => props.backToList(),
+                        },
+                    ],
+                });
+            } catch (error: any) {
+                setShowLoading(false);
+                errorHandler(error, "Procedura non riuscita");
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (e.key === "Enter" && !isError && !isFormInvalid) {
+                if (nameUpdated) {
+                    hideAlert();
+                    props.backToList();
+                } else {
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        hideAlert,
+        props,
+        nameUpdated,
+        getDescrizioneCompleta,
+        immobileInteresse?.id,
+        inputDateValue,
+        inputLuogoValue,
+        inputNoteValue,
+        inputStatusIsTouched,
+        inputStatusValue,
+        inputTimeValue,
+        isVisit,
+        errorHandler,
+        isError,
+    ]);
 
     const getImmobile = (immobile: Immobile) => {
         return (
@@ -373,6 +468,7 @@ const EventoForm: React.FC<{
                         )}
                         <TextArea
                             title="Descrizione"
+                            autofocus
                             inputValue={inputNoteValue}
                             inputIsInvalid={inputNoteIsInvalid}
                             inputChangeHandler={inputNoteChangedHandler}
@@ -385,6 +481,7 @@ const EventoForm: React.FC<{
                 {props.evento && (
                     <TextArea
                         title="Descrizione"
+                        autofocus
                         inputValue={inputNoteValue}
                         inputIsInvalid={inputNoteIsInvalid}
                         inputChangeHandler={inputNoteChangedHandler}

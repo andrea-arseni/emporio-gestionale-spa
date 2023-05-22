@@ -1,5 +1,4 @@
 import {
-    useIonAlert,
     IonLoading,
     IonList,
     IonButton,
@@ -8,14 +7,20 @@ import {
     IonSelect,
     IonSelectOption,
 } from "@ionic/react";
-import { useState, FormEvent, SetStateAction, Dispatch } from "react";
+import {
+    useState,
+    FormEvent,
+    SetStateAction,
+    Dispatch,
+    useEffect,
+} from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
 import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
-import errorHandler from "../../../utils/errorHandler";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const StepForm: React.FC<{
     lavoro: Lavoro;
@@ -39,7 +44,10 @@ const StepForm: React.FC<{
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
-    const [presentAlert] = useIonAlert();
+    const [querySuccessfull, isQuerySuccessfull] = useState<boolean>(false);
+
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
 
     const {
         inputValue: inputDescrizioneValue,
@@ -78,6 +86,7 @@ const StepForm: React.FC<{
                 ? await axiosInstance.patch(`${url}/${props.step.id!}`, reqBody)
                 : await axiosInstance.post(`${url}`, reqBody);
             setShowLoading(false);
+            isQuerySuccessfull(true);
             presentAlert({
                 header: "Ottimo",
                 message: `Obiettivo aggiornato`,
@@ -98,12 +107,7 @@ const StepForm: React.FC<{
             });
         } catch (error: any) {
             setShowLoading(false);
-            errorHandler(
-                error,
-                () => {},
-                "Procedura non riuscita",
-                presentAlert
-            );
+            errorHandler(error, "Procedura non riuscita");
         }
     };
 
@@ -111,6 +115,82 @@ const StepForm: React.FC<{
         setStatus(e.detail.value);
         setStatusChanged(true);
     };
+
+    useEffect(() => {
+        const isFormValid =
+            (!props.step && (inputDescrizioneValue || statusChanged)) ||
+            (props.step && !inputDescrizioneIsInvalid);
+
+        const submitForm = async () => {
+            setShowLoading(true);
+            const url = `lavori/${props.lavoro!.id}/steps`;
+            const reqBody = {
+                lavoroStatus: status.toUpperCase(),
+                stepMessage: getDescrizioneCompleta,
+                descrizione: getDescrizioneCompleta,
+            };
+            try {
+                props.step
+                    ? await axiosInstance.patch(
+                          `${url}/${props.step.id!}`,
+                          reqBody
+                      )
+                    : await axiosInstance.post(`${url}`, reqBody);
+                setShowLoading(false);
+                isQuerySuccessfull(true);
+                presentAlert({
+                    header: "Ottimo",
+                    message: `Obiettivo aggiornato`,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => {
+                                props.setCurrentLavoro((prevLavoro) => {
+                                    return {
+                                        ...prevLavoro,
+                                        status: status.toUpperCase(),
+                                    } as Lavoro;
+                                });
+                                props.backToList();
+                            },
+                        },
+                    ],
+                });
+            } catch (error: any) {
+                setShowLoading(false);
+                errorHandler(error, "Procedura non riuscita");
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (isFormValid && !isError && e.key === "Enter") {
+                if (querySuccessfull) {
+                    hideAlert();
+                    props.backToList();
+                } else {
+                    await submitForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        isError,
+        errorHandler,
+        hideAlert,
+        props,
+        getDescrizioneCompleta,
+        inputDescrizioneIsInvalid,
+        inputDescrizioneIsTouched,
+        inputDescrizioneValue,
+        querySuccessfull,
+        status,
+        statusChanged,
+    ]);
 
     return (
         <form className="form">
@@ -145,6 +225,7 @@ const StepForm: React.FC<{
                     inputTouchHandler={inputDescrizioneTouchedHandler}
                     errorMessage={"Input non valido"}
                     reset={inputDescrizioneReset}
+                    autofocus
                 />
                 <IonButton
                     expand="block"

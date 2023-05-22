@@ -5,10 +5,9 @@ import {
     IonSelectOption,
     IonLabel,
     IonButton,
-    useIonAlert,
     IonLoading,
 } from "@ionic/react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Caratteristiche } from "../../../entities/caratteristiche.model";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
@@ -41,7 +40,6 @@ import { possibleStatus, status } from "../../../types/status";
 import { possibleTipologies } from "../../../types/tipologia";
 import axiosInstance from "../../../utils/axiosInstance";
 import { capitalize } from "../../../utils/stringUtils";
-import errorHandler from "../../../utils/errorHandler";
 import { genericaDescrizione } from "../../../utils/genericaDescrizione";
 import FormGroup from "../../form-components/form-group/FormGroup";
 import FormInputBoolean from "../../form-components/form-input-boolean/FormInputBoolean";
@@ -59,6 +57,7 @@ import useList from "../../../hooks/use-list";
 import { getPhoneValue } from "../../../utils/numberUtils";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { useNavigate } from "react-router-dom";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const ImmobileForm: React.FC<{
     immobile: Immobile | null;
@@ -66,9 +65,15 @@ const ImmobileForm: React.FC<{
 }> = (props) => {
     const navigate = useNavigate();
 
+    const [isQuerySuccessfull, setIsQuerySuccessfull] =
+        useState<boolean>(false);
+
     const [isAutomaticRef, setIsAutomaticRef] = useState<boolean | null>(
         !!!props.immobile
     );
+
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
 
     const [isManualTown, setIsManualTown] = useState<boolean>(
         !!props.immobile &&
@@ -656,8 +661,6 @@ const ImmobileForm: React.FC<{
 
     const [showLoading, setShowLoading] = useState<boolean>(true);
 
-    const [presentAlert] = useIonAlert();
-
     const [proprietarioValue, setProprietarioValue] = useState<Persona | null>(
         null
     );
@@ -791,12 +794,7 @@ const ImmobileForm: React.FC<{
                 );
             } catch (e) {
                 setShowLoading(false);
-                errorHandler(
-                    e,
-                    () => {},
-                    "Immobile impossibile da aprire",
-                    presentAlert
-                );
+                errorHandler(e, "Immobile impossibile da aprire");
             }
         };
         props.immobile && !caratteristicheFetched
@@ -804,6 +802,7 @@ const ImmobileForm: React.FC<{
             : setShowLoading(false);
     }, [
         props.immobile,
+        errorHandler,
         presentAlert,
         inputAltezzaChangedHandler,
         inputAnnoCostruzioneChangedHandler,
@@ -911,7 +910,7 @@ const ImmobileForm: React.FC<{
         return `${props.immobile ? "Modifica" : "Aggiungi"} immobile`;
     };
 
-    const getProprietario = () => {
+    const getProprietario = useCallback(() => {
         // if newpart is open create new object
         if (newProprietarioPartOpened) {
             return {
@@ -928,9 +927,15 @@ const ImmobileForm: React.FC<{
         } else {
             return proprietarioValue ? proprietarioValue : null;
         }
-    };
+    }, [
+        newProprietarioPartOpened,
+        inputNameValue,
+        inputPhoneValue,
+        inputEmailValue,
+        proprietarioValue,
+    ]);
 
-    const getComuneValue = () => {
+    const getComuneValue = useCallback(() => {
         if (!isManualTown || !inputComuneValue) return inputComuneValue;
         let output = inputComuneValue;
         possibleComuni.forEach((el) => {
@@ -942,7 +947,7 @@ const ImmobileForm: React.FC<{
             }
         });
         return output;
-    };
+    }, [inputComuneValue, isManualTown]);
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
@@ -1035,6 +1040,7 @@ const ImmobileForm: React.FC<{
                   )
                 : await axiosInstance.post(`immobili`, reqBody);
             setShowLoading(false);
+            setIsQuerySuccessfull(true);
             presentAlert({
                 header: "Ottimo",
                 subHeader: `Immobile ${
@@ -1050,12 +1056,7 @@ const ImmobileForm: React.FC<{
             });
         } catch (error: any) {
             setShowLoading(false);
-            errorHandler(
-                error,
-                () => {},
-                "Procedura non riuscita",
-                presentAlert
-            );
+            errorHandler(error, "Procedura non riuscita");
         }
     };
 
@@ -1123,6 +1124,244 @@ const ImmobileForm: React.FC<{
         inputNameReset,
         inputPhoneReset,
         inputEmailReset,
+    ]);
+
+    const { immobile, backToList } = props;
+
+    useEffect(() => {
+        const isFormInvalid =
+            !inputTitleValue ||
+            inputTitleIsInvalid ||
+            !inputSuperficieValue ||
+            inputSuperficieIsInvalid ||
+            !inputTipologiaValue ||
+            !inputLocaliValue ||
+            !inputComuneValue ||
+            !inputIndirizzoValue ||
+            !inputPrezzoValue ||
+            inputPrezzoIsInvalid ||
+            !inputRiscaldamentoValue ||
+            !inputClasseEnergeticaValue ||
+            inputConsumoIsInvalid ||
+            !inputContrattoValue ||
+            !inputCategoriaValue ||
+            !inputStatoValue ||
+            !inputStatusValue ||
+            !inputLiberoValue ||
+            !inputPianoValue ||
+            inputSpeseCondominialiIsInvalid ||
+            inputSpeseRiscaldamentoIsInvalid ||
+            inputRenditaIsInvalid ||
+            inputAnnoCostruzioneIsInvalid ||
+            inputDescrizioneIsInvalid ||
+            (!immobile && !inputDescrizioneIsTouched) ||
+            (newProprietarioPartOpened && inputNameIsInvalid) ||
+            (newProprietarioPartOpened && inputPhoneIsInvalid) ||
+            (newProprietarioPartOpened && inputEmailIsInvalid);
+
+        const eseguiForm = async () => {
+            const newImmobile = new Immobile(
+                null,
+                isAutomaticRef ? null : inputRefValue,
+                inputTitleValue,
+                inputSuperficieValue,
+                null,
+                inputTipologiaValue,
+                inputLocaliValue,
+                inputIndirizzoValue,
+                inputZonaValue ? inputZonaValue : "",
+                getComuneValue(),
+                inputPrezzoValue
+                    ? +inputPrezzoValue.toString().replace(".", "")
+                    : null,
+                inputRiscaldamentoValue,
+                inputClasseEnergeticaValue,
+                inputConsumoValue,
+                inputContrattoValue,
+                inputCategoriaValue,
+                inputStatoValue,
+                inputLiberoValue,
+                inputStatusValue
+                    ? (capitalize(inputStatusValue.toLowerCase()) as status)
+                    : null,
+                inputPianoValue,
+                null,
+                null,
+                null,
+                inquiliniValue
+            );
+            const caratteristicheImmobile = new Caratteristiche(
+                null,
+                inputDescrizioneValue,
+                inputEsposizioneValue,
+                inputSpeseCondominialiValue
+                    ? +inputSpeseCondominialiValue
+                          .toString()
+                          .split(".")[0]
+                          .split(",")[0]
+                    : 0,
+                inputSpeseExtraValue
+                    ? inputSpeseExtraValue
+                    : "Spese Extra non previste",
+                inputAscensoreValue,
+                inputArredamentoValue,
+                inputBalconiValue,
+                inputTerrazziValue,
+                inputBoxValue,
+                inputGiardinoValue,
+                inputTavernaValue ? inputTavernaValue : "Assente",
+                inputMansardaValue ? inputMansardaValue : "Assente",
+                inputCantinaValue ? inputCantinaValue : "Assente",
+                inputSpeseRiscaldamentoValue,
+                inputAriaCondizionataValue,
+                inputProprietaValue,
+                inputCategoriaCatastaleValue,
+                inputRenditaValue,
+                inputImpiantoElettricoValue,
+                inputImpiantoIdraulicoValue,
+                inputLivelliValue,
+                inputSerramentiInterniValue,
+                inputSerramentiEsterniValue,
+                inputPortaBlindataValue,
+                inputAntifurtoValue ? inputAntifurtoValue : "Assente",
+                inputCitofonoValue,
+                inputAnnoCostruzioneValue,
+                inputPortineriaValue,
+                inputCombustibileValue,
+                inputCablatoValue,
+                inputTipoContrattoValue,
+                inputCauzioneValue,
+                inputAltezzaValue,
+                inputTotalePianiValue
+            );
+            setShowLoading(true);
+            const reqBody = {
+                immobile: newImmobile,
+                proprietario: getProprietario(),
+                caratteristicheImmobile,
+            };
+
+            try {
+                const res = immobile
+                    ? await axiosInstance.patch(
+                          `immobili/${immobile!.id}`,
+                          reqBody
+                      )
+                    : await axiosInstance.post(`immobili`, reqBody);
+                setShowLoading(false);
+                setIsQuerySuccessfull(true);
+                presentAlert({
+                    header: "Ottimo",
+                    subHeader: `Immobile ${immobile ? "modificato" : "creato"}`,
+                    message: `Riferimento: ${res.data.ref}`,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => backToList(),
+                        },
+                    ],
+                });
+            } catch (error: any) {
+                setShowLoading(false);
+                errorHandler(error, "Procedura non riuscita");
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (e.key === "Enter" && !isError) {
+                if (!isFormInvalid && isQuerySuccessfull) {
+                    hideAlert();
+                    backToList();
+                } else if (!isFormInvalid && !isQuerySuccessfull) {
+                    if (document.activeElement instanceof HTMLElement)
+                        document.activeElement.blur();
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        getComuneValue,
+        getProprietario,
+        hideAlert,
+        errorHandler,
+        isError,
+        inputAltezzaValue,
+        inputAnnoCostruzioneIsInvalid,
+        inputAnnoCostruzioneValue,
+        inputAntifurtoValue,
+        inputAriaCondizionataValue,
+        inputArredamentoValue,
+        inputAscensoreValue,
+        inputBalconiValue,
+        inputBoxValue,
+        inputCablatoValue,
+        inputCantinaValue,
+        inputCategoriaCatastaleValue,
+        inputCategoriaValue,
+        inputCauzioneValue,
+        inputCitofonoValue,
+        inputClasseEnergeticaValue,
+        inputCombustibileValue,
+        inputComuneValue,
+        inputConsumoIsInvalid,
+        inputConsumoValue,
+        inputContrattoValue,
+        inputDescrizioneIsInvalid,
+        inputDescrizioneIsTouched,
+        inputDescrizioneValue,
+        inputEmailIsInvalid,
+        inputEsposizioneValue,
+        inputIndirizzoValue,
+        inputLiberoValue,
+        inputLivelliValue,
+        inputPrezzoIsInvalid,
+        inputPrezzoValue,
+        inputGiardinoValue,
+        inputImpiantoElettricoValue,
+        inputImpiantoIdraulicoValue,
+        inputLocaliValue,
+        inputMansardaValue,
+        inputNameIsInvalid,
+        inputRefValue,
+        inputRenditaIsInvalid,
+        inputSuperficieValue,
+        inputTavernaValue,
+        inputZonaValue,
+        inquiliniValue,
+        isAutomaticRef,
+        inputSpeseExtraValue,
+        newProprietarioPartOpened,
+        inputTipoContrattoValue,
+        inputSpeseRiscaldamentoIsInvalid,
+        inputSpeseRiscaldamentoValue,
+        inputTotalePianiValue,
+        isQuerySuccessfull,
+        inputSpeseCondominialiIsInvalid,
+        inputRiscaldamentoValue,
+        inputSerramentiEsterniValue,
+        inputSerramentiInterniValue,
+        inputTitleIsInvalid,
+        inputTitleValue,
+        inputPhoneIsInvalid,
+        inputPianoValue,
+        inputPortaBlindataValue,
+        inputPortineriaValue,
+        inputProprietaValue,
+        inputSpeseCondominialiValue,
+        inputStatoValue,
+        inputSuperficieIsInvalid,
+        inputTerrazziValue,
+        inputTipologiaValue,
+        inputRenditaValue,
+        inputStatusValue,
+        immobile,
+        backToList,
     ]);
 
     const getPersone = (type: "proprietario" | "inquilino") => {
@@ -1208,6 +1447,7 @@ const ImmobileForm: React.FC<{
                         />
                     )}
                     <FormInput
+                        autofocus
                         title={"Titolo (tra 15 e 60 lettere)"}
                         inputValue={inputTitleValue}
                         type={"text"}

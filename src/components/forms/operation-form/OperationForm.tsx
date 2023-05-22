@@ -1,28 +1,27 @@
 import {
     IonList,
     IonButton,
-    useIonAlert,
     IonLoading,
     IonIcon,
     IonItem,
     IonLabel,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Operazione } from "../../../entities/operazione.model";
 import useDateHandler from "../../../hooks/use-date-handler";
 import useInput from "../../../hooks/use-input";
 import axiosInstance from "../../../utils/axiosInstance";
-import errorHandler from "../../../utils/errorHandler";
 import { getDayName } from "../../../utils/timeUtils";
 import DatePicker from "../../date-picker/DatePicker";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormInput from "../../form-components/form-input/FormInput";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const FormOperation: React.FC<{
     operation: Operazione | null;
-    setMode: Dispatch<SetStateAction<"form" | "list">>;
+    backToList: () => void;
 }> = (props) => {
     const {
         datePickerIsOpen,
@@ -63,7 +62,10 @@ const FormOperation: React.FC<{
             : null
     );
 
-    const [presentAlert] = useIonAlert();
+    const [nameUpdated, isNameUpdated] = useState<boolean>(false);
+
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
@@ -83,15 +85,22 @@ const FormOperation: React.FC<{
                   )
                 : axiosInstance.post("operazioni", reqBody));
             setShowLoading(false);
-            props.setMode("list");
+            isNameUpdated(true);
+            presentAlert({
+                header: "Ottimo",
+                message: `Operazione ${
+                    props.operation ? "modificata" : "creata"
+                }`,
+                buttons: [
+                    {
+                        text: "OK",
+                        handler: () => props.backToList(),
+                    },
+                ],
+            });
         } catch (e: any) {
             setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Creazione operazione non riuscita",
-                presentAlert
-            );
+            errorHandler(e, "Creazione operazione non riuscita");
         }
     };
 
@@ -132,6 +141,84 @@ const FormOperation: React.FC<{
         return `${props.operation ? "Modifica " : "Crea nuova "} operazione`;
     };
 
+    useEffect(() => {
+        const isFormDisabled =
+            (!props.operation &&
+                (!inputDescrizioneIsTouched ||
+                    inputDescrizioneIsInvalid ||
+                    !inputDateValue ||
+                    !inputImportoIsTouched ||
+                    inputImportoIsInvalid)) ||
+            (props.operation &&
+                (!inputDateValue ||
+                    !inputDescrizioneValue ||
+                    !inputImportoValue));
+
+        const eseguiForm = async () => {
+            setShowLoading(true);
+            const reqBody = {
+                data: inputDateValue.split("T")[0],
+                importo: inputImportoValue,
+                descrizione: inputDescrizioneValue,
+            };
+            try {
+                await (props.operation
+                    ? axiosInstance.patch(
+                          "operazioni/" + props.operation.id,
+                          reqBody
+                      )
+                    : axiosInstance.post("operazioni", reqBody));
+                setShowLoading(false);
+                isNameUpdated(true);
+                presentAlert({
+                    header: "Ottimo",
+                    message: `Operazione ${
+                        props.operation ? "modificata" : "creata"
+                    }`,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => props.backToList(),
+                        },
+                    ],
+                });
+            } catch (e: any) {
+                setShowLoading(false);
+                errorHandler(e, "Creazione operazione non riuscita");
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (!isFormDisabled && e.key === "Enter" && !isError) {
+                if (nameUpdated) {
+                    hideAlert();
+                    props.backToList();
+                } else {
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        hideAlert,
+        errorHandler,
+        isError,
+        props,
+        nameUpdated,
+        inputDescrizioneValue,
+        inputDateValue,
+        inputDescrizioneIsInvalid,
+        inputDescrizioneIsTouched,
+        inputImportoIsInvalid,
+        inputImportoIsTouched,
+        inputImportoValue,
+    ]);
+
     return (
         <form onSubmit={submitForm} className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
@@ -156,6 +243,7 @@ const FormOperation: React.FC<{
                     simple
                 />
                 <FormInput
+                    autofocus
                     title="Importo in €"
                     inputValue={inputImportoValue}
                     type={"number"}

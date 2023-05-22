@@ -57,46 +57,43 @@ export const fetchFotoFirmata = createAsyncThunk(
     }
 );
 
+const fetchFile = async (url: string, dispatch: any, id: number) => {
+    const res = await axiosInstance.get(url);
+    dispatch(
+        setPhoto({
+            byteArray: res.data.byteArray,
+            id,
+        })
+    );
+};
+
+const setFileNotAvailable = (dispatch: any, id: number) => {
+    dispatch(
+        setPhoto({
+            byteArray: "blockPhoto",
+            id,
+        })
+    );
+};
+
 export const fetchFileById = createAsyncThunk(
     "fileDaId",
     async (url: string, { dispatch }) => {
         const id = +url.split("/").pop()!;
         dispatch(blockPhoto({ id }));
         try {
-            const res = await axiosInstance.get(url);
-            dispatch(
-                setPhoto({
-                    byteArray: res.data.byteArray,
-                    id,
-                })
-            );
+            fetchFile(url, dispatch, id);
         } catch (e: any) {
-            if (
-                e &&
-                e.response &&
-                e.response.data &&
-                e.response.data.message &&
-                e.response.data.message.includes("Access Denied")
-            ) {
+            await new Promise((r) => setTimeout(r, 2000));
+            try {
+                fetchFile(url, dispatch, id);
+            } catch (e) {
                 await new Promise((r) => setTimeout(r, 2000));
                 try {
-                    const res = await axiosInstance.get(url);
-                    dispatch(
-                        setPhoto({
-                            byteArray: res.data.byteArray,
-                            id,
-                        })
-                    );
+                    fetchFile(url, dispatch, id);
                 } catch (e) {
-                    dispatch(
-                        setPhoto({
-                            byteArray: "blockPhoto",
-                            id,
-                        })
-                    );
+                    setFileNotAvailable(dispatch, id);
                 }
-            } else {
-                dispatch(setError({ name: "fetchFileById", object: e }));
             }
         }
     }

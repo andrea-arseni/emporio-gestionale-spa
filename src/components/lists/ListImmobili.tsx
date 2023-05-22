@@ -19,7 +19,6 @@ import { Entity } from "../../entities/entity";
 import { Immobile } from "../../entities/immobile.model";
 import useWindowSize from "../../hooks/use-size";
 import axiosInstance from "../../utils/axiosInstance";
-import errorHandler from "../../utils/errorHandler";
 import { numberAsPrice } from "../../utils/numberUtils";
 import styles from "./Lists.module.css";
 import useSelection from "../../hooks/use-selection";
@@ -30,6 +29,7 @@ import { isUserAdmin } from "../../utils/userUtils";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { triggerImmobiliUpdate } from "../../store/immobile-slice";
+import useErrorHandler from "../../hooks/use-error-handler";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -49,6 +49,8 @@ const ListImmobili: React.FC<{
     const [width] = useWindowSize();
 
     const [presentAlert] = useIonAlert();
+
+    const { errorHandler } = useErrorHandler();
 
     const copyImmobile = async (id: number) => {
         // loader
@@ -82,12 +84,7 @@ const ListImmobili: React.FC<{
             // catch error
         } catch (e) {
             props.setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Duplicazione dell'immobile non riuscita",
-                presentAlert
-            );
+            errorHandler(e, "Duplicazione dell'immobile non riuscita");
         }
     };
 

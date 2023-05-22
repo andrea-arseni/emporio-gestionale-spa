@@ -15,6 +15,7 @@ import { Entity } from "../../../entities/entity";
 import { useAppDispatch } from "../../../hooks";
 import { triggerDocumentiUpdate } from "../../../store/documenti-slice";
 import { submitFile } from "../../../utils/fileUtils";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const DocumentiPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
@@ -22,6 +23,8 @@ const DocumentiPage: React.FC<{}> = () => {
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [presentAlert] = useIonAlert();
+
+    const { errorHandler } = useErrorHandler();
 
     const inputFileRef = useRef<any>();
 
@@ -72,6 +75,7 @@ const DocumentiPage: React.FC<{}> = () => {
                                 e,
                                 setShowLoading,
                                 presentAlert,
+                                errorHandler,
                                 `/documenti`,
                                 triggerUpdate
                             )

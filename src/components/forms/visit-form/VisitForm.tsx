@@ -1,12 +1,5 @@
-import {
-    IonButton,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonList,
-    useIonAlert,
-} from "@ionic/react";
-import { FormEvent, useEffect, useState } from "react";
+import { IonButton, IonIcon, IonItem, IonLabel, IonList } from "@ionic/react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
@@ -15,7 +8,6 @@ import useInput from "../../../hooks/use-input";
 import useList from "../../../hooks/use-list";
 import axiosInstance from "../../../utils/axiosInstance";
 import { capitalize } from "../../../utils/stringUtils";
-import errorHandler from "../../../utils/errorHandler";
 import FormInput from "../../form-components/form-input/FormInput";
 import FormSelect from "../../form-components/form-select/FormSelect";
 import ItemSelector from "../../form-components/item-selector/ItemSelector";
@@ -37,6 +29,7 @@ import styles from "./VisitForm.module.css";
 import { useNavigate } from "react-router-dom";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { Evento } from "../../../entities/evento.model";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const FormVisit: React.FC<{
     readonly?: boolean;
@@ -48,7 +41,20 @@ const FormVisit: React.FC<{
 
     const dispatch = useAppDispatch();
 
-    const [presentAlert] = useIonAlert();
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
+
+    const operationComplete = props.operationComplete;
+
+    const closeTheJob = useCallback(() => {
+        if (operationComplete) operationComplete();
+        setTimeout(() => {
+            hideAlert();
+        }, 50);
+    }, [operationComplete, hideAlert]);
+
+    const [isQuerySuccessfull, setIsQuerySuccessfull] =
+        useState<boolean>(false);
 
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
@@ -127,6 +133,22 @@ const FormVisit: React.FC<{
         useList();
 
     useEffect(() => {
+        if (isQuerySuccessfull) {
+            presentAlert({
+                header: "Ottimo!",
+                message:
+                    visit && visit.id ? `Visita modificata` : `Visita aggiunta`,
+                buttons: [
+                    {
+                        text: "Ok",
+                        handler: closeTheJob,
+                    },
+                ],
+            });
+        }
+    }, [isQuerySuccessfull, presentAlert, closeTheJob, visit]);
+
+    useEffect(() => {
         const closeModal = () => {
             setModalIsOpen(false);
             setModalContentType(null);
@@ -154,12 +176,7 @@ const FormVisit: React.FC<{
                 setPossibleUsers(res.data.data);
             } catch (e) {
                 if (!mounted) return;
-                errorHandler(
-                    e,
-                    () => {},
-                    "Selezione agente non disponibile",
-                    presentAlert
-                );
+                errorHandler(e, "Selezione agente non disponibile");
             }
         };
 
@@ -168,7 +185,7 @@ const FormVisit: React.FC<{
         return () => {
             mounted = false;
         };
-    }, [presentAlert]);
+    }, [presentAlert, errorHandler]);
 
     useEffect(() => {
         let mounted = true;
@@ -206,6 +223,97 @@ const FormVisit: React.FC<{
             mounted = false;
         };
     }, [personaValue]);
+
+    useEffect(() => {
+        const isFormDisabled =
+            !inputDateValue ||
+            !inputTimeValue ||
+            !inputUserValue ||
+            (immobileValue && !personaValue) ||
+            (!personaValue &&
+                !immobileValue &&
+                !inputDoveValue &&
+                !inputNoteValue);
+
+        const eseguiForm = async () => {
+            const mode = visit && visit.id ? "update" : "insert";
+            dispatch(changeLoading(true));
+            const quando =
+                inputDateValue.split("T")[0] + "T" + inputTimeValue + ":00";
+            const reqBody = {
+                quando,
+                idPersona: personaValue
+                    ? personaValue.id
+                    : mode === "update"
+                    ? 0
+                    : null,
+                idImmobile: immobileValue
+                    ? immobileValue.id
+                    : mode === "update"
+                    ? 0
+                    : null,
+                userName: inputUserValue,
+                dove: inputDoveValue,
+                note: inputNoteValue,
+            };
+            try {
+                if (mode === "update") {
+                    await axiosInstance.patch(`/visite/${visit!.id}`, reqBody);
+                } else {
+                    await axiosInstance.post("/visite", reqBody);
+                }
+                dispatch(changeLoading(false));
+
+                setIsQuerySuccessfull(true);
+            } catch (error: any) {
+                dispatch(changeLoading(false));
+                errorHandler(
+                    error,
+                    `${
+                        mode === "update" ? "Aggiornamento" : "Inserimento"
+                    } visita non riuscito`
+                );
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (
+                !props.readonly &&
+                !isFormDisabled &&
+                !isError &&
+                e.key === "Enter"
+            ) {
+                if (isQuerySuccessfull) {
+                    closeTheJob();
+                } else {
+                    if (document.activeElement instanceof HTMLElement)
+                        document.activeElement.blur();
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        isQuerySuccessfull,
+        dispatch,
+        isError,
+        errorHandler,
+        immobileValue,
+        inputDateValue,
+        inputDoveValue,
+        inputNoteValue,
+        inputTimeValue,
+        inputUserValue,
+        personaValue,
+        props.readonly,
+        visit,
+        closeTheJob,
+    ]);
 
     const isFormDisabled =
         !inputDateValue ||
@@ -259,14 +367,14 @@ const FormVisit: React.FC<{
                 await axiosInstance.post("/visite", reqBody);
             }
             dispatch(changeLoading(false));
-            props.operationComplete!();
+            setIsQuerySuccessfull(true);
         } catch (error: any) {
             dispatch(changeLoading(false));
             errorHandler(
                 error,
-                () => {},
-                "Inserimento visita non riuscito",
-                presentAlert
+                `${
+                    mode === "update" ? "Aggiornamento" : "Inserimento"
+                } visita non riuscito`
             );
         }
     };
@@ -352,7 +460,12 @@ const FormVisit: React.FC<{
                     }}
                     addAction={
                         isNativeApp
-                            ? () => saveContact(presentAlert, personaValue!)
+                            ? () =>
+                                  saveContact(
+                                      presentAlert,
+                                      personaValue!,
+                                      errorHandler
+                                  )
                             : undefined
                     }
                     closeItems={closePersoneItemsList}

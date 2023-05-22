@@ -1,5 +1,6 @@
 import { IonIcon, IonItem, IonLabel, IonNote, IonTextarea } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
+import { useEffect, useRef } from "react";
 
 const FormTextArea: React.FC<{
     title: string;
@@ -11,7 +12,21 @@ const FormTextArea: React.FC<{
     errorMessage?: string;
     readonly?: boolean;
     rows?: number;
+    autofocus?: boolean;
 }> = (props) => {
+    const ref = useRef<HTMLIonTextareaElement>(null);
+
+    useEffect(() => {
+        const focus = async () => {
+            await new Promise((r) => setTimeout(r, 300));
+            ref.current!.setFocus();
+        };
+
+        if (props.autofocus) {
+            focus();
+        }
+    }, [props.autofocus]);
+
     return (
         <IonItem>
             <IonLabel
@@ -21,6 +36,7 @@ const FormTextArea: React.FC<{
                 {props.title}
             </IonLabel>
             <IonTextarea
+                ref={ref}
                 readonly={props.readonly}
                 color={props.inputIsInvalid ? "danger" : undefined}
                 auto-grow

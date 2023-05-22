@@ -2,7 +2,6 @@ import FileSaver from "file-saver";
 import { Dispatch, SetStateAction } from "react";
 import { Documento } from "../entities/documento.model";
 import axiosInstance from "./axiosInstance";
-import errorHandler from "./errorHandler";
 import heic2any from "heic2any";
 import Resizer from "react-image-file-resizer";
 import { fileSpeciale, listFileSpeciali } from "../types/file_speciali";
@@ -17,7 +16,11 @@ import { changeLoading } from "../store/ui-slice";
 import { addFile } from "../store/immobile-slice";
 import { Mediastore } from "@agorapulse/capacitor-mediastore";
 import { capitalize } from "./stringUtils";
-import { checkShareability, checkSpecificFileShareability } from "./shareUtils";
+import {
+    NOT_SHAREABLE_MSG,
+    checkSpecificFileShareability,
+    isSharingAvailable,
+} from "./shareUtils";
 
 export const getFileType = (fileName: string) => {
     const extension = fileName
@@ -201,7 +204,7 @@ export const downloadMultipleFiles = async (
     documenti: Documento[],
     dispatch: any,
     immobileId: string,
-    presentAlert: any
+    errorHandler: any
 ) => {
     if (isNativeApp) dispatch(changeLoading(true));
     if (isNativeApp && isPlatform("android")) {
@@ -283,12 +286,7 @@ export const downloadMultipleFiles = async (
                 `Lista foto`
             );
         } catch (e) {
-            errorHandler(
-                e,
-                () => {},
-                "Non è riuscita la conversione dell'immagine HEIC fornita",
-                presentAlert
-            );
+            errorHandler(e, "Salvataggio delle foto non riuscito");
             return null;
         }
     }
@@ -342,9 +340,13 @@ const getFilesFromBase64Strings = async (listBase64Strings: Documento[]) => {
 
 export const shareMultipleFiles = async (
     documenti: Documento[],
-    presentAlert: any
+    errorHandler: any
 ) => {
-    if (!checkShareability(presentAlert)) return;
+    if (!isSharingAvailable()) {
+        errorHandler(null, NOT_SHAREABLE_MSG);
+        return;
+    }
+
     const files = await getFilesFromBase64Strings(documenti);
     try {
         if (isNativeApp) {
@@ -359,12 +361,7 @@ export const shareMultipleFiles = async (
             });
         }
     } catch (error) {
-        errorHandler(
-            null,
-            () => {},
-            `Condivisione non riuscita.`,
-            presentAlert
-        );
+        errorHandler(null, `Condivisione non riuscita.`);
     }
 };
 
@@ -381,13 +378,17 @@ export const getFileObjectFromBase64String = async (
 export const shareFile = async (
     byteArray: string,
     documento: Documento,
-    presentAlert: any
+    errorHandler: any
 ) => {
-    if (!checkShareability(presentAlert)) return;
+    if (!isSharingAvailable()) {
+        //setIsError(true);
+        errorHandler(null, NOT_SHAREABLE_MSG);
+        return;
+    }
     const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
     const blob = await getBlobFromBase64String(base64File);
     const file = new File([blob], documento.nome!, { type: blob.type });
-    if (!checkSpecificFileShareability(presentAlert, file)) return;
+    if (!checkSpecificFileShareability(errorHandler, file)) return;
     try {
         if (isNativeApp) {
             const options: SocialSharingOptions = {
@@ -400,12 +401,7 @@ export const shareFile = async (
             });
         }
     } catch (error) {
-        errorHandler(
-            null,
-            () => {},
-            `Condivisione non riuscita.`,
-            presentAlert
-        );
+        errorHandler(null, `Condivisione non riuscita.`);
     }
 };
 
@@ -433,6 +429,7 @@ export const submitFile = async (
     e: any,
     setShowLoading: Dispatch<SetStateAction<boolean>> | null,
     presentAlert: any,
+    errorHandler: any,
     url: string,
     setUpdate: Dispatch<SetStateAction<number>>,
     tipologia?: "documento" | "foto",
@@ -460,6 +457,7 @@ export const submitFile = async (
         e.target.files,
         0,
         presentAlert,
+        errorHandler,
         url,
         tipologia,
         currentFileSpeciale,
@@ -504,6 +502,7 @@ const uploadFileToServer = async (
     listFiles: File[],
     currentIndex: number,
     presentAlert: any,
+    errorHandler: any,
     url: string,
     tipologia?: "documento" | "foto",
     currentFileSpeciale?: fileSpeciale | null,
@@ -522,7 +521,7 @@ const uploadFileToServer = async (
     }
     let file: File | null = listFiles[currentIndex];
     if (file!.type === "image/heic") {
-        file = await convertHeichToJpeg(file!, presentAlert);
+        file = await convertHeichToJpeg(file!, errorHandler, setShowLoading);
         if (!file) return;
     }
     const formData = new FormData();
@@ -547,6 +546,7 @@ const uploadFileToServer = async (
             listFiles,
             currentIndex,
             presentAlert,
+            errorHandler,
             url,
             tipologia,
             currentFileSpeciale,
@@ -556,14 +556,16 @@ const uploadFileToServer = async (
         setShowLoading(false);
         errorHandler(
             e,
-            () => setTimeout(() => setUpdate((prevState) => ++prevState), 1000),
-            `Procedura interrotta: caricamento di '${file.name}' non riuscito`,
-            presentAlert
+            `Procedura interrotta: caricamento di '${file.name}' non riuscito`
         );
     }
 };
 
-const convertHeichToJpeg = async (file: File, presentAlert: any) => {
+const convertHeichToJpeg = async (
+    file: File,
+    errorHandler: any,
+    setShowLoading: any
+) => {
     try {
         const blob = (await convertFileToBlob(file)) as Blob;
         const jpegBlob = await heic2any({
@@ -578,11 +580,10 @@ const convertHeichToJpeg = async (file: File, presentAlert: any) => {
         );
         return getFileFromBlob(resizedBlob, file.name, "jpeg");
     } catch (e) {
+        setShowLoading(false);
         errorHandler(
             e,
-            () => {},
-            "Non è riuscita la conversione dell'immagine HEIC fornita",
-            presentAlert
+            "Non è riuscita la conversione dell'immagine HEIC fornita"
         );
         return null;
     }

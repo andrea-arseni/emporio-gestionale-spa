@@ -5,7 +5,6 @@ import {
     IonLabel,
     IonSegment,
     IonSegmentButton,
-    useIonAlert,
     IonButton,
     isPlatform,
 } from "@ionic/react";
@@ -19,8 +18,7 @@ import { useAppSelector, useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
 import { setFormActive } from "../../../store/appuntamenti-slice";
 import { alertEliminaVisita } from "../../../store/appuntamenti-thunk";
-import { setModalOpened } from "../../../store/ui-slice";
-import errorHandler from "../../../utils/errorHandler";
+import { setError, setModalOpened } from "../../../store/ui-slice";
 import { getConfermaVisitaMessage } from "../../../utils/messageUtils";
 import { isUserAdmin } from "../../../utils/userUtils";
 import FormTextArea from "../../form-components/form-text-area/FormTextArea";
@@ -29,7 +27,12 @@ import FormVisit from "../../forms/visit-form/VisitForm";
 import { isPast } from "../../../utils/timeUtils";
 import { isNativeApp } from "../../../utils/contactUtils";
 import styles from "./CalendarModal.module.css";
-import { checkShareability, shareObject } from "../../../utils/shareUtils";
+import {
+    NOT_SHAREABLE_MSG,
+    isSharingAvailable,
+    shareObject,
+} from "../../../utils/shareUtils";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const CalendarModal: React.FC<{}> = () => {
     const modalIsOpen = useAppSelector((state) => state.ui.isModalOpened);
@@ -38,7 +41,7 @@ const CalendarModal: React.FC<{}> = () => {
 
     const dispatch = useAppDispatch();
 
-    const [presentAlert] = useIonAlert();
+    const { presentAlert, errorHandler } = useErrorHandler();
 
     const userData = useAppSelector((state) => state.auth.userData);
 
@@ -74,18 +77,16 @@ const CalendarModal: React.FC<{}> = () => {
             : undefined;
 
     const condividiConferma = async () => {
-        if (!checkShareability(presentAlert)) return;
+        if (!isSharingAvailable()) {
+            errorHandler(null, NOT_SHAREABLE_MSG);
+            return;
+        }
 
         try {
             await shareObject(inputNoteValue, produceUrl(), "Conferma Visita");
             smontaModale();
         } catch (error) {
-            errorHandler(
-                null,
-                () => {},
-                `Condivisione testo non riuscita.`,
-                presentAlert
-            );
+            errorHandler(null, `Condivisione testo non riuscita.`);
         }
     };
 
@@ -93,14 +94,10 @@ const CalendarModal: React.FC<{}> = () => {
 
     useEffect(() => {
         if (error && error.name === "eliminaVisita") {
-            errorHandler(
-                error.object,
-                () => {},
-                "Cancellazione non riuscita",
-                presentAlert
-            );
+            dispatch(setError(null));
+            errorHandler(error.object, "Cancellazione non riuscita");
         }
-    }, [error, presentAlert]);
+    }, [error, presentAlert, dispatch, errorHandler]);
 
     const modificaVisita = () => {
         dispatch(setModalOpened(false));

@@ -22,7 +22,6 @@ import { setCurrentVisit, setFormActive } from "../../store/appuntamenti-slice";
 import { alertEliminaVisita } from "../../store/appuntamenti-thunk";
 import { capitalize } from "../../utils/stringUtils";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
-import errorHandler from "../../utils/errorHandler";
 import { getConfermaVisitaMessage } from "../../utils/messageUtils";
 import { isUserAdmin } from "../../utils/userUtils";
 import Card from "../card/Card";
@@ -30,7 +29,12 @@ import ModalMessage from "../modal/modal-message/ModalMessage";
 import ItemOption from "./ItemOption";
 import styles from "./Lists.module.css";
 import { getDayName, isPast } from "../../utils/timeUtils";
-import { checkShareability, shareObject } from "../../utils/shareUtils";
+import {
+    NOT_SHAREABLE_MSG,
+    isSharingAvailable,
+    shareObject,
+} from "../../utils/shareUtils";
+import useErrorHandler from "../../hooks/use-error-handler";
 
 const ListVisits: React.FC<{
     visits: Visit[];
@@ -41,6 +45,8 @@ const ListVisits: React.FC<{
     const userData = useAppSelector((state) => state.auth.userData);
 
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+
+    const { errorHandler } = useErrorHandler();
 
     const { list, closeItemsList } = useList();
 
@@ -93,19 +99,17 @@ const ListVisits: React.FC<{
             : undefined;
 
     const sendConfirmationMessage = async () => {
-        if (!checkShareability(presentAlert)) return;
+        if (!isSharingAvailable()) {
+            errorHandler(null, NOT_SHAREABLE_MSG);
+            return;
+        }
 
         try {
             const url = produceUrl();
             await shareObject(inputNoteValue, url, "Conferma Visita");
             setModalIsOpen(false);
         } catch (error) {
-            errorHandler(
-                null,
-                () => {},
-                `Condivisione testo non riuscita.`,
-                presentAlert
-            );
+            errorHandler(null, `Condivisione testo non riuscita.`);
         }
     };
 
@@ -165,7 +169,11 @@ const ListVisits: React.FC<{
                     {visit.persona && isNativeApp && (
                         <ItemOption
                             handler={() =>
-                                saveContact(presentAlert, visit.persona!)
+                                saveContact(
+                                    presentAlert,
+                                    visit.persona!,
+                                    errorHandler
+                                )
                             }
                             colorType={"dark"}
                             icon={personAddOutline}

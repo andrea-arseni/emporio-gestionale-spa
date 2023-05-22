@@ -11,7 +11,7 @@ import { Entity } from "../../../entities/entity";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
 import axiosInstance from "../../../utils/axiosInstance";
-import errorHandler from "../../../utils/errorHandler";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const LavoriDataPage: React.FC<{}> = () => {
     const [showLoading, setShowLoading] = useState<boolean>(true);
@@ -29,6 +29,8 @@ const LavoriDataPage: React.FC<{}> = () => {
 
     const [currentStep, setCurrentStep] = useState<Entity | null>(null);
 
+    const { errorHandler } = useErrorHandler();
+
     useEffect(() => {
         let mounted = true;
 
@@ -39,13 +41,9 @@ const LavoriDataPage: React.FC<{}> = () => {
                 setCurrentLavoro(res.data);
                 setShowLoading(false);
             } catch (e) {
+                setShowLoading(false);
                 if (!mounted) return;
-                errorHandler(
-                    e,
-                    () => {},
-                    "Lavoro impossibile da aprire",
-                    presentAlert
-                );
+                errorHandler(e, "Lavoro impossibile da aprire", true);
             }
         };
 
@@ -54,7 +52,7 @@ const LavoriDataPage: React.FC<{}> = () => {
         return () => {
             mounted = false;
         };
-    }, [id, presentAlert]);
+    }, [id, presentAlert, errorHandler]);
 
     const backToList = () => {
         setMode("list");

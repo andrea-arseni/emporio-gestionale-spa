@@ -26,6 +26,7 @@ import { isUserAdmin } from "../../utils/userUtils";
 import { useAppSelector } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { getDayName } from "../../utils/timeUtils";
+import useErrorHandler from "../../hooks/use-error-handler";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -42,6 +43,8 @@ const ListPersone: React.FC<{
     const [width] = useWindowSize();
 
     const [presentAlert] = useIonAlert();
+
+    const { errorHandler } = useErrorHandler();
 
     const userData = useAppSelector((state) => state.auth.userData);
 
@@ -171,7 +174,11 @@ const ListPersone: React.FC<{
                             <ItemOption
                                 handler={() => {
                                     props.closeItems();
-                                    saveContact(presentAlert, persona);
+                                    saveContact(
+                                        presentAlert,
+                                        persona,
+                                        errorHandler
+                                    );
                                 }}
                                 colorType={"dark"}
                                 icon={personAddOutline}

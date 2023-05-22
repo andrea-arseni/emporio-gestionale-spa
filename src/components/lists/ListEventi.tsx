@@ -20,12 +20,16 @@ import ItemOption from "./ItemOption";
 import { getInterestMessage } from "../../utils/messageUtils";
 import { useAppSelector } from "../../hooks";
 import { Immobile } from "../../entities/immobile.model";
-import errorHandler from "../../utils/errorHandler";
 import { isNativeApp, saveContact } from "../../utils/contactUtils";
 import ModalMessage from "../modal/modal-message/ModalMessage";
 import { isUserAdmin } from "../../utils/userUtils";
-import { checkShareability, shareObject } from "../../utils/shareUtils";
+import {
+    NOT_SHAREABLE_MSG,
+    isSharingAvailable,
+    shareObject,
+} from "../../utils/shareUtils";
 import axiosInstance from "../../utils/axiosInstance";
+import useErrorHandler from "../../hooks/use-error-handler";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
@@ -44,6 +48,8 @@ const ListEventi: React.FC<{
     const [currentImmobile, setCurrentImmobile] = useState<Immobile | null>(
         null
     );
+
+    const { errorHandler } = useErrorHandler();
 
     const [presentAlert] = useIonAlert();
 
@@ -68,7 +74,10 @@ const ListEventi: React.FC<{
             : undefined;
 
     const sendInterestMessage = async () => {
-        if (!checkShareability(presentAlert)) return;
+        if (!isSharingAvailable()) {
+            errorHandler(null, NOT_SHAREABLE_MSG);
+            return;
+        }
 
         try {
             await shareObject(inputNoteValue, produceUrl(), "Conferma Visita");
@@ -94,12 +103,7 @@ const ListEventi: React.FC<{
                 error &&
                 error.message !== "Abort due to cancellation of share."
             )
-                errorHandler(
-                    null,
-                    () => {},
-                    `Condivisione testo non riuscita.`,
-                    presentAlert
-                );
+                errorHandler(null, `Condivisione testo non riuscita.`);
         }
     };
 
@@ -186,7 +190,11 @@ const ListEventi: React.FC<{
                                 <ItemOption
                                     handler={() => {
                                         props.closeItems();
-                                        saveContact(presentAlert, persona!);
+                                        saveContact(
+                                            presentAlert,
+                                            persona!,
+                                            errorHandler
+                                        );
                                     }}
                                     colorType={"dark"}
                                     icon={personAddOutline}

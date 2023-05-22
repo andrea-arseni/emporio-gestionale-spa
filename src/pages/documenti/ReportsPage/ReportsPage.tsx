@@ -11,10 +11,12 @@ import { Documento } from "../../../entities/documento.model";
 import useList from "../../../hooks/use-list";
 import axiosInstance from "../../../utils/axiosInstance";
 import axiosSecondaryApi from "../../../utils/axiosSecondaryApi";
-import errorHandler from "../../../utils/errorHandler";
 import styles from "./ReportsPage.module.css";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
-const ReportsPage: React.FC<{}> = (props) => {
+const ReportsPage: React.FC<{}> = () => {
+    const { errorHandler } = useErrorHandler();
+
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const { list, closeItemsList } = useList();
@@ -42,12 +44,7 @@ const ReportsPage: React.FC<{}> = (props) => {
             } catch (e) {
                 if (!mounted) return;
                 setShowLoading(false);
-                errorHandler(
-                    e,
-                    () => {},
-                    "Lettura report non riuscita",
-                    presentAlert
-                );
+                errorHandler(e, "Lettura report non riuscita");
             }
         };
 
@@ -56,7 +53,7 @@ const ReportsPage: React.FC<{}> = (props) => {
         return () => {
             mounted = false;
         };
-    }, [year, presentAlert, update]);
+    }, [year, presentAlert, update, errorHandler]);
 
     const confirmDeleteEntity = async (id: string) => {
         const url = `/documenti/${id}`;
@@ -67,16 +64,11 @@ const ReportsPage: React.FC<{}> = (props) => {
             setUpdate((oldNumber) => ++oldNumber);
         } catch (e) {
             setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Eliminazione non riuscita",
-                presentAlert
-            );
+            errorHandler(e, "Eliminazione non riuscita");
         }
     };
 
-    const deleteEntity = (entityName: string, id: string, message?: string) => {
+    const deleteEntity = (id: string, message?: string) => {
         presentAlert({
             header: "Attenzione!",
             subHeader: message ? message : "La cancellazione è irreversibile.",
@@ -104,12 +96,7 @@ const ReportsPage: React.FC<{}> = (props) => {
             setUpdate((oldNumber) => ++oldNumber);
         } catch (e) {
             setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Creazione report non riuscita",
-                presentAlert
-            );
+            errorHandler(e, "Creazione report non riuscita");
         }
     };
 

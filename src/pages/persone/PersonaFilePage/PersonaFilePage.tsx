@@ -26,7 +26,6 @@ import useList from "../../../hooks/use-list";
 import { fileSpeciale } from "../../../types/file_speciali";
 import axiosInstance from "../../../utils/axiosInstance";
 import { isNativeApp } from "../../../utils/contactUtils";
-import errorHandler from "../../../utils/errorHandler";
 import {
     getFilesNonSpeciali,
     getFileSpeciale,
@@ -34,6 +33,7 @@ import {
     submitFile,
 } from "../../../utils/fileUtils";
 import styles from "./PersonaFilePage.module.css";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const PersonaFilePage: React.FC<{}> = () => {
     const location = useLocation();
@@ -63,6 +63,8 @@ const PersonaFilePage: React.FC<{}> = () => {
 
     const { list, closeItemsList } = useList();
 
+    const { errorHandler } = useErrorHandler();
+
     useEffect(() => {
         let mounted = true;
 
@@ -78,9 +80,8 @@ const PersonaFilePage: React.FC<{}> = () => {
                 setShowLoading(false);
                 errorHandler(
                     e,
-                    () => navigate(-1),
                     "Impossibile leggere i file della persona",
-                    presentAlert
+                    true
                 );
             }
         };
@@ -90,7 +91,7 @@ const PersonaFilePage: React.FC<{}> = () => {
         return () => {
             mounted = false;
         };
-    }, [navigate, personaId, presentAlert, update]);
+    }, [navigate, personaId, presentAlert, update, errorHandler]);
 
     const backToList = () => {
         setMode("list");
@@ -112,12 +113,8 @@ const PersonaFilePage: React.FC<{}> = () => {
             setUpdate((oldNumber) => ++oldNumber);
         } catch (e) {
             setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Eliminazione non riuscita",
-                presentAlert
-            );
+            closeItemsList();
+            errorHandler(e, "Eliminazione non riuscita");
         }
     };
 
@@ -186,6 +183,7 @@ const PersonaFilePage: React.FC<{}> = () => {
                                 e,
                                 setShowLoading,
                                 presentAlert,
+                                errorHandler,
                                 `persone/${personaId}/files`,
                                 setUpdate,
                                 undefined,

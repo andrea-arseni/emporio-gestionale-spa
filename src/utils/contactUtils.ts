@@ -1,6 +1,5 @@
 import { Contact, Contacts, ContactType } from "@capacitor-community/contacts";
 import { Persona } from "../entities/persona.model";
-import errorHandler from "./errorHandler";
 import { isPlatform } from "@ionic/react";
 
 const askContactPermission = async (presentAlert: any) => {
@@ -65,7 +64,11 @@ const isContactAlreadyPresent = async (presentAlert: any, persona: Persona) => {
     });
 };
 
-export const saveContact = async (presentAlert: any, persona: Persona) => {
+export const saveContact = async (
+    presentAlert: any,
+    persona: Persona,
+    errorHandler: any
+) => {
     const isGranted = await askContactPermission(presentAlert);
     if (!isGranted) return;
 
@@ -113,12 +116,7 @@ export const saveContact = async (presentAlert: any, persona: Persona) => {
             ],
         });
     } catch (e) {
-        errorHandler(
-            e,
-            () => {},
-            "Salvataggio contatto non riuscito",
-            presentAlert
-        );
+        errorHandler(e, "Salvataggio contatto non riuscito");
     }
 };
 

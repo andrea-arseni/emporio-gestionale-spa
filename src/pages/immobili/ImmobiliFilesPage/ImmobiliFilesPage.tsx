@@ -45,7 +45,6 @@ import { changeLoading, setError } from "../../../store/ui-slice";
 import { fileSpeciale } from "../../../types/file_speciali";
 import axiosInstance from "../../../utils/axiosInstance";
 import axiosSecondaryApi from "../../../utils/axiosSecondaryApi";
-import errorHandler from "../../../utils/errorHandler";
 import {
     downloadMultipleFiles,
     shareMultipleFiles,
@@ -54,6 +53,7 @@ import {
 } from "../../../utils/fileUtils";
 import { isUserAdmin } from "../../../utils/userUtils";
 import styles from "./ImmobiliFilesPage.module.css";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 export type fileMode = "files" | "foto" | "form" | "report";
 
@@ -89,6 +89,8 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
 
     const dispatch = useAppDispatch();
 
+    const { errorHandler } = useErrorHandler();
+
     useEffect(() => {
         dispatch(setIsSelectionModeActivated(false));
     }, [dispatch]);
@@ -120,46 +122,17 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         if (error.name === "fetchImmobileById") {
             errorHandler(
                 error.object,
-                () => {
-                    navigate(-1);
-                    dispatch(setError(null));
-                },
                 "Impossibile leggere i file dell'immobile",
-                presentAlert
-            );
-        } else if (error.name === "fetchFileById") {
-            errorHandler(
-                error.object,
-                () => dispatch(setError(null)),
-                "Impossibile aprire la foto",
-                presentAlert
+                true
             );
         } else if (error.name === "swapPhotoPositions") {
-            errorHandler(
-                error.object,
-                () => dispatch(setError(null)),
-                "Scambio di posizioni non riuscito",
-                presentAlert
-            );
+            errorHandler(error.object, "Scambio di posizioni non riuscito");
         } else if (error.name === "createReport") {
-            errorHandler(
-                error.object,
-                () => {
-                    dispatch(setError(null));
-                    setIsSelectingDates(false);
-                },
-                "Creazione Report non riuscita",
-                presentAlert
-            );
+            errorHandler(error.object, "Creazione Report non riuscita");
         } else if (error.name === "ripristinaImmobile") {
-            errorHandler(
-                error.object,
-                () => dispatch(setError(null)),
-                "Riattivazione immobile non riuscita",
-                presentAlert
-            );
+            errorHandler(error.object, "Riattivazione immobile non riuscita");
         }
-    }, [error, navigate, presentAlert, dispatch]);
+    }, [error, navigate, presentAlert, dispatch, errorHandler]);
 
     const alertEliminaFotoSelezionate = () => {
         // alert vuoi farlo davvero? E' irreversibile
@@ -213,9 +186,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             dispatch(changeLoading(false));
             errorHandler(
                 e,
-                () => {},
-                `Procedura interrotta: eliminazione foto non riuscita`,
-                presentAlert
+                `Procedura interrotta: eliminazione foto non riuscita`
             );
         }
     };
@@ -238,12 +209,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
             dispatch(deleteFile(+id));
         } catch (e) {
             dispatch(changeLoading(false));
-            errorHandler(
-                e,
-                () => {},
-                "Eliminazione non riuscita",
-                presentAlert
-            );
+            errorHandler(e, "Eliminazione non riuscita");
         }
     };
 
@@ -290,7 +256,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         if (!areAllThere) {
             fermaTutto("condividerle");
         } else {
-            shareMultipleFiles(photoSelected, presentAlert);
+            shareMultipleFiles(photoSelected, errorHandler);
         }
     };
 
@@ -304,7 +270,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                 photoSelected,
                 dispatch,
                 immobileId,
-                presentAlert
+                errorHandler
             );
         }
     };
@@ -336,7 +302,6 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         dispatch(performRipristinaImmobile(+immobileId));
 
     const creaReport = async (input: any) => {
-        // react thunk
         dispatch(changeLoading(true));
         try {
             const reqBody = { from: input.startDate, to: input.endDate };
@@ -499,6 +464,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                         e,
                         setShowLoading,
                         presentAlert,
+                        errorHandler,
                         `immobili/${immobile.id}/files`,
                         setUpdate,
                         mode === "files" ? "documento" : "foto",

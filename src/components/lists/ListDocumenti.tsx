@@ -4,7 +4,6 @@ import {
     IonItemSliding,
     IonItemOptions,
     IonThumbnail,
-    useIonAlert,
     isPlatform,
 } from "@ionic/react";
 import {
@@ -34,12 +33,12 @@ import image from "../../assets/image.png";
 import pdf from "../../assets/pdf.png";
 import report from "../../assets/report.png";
 import axiosInstance from "../../utils/axiosInstance";
-import errorHandler from "../../utils/errorHandler";
 import ItemOption from "./ItemOption";
 import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
 import { isUserAdmin } from "../../utils/userUtils";
 import { useAppSelector } from "../../hooks";
 import { isNativeApp } from "../../utils/contactUtils";
+import useErrorHandler from "../../hooks/use-error-handler";
 
 const ListDocumenti: React.FC<{
     documenti: Documento[];
@@ -52,7 +51,7 @@ const ListDocumenti: React.FC<{
     baseUrl: string;
     closeItems: () => void;
 }> = (props) => {
-    const [presentAlert] = useIonAlert();
+    const { errorHandler } = useErrorHandler();
 
     const [currentFile, setCurrentFile] = useState<{
         documento: Documento;
@@ -83,12 +82,7 @@ const ListDocumenti: React.FC<{
             return res.data;
         } catch (e) {
             props.setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Download del file non riuscito",
-                presentAlert
-            );
+            errorHandler(e, "Download del file non riuscito");
         }
     };
 
@@ -122,7 +116,7 @@ const ListDocumenti: React.FC<{
 
     const shareThisFile = () => {
         props.closeItems();
-        shareFile(currentFile!.byteArray, currentFile!.documento, presentAlert);
+        shareFile(currentFile!.byteArray, currentFile!.documento, errorHandler);
     };
 
     const userData = useAppSelector((state) => state.auth.userData);

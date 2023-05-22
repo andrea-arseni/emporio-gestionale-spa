@@ -20,7 +20,6 @@ import { Operazione } from "../../entities/operazione.model";
 import { Persona } from "../../entities/persona.model";
 import { Step } from "../../entities/step.model";
 import axiosInstance from "../../utils/axiosInstance";
-import errorHandler from "../../utils/errorHandler";
 import { addDays, getDateAsString } from "../../utils/timeUtils";
 import Card from "../card/Card";
 import FilterActionSheet from "../action-sheets/filter-action-sheet/FilterActionSheet";
@@ -58,6 +57,7 @@ import {
     triggerUpdateUtils,
 } from "../../utils/queryUtils";
 import useQueryData from "../../hooks/use-query-data";
+import useErrorHandler from "../../hooks/use-error-handler";
 
 const Selector: React.FC<{
     entitiesType: entitiesType;
@@ -139,6 +139,8 @@ const Selector: React.FC<{
 
     const { list, closeItemsList } = useList();
 
+    const { errorHandler } = useErrorHandler();
+
     // definisci quale tipologia di entity vuoi cercare
     useEffect(() => {
         let mounted = true;
@@ -166,6 +168,7 @@ const Selector: React.FC<{
                 }${
                     props.baseUrl && props.baseUrl.includes("?") ? "&" : "?"
                 }page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
+
                 const res = await axiosInstance.get(url);
                 if (!mounted) return;
                 setShowLoading(false);
@@ -178,9 +181,7 @@ const Selector: React.FC<{
                 setShowLoading(false);
                 errorHandler(
                     e,
-                    () => navigate(-1),
-                    `Impossibile visualizzare ${props.entitiesType}`,
-                    presentAlert
+                    `Impossibile visualizzare ${props.entitiesType}`
                 );
             }
         };
@@ -202,6 +203,7 @@ const Selector: React.FC<{
     }, [
         navigate,
         presentAlert,
+        errorHandler,
         page,
         props.entitiesType,
         filter,
@@ -218,6 +220,8 @@ const Selector: React.FC<{
     };
 
     const confirmDeleteEntity = async (entityName: string, id: string) => {
+        await new Promise((r) => setTimeout(r, 300));
+
         let url =
             (props.baseUrl && !props.baseUrl.includes("?")
                 ? props.baseUrl
@@ -226,6 +230,7 @@ const Selector: React.FC<{
             id;
         try {
             setShowLoading(true);
+
             await axiosInstance.delete(
                 props.specific && props.baseUrl ? props.baseUrl : url
             );
@@ -236,12 +241,7 @@ const Selector: React.FC<{
             props.localQuery ? setUpdate(++update) : dispatch(setUpdate());
         } catch (e) {
             setShowLoading(false);
-            errorHandler(
-                e,
-                () => {},
-                "Eliminazione non riuscita",
-                presentAlert
-            );
+            errorHandler(e, "Eliminazione non riuscita");
         }
     };
 
@@ -252,6 +252,7 @@ const Selector: React.FC<{
             buttons: [
                 {
                     text: "Conferma",
+                    role: "cancel",
                     handler: () => confirmDeleteEntity(entityName, id),
                 },
                 {

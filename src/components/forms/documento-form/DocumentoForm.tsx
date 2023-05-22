@@ -1,16 +1,16 @@
-import { IonButton, IonList, IonLoading, useIonAlert } from "@ionic/react";
-import { FormEvent, useState } from "react";
+import { IonButton, IonList, IonLoading } from "@ionic/react";
+import { FormEvent, useEffect, useState } from "react";
 import { Documento } from "../../../entities/documento.model";
 import { useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
 import { renameFile } from "../../../store/immobile-slice";
 import axiosInstance from "../../../utils/axiosInstance";
-import errorHandler from "../../../utils/errorHandler";
 import {
     getFileExtension,
     getFileNameWithoutExtension,
 } from "../../../utils/fileUtils";
 import FormInput from "../../form-components/form-input/FormInput";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const DocumentoForm: React.FC<{
     documento: Documento | null;
@@ -28,7 +28,10 @@ const DocumentoForm: React.FC<{
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
-    const [presentAlert] = useIonAlert();
+    const [nameUpdated, isNameUpdated] = useState<boolean>(false);
+
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
 
     const {
         inputValue,
@@ -44,6 +47,10 @@ const DocumentoForm: React.FC<{
 
     const submitForm = async (e: FormEvent) => {
         e.preventDefault();
+        await eseguiForm();
+    };
+
+    const eseguiForm = async () => {
         const nuovoNome = `${inputValue}.${estensione}`;
         setShowLoading(true);
         try {
@@ -53,6 +60,7 @@ const DocumentoForm: React.FC<{
                 reqBody
             );
             setShowLoading(false);
+            isNameUpdated(true);
             presentAlert({
                 header: "Ottimo",
                 subHeader: "Nome modificato con successo",
@@ -74,15 +82,88 @@ const DocumentoForm: React.FC<{
             });
         } catch (e) {
             setShowLoading(false);
-            errorHandler(e, () => {}, "Procedura non riuscita", presentAlert);
+            errorHandler(e, "Procedura non riuscita");
         }
     };
+
+    const isFormInvalid = !inputIsTouched || (inputIsInvalid && inputIsTouched);
+
+    useEffect(() => {
+        const inputIsValid =
+            inputValue.toString().length >= 5 &&
+            inputValue.toString().length <= 40;
+
+        const eseguiForm = async () => {
+            const nuovoNome = `${inputValue}.${estensione}`;
+            setShowLoading(true);
+            try {
+                let reqBody = {
+                    name: nuovoNome,
+                };
+                await axiosInstance.patch(
+                    `${props.baseUrl}/${props.documento!.id}`,
+                    reqBody
+                );
+                setShowLoading(false);
+                isNameUpdated(true);
+                presentAlert({
+                    header: "Ottimo",
+                    subHeader: "Nome modificato con successo",
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => {
+                                if (props.baseUrl.includes("immobili"))
+                                    dispatch(
+                                        renameFile({
+                                            id: props.documento!.id!,
+                                            newName: nuovoNome,
+                                        })
+                                    );
+                                props.backToList();
+                            },
+                        },
+                    ],
+                });
+            } catch (e) {
+                setShowLoading(false);
+                errorHandler(e, "Procedura non riuscita");
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (e.key === "Enter" && !isError && inputIsValid) {
+                if (nameUpdated) {
+                    hideAlert();
+                    props.backToList();
+                } else {
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        inputValue,
+        dispatch,
+        estensione,
+        presentAlert,
+        hideAlert,
+        props,
+        nameUpdated,
+        errorHandler,
+        isError,
+    ]);
 
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
                 <FormInput
+                    autofocus
                     title={"Nome File (minimo 5 massimo 40 lettere)"}
                     inputValue={inputValue}
                     type={"text"}
@@ -94,9 +175,7 @@ const DocumentoForm: React.FC<{
                 />
                 <IonButton
                     expand="block"
-                    disabled={
-                        !inputIsTouched || (inputIsInvalid && inputIsTouched)
-                    }
+                    disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}
                 >
                     Rinomina File

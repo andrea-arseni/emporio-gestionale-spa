@@ -25,7 +25,6 @@ import {
 import axiosInstance from "../../../utils/axiosInstance";
 import { Visit } from "../../../entities/visit.model";
 import FormVisit from "../../../components/forms/visit-form/VisitForm";
-import errorHandler from "../../../utils/errorHandler";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import {
     backToList,
@@ -44,9 +43,12 @@ import StringFilter from "../../../components/filters/string-filter/StringFilter
 import FilterBar from "../../../components/bars/filter-bar/FilterBar";
 import { resetQueryDataUtils, setFilterUtils } from "../../../utils/queryUtils";
 import { Filtro } from "../../../entities/filtro.model";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     const [presentAlert] = useIonAlert();
+
+    const { errorHandler } = useErrorHandler();
 
     const resetQueryData = () => resetQueryDataUtils("visite");
 
@@ -117,6 +119,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
 
         const fetchVisits = async () => {
             dispatch(changeLoading(true));
+
             try {
                 let url = `/visite?filter=quando&startDate=${getDateAsString(
                     currentWeek[0].date
@@ -135,12 +138,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
             } catch (e: any) {
                 if (!mounted) return;
                 dispatch(changeLoading(false));
-                errorHandler(
-                    e,
-                    () => {},
-                    "Visite richieste non disponibili",
-                    presentAlert
-                );
+                errorHandler(e, "Visite richieste non disponibili");
             }
         };
         if (filter.filter && !filter.value) return;
@@ -149,7 +147,7 @@ const AppuntamentiPage: React.FC<{}> = () => {
         return () => {
             mounted = false;
         };
-    }, [currentWeek, presentAlert, trigger, dispatch, filter]);
+    }, [currentWeek, presentAlert, trigger, dispatch, filter, errorHandler]);
 
     const todaysVisits = visits
         .filter((visit) => {

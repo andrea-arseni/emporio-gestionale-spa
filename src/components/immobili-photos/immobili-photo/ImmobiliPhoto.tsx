@@ -13,6 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
+import notAvailable from "../../../assets/notAvailable.png";
 import {
     deselectPhoto,
     erasePhoto,
@@ -24,13 +25,15 @@ import {
     swapPhotoPositions,
 } from "../../../store/immobile-thunk";
 import axiosSecondaryApi from "../../../utils/axiosSecondaryApi";
-import errorHandler from "../../../utils/errorHandler";
 import styles from "./ImmobiliPhoto.module.css";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const ImmobiliPhoto: React.FC<{
     id: number;
 }> = (props) => {
     const [presentAlert] = useIonAlert();
+
+    const { errorHandler } = useErrorHandler();
 
     const dispatch = useAppDispatch();
 
@@ -92,12 +95,7 @@ const ImmobiliPhoto: React.FC<{
                 setIsRotating(false);
                 setShowLoading(false);
                 dispatch(setIsSelectionModeAllowed(true));
-                errorHandler(
-                    e,
-                    () => {},
-                    "Rotazione non riuscita",
-                    presentAlert
-                );
+                errorHandler(e, "Rotazione non riuscita");
             }
         };
 
@@ -111,8 +109,8 @@ const ImmobiliPhoto: React.FC<{
         rotatingSense,
         isRotating,
         props.id,
-        presentAlert,
         dispatch,
+        errorHandler,
         idImmobile,
     ]);
 
@@ -165,7 +163,11 @@ const ImmobiliPhoto: React.FC<{
                                 ? dispatch(deselectPhoto(foto.id!))
                                 : dispatch(selectPhoto(foto.id!))
                         }
-                        src={foto.base64String}
+                        src={
+                            foto.base64String !== "blockPhoto"
+                                ? foto.base64String
+                                : notAvailable
+                        }
                         className={`${styles.image} ${
                             isSelected
                                 ? styles.isSelected
@@ -175,36 +177,38 @@ const ImmobiliPhoto: React.FC<{
                         } `}
                         alt="Immagine non disponibile 😱😱😱"
                     />
-                    {!isSelectionModeActivated && foto.nome !== "0" && (
-                        <>
-                            <IonFab
-                                vertical="bottom"
-                                horizontal="start"
-                                slot="fixed"
-                            >
-                                <IonFabButton
-                                    size="small"
-                                    color="light"
-                                    onClick={() => setRotatingSense("-90")}
+                    {!isSelectionModeActivated &&
+                        foto.nome !== "0" &&
+                        foto.base64String !== "blockPhoto" && (
+                            <>
+                                <IonFab
+                                    vertical="bottom"
+                                    horizontal="start"
+                                    slot="fixed"
                                 >
-                                    <IonIcon icon={arrowUndoOutline} />
-                                </IonFabButton>
-                            </IonFab>
-                            <IonFab
-                                vertical="bottom"
-                                horizontal="end"
-                                slot="fixed"
-                            >
-                                <IonFabButton
-                                    size="small"
-                                    color="light"
-                                    onClick={() => setRotatingSense("90")}
+                                    <IonFabButton
+                                        size="small"
+                                        color="light"
+                                        onClick={() => setRotatingSense("-90")}
+                                    >
+                                        <IonIcon icon={arrowUndoOutline} />
+                                    </IonFabButton>
+                                </IonFab>
+                                <IonFab
+                                    vertical="bottom"
+                                    horizontal="end"
+                                    slot="fixed"
                                 >
-                                    <IonIcon icon={arrowRedoOutline} />
-                                </IonFabButton>
-                            </IonFab>
-                        </>
-                    )}
+                                    <IonFabButton
+                                        size="small"
+                                        color="light"
+                                        onClick={() => setRotatingSense("90")}
+                                    >
+                                        <IonIcon icon={arrowRedoOutline} />
+                                    </IonFabButton>
+                                </IonFab>
+                            </>
+                        )}
                     {isSelectionModeActivated && (
                         <IonFab vertical="bottom" horizontal="end" slot="fixed">
                             <IonFabButton size="small" color="light">

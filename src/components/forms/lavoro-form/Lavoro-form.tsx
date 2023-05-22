@@ -1,6 +1,5 @@
 import {
     IonList,
-    useIonAlert,
     IonLoading,
     IonButton,
     IonItem,
@@ -8,14 +7,14 @@ import {
     IonSelect,
     IonSelectOption,
 } from "@ionic/react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
-import errorHandler from "../../../utils/errorHandler";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormInput from "../../form-components/form-input/FormInput";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const LavoroForm: React.FC<{
     lavoro: Lavoro | null;
@@ -23,7 +22,10 @@ const LavoroForm: React.FC<{
 }> = (props) => {
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
-    const [presentAlert] = useIonAlert();
+    const [nameUpdated, isNameUpdated] = useState<boolean>(false);
+
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
 
     const {
         inputValue: inputTitoloValue,
@@ -87,6 +89,7 @@ const LavoroForm: React.FC<{
                   )
                 : await axiosInstance.post(`lavori`, reqBody);
             setShowLoading(false);
+            isNameUpdated(true);
             presentAlert({
                 header: "Ottimo",
                 message: `Obiettivo ${props.lavoro ? "modificato" : "creato"}`,
@@ -99,22 +102,90 @@ const LavoroForm: React.FC<{
             });
         } catch (error: any) {
             setShowLoading(false);
-            errorHandler(
-                error,
-                () => {},
-                "Procedura non riuscita",
-                presentAlert
-            );
+            errorHandler(error, "Procedura non riuscita");
         }
     };
 
     const changeLavoroType = (e: any) => setStatus(e.detail.value);
+
+    useEffect(() => {
+        const isFormValid =
+            (props.lavoro &&
+                (inputTitoloValue !== props.lavoro.titolo ||
+                    status !== props.lavoro.status)) ||
+            (!props.lavoro &&
+                inputTitoloValue.toString().length >= 10 &&
+                inputTitoloValue.toString().length <= 45 &&
+                inputDescrizioneValue.toString().trim().length > 0 &&
+                status);
+
+        const eseguiForm = async () => {
+            const reqBody = {
+                titolo: inputTitoloValue,
+                status: status.toUpperCase(),
+                descrizione: inputDescrizioneValue,
+            };
+            setShowLoading(true);
+            try {
+                props.lavoro
+                    ? await axiosInstance.patch(
+                          `lavori/${props.lavoro!.id}`,
+                          reqBody
+                      )
+                    : await axiosInstance.post(`lavori`, reqBody);
+                setShowLoading(false);
+                isNameUpdated(true);
+                presentAlert({
+                    header: "Ottimo",
+                    message: `Obiettivo ${
+                        props.lavoro ? "modificato" : "creato"
+                    }`,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => props.backToList(),
+                        },
+                    ],
+                });
+            } catch (error: any) {
+                setShowLoading(false);
+                errorHandler(error, "Procedura non riuscita");
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (isFormValid && e.key === "Enter" && !isError) {
+                if (nameUpdated) {
+                    hideAlert();
+                    props.backToList();
+                } else {
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        hideAlert,
+        errorHandler,
+        isError,
+        props,
+        nameUpdated,
+        inputDescrizioneValue,
+        inputTitoloValue,
+        status,
+    ]);
 
     return (
         <form className="form">
             <IonLoading cssClass="loader" isOpen={showLoading} />
             <IonList className="list">
                 <FormInput
+                    autofocus
                     title=" Titolo (tra 10 e 45 lettere)"
                     inputValue={inputTitoloValue}
                     type={"text"}

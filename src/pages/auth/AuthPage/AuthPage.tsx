@@ -13,16 +13,18 @@ import styles from "./AuthPage.module.css";
 import logo from "../../../assets/logo.png";
 import useInput from "../../../hooks/use-input";
 import axiosInstance from "../../../utils/axiosInstance";
-import errorHandler from "../../../utils/errorHandler";
 import { performLogin } from "../../../store/auth-thunk";
 import { useAppDispatch } from "../../../hooks";
 import { loginData } from "../../../store/auth-slice";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const AuthPage: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
     const [mode, setMode] = useState<"login" | "forgot-password">("login");
 
     const [progress, setProgress] = useState<number>(1);
+
+    const { errorHandler } = useErrorHandler();
 
     const [timeRemaining, setTimeRemaining] = useState<number>(120);
 
@@ -135,13 +137,10 @@ const AuthPage: React.FC<{}> = () => {
             setShowLoading(false);
             errorHandler(
                 e,
-                () => {
-                    if (firstStepAccomplished) window.location.reload();
-                },
                 `${
                     mode === "login" ? "Login" : "Richiesta recupero password"
                 } non riuscita`,
-                presentAlert
+                firstStepAccomplished
             );
         }
     };

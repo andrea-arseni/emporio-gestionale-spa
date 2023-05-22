@@ -5,7 +5,6 @@ import {
     IonButton,
     IonIcon,
     IonLabel,
-    useIonAlert,
     isPlatform,
 } from "@ionic/react";
 import { useEffect } from "react";
@@ -15,7 +14,6 @@ import Card from "../card/Card";
 import ImmobiliPhoto from "./immobili-photo/ImmobiliPhoto";
 import styles from "./ImmobiliPhotos.module.css";
 import { ribbonOutline } from "ionicons/icons";
-import errorHandler from "../../utils/errorHandler";
 import axiosSecondaryApi from "../../utils/axiosSecondaryApi";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { changeLoading } from "../../store/ui-slice";
@@ -25,9 +23,10 @@ import {
     setIsSelectionModeActivated,
     setListIdPhotoSelected,
 } from "../../store/immobile-slice";
+import useErrorHandler from "../../hooks/use-error-handler";
 
 const ImmobiliPhotos: React.FC<{}> = () => {
-    const [presentAlert] = useIonAlert();
+    const { errorHandler } = useErrorHandler();
 
     const dispatch = useAppDispatch();
 
@@ -77,7 +76,7 @@ const ImmobiliPhotos: React.FC<{}> = () => {
             }, 500);
         } catch (e) {
             dispatch(changeLoading(false));
-            errorHandler(e, () => {}, "Procedura non riuscita", presentAlert);
+            errorHandler(e, "Procedura non riuscita");
         }
     };
 

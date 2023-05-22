@@ -231,6 +231,7 @@ const SortActionSheet: React.FC<{
             isOpen={props.showSortingActionSheet}
             header="Ordina per:"
             buttons={getButtons()}
+            onDidDismiss={() => props.setShowSortingActionSheet(false)}
         />
     );
 };

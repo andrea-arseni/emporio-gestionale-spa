@@ -57,7 +57,6 @@ const FilterActionSheet: React.FC<{
         negativeForbidden?: boolean
     ) => {
         props.setShowFilterActionSheet(false);
-        //await new Promise((r) => setTimeout(r, 300));
         props.setFilterMode(filterMode);
         props.localQuery
             ? props.setFilter(filter)
@@ -556,6 +555,7 @@ const FilterActionSheet: React.FC<{
             isOpen={props.showFilterActionSheet}
             header="Filtra per:"
             buttons={getButtons()}
+            onDidDismiss={() => props.setShowFilterActionSheet(false)}
         />
     );
 };

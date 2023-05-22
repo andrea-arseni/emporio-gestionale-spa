@@ -3,7 +3,6 @@ import {
     IonItem,
     IonLabel,
     IonButton,
-    useIonAlert,
     IonLoading,
     IonSelect,
     IonSelectOption,
@@ -23,7 +22,6 @@ import { possibiliPersoneTypes } from "../../../types/persona_types";
 import { possibiliProvenienzePersona } from "../../../types/provenienza_persona";
 import axiosInstance from "../../../utils/axiosInstance";
 import { capitalize } from "../../../utils/stringUtils";
-import errorHandler from "../../../utils/errorHandler";
 import FormInput from "../../form-components/form-input/FormInput";
 import Modal from "../../modal/Modal";
 import Selector from "../../selector/Selector";
@@ -34,6 +32,7 @@ import SecondaryItem from "../../form-components/secondary-item/SecondaryItem";
 import useList from "../../../hooks/use-list";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { useNavigate } from "react-router-dom";
+import useErrorHandler from "../../../hooks/use-error-handler";
 
 const PersoneForm: React.FC<{
     persona: Persona | null;
@@ -46,7 +45,11 @@ const PersoneForm: React.FC<{
 
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
-    const [presentAlert] = useIonAlert();
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
+
+    const [isQuerySuccessfull, setIsQuerySuccessfull] =
+        useState<boolean>(false);
 
     const [choiceMode, setChoiceMode] = useState<
         "proprietà" | "locazione" | "interesse" | null
@@ -259,6 +262,7 @@ const PersoneForm: React.FC<{
                   )
                 : await axiosInstance.post(`persone`, reqBody);
             setShowLoading(false);
+            setIsQuerySuccessfull(true);
             presentAlert({
                 header: "Ottimo",
                 subHeader: `Persona ${props.persona ? "modificata" : "creata"}`,
@@ -298,15 +302,159 @@ const PersoneForm: React.FC<{
                     ],
                 });
             } else {
-                errorHandler(
-                    error,
-                    () => {},
-                    "Procedura non riuscita",
-                    presentAlert
-                );
+                errorHandler(error, "Procedura non riuscita");
             }
         }
     };
+
+    useEffect(() => {
+        const getPhoneValue = () => {
+            let phoneValue: string = inputPhoneValue
+                .trim()
+                .split(" ")
+                .join("")
+                .split("/")
+                .join("");
+            return phoneValue.length > 0 ? phoneValue : null;
+        };
+
+        const isFormDisabled =
+            (!props.persona &&
+                (!inputNameIsTouched ||
+                    (!inputEmailIsTouched && !inputPhoneIsTouched))) ||
+            (inputEmailValue.trim().length === 0 &&
+                (getPhoneValue() === null || getPhoneValue()!.length === 0)) ||
+            inputNameIsInvalid ||
+            inputPhoneIsInvalid ||
+            inputEmailIsInvalid ||
+            inputRuoloIsInvalid ||
+            !inputProvenienzaValue ||
+            inputProvenienzaIsInvalid ||
+            inputStatusIsInvalid;
+
+        const eseguiForm = async () => {
+            const reqBody = {
+                id: props.persona ? props.persona.id : null,
+                nome: inputNameValue,
+                telefono: getPhoneValue(),
+                email: inputEmailValue.length > 0 ? inputEmailValue : null,
+                ruolo: inputRuoloValue,
+                immobiliProprieta: listHouses.map((el) => el.id!),
+                immobileAffitto: immobileLocato ? immobileLocato.id : null,
+                immobileInteresse: immobileInteresse
+                    ? immobileInteresse.id
+                    : null,
+                note: inputNoteValue,
+                provenienza: inputProvenienzaValue.split(" ").join("_"),
+                status: inputStatusValue,
+            };
+            setShowLoading(true);
+            try {
+                props.persona
+                    ? await axiosInstance.patch(
+                          `persone/${props.persona!.id}`,
+                          reqBody
+                      )
+                    : await axiosInstance.post(`persone`, reqBody);
+                setShowLoading(false);
+                setIsQuerySuccessfull(true);
+                presentAlert({
+                    header: "Ottimo",
+                    subHeader: `Persona ${
+                        props.persona ? "modificata" : "creata"
+                    }`,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: () => props.backToList(),
+                        },
+                    ],
+                });
+            } catch (error: any) {
+                setShowLoading(false);
+
+                if (
+                    error &&
+                    error.response &&
+                    error.response.data &&
+                    error.response.data.message &&
+                    error.response.data.message.includes(
+                        "E' la persona con id "
+                    )
+                ) {
+                    const [message, id] = error.response.data.message.split(
+                        "E' la persona con id "
+                    );
+                    presentAlert({
+                        header: "Attenzione!",
+                        message,
+                        buttons: [
+                            {
+                                text: "Vai alla persona",
+                                handler: () =>
+                                    navigateToSpecificItem(
+                                        "persone",
+                                        id,
+                                        navigate
+                                    ),
+                            },
+                            {
+                                text: "Chiudi",
+                                role: "cancel",
+                            },
+                        ],
+                    });
+                } else {
+                    errorHandler(error, "Procedura non riuscita");
+                }
+            }
+        };
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (!isFormDisabled && !isError && e.key === "Enter") {
+                if (document.activeElement instanceof HTMLElement)
+                    document.activeElement.blur();
+                if (isQuerySuccessfull) {
+                    hideAlert();
+                    props.backToList();
+                } else {
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        errorHandler,
+        isError,
+        immobileInteresse,
+        immobileLocato,
+        inputEmailIsInvalid,
+        inputEmailIsTouched,
+        inputEmailValue,
+        inputNameIsInvalid,
+        inputNameIsTouched,
+        inputNameValue,
+        inputNoteValue,
+        inputPhoneIsInvalid,
+        inputPhoneIsTouched,
+        inputPhoneValue,
+        inputProvenienzaIsInvalid,
+        inputProvenienzaValue,
+        inputRuoloIsInvalid,
+        inputRuoloValue,
+        inputStatusIsInvalid,
+        inputStatusValue,
+        listHouses,
+        navigate,
+        hideAlert,
+        isQuerySuccessfull,
+        props,
+    ]);
 
     const { list: itemsList, closeItemsList } = useList();
 
@@ -353,6 +501,7 @@ const PersoneForm: React.FC<{
             <IonList className="list">
                 <FormGroup title="Dati base">
                     <FormInput
+                        autofocus
                         title={"Nome (Obbligatorio - almeno 5 lettere)"}
                         inputValue={inputNameValue}
                         type={"text"}

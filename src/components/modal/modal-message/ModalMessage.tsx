@@ -1,5 +1,5 @@
 import { IonButton } from "@ionic/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import FormTextArea from "../../form-components/form-text-area/FormTextArea";
 import Modal from "../Modal";
 
@@ -14,6 +14,10 @@ const ModalMessage: React.FC<{
     handler: () => void;
 }> = (props) => {
     const [urlAdded, setUrlAdded] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!props.modalIsOpen) setUrlAdded(false);
+    }, [props.modalIsOpen]);
 
     return (
         <Modal

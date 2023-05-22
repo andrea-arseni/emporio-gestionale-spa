@@ -48,7 +48,7 @@ const OperazioniPage: React.FC<{}> = () => {
                         backToList
                     />
                     <FormOperation
-                        setMode={setMode}
+                        backToList={backToList}
                         operation={currentOperation as Operazione}
                     />
                 </>

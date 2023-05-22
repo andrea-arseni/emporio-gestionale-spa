@@ -1,6 +1,6 @@
 import { IonList, IonItem, IonButton, IonLabel, IonIcon } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getDayName } from "../../utils/timeUtils";
 import DatePicker from "../date-picker/DatePicker";
 import styles from "./TwoDates.module.css";
@@ -32,6 +32,21 @@ const TwoDates: React.FC<{
         setSelectingStartDate(false);
         setSelectingEndDate(false);
     };
+
+    useEffect(() => {
+        const formIsValid = startDate && endDate;
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (formIsValid && e.key === "Enter") {
+                props.action({ startDate, endDate });
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [props, endDate, startDate]);
 
     return (
         <>
