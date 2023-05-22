@@ -7,7 +7,7 @@ import {
     IonLabel,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Operazione } from "../../../entities/operazione.model";
 import useDateHandler from "../../../hooks/use-date-handler";
 import useInput from "../../../hooks/use-input";
@@ -18,6 +18,7 @@ import ItemSelector from "../../form-components/item-selector/ItemSelector";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormInput from "../../form-components/form-input/FormInput";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
 
 const FormOperation: React.FC<{
     operation: Operazione | null;
@@ -64,13 +65,14 @@ const FormOperation: React.FC<{
 
     const [nameUpdated, isNameUpdated] = useState<boolean>(false);
 
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const eseguiForm = useCallback(async () => {
         setShowLoading(true);
         const reqBody = {
             data: inputDateValue.split("T")[0],
@@ -102,6 +104,18 @@ const FormOperation: React.FC<{
             setShowLoading(false);
             errorHandler(e, "Creazione operazione non riuscita");
         }
+    }, [
+        errorHandler,
+        inputDateValue,
+        inputDescrizioneValue,
+        inputImportoValue,
+        presentAlert,
+        props,
+    ]);
+
+    const submitForm = async (e: FormEvent) => {
+        e.preventDefault();
+        await eseguiForm();
     };
 
     const getDate = () => (
@@ -154,46 +168,13 @@ const FormOperation: React.FC<{
                     !inputDescrizioneValue ||
                     !inputImportoValue));
 
-        const eseguiForm = async () => {
-            setShowLoading(true);
-            const reqBody = {
-                data: inputDateValue.split("T")[0],
-                importo: inputImportoValue,
-                descrizione: inputDescrizioneValue,
-            };
-            try {
-                await (props.operation
-                    ? axiosInstance.patch(
-                          "operazioni/" + props.operation.id,
-                          reqBody
-                      )
-                    : axiosInstance.post("operazioni", reqBody));
-                setShowLoading(false);
-                isNameUpdated(true);
-                presentAlert({
-                    header: "Ottimo",
-                    message: `Operazione ${
-                        props.operation ? "modificata" : "creata"
-                    }`,
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: () => props.backToList(),
-                        },
-                    ],
-                });
-            } catch (e: any) {
-                setShowLoading(false);
-                errorHandler(e, "Creazione operazione non riuscita");
-            }
-        };
-
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (!isFormDisabled && e.key === "Enter" && !isError) {
+                setHasBeenClicked(true);
                 if (nameUpdated) {
                     hideAlert();
                     props.backToList();
-                } else {
+                } else if (hasBeenClicked) {
                     await eseguiForm();
                 }
             }
@@ -207,6 +188,9 @@ const FormOperation: React.FC<{
         presentAlert,
         hideAlert,
         errorHandler,
+        eseguiForm,
+        setHasBeenClicked,
+        hasBeenClicked,
         isError,
         props,
         nameUpdated,

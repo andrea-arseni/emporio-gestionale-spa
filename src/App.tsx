@@ -280,16 +280,16 @@ LA QUERY E' SBAGLIATA
 - if immagine non disponibile don't show girini - VINTO
 - if immagine non disponibile show foto non disponibile - VINTO
 - Error handler gestibile con tastiera - VINTO
+- Double click per submit form - VINTO
 
 *****
 
-- Double click per submit form
-- Anche AuthPage
+- Fix error handling and invio con AuthPage
 - Password visibile con occhio
 
 *****
 
-- Quando disattivi una persona lascia il focus sul select
+- Quando disattivi una persona lascia il focus sul select - focus-util 
 - Proprietari non si vedono immobili aprendo da persona
 - Doppio indietro e proprietario inesistente
 - 1970 primo contatto è falso

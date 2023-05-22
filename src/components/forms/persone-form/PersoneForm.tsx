@@ -11,6 +11,7 @@ import {
     Dispatch,
     FormEvent,
     SetStateAction,
+    useCallback,
     useEffect,
     useState,
 } from "react";
@@ -33,6 +34,8 @@ import useList from "../../../hooks/use-list";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { useNavigate } from "react-router-dom";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
+import { freeFocus } from "../../../utils/focusUtil";
 
 const PersoneForm: React.FC<{
     persona: Persona | null;
@@ -50,6 +53,8 @@ const PersoneForm: React.FC<{
 
     const [isQuerySuccessfull, setIsQuerySuccessfull] =
         useState<boolean>(false);
+
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
 
     const [choiceMode, setChoiceMode] = useState<
         "proprietà" | "locazione" | "interesse" | null
@@ -195,7 +200,7 @@ const PersoneForm: React.FC<{
         reset: inputNoteReset,
     } = useInput(() => true);
 
-    const getPhoneValue = () => {
+    const getPhoneValue = useCallback(() => {
         let phoneValue: string = inputPhoneValue
             .trim()
             .split(" ")
@@ -203,7 +208,7 @@ const PersoneForm: React.FC<{
             .split("/")
             .join("");
         return phoneValue.length > 0 ? phoneValue : null;
-    };
+    }, [inputPhoneValue]);
 
     const isFormInvalid =
         (!props.persona &&
@@ -238,8 +243,7 @@ const PersoneForm: React.FC<{
         return `${props.persona ? "Modifica" : "Aggiungi"} persona`;
     };
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const eseguiForm = useCallback(async () => {
         const reqBody = {
             id: props.persona ? props.persona.id : null,
             nome: inputNameValue,
@@ -305,6 +309,26 @@ const PersoneForm: React.FC<{
                 errorHandler(error, "Procedura non riuscita");
             }
         }
+    }, [
+        errorHandler,
+        getPhoneValue,
+        immobileInteresse,
+        immobileLocato,
+        inputEmailValue,
+        inputNoteValue,
+        inputNameValue,
+        inputProvenienzaValue,
+        inputRuoloValue,
+        inputStatusValue,
+        listHouses,
+        navigate,
+        presentAlert,
+        props,
+    ]);
+
+    const submitForm = async (e: FormEvent) => {
+        e.preventDefault();
+        await eseguiForm();
     };
 
     useEffect(() => {
@@ -332,92 +356,14 @@ const PersoneForm: React.FC<{
             inputProvenienzaIsInvalid ||
             inputStatusIsInvalid;
 
-        const eseguiForm = async () => {
-            const reqBody = {
-                id: props.persona ? props.persona.id : null,
-                nome: inputNameValue,
-                telefono: getPhoneValue(),
-                email: inputEmailValue.length > 0 ? inputEmailValue : null,
-                ruolo: inputRuoloValue,
-                immobiliProprieta: listHouses.map((el) => el.id!),
-                immobileAffitto: immobileLocato ? immobileLocato.id : null,
-                immobileInteresse: immobileInteresse
-                    ? immobileInteresse.id
-                    : null,
-                note: inputNoteValue,
-                provenienza: inputProvenienzaValue.split(" ").join("_"),
-                status: inputStatusValue,
-            };
-            setShowLoading(true);
-            try {
-                props.persona
-                    ? await axiosInstance.patch(
-                          `persone/${props.persona!.id}`,
-                          reqBody
-                      )
-                    : await axiosInstance.post(`persone`, reqBody);
-                setShowLoading(false);
-                setIsQuerySuccessfull(true);
-                presentAlert({
-                    header: "Ottimo",
-                    subHeader: `Persona ${
-                        props.persona ? "modificata" : "creata"
-                    }`,
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: () => props.backToList(),
-                        },
-                    ],
-                });
-            } catch (error: any) {
-                setShowLoading(false);
-
-                if (
-                    error &&
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.message &&
-                    error.response.data.message.includes(
-                        "E' la persona con id "
-                    )
-                ) {
-                    const [message, id] = error.response.data.message.split(
-                        "E' la persona con id "
-                    );
-                    presentAlert({
-                        header: "Attenzione!",
-                        message,
-                        buttons: [
-                            {
-                                text: "Vai alla persona",
-                                handler: () =>
-                                    navigateToSpecificItem(
-                                        "persone",
-                                        id,
-                                        navigate
-                                    ),
-                            },
-                            {
-                                text: "Chiudi",
-                                role: "cancel",
-                            },
-                        ],
-                    });
-                } else {
-                    errorHandler(error, "Procedura non riuscita");
-                }
-            }
-        };
-
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (!isFormDisabled && !isError && e.key === "Enter") {
-                if (document.activeElement instanceof HTMLElement)
-                    document.activeElement.blur();
+                setHasBeenClicked(true);
                 if (isQuerySuccessfull) {
                     hideAlert();
                     props.backToList();
-                } else {
+                } else if (hasBeenClicked) {
+                    freeFocus();
                     await eseguiForm();
                 }
             }
@@ -430,6 +376,9 @@ const PersoneForm: React.FC<{
     }, [
         presentAlert,
         errorHandler,
+        eseguiForm,
+        setHasBeenClicked,
+        hasBeenClicked,
         isError,
         immobileInteresse,
         immobileLocato,

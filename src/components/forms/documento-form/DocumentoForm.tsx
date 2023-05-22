@@ -1,5 +1,5 @@
 import { IonButton, IonList, IonLoading } from "@ionic/react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Documento } from "../../../entities/documento.model";
 import { useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
@@ -11,6 +11,7 @@ import {
 } from "../../../utils/fileUtils";
 import FormInput from "../../form-components/form-input/FormInput";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
 
 const DocumentoForm: React.FC<{
     documento: Documento | null;
@@ -29,6 +30,8 @@ const DocumentoForm: React.FC<{
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [nameUpdated, isNameUpdated] = useState<boolean>(false);
+
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -50,7 +53,7 @@ const DocumentoForm: React.FC<{
         await eseguiForm();
     };
 
-    const eseguiForm = async () => {
+    const eseguiForm = useCallback(async () => {
         const nuovoNome = `${inputValue}.${estensione}`;
         setShowLoading(true);
         try {
@@ -84,7 +87,7 @@ const DocumentoForm: React.FC<{
             setShowLoading(false);
             errorHandler(e, "Procedura non riuscita");
         }
-    };
+    }, [dispatch, errorHandler, estensione, inputValue, presentAlert, props]);
 
     const isFormInvalid = !inputIsTouched || (inputIsInvalid && inputIsTouched);
 
@@ -93,50 +96,13 @@ const DocumentoForm: React.FC<{
             inputValue.toString().length >= 5 &&
             inputValue.toString().length <= 40;
 
-        const eseguiForm = async () => {
-            const nuovoNome = `${inputValue}.${estensione}`;
-            setShowLoading(true);
-            try {
-                let reqBody = {
-                    name: nuovoNome,
-                };
-                await axiosInstance.patch(
-                    `${props.baseUrl}/${props.documento!.id}`,
-                    reqBody
-                );
-                setShowLoading(false);
-                isNameUpdated(true);
-                presentAlert({
-                    header: "Ottimo",
-                    subHeader: "Nome modificato con successo",
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: () => {
-                                if (props.baseUrl.includes("immobili"))
-                                    dispatch(
-                                        renameFile({
-                                            id: props.documento!.id!,
-                                            newName: nuovoNome,
-                                        })
-                                    );
-                                props.backToList();
-                            },
-                        },
-                    ],
-                });
-            } catch (e) {
-                setShowLoading(false);
-                errorHandler(e, "Procedura non riuscita");
-            }
-        };
-
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (e.key === "Enter" && !isError && inputIsValid) {
+                setHasBeenClicked(true);
                 if (nameUpdated) {
                     hideAlert();
                     props.backToList();
-                } else {
+                } else if (hasBeenClicked) {
                     await eseguiForm();
                 }
             }
@@ -148,14 +114,13 @@ const DocumentoForm: React.FC<{
         };
     }, [
         inputValue,
-        dispatch,
-        estensione,
-        presentAlert,
         hideAlert,
         props,
         nameUpdated,
-        errorHandler,
         isError,
+        eseguiForm,
+        hasBeenClicked,
+        setHasBeenClicked,
     ]);
 
     return (

@@ -9,7 +9,7 @@ import {
     IonButton,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, useCallback } from "react";
 import { Entity } from "../../../entities/entity";
 import { Evento } from "../../../entities/evento.model";
 import { Immobile } from "../../../entities/immobile.model";
@@ -29,6 +29,7 @@ import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormGroup from "../../form-components/form-group/FormGroup";
 import FormSelect from "../../form-components/form-select/FormSelect";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
 
 const EventoForm: React.FC<{
     persona: Persona;
@@ -64,6 +65,8 @@ const EventoForm: React.FC<{
         useErrorHandler();
 
     const [isVisit, setIsVisit] = useState<boolean>(false);
+
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
 
     const {
         datePickerIsOpen,
@@ -160,8 +163,10 @@ const EventoForm: React.FC<{
         };
     }, [props.persona.id]);
 
-    const getMessage = () =>
-        `${isVisit ? "Visita Fissata" : "Persona Aggiornata"}`;
+    const getMessage = useCallback(
+        () => `${isVisit ? "Visita Fissata" : "Persona Aggiornata"}`,
+        [isVisit]
+    );
 
     const getDescrizioneCompleta = statusChangedDescription
         ? "[" + statusChangedDescription + "] " + inputNoteValue
@@ -192,8 +197,7 @@ const EventoForm: React.FC<{
             : "Aggiorna Persona";
     };
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const eseguiForm = useCallback(async () => {
         setShowLoading(true);
         try {
             let reqBody = null;
@@ -245,6 +249,24 @@ const EventoForm: React.FC<{
             setShowLoading(false);
             errorHandler(error, "Procedura non riuscita");
         }
+    }, [
+        errorHandler,
+        getDescrizioneCompleta,
+        getMessage,
+        immobileInteresse?.id,
+        inputDateValue,
+        inputLuogoValue,
+        inputNoteValue,
+        inputStatusValue,
+        inputTimeValue,
+        isVisit,
+        presentAlert,
+        props,
+    ]);
+
+    const submitForm = async (e: FormEvent) => {
+        e.preventDefault();
+        await eseguiForm();
     };
 
     useEffect(() => {
@@ -255,68 +277,13 @@ const EventoForm: React.FC<{
                 (!inputNoteValue ||
                     inputNoteValue.toString().trim().length === 0));
 
-        const eseguiForm = async () => {
-            setShowLoading(true);
-            try {
-                let reqBody = null;
-                if (props.evento) {
-                    reqBody = {
-                        descrizione: getDescrizioneCompleta.trim(),
-                    };
-                    await axiosInstance.patch(
-                        `/persone/${props.persona.id}/eventi/${props.evento.id}`,
-                        reqBody
-                    );
-                } else if (isVisit) {
-                    reqBody = {
-                        quando: `${
-                            inputDateValue.split("T")[0]
-                        }T${inputTimeValue}:00`,
-                        idPersona: props.persona.id,
-                        note: inputNoteValue.trim(),
-                        idImmobile: immobileInteresse?.id,
-                        dove: inputLuogoValue,
-                    };
-                    await axiosInstance.post(`/visite`, reqBody);
-                } else {
-                    reqBody = {
-                        descrizione: inputNoteValue.trim(),
-                        statusPersona: inputStatusValue
-                            .toUpperCase()
-                            .replace(" ", "_"),
-                        idImmobile: immobileInteresse?.id,
-                    };
-                    await axiosInstance.post(
-                        `/persone/${props.persona.id}/eventi`,
-                        reqBody
-                    );
-                }
-                setShowLoading(false);
-                isNameUpdated(true);
-                presentAlert({
-                    header: "Ottimo",
-                    subHeader: `${
-                        isVisit ? "Visita Fissata" : "Persona Aggiornata"
-                    }`,
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: () => props.backToList(),
-                        },
-                    ],
-                });
-            } catch (error: any) {
-                setShowLoading(false);
-                errorHandler(error, "Procedura non riuscita");
-            }
-        };
-
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (e.key === "Enter" && !isError && !isFormInvalid) {
+                setHasBeenClicked(true);
                 if (nameUpdated) {
                     hideAlert();
                     props.backToList();
-                } else {
+                } else if (hasBeenClicked) {
                     await eseguiForm();
                 }
             }
@@ -342,6 +309,9 @@ const EventoForm: React.FC<{
         isVisit,
         errorHandler,
         isError,
+        hasBeenClicked,
+        eseguiForm,
+        setHasBeenClicked,
     ]);
 
     const getImmobile = (immobile: Immobile) => {

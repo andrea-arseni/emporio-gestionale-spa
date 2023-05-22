@@ -58,6 +58,8 @@ import { getPhoneValue } from "../../../utils/numberUtils";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { useNavigate } from "react-router-dom";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
+import { freeFocus } from "../../../utils/focusUtil";
 
 const ImmobileForm: React.FC<{
     immobile: Immobile | null;
@@ -1128,6 +1130,8 @@ const ImmobileForm: React.FC<{
 
     const { immobile, backToList } = props;
 
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+
     useEffect(() => {
         const isFormInvalid =
             !inputTitleValue ||
@@ -1269,12 +1273,16 @@ const ImmobileForm: React.FC<{
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (e.key === "Enter" && !isError) {
+                setHasBeenClicked(true);
                 if (!isFormInvalid && isQuerySuccessfull) {
                     hideAlert();
                     backToList();
-                } else if (!isFormInvalid && !isQuerySuccessfull) {
-                    if (document.activeElement instanceof HTMLElement)
-                        document.activeElement.blur();
+                } else if (
+                    !isFormInvalid &&
+                    !isQuerySuccessfull &&
+                    hasBeenClicked
+                ) {
+                    freeFocus();
                     await eseguiForm();
                 }
             }
@@ -1290,6 +1298,8 @@ const ImmobileForm: React.FC<{
         getProprietario,
         hideAlert,
         errorHandler,
+        setHasBeenClicked,
+        hasBeenClicked,
         isError,
         inputAltezzaValue,
         inputAnnoCostruzioneIsInvalid,

@@ -7,7 +7,7 @@ import {
     IonSelect,
     IonSelectOption,
 } from "@ionic/react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
@@ -15,6 +15,7 @@ import axiosInstance from "../../../utils/axiosInstance";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormInput from "../../form-components/form-input/FormInput";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
 
 const LavoroForm: React.FC<{
     lavoro: Lavoro | null;
@@ -23,6 +24,8 @@ const LavoroForm: React.FC<{
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [nameUpdated, isNameUpdated] = useState<boolean>(false);
+
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -73,8 +76,7 @@ const LavoroForm: React.FC<{
         return `${props.lavoro ? "Modifica" : "Aggiungi"} Obiettivo`;
     };
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const eseguiForm = useCallback(async () => {
         const reqBody = {
             titolo: inputTitoloValue,
             status: status.toUpperCase(),
@@ -104,6 +106,18 @@ const LavoroForm: React.FC<{
             setShowLoading(false);
             errorHandler(error, "Procedura non riuscita");
         }
+    }, [
+        errorHandler,
+        inputDescrizioneValue,
+        inputTitoloValue,
+        presentAlert,
+        props,
+        status,
+    ]);
+
+    const submitForm = async (e: FormEvent) => {
+        e.preventDefault();
+        await eseguiForm();
     };
 
     const changeLavoroType = (e: any) => setStatus(e.detail.value);
@@ -119,46 +133,13 @@ const LavoroForm: React.FC<{
                 inputDescrizioneValue.toString().trim().length > 0 &&
                 status);
 
-        const eseguiForm = async () => {
-            const reqBody = {
-                titolo: inputTitoloValue,
-                status: status.toUpperCase(),
-                descrizione: inputDescrizioneValue,
-            };
-            setShowLoading(true);
-            try {
-                props.lavoro
-                    ? await axiosInstance.patch(
-                          `lavori/${props.lavoro!.id}`,
-                          reqBody
-                      )
-                    : await axiosInstance.post(`lavori`, reqBody);
-                setShowLoading(false);
-                isNameUpdated(true);
-                presentAlert({
-                    header: "Ottimo",
-                    message: `Obiettivo ${
-                        props.lavoro ? "modificato" : "creato"
-                    }`,
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: () => props.backToList(),
-                        },
-                    ],
-                });
-            } catch (error: any) {
-                setShowLoading(false);
-                errorHandler(error, "Procedura non riuscita");
-            }
-        };
-
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (isFormValid && e.key === "Enter" && !isError) {
+                setHasBeenClicked(true);
                 if (nameUpdated) {
                     hideAlert();
                     props.backToList();
-                } else {
+                } else if (hasBeenClicked) {
                     await eseguiForm();
                 }
             }
@@ -172,6 +153,9 @@ const LavoroForm: React.FC<{
         presentAlert,
         hideAlert,
         errorHandler,
+        eseguiForm,
+        setHasBeenClicked,
+        hasBeenClicked,
         isError,
         props,
         nameUpdated,

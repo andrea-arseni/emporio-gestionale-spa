@@ -13,6 +13,7 @@ import {
     SetStateAction,
     Dispatch,
     useEffect,
+    useCallback,
 } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
@@ -21,6 +22,7 @@ import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
 import axiosInstance from "../../../utils/axiosInstance";
 import TextArea from "../../form-components/form-text-area/FormTextArea";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
 
 const StepForm: React.FC<{
     lavoro: Lavoro;
@@ -45,6 +47,8 @@ const StepForm: React.FC<{
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [querySuccessfull, isQuerySuccessfull] = useState<boolean>(false);
+
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -72,8 +76,7 @@ const StepForm: React.FC<{
         ? statusChangedDescription + "***" + inputDescrizioneValue
         : inputDescrizioneValue;
 
-    const submitForm = async (e: FormEvent) => {
-        e.preventDefault();
+    const eseguiForm = useCallback(async () => {
         setShowLoading(true);
         const url = `lavori/${props.lavoro!.id}/steps`;
         const reqBody = {
@@ -109,6 +112,11 @@ const StepForm: React.FC<{
             setShowLoading(false);
             errorHandler(error, "Procedura non riuscita");
         }
+    }, [errorHandler, getDescrizioneCompleta, presentAlert, props, status]);
+
+    const submitForm = async (e: FormEvent) => {
+        e.preventDefault();
+        await eseguiForm();
     };
 
     const changeLavoroType = (e: any) => {
@@ -121,54 +129,14 @@ const StepForm: React.FC<{
             (!props.step && (inputDescrizioneValue || statusChanged)) ||
             (props.step && !inputDescrizioneIsInvalid);
 
-        const submitForm = async () => {
-            setShowLoading(true);
-            const url = `lavori/${props.lavoro!.id}/steps`;
-            const reqBody = {
-                lavoroStatus: status.toUpperCase(),
-                stepMessage: getDescrizioneCompleta,
-                descrizione: getDescrizioneCompleta,
-            };
-            try {
-                props.step
-                    ? await axiosInstance.patch(
-                          `${url}/${props.step.id!}`,
-                          reqBody
-                      )
-                    : await axiosInstance.post(`${url}`, reqBody);
-                setShowLoading(false);
-                isQuerySuccessfull(true);
-                presentAlert({
-                    header: "Ottimo",
-                    message: `Obiettivo aggiornato`,
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: () => {
-                                props.setCurrentLavoro((prevLavoro) => {
-                                    return {
-                                        ...prevLavoro,
-                                        status: status.toUpperCase(),
-                                    } as Lavoro;
-                                });
-                                props.backToList();
-                            },
-                        },
-                    ],
-                });
-            } catch (error: any) {
-                setShowLoading(false);
-                errorHandler(error, "Procedura non riuscita");
-            }
-        };
-
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (isFormValid && !isError && e.key === "Enter") {
+                setHasBeenClicked(true);
                 if (querySuccessfull) {
                     hideAlert();
                     props.backToList();
-                } else {
-                    await submitForm();
+                } else if (hasBeenClicked) {
+                    await eseguiForm();
                 }
             }
         };
@@ -179,9 +147,12 @@ const StepForm: React.FC<{
         };
     }, [
         presentAlert,
-        isError,
         errorHandler,
         hideAlert,
+        eseguiForm,
+        setHasBeenClicked,
+        hasBeenClicked,
+        isError,
         props,
         getDescrizioneCompleta,
         inputDescrizioneIsInvalid,

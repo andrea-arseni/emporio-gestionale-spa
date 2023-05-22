@@ -30,6 +30,8 @@ import { useNavigate } from "react-router-dom";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { Evento } from "../../../entities/evento.model";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { freeFocus } from "../../../utils/focusUtil";
+import useSingleClick from "../../../hooks/use-single-click";
 
 const FormVisit: React.FC<{
     readonly?: boolean;
@@ -40,6 +42,8 @@ const FormVisit: React.FC<{
     const visit = useAppSelector((state) => state.appuntamenti.currentVisit);
 
     const dispatch = useAppDispatch();
+
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -224,122 +228,7 @@ const FormVisit: React.FC<{
         };
     }, [personaValue]);
 
-    useEffect(() => {
-        const isFormDisabled =
-            !inputDateValue ||
-            !inputTimeValue ||
-            !inputUserValue ||
-            (immobileValue && !personaValue) ||
-            (!personaValue &&
-                !immobileValue &&
-                !inputDoveValue &&
-                !inputNoteValue);
-
-        const eseguiForm = async () => {
-            const mode = visit && visit.id ? "update" : "insert";
-            dispatch(changeLoading(true));
-            const quando =
-                inputDateValue.split("T")[0] + "T" + inputTimeValue + ":00";
-            const reqBody = {
-                quando,
-                idPersona: personaValue
-                    ? personaValue.id
-                    : mode === "update"
-                    ? 0
-                    : null,
-                idImmobile: immobileValue
-                    ? immobileValue.id
-                    : mode === "update"
-                    ? 0
-                    : null,
-                userName: inputUserValue,
-                dove: inputDoveValue,
-                note: inputNoteValue,
-            };
-            try {
-                if (mode === "update") {
-                    await axiosInstance.patch(`/visite/${visit!.id}`, reqBody);
-                } else {
-                    await axiosInstance.post("/visite", reqBody);
-                }
-                dispatch(changeLoading(false));
-
-                setIsQuerySuccessfull(true);
-            } catch (error: any) {
-                dispatch(changeLoading(false));
-                errorHandler(
-                    error,
-                    `${
-                        mode === "update" ? "Aggiornamento" : "Inserimento"
-                    } visita non riuscito`
-                );
-            }
-        };
-
-        const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (
-                !props.readonly &&
-                !isFormDisabled &&
-                !isError &&
-                e.key === "Enter"
-            ) {
-                if (isQuerySuccessfull) {
-                    closeTheJob();
-                } else {
-                    if (document.activeElement instanceof HTMLElement)
-                        document.activeElement.blur();
-                    await eseguiForm();
-                }
-            }
-        };
-
-        window.addEventListener("keydown", submitFormIfValid);
-        return () => {
-            window.removeEventListener("keydown", submitFormIfValid);
-        };
-    }, [
-        presentAlert,
-        isQuerySuccessfull,
-        dispatch,
-        isError,
-        errorHandler,
-        immobileValue,
-        inputDateValue,
-        inputDoveValue,
-        inputNoteValue,
-        inputTimeValue,
-        inputUserValue,
-        personaValue,
-        props.readonly,
-        visit,
-        closeTheJob,
-    ]);
-
-    const isFormDisabled =
-        !inputDateValue ||
-        !inputTimeValue ||
-        !inputUserValue ||
-        (immobileValue && !personaValue) ||
-        (!personaValue && !immobileValue && !inputDoveValue && !inputNoteValue);
-
-    const getSubmitText = () => {
-        if (!inputDateValue) return "Data obbligatoria";
-        if (!inputTimeValue) return "Orario obbligatorio";
-        if (!inputUserValue) return "Incaricato obbligatorio";
-        if (immobileValue && !personaValue) return "Persona obbligatoria";
-        if (
-            !personaValue &&
-            !immobileValue &&
-            !inputDoveValue &&
-            !inputNoteValue
-        )
-            return "Dati insufficienti";
-        return `${visit && visit.id ? "Modifica " : "Aggiungi "}
-                            Visita`;
-    };
-
-    const submitVisit = async (e: FormEvent) => {
-        e.preventDefault();
+    const eseguiForm = useCallback(async () => {
         const mode = visit && visit.id ? "update" : "insert";
         dispatch(changeLoading(true));
         const quando =
@@ -367,6 +256,7 @@ const FormVisit: React.FC<{
                 await axiosInstance.post("/visite", reqBody);
             }
             dispatch(changeLoading(false));
+
             setIsQuerySuccessfull(true);
         } catch (error: any) {
             dispatch(changeLoading(false));
@@ -377,6 +267,98 @@ const FormVisit: React.FC<{
                 } visita non riuscito`
             );
         }
+    }, [
+        dispatch,
+        errorHandler,
+        immobileValue,
+        inputDateValue,
+        inputDoveValue,
+        inputNoteValue,
+        inputTimeValue,
+        inputUserValue,
+        personaValue,
+        visit,
+    ]);
+
+    const submitVisit = async (e: FormEvent) => {
+        e.preventDefault();
+        await eseguiForm();
+    };
+
+    useEffect(() => {
+        const isFormDisabled =
+            !inputDateValue ||
+            !inputTimeValue ||
+            !inputUserValue ||
+            (immobileValue && !personaValue) ||
+            (!personaValue &&
+                !immobileValue &&
+                !inputDoveValue &&
+                !inputNoteValue);
+
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (
+                !props.readonly &&
+                !isFormDisabled &&
+                !isError &&
+                e.key === "Enter"
+            ) {
+                setHasBeenClicked(true);
+                if (isQuerySuccessfull) {
+                    closeTheJob();
+                } else if (hasBeenClicked) {
+                    freeFocus();
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        presentAlert,
+        dispatch,
+        errorHandler,
+        eseguiForm,
+        closeTheJob,
+        setHasBeenClicked,
+        hasBeenClicked,
+        isQuerySuccessfull,
+        isError,
+        immobileValue,
+        inputDateValue,
+        inputDoveValue,
+        inputNoteValue,
+        inputTimeValue,
+        inputUserValue,
+        personaValue,
+        props.readonly,
+        visit,
+    ]);
+
+    const isFormDisabled =
+        !inputDateValue ||
+        !inputTimeValue ||
+        !inputUserValue ||
+        (immobileValue && !personaValue) ||
+        (!personaValue && !immobileValue && !inputDoveValue && !inputNoteValue);
+
+    const getSubmitText = () => {
+        if (!inputDateValue) return "Data obbligatoria";
+        if (!inputTimeValue) return "Orario obbligatorio";
+        if (!inputUserValue) return "Incaricato obbligatorio";
+        if (immobileValue && !personaValue) return "Persona obbligatoria";
+        if (
+            !personaValue &&
+            !immobileValue &&
+            !inputDoveValue &&
+            !inputNoteValue
+        )
+            return "Dati insufficienti";
+        return `${visit && visit.id ? "Modifica " : "Aggiungi "}
+                            Visita`;
     };
 
     const getImmobile = () => {
