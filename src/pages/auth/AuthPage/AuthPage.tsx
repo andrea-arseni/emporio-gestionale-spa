@@ -1,5 +1,6 @@
 import {
     IonButton,
+    IonIcon,
     IonInput,
     IonItem,
     IonLabel,
@@ -8,7 +9,14 @@ import {
     IonProgressBar,
     useIonAlert,
 } from "@ionic/react";
-import React, { FormEvent, Fragment, useEffect, useState } from "react";
+import React, {
+    FormEvent,
+    Fragment,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import styles from "./AuthPage.module.css";
 import logo from "../../../assets/logo.png";
 import useInput from "../../../hooks/use-input";
@@ -17,6 +25,9 @@ import { performLogin } from "../../../store/auth-thunk";
 import { useAppDispatch } from "../../../hooks";
 import { loginData } from "../../../store/auth-slice";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import useSingleClick from "../../../hooks/use-single-click";
+import { freeFocus } from "../../../utils/focusUtil";
+import { eyeOffOutline, eyeOutline } from "ionicons/icons";
 
 const AuthPage: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
@@ -24,9 +35,15 @@ const AuthPage: React.FC<{}> = () => {
 
     const [progress, setProgress] = useState<number>(1);
 
-    const { errorHandler } = useErrorHandler();
+    const { errorHandler, isError } = useErrorHandler();
+
+    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
 
     const [timeRemaining, setTimeRemaining] = useState<number>(120);
+
+    const inputUserRef = useRef<HTMLIonInputElement>(null);
+    const inputCodeRef = useRef<HTMLIonInputElement>(null);
+    const inputEmailRef = useRef<HTMLIonInputElement>(null);
 
     const [firstStepAccomplished, setFirstStepAccomplished] =
         useState<boolean>(false);
@@ -87,9 +104,40 @@ const AuthPage: React.FC<{}> = () => {
         };
     }, [firstStepAccomplished]);
 
+    useEffect(() => {
+        const setFocusOnUser = async () => {
+            await new Promise((r) => setTimeout(r, 300));
+            inputUserRef.current?.setFocus();
+        };
+
+        const setFocusOnCode = async () => {
+            await new Promise((r) => setTimeout(r, 300));
+            inputCodeRef.current?.setFocus();
+        };
+
+        const setFocusOnEmail = async () => {
+            await new Promise((r) => setTimeout(r, 300));
+            inputEmailRef.current?.setFocus();
+        };
+
+        if (firstStepAccomplished) {
+            setFocusOnCode();
+        } else if (mode === "login") {
+            setFocusOnUser();
+        } else {
+            setFocusOnEmail();
+        }
+    }, [firstStepAccomplished, mode]);
+
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [presentAlert] = useIonAlert();
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const getTiming = () => {
         const minutes = Math.floor(timeRemaining / 60);
@@ -102,7 +150,7 @@ const AuthPage: React.FC<{}> = () => {
         return `${minutesText} e ${secondsText}`;
     };
 
-    const formIsInvalid = () => {
+    const formIsInvalid = useCallback(() => {
         if (mode === "login") {
             return (
                 inputNameIsInvalid ||
@@ -115,41 +163,34 @@ const AuthPage: React.FC<{}> = () => {
         } else {
             return inputEmailIsInvalid || inputEmailValue.trim() === "";
         }
-    };
+    }, [
+        firstStepAccomplished,
+        inputCodeIsInvalid,
+        inputCodeIsTouched,
+        inputEmailIsInvalid,
+        inputEmailValue,
+        inputNameIsInvalid,
+        inputNameValue,
+        inputPasswordIsInvalid,
+        inputPasswordValue,
+        mode,
+    ]);
 
-    const resetForm = () => {
+    const resetForm = useCallback(() => {
         if (mode === "login") {
             inputNameReset();
             inputPasswordReset();
         } else {
             inputEmailReset();
         }
-    };
+    }, [inputNameReset, inputPasswordReset, inputEmailReset, mode]);
 
-    const onSubmitHandler = async (e: FormEvent) => {
-        e.preventDefault();
-        setShowLoading(true);
-        try {
-            await (mode === "login"
-                ? submitLoginCall()
-                : submitForgotPasswordCall());
-        } catch (e: any) {
-            setShowLoading(false);
-            errorHandler(
-                e,
-                `${
-                    mode === "login" ? "Login" : "Richiesta recupero password"
-                } non riuscita`,
-                firstStepAccomplished
-            );
-        }
-    };
-
-    const submitLoginCall = async () => {
+    const submitLoginCall = useCallback(async () => {
         const reqBody = {
             nameOrEmail: inputNameValue.trim(),
             password: inputPasswordValue,
-            code: inputCodeValue.trim().length > 0 ? +inputCodeValue : null,
+            code:
+                inputCodeValue.trim().length > 0 ? inputCodeValue.trim() : null,
         };
         const res = await axiosInstance.post(`users/login`, reqBody);
         setShowLoading(false);
@@ -162,9 +203,9 @@ const AuthPage: React.FC<{}> = () => {
         } else {
             setFirstStepAccomplished(true);
         }
-    };
+    }, [dispatch, inputCodeValue, inputNameValue, inputPasswordValue]);
 
-    const submitForgotPasswordCall = async () => {
+    const submitForgotPasswordCall = useCallback(async () => {
         await axiosInstance.post(`users/forgot-password`, {
             name: "",
             email: inputEmailValue,
@@ -185,6 +226,62 @@ const AuthPage: React.FC<{}> = () => {
                 },
             ],
         });
+    }, [inputEmailValue, presentAlert, resetForm]);
+
+    const eseguiForm = useCallback(async () => {
+        setShowLoading(true);
+        try {
+            await (mode === "login"
+                ? submitLoginCall()
+                : submitForgotPasswordCall());
+        } catch (e: any) {
+            setShowLoading(false);
+            errorHandler(
+                e,
+                `${
+                    mode === "login" ? "Login" : "Richiesta recupero password"
+                } non riuscita`
+            );
+        }
+    }, [errorHandler, mode, submitForgotPasswordCall, submitLoginCall]);
+
+    const onSubmitHandler = async (e: FormEvent) => {
+        e.preventDefault();
+        await eseguiForm();
+    };
+
+    useEffect(() => {
+        const submitFormIfValid = async (e: KeyboardEvent) => {
+            if (e.key === "Enter" && !isError && !formIsInvalid()) {
+                setHasBeenClicked(true);
+                if (
+                    hasBeenClicked ||
+                    (firstStepAccomplished &&
+                        inputCodeValue.trim().length === 6)
+                ) {
+                    await eseguiForm();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", submitFormIfValid);
+        return () => {
+            window.removeEventListener("keydown", submitFormIfValid);
+        };
+    }, [
+        eseguiForm,
+        formIsInvalid,
+        hasBeenClicked,
+        setHasBeenClicked,
+        isError,
+        firstStepAccomplished,
+        inputCodeValue,
+        mode,
+    ]);
+
+    const preventSubmit = (event: FormEvent) => {
+        event.preventDefault();
+        freeFocus();
     };
 
     const loginInputs = (
@@ -198,6 +295,7 @@ const AuthPage: React.FC<{}> = () => {
                         )}
                     </IonLabel>
                     <IonInput
+                        ref={inputUserRef}
                         type="text"
                         onBlur={inputNameTouchedHandler}
                         onIonChange={(e) => inputNameChangedHandler(e)}
@@ -220,20 +318,29 @@ const AuthPage: React.FC<{}> = () => {
                         )}
                     </IonLabel>
                     <IonInput
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         onBlur={inputPasswordTouchedHandler}
                         onIonChange={(e) => inputPasswordChangedHandler(e)}
                         value={inputPasswordValue}
                     ></IonInput>
+                    <IonIcon
+                        className={styles.eyeIcon}
+                        icon={showPassword ? eyeOffOutline : eyeOutline}
+                        onClick={togglePasswordVisibility}
+                    />
                 </IonItem>
             )}
             {firstStepAccomplished && (
                 <IonItem className={styles.inputWrapper}>
                     <IonLabel position="floating">Inserisci il Codice</IonLabel>
                     <IonInput
+                        ref={inputCodeRef}
                         type="text"
                         onBlur={inputCodeTouchedHandler}
                         onIonChange={(e) => inputCodeChangedHandler(e)}
+                        onKeyDown={(event) =>
+                            event.key === "Enter" && preventSubmit(event)
+                        }
                         value={inputCodeValue}
                     ></IonInput>
                     {inputCodeIsInvalid && (
@@ -265,10 +372,14 @@ const AuthPage: React.FC<{}> = () => {
                 )}
             </IonLabel>
             <IonInput
+                ref={inputEmailRef}
                 type="text"
                 onBlur={inputEmailTouchedHandler}
                 onIonChange={(e) => inputEmailChangedHandler(e)}
                 value={inputEmailValue}
+                onKeyDown={(event) =>
+                    event.key === "Enter" && preventSubmit(event)
+                }
             ></IonInput>
         </IonItem>
     );

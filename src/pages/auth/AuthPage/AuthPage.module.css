@@ -23,6 +23,14 @@
     margin: 10px;
 }
 
+.eyeIcon {
+    width: 26px;
+    height: 26px;
+    position: absolute;
+    right: 10px;
+    top: 20px;
+}
+
 .progressDiv {
     margin-bottom: 30px;
 }

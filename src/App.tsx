@@ -281,14 +281,18 @@ LA QUERY E' SBAGLIATA
 - if immagine non disponibile show foto non disponibile - VINTO
 - Error handler gestibile con tastiera - VINTO
 - Double click per submit form - VINTO
+- Auth flow con doppio invio - VINTO
+- Test error handling AuthPage - VINTO
+- Password visibile con occhio - VINTO
 
 *****
 
-- Fix error handling and invio con AuthPage
-- Password visibile con occhio
+- Psw flow con doppio invio
+- Error handling psw page
 
 *****
 
+- Quando modifichi le note di una visita se le azzeri rimangono, correggere
 - Quando disattivi una persona lascia il focus sul select - focus-util 
 - Proprietari non si vedono immobili aprendo da persona
 - Doppio indietro e proprietario inesistente
