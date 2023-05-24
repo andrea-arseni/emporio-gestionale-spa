@@ -238,65 +238,19 @@ export default App;
 
 /*
 
-STRONG IMPROVEMENTS 
+- Psw flow con doppio invio - VINTO
+- Error handling psw page - VINTO
 
-- GESTIONALE
-- Rimuovi funzionalità aggiungi app passato - VINTO
-- Vendendo / affittando su messaggio evento - VINTO
-- Laboratorio - VINTO
-- Data con persona - VINTO
-- Data con lavoro - VINTO
-- Filtri con data su lavoro - VINTO 
-- Filtri con data su persona - VINTO
-- Persona con data - VINTO
-- Lavoro con data - VINTO
-- Filtro persone prima per cose poi per status - Filtri better? - VINTO
-- Filtro per data su persona - VINTO
-- Filtro per data su lavoro  - VINTO
-- Sorting per data su persona - VINTO
-- Sorting per data su lavoro - VINTO
-LA QUERY E' SBAGLIATA 
-- Problema - Quando filtri mettendo endDate molto vecchia, prende record con date più alte e ti fornisce il dato con la data vecchia
-- La Where Clause fornisce la data ma non indica di prendere la data più avanzata di quel record.
-- Persona - VINTO
-- Lavoro - VINTO
-- Testing - VINTO
-- Share Messaggio sempre su dispositivo da browser - VINTO
-- Quando va in ok - VINTO
-- Quando va in ko - VINTO
-- Quando annulli te - VINTO
-- Dopo messaggio automatico evento - cambio stato + scritto messaggio - VINTO
-- Dopo ogni cambio stato - cancellazione evento - inserimento evento - refresh query - VINTO
-- Native solo su Native, gesù - VINTO
-- Zong must work - VINTO
-- Aggiungi link al testo on demand - VINTO
-- Filtri vanno in leak, correggere -    VINTO
-- Bug rinomina file persona - VINTO
-- Lavoro ha lettera - VINTO
-- Il lavoro non deve submit senza titolo - VINTO
-- Non è possibile attivare le actionbar più volte - VINTO
-- no props as dependency - VINTO
-- Filtri gestibili con keyboard - VINTO
-- if immagine non disponibile don't show girini - VINTO
-- if immagine non disponibile show foto non disponibile - VINTO
-- Error handler gestibile con tastiera - VINTO
-- Double click per submit form - VINTO
-- Auth flow con doppio invio - VINTO
-- Test error handling AuthPage - VINTO
-- Password visibile con occhio - VINTO
-
-*****
-
-- Psw flow con doppio invio
-- Error handling psw page
-
-*****
+IMPROVEMENTS 
 
 - Quando modifichi le note di una visita se le azzeri rimangono, correggere
 - Quando disattivi una persona lascia il focus sul select - focus-util 
 - Proprietari non si vedono immobili aprendo da persona
 - Doppio indietro e proprietario inesistente
 - 1970 primo contatto è falso
+
+*****
+
 - Retrieve foto firmate oppure foto originali
 - Navigazione su singolo immobile rivista
 - Navigazione su singola persona rivista
