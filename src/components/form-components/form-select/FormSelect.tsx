@@ -1,16 +1,19 @@
 import { IonItem, IonLabel, IonSelect, IonSelectOption } from "@ionic/react";
 import { capitalize } from "../../../utils/stringUtils";
+import React from "react";
 
 const FormSelect: React.FC<{
     title: string;
     value: string | null | number;
     function: (e: any) => void;
     possibleValues: string[] | number[];
-}> = (props) => {
+    ref?: any;
+}> = React.forwardRef((props, ref: any) => {
     return (
         <IonItem>
             <IonLabel position="floating">{props.title}</IonLabel>
             <IonSelect
+                ref={ref}
                 cancelText="Torna Indietro"
                 mode="ios"
                 interface="action-sheet"
@@ -30,6 +33,6 @@ const FormSelect: React.FC<{
             </IonSelect>
         </IonItem>
     );
-};
+});
 
 export default FormSelect;

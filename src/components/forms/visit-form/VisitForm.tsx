@@ -1,5 +1,5 @@
 import { IonButton, IonIcon, IonItem, IonLabel, IonList } from "@ionic/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
@@ -30,7 +30,6 @@ import { useNavigate } from "react-router-dom";
 import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { Evento } from "../../../entities/evento.model";
 import useErrorHandler from "../../../hooks/use-error-handler";
-import { freeFocus } from "../../../utils/focusUtil";
 import useSingleClick from "../../../hooks/use-single-click";
 
 const FormVisit: React.FC<{
@@ -43,7 +42,11 @@ const FormVisit: React.FC<{
 
     const dispatch = useAppDispatch();
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const ionSelectAgente = useRef<HTMLIonSelectElement>(null);
+    const ionSelectOrario = useRef<HTMLIonSelectElement>(null);
+
+    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
+        useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -304,10 +307,10 @@ const FormVisit: React.FC<{
                 e.key === "Enter"
             ) {
                 setHasBeenClicked(true);
+                closeIonSelects([ionSelectAgente, ionSelectOrario]);
                 if (isQuerySuccessfull) {
                     closeTheJob();
                 } else if (hasBeenClicked) {
-                    freeFocus();
                     await eseguiForm();
                 }
             }
@@ -324,6 +327,7 @@ const FormVisit: React.FC<{
         eseguiForm,
         closeTheJob,
         setHasBeenClicked,
+        closeIonSelects,
         hasBeenClicked,
         isQuerySuccessfull,
         isError,
@@ -508,6 +512,7 @@ const FormVisit: React.FC<{
                     >
                         {!props.readonly && (
                             <FormSelect
+                                ref={ionSelectOrario}
                                 title="Orario della Visita"
                                 value={inputTimeValue}
                                 function={inputTimeChangedHandler}
@@ -554,6 +559,7 @@ const FormVisit: React.FC<{
                     />
                     {possibleUsers.length > 0 && !props.readonly && (
                         <FormSelect
+                            ref={ionSelectAgente}
                             title="Agente Incaricato"
                             value={inputUserValue}
                             function={inputUserChangedHandler}

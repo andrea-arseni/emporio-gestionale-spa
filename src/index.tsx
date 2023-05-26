@@ -7,6 +7,12 @@ import { Provider } from "react-redux";
 import store from "./store/index";
 import "./index.css";
 
+declare global {
+    interface HTMLIonSelectElement {
+        close(): void;
+    }
+}
+
 ReactDOM.render(
     <Provider store={store}>
         <BrowserRouter>

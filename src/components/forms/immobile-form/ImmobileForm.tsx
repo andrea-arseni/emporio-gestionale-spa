@@ -7,7 +7,7 @@ import {
     IonButton,
     IonLoading,
 } from "@ionic/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Caratteristiche } from "../../../entities/caratteristiche.model";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
@@ -59,7 +59,6 @@ import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { useNavigate } from "react-router-dom";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import useSingleClick from "../../../hooks/use-single-click";
-import { freeFocus } from "../../../utils/focusUtil";
 
 const ImmobileForm: React.FC<{
     immobile: Immobile | null;
@@ -1130,7 +1129,40 @@ const ImmobileForm: React.FC<{
 
     const { immobile, backToList } = props;
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const ionSelectTipologia = useRef<HTMLIonSelectElement>(null);
+    const ionSelectLocali = useRef<HTMLIonSelectElement>(null);
+    const ionSelectComune = useRef<HTMLIonSelectElement>(null);
+    const ionSelectZona = useRef<HTMLIonSelectElement>(null);
+    const ionSelectRiscaldamento = useRef<HTMLIonSelectElement>(null);
+    const ionSelectClasseEnergetica = useRef<HTMLIonSelectElement>(null);
+    const ionSelectContratto = useRef<HTMLIonSelectElement>(null);
+    const ionSelectCategoria = useRef<HTMLIonSelectElement>(null);
+    const ionSelectStato = useRef<HTMLIonSelectElement>(null);
+    const ionSelectLibero = useRef<HTMLIonSelectElement>(null);
+    const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
+    const ionSelectPiano = useRef<HTMLIonSelectElement>(null);
+    const ionSelectEsposizione = useRef<HTMLIonSelectElement>(null);
+    const ionSelectArredamento = useRef<HTMLIonSelectElement>(null);
+    const ionSelectBalconi = useRef<HTMLIonSelectElement>(null);
+    const ionSelectTerrazzi = useRef<HTMLIonSelectElement>(null);
+    const ionSelectBox = useRef<HTMLIonSelectElement>(null);
+    const ionSelectGiardino = useRef<HTMLIonSelectElement>(null);
+    const ionSelectAriaCondizionata = useRef<HTMLIonSelectElement>(null);
+    const ionSelectProprieta = useRef<HTMLIonSelectElement>(null);
+    const ionSelectCategoriaCatastale = useRef<HTMLIonSelectElement>(null);
+    const ionSelectImpiantoElettrico = useRef<HTMLIonSelectElement>(null);
+    const ionSelectImpiantoIdraulico = useRef<HTMLIonSelectElement>(null);
+    const ionSelectCombustibile = useRef<HTMLIonSelectElement>(null);
+    const ionSelectLivelli = useRef<HTMLIonSelectElement>(null);
+    const ionSelectSerramentiInterni = useRef<HTMLIonSelectElement>(null);
+    const ionSelectSerramentiEsterni = useRef<HTMLIonSelectElement>(null);
+    const ionSelectCitofono = useRef<HTMLIonSelectElement>(null);
+    const ionSelectPortineria = useRef<HTMLIonSelectElement>(null);
+    const ionSelectTipoContratto = useRef<HTMLIonSelectElement>(null);
+    const ionSelectCauzione = useRef<HTMLIonSelectElement>(null);
+
+    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
+        useSingleClick();
 
     useEffect(() => {
         const isFormInvalid =
@@ -1274,6 +1306,41 @@ const ImmobileForm: React.FC<{
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (e.key === "Enter" && !isError) {
                 setHasBeenClicked(true);
+                closeIonSelects([
+                    ionSelectTipologia,
+                    ionSelectLocali,
+                    ionSelectLocali,
+                    ionSelectComune,
+                    ionSelectZona,
+                    ionSelectRiscaldamento,
+                    ionSelectClasseEnergetica,
+                    ionSelectContratto,
+                    ionSelectCategoria,
+                    ionSelectStato,
+                    ionSelectLibero,
+                    ionSelectStatus,
+                    ionSelectPiano,
+                    ionSelectEsposizione,
+                    ionSelectArredamento,
+                    ionSelectBalconi,
+                    ionSelectTerrazzi,
+                    ionSelectBox,
+                    ionSelectGiardino,
+                    ionSelectAriaCondizionata,
+                    ionSelectProprieta,
+                    ionSelectCategoriaCatastale,
+                    ionSelectImpiantoElettrico,
+                    ionSelectImpiantoIdraulico,
+                    ionSelectCombustibile,
+                    ionSelectLivelli,
+                    ionSelectSerramentiInterni,
+                    ionSelectSerramentiEsterni,
+                    ionSelectCitofono,
+                    ionSelectPortineria,
+                    ionSelectTipoContratto,
+                    ionSelectCauzione,
+                ]);
+
                 if (!isFormInvalid && isQuerySuccessfull) {
                     hideAlert();
                     backToList();
@@ -1282,7 +1349,6 @@ const ImmobileForm: React.FC<{
                     !isQuerySuccessfull &&
                     hasBeenClicked
                 ) {
-                    freeFocus();
                     await eseguiForm();
                 }
             }
@@ -1299,6 +1365,7 @@ const ImmobileForm: React.FC<{
         hideAlert,
         errorHandler,
         setHasBeenClicked,
+        closeIonSelects,
         hasBeenClicked,
         isError,
         inputAltezzaValue,
@@ -1480,12 +1547,14 @@ const ImmobileForm: React.FC<{
                         reset={inputSuperficieReset}
                     />
                     <FormSelect
+                        ref={ionSelectTipologia}
                         title="Tipologia"
                         value={inputTipologiaValue}
                         function={inputTipologiaChangedHandler}
                         possibleValues={possibleTipologies}
                     />
                     <FormSelect
+                        ref={ionSelectLocali}
                         title="Locali"
                         value={inputLocaliValue}
                         function={inputLocaliChangedHandler}
@@ -1495,6 +1564,7 @@ const ImmobileForm: React.FC<{
                         <IonItem>
                             <IonLabel position="floating">Comune</IonLabel>
                             <IonSelect
+                                ref={ionSelectComune}
                                 cancelText="Torna Indietro"
                                 mode="ios"
                                 interface="action-sheet"
@@ -1532,6 +1602,7 @@ const ImmobileForm: React.FC<{
                         <IonItem>
                             <IonLabel position="floating">Zona</IonLabel>
                             <IonSelect
+                                ref={ionSelectZona}
                                 cancelText="Torna Indietro"
                                 mode="ios"
                                 interface="action-sheet"
@@ -1574,12 +1645,14 @@ const ImmobileForm: React.FC<{
                         reset={inputPrezzoReset}
                     />
                     <FormSelect
+                        ref={ionSelectRiscaldamento}
                         title="Riscaldamento"
                         value={inputRiscaldamentoValue}
                         function={inputRiscaldamentoChangedHandler}
                         possibleValues={possibleRiscaldamenti}
                     />
                     <FormSelect
+                        ref={ionSelectClasseEnergetica}
                         title="Classe Energetica"
                         value={inputClasseEnergeticaValue}
                         function={inputClasseEnergeticaChangedHandler}
@@ -1600,30 +1673,35 @@ const ImmobileForm: React.FC<{
                         />
                     )}
                     <FormSelect
+                        ref={ionSelectContratto}
                         title="Contratto"
                         value={inputContrattoValue}
                         function={inputContrattoChangedHandler}
                         possibleValues={possibleContratti}
                     />
                     <FormSelect
+                        ref={ionSelectCategoria}
                         title="Categoria"
                         value={inputCategoriaValue}
                         function={inputCategoriaChangedHandler}
                         possibleValues={possibleCategories}
                     />
                     <FormSelect
+                        ref={ionSelectStato}
                         title="Stato"
                         value={inputStatoValue}
                         function={inputStatoChangedHandler}
                         possibleValues={possibleStato}
                     />
                     <FormSelect
+                        ref={ionSelectLibero}
                         title="Libero"
                         value={inputLiberoValue}
                         function={inputLiberoChangedHandler}
                         possibleValues={possibleLibero}
                     />
                     <FormSelect
+                        ref={ionSelectStatus}
                         title="Status"
                         value={inputStatusValue}
                         function={inputStatusChangedHandler}
@@ -1633,6 +1711,7 @@ const ImmobileForm: React.FC<{
                     />
                     <FormSelect
                         title="Piano"
+                        ref={ionSelectPiano}
                         value={inputPianoValue}
                         function={inputPianoChangedHandler}
                         possibleValues={possiblePiano}
@@ -1793,48 +1872,56 @@ const ImmobileForm: React.FC<{
                         />
                     )}
                     <FormSelect
+                        ref={ionSelectEsposizione}
                         title="Esposizione"
                         value={inputEsposizioneValue}
                         function={inputEsposizioneChangedHandler}
                         possibleValues={possibiliEsposizioni}
                     />
                     <FormSelect
+                        ref={ionSelectArredamento}
                         title="Arredamento"
                         value={inputArredamentoValue}
                         function={inputArredamentoChangedHandler}
                         possibleValues={possibiliArredamenti}
                     />
                     <FormSelect
+                        ref={ionSelectBalconi}
                         title="Balconi"
                         value={inputBalconiValue}
                         function={inputBalconiChangedHandler}
                         possibleValues={possibiliBalconiTerrazzi}
                     />
                     <FormSelect
+                        ref={ionSelectTerrazzi}
                         title="Terrazzi"
                         value={inputTerrazziValue}
                         function={inputTerrazziChangedHandler}
                         possibleValues={possibiliBalconiTerrazzi}
                     />
                     <FormSelect
+                        ref={ionSelectBox}
                         title="Box"
                         value={inputBoxValue}
                         function={inputBoxChangedHandler}
                         possibleValues={possibiliBox}
                     />
                     <FormSelect
+                        ref={ionSelectGiardino}
                         title="Giardino"
                         value={inputGiardinoValue}
                         function={inputGiardinoChangedHandler}
                         possibleValues={possibiliGiardini}
                     />
                     <FormSelect
+                        ref={ionSelectAriaCondizionata}
                         title="Aria Condizionata"
                         value={inputAriaCondizionataValue}
                         function={inputAriaCondizionataChangedHandler}
                         possibleValues={possibiliAC}
                     />
                     <FormSelect
+                        ref={ionSelectProprieta}
                         title="Proprietà"
                         value={inputProprietaValue}
                         function={inputProprietaChangedHandler}
@@ -1851,6 +1938,7 @@ const ImmobileForm: React.FC<{
                         reset={inputAnnoCostruzioneReset}
                     />
                     <FormSelect
+                        ref={ionSelectCategoriaCatastale}
                         title="Categoria Catastale"
                         value={inputCategoriaCatastaleValue}
                         function={inputCategoriaCatastaleChangedHandler}
@@ -1867,48 +1955,56 @@ const ImmobileForm: React.FC<{
                         reset={inputRenditaReset}
                     />
                     <FormSelect
+                        ref={ionSelectImpiantoElettrico}
                         title="Impianto Elettrico"
                         value={inputImpiantoElettricoValue}
                         function={inputImpiantoElettricoChangedHandler}
                         possibleValues={possibiliImpianti}
                     />
                     <FormSelect
+                        ref={ionSelectImpiantoIdraulico}
                         title="Impianto Idraulico"
                         value={inputImpiantoIdraulicoValue}
                         function={inputImpiantoIdraulicoChangedHandler}
                         possibleValues={possibiliImpianti}
                     />
                     <FormSelect
+                        ref={ionSelectCombustibile}
                         title="Combustibile"
                         value={inputCombustibileValue}
                         function={inputCombustibileChangedHandler}
                         possibleValues={possibleCombustibili}
                     />
                     <FormSelect
+                        ref={ionSelectLivelli}
                         title="Livelli"
                         value={inputLivelliValue}
                         function={inputLivelliChangedHandler}
                         possibleValues={possibleLivelli}
                     />
                     <FormSelect
+                        ref={ionSelectSerramentiInterni}
                         title="Serramenti Interni"
                         value={inputSerramentiInterniValue}
                         function={inputSerramentiInterniChangedHandler}
                         possibleValues={possibleSerramentiInterni}
                     />
                     <FormSelect
+                        ref={ionSelectSerramentiEsterni}
                         title="Serramenti Esterni"
                         value={inputSerramentiEsterniValue}
                         function={inputSerramentiEsterniChangedHandler}
                         possibleValues={possibleSerramentiEsterni}
                     />
                     <FormSelect
+                        ref={ionSelectCitofono}
                         title="Citofono"
                         value={inputCitofonoValue}
                         function={inputCitofonoChangedHandler}
                         possibleValues={possibleCitofoni}
                     />
                     <FormSelect
+                        ref={ionSelectPortineria}
                         title="Portineria"
                         value={inputPortineriaValue}
                         function={inputPortineriaChangedHandler}
@@ -1937,12 +2033,14 @@ const ImmobileForm: React.FC<{
                     {inputContrattoValue === "affitto" && (
                         <>
                             <FormSelect
+                                ref={ionSelectTipoContratto}
                                 title="Tipo Contratto"
                                 value={inputTipoContrattoValue}
                                 function={inputTipoContrattoChangedHandler}
                                 possibleValues={possibiliTipiContratti}
                             />
                             <FormSelect
+                                ref={ionSelectCauzione}
                                 title="Cauzione"
                                 value={inputCauzioneValue}
                                 function={inputCauzioneChangedHandler}

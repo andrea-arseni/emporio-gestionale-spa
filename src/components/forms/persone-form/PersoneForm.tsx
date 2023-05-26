@@ -13,6 +13,7 @@ import {
     SetStateAction,
     useCallback,
     useEffect,
+    useRef,
     useState,
 } from "react";
 import { Entity } from "../../../entities/entity";
@@ -35,7 +36,6 @@ import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { useNavigate } from "react-router-dom";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import useSingleClick from "../../../hooks/use-single-click";
-import { freeFocus } from "../../../utils/focusUtil";
 
 const PersoneForm: React.FC<{
     persona: Persona | null;
@@ -54,7 +54,11 @@ const PersoneForm: React.FC<{
     const [isQuerySuccessfull, setIsQuerySuccessfull] =
         useState<boolean>(false);
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
+    const ionSelectProvenienza = useRef<HTMLIonSelectElement>(null);
+
+    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
+        useSingleClick();
 
     const [choiceMode, setChoiceMode] = useState<
         "proprietà" | "locazione" | "interesse" | null
@@ -359,11 +363,11 @@ const PersoneForm: React.FC<{
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (!isFormDisabled && !isError && e.key === "Enter") {
                 setHasBeenClicked(true);
+                closeIonSelects([ionSelectStatus, ionSelectProvenienza]);
                 if (isQuerySuccessfull) {
                     hideAlert();
                     props.backToList();
                 } else if (hasBeenClicked) {
-                    freeFocus();
                     await eseguiForm();
                 }
             }
@@ -378,6 +382,7 @@ const PersoneForm: React.FC<{
         errorHandler,
         eseguiForm,
         setHasBeenClicked,
+        closeIonSelects,
         hasBeenClicked,
         isError,
         immobileInteresse,
@@ -489,6 +494,7 @@ const PersoneForm: React.FC<{
                                 Status
                             </IonLabel>
                             <IonSelect
+                                ref={ionSelectStatus}
                                 cancelText="Torna Indietro"
                                 mode="ios"
                                 interface="action-sheet"
@@ -517,6 +523,7 @@ const PersoneForm: React.FC<{
                             Provenienza
                         </IonLabel>
                         <IonSelect
+                            ref={ionSelectProvenienza}
                             cancelText="Torna Indietro"
                             mode="ios"
                             interface="action-sheet"

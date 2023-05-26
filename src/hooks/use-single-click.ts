@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const useSingleClick = () => {
     const [hasBeenClicked, setHasBeenClicked] = useState<boolean>(false);
@@ -17,7 +17,16 @@ const useSingleClick = () => {
         };
     }, [hasBeenClicked]);
 
-    return { hasBeenClicked, setHasBeenClicked };
+    const closeIonSelects = useCallback(
+        (ionSelectList: React.RefObject<HTMLIonSelectElement>[]) => {
+            ionSelectList.forEach((element) => {
+                if (element) element.current?.close();
+            });
+        },
+        []
+    );
+
+    return { hasBeenClicked, setHasBeenClicked, closeIonSelects };
 };
 
 export default useSingleClick;

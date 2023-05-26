@@ -14,6 +14,7 @@ import {
     Dispatch,
     useEffect,
     useCallback,
+    useRef,
 } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
@@ -48,7 +49,10 @@ const StepForm: React.FC<{
 
     const [querySuccessfull, isQuerySuccessfull] = useState<boolean>(false);
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
+
+    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
+        useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -90,6 +94,12 @@ const StepForm: React.FC<{
                 : await axiosInstance.post(`${url}`, reqBody);
             setShowLoading(false);
             isQuerySuccessfull(true);
+            props.setCurrentLavoro((prevLavoro) => {
+                return {
+                    ...prevLavoro,
+                    status: status.toUpperCase(),
+                } as Lavoro;
+            });
             presentAlert({
                 header: "Ottimo",
                 message: `Obiettivo aggiornato`,
@@ -97,12 +107,6 @@ const StepForm: React.FC<{
                     {
                         text: "OK",
                         handler: () => {
-                            props.setCurrentLavoro((prevLavoro) => {
-                                return {
-                                    ...prevLavoro,
-                                    status: status.toUpperCase(),
-                                } as Lavoro;
-                            });
                             props.backToList();
                         },
                     },
@@ -132,6 +136,7 @@ const StepForm: React.FC<{
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (isFormValid && !isError && e.key === "Enter") {
                 setHasBeenClicked(true);
+                closeIonSelects([ionSelectStatus]);
                 if (querySuccessfull) {
                     hideAlert();
                     props.backToList();
@@ -151,6 +156,7 @@ const StepForm: React.FC<{
         hideAlert,
         eseguiForm,
         setHasBeenClicked,
+        closeIonSelects,
         hasBeenClicked,
         isError,
         props,
@@ -171,6 +177,7 @@ const StepForm: React.FC<{
                     <IonItem>
                         <IonLabel position="floating">Status</IonLabel>
                         <IonSelect
+                            ref={ionSelectStatus}
                             cancelText="Torna Indietro"
                             mode="ios"
                             interface="action-sheet"

@@ -7,7 +7,7 @@ import {
     IonSelect,
     IonSelectOption,
 } from "@ionic/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Lavoro } from "../../../entities/lavoro.model";
 import useInput from "../../../hooks/use-input";
 import { lavoroType, possibiliLavoroTypes } from "../../../types/lavoro_types";
@@ -25,7 +25,10 @@ const LavoroForm: React.FC<{
 
     const [nameUpdated, isNameUpdated] = useState<boolean>(false);
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
+
+    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
+        useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -136,6 +139,7 @@ const LavoroForm: React.FC<{
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (isFormValid && e.key === "Enter" && !isError) {
                 setHasBeenClicked(true);
+                closeIonSelects([ionSelectStatus]);
                 if (nameUpdated) {
                     hideAlert();
                     props.backToList();
@@ -155,6 +159,7 @@ const LavoroForm: React.FC<{
         errorHandler,
         eseguiForm,
         setHasBeenClicked,
+        closeIonSelects,
         hasBeenClicked,
         isError,
         props,
@@ -183,6 +188,7 @@ const LavoroForm: React.FC<{
                     <IonItem>
                         <IonLabel position="floating">Status</IonLabel>
                         <IonSelect
+                            ref={ionSelectStatus}
                             cancelText="Torna Indietro"
                             mode="ios"
                             interface="action-sheet"

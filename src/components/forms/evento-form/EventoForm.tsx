@@ -9,7 +9,7 @@ import {
     IonButton,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { useState, useEffect, FormEvent, useCallback } from "react";
+import { useState, useEffect, FormEvent, useCallback, useRef } from "react";
 import { Entity } from "../../../entities/entity";
 import { Evento } from "../../../entities/evento.model";
 import { Immobile } from "../../../entities/immobile.model";
@@ -66,7 +66,11 @@ const EventoForm: React.FC<{
 
     const [isVisit, setIsVisit] = useState<boolean>(false);
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
+    const ionSelectOrario = useRef<HTMLIonSelectElement>(null);
+
+    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
+        useSingleClick();
 
     const {
         datePickerIsOpen,
@@ -280,6 +284,7 @@ const EventoForm: React.FC<{
         const submitFormIfValid = async (e: KeyboardEvent) => {
             if (e.key === "Enter" && !isError && !isFormInvalid) {
                 setHasBeenClicked(true);
+                closeIonSelects([ionSelectStatus, ionSelectOrario]);
                 if (nameUpdated) {
                     hideAlert();
                     props.backToList();
@@ -296,6 +301,7 @@ const EventoForm: React.FC<{
     }, [
         presentAlert,
         hideAlert,
+        closeIonSelects,
         props,
         nameUpdated,
         getDescrizioneCompleta,
@@ -360,6 +366,7 @@ const EventoForm: React.FC<{
                                     Status Persona
                                 </IonLabel>
                                 <IonSelect
+                                    ref={ionSelectStatus}
                                     cancelText="Torna Indietro"
                                     mode="ios"
                                     interface="action-sheet"
@@ -415,6 +422,7 @@ const EventoForm: React.FC<{
                         }}
                     >
                         <FormSelect
+                            ref={ionSelectOrario}
                             title="Orario della Visita"
                             value={inputTimeValue}
                             function={inputTimeChangedHandler}

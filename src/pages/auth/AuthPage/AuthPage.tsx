@@ -26,7 +26,6 @@ import { useAppDispatch } from "../../../hooks";
 import { loginData } from "../../../store/auth-slice";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import useSingleClick from "../../../hooks/use-single-click";
-import { freeFocus } from "../../../utils/focusUtil";
 import { eyeOffOutline, eyeOutline } from "ionicons/icons";
 
 const AuthPage: React.FC<{}> = () => {
@@ -281,7 +280,6 @@ const AuthPage: React.FC<{}> = () => {
 
     const preventSubmit = (event: FormEvent) => {
         event.preventDefault();
-        freeFocus();
     };
 
     const loginInputs = (

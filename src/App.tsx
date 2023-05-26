@@ -238,24 +238,22 @@ export default App;
 
 /*
 
-- Psw flow con doppio invio - VINTO
-- Error handling psw page - VINTO
-
 IMPROVEMENTS 
 
-- Quando modifichi le note di una visita se le azzeri rimangono, correggere
-- Quando disattivi una persona lascia il focus sul select - focus-util 
+- Ogni volta che chiudi un form chiudi ogni possibile select
+- permetti il doppio click sul codice - libera focus
+- 3 tentativi e sei fuori
 - Proprietari non si vedono immobili aprendo da persona
-- Doppio indietro e proprietario inesistente
-- 1970 primo contatto è falso
 
 *****
 
+- 
 - Retrieve foto firmate oppure foto originali
 - Navigazione su singolo immobile rivista
 - Navigazione su singola persona rivista
 - Disattiva button su persona
 - Note private su Immobile
+- Proprietario inesistente e 1970 primo contatto è falso
 - Parenti tra persone
 
 - Deploy ed enjoy nuova versione
@@ -274,5 +272,7 @@ IMPROVEMENTS
 - IAM Roles sul DB
 - Cloudfront Price Class 100
 
-- FINITO PER SEMPRE per adesso
+- CURRICULUM AD ARIANNA
+- LINKEDIN 
+
 */

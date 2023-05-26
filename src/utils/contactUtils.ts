@@ -64,6 +64,9 @@ const isContactAlreadyPresent = async (presentAlert: any, persona: Persona) => {
     });
 };
 
+const getStringIfRelevant = (name: string) =>
+    name !== "-" && name !== "." && name !== "/" ? name : "";
+
 export const saveContact = async (
     presentAlert: any,
     persona: Persona,
@@ -77,7 +80,7 @@ export const saveContact = async (
         persona
     );
     if (isPersonaAlreadyPresent !== false) return;
-    const [givenName, familyName] = persona.nome!.split(" ");
+    const [givenName, middleName, familyName] = persona.nome!.split(" ");
     const emails = [];
     if (persona.email) emails.push({ label: "email", address: persona.email });
     const phoneNumbers = [];
@@ -87,9 +90,9 @@ export const saveContact = async (
         Contacts.saveContact({
             contactType: ContactType.Person,
             namePrefix: "",
-            givenName,
-            middleName: "",
-            familyName,
+            givenName: getStringIfRelevant(givenName),
+            middleName: getStringIfRelevant(middleName),
+            familyName: getStringIfRelevant(familyName),
             nameSuffix: "",
             nickname: "",
             jobTitle: "",
