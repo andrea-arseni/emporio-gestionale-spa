@@ -26,7 +26,13 @@ const useSingleClick = () => {
         []
     );
 
-    return { hasBeenClicked, setHasBeenClicked, closeIonSelects };
+    const releaseFocus = useCallback(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, []);
+
+    return { hasBeenClicked, setHasBeenClicked, closeIonSelects, releaseFocus };
 };
 
 export default useSingleClick;

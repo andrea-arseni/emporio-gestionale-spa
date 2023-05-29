@@ -238,16 +238,19 @@ export default App;
 
 /*
 
-IMPROVEMENTS 
+- Ogni volta che chiudi un form chiudi ogni possibile select - VINTO
+- applica un release focus serio - VINTO
 
-- Ogni volta che chiudi un form chiudi ogni possibile select
-- permetti il doppio click sul codice - libera focus
+IMPROVEMENTS 29/5/2023
+
 - 3 tentativi e sei fuori
-- Proprietari non si vedono immobili aprendo da persona
 
 *****
+- Quando scade il token non fare "Errore nella lettura del token" fai la logout
+- Se elimini il dove da un appuntamento deve mostrare l'indirizzo dell'immobile
+- Non si vedono immobili aprendo da persona
+- Così rimuove le proprietà da solo
 
-- 
 - Retrieve foto firmate oppure foto originali
 - Navigazione su singolo immobile rivista
 - Navigazione su singola persona rivista
@@ -255,16 +258,18 @@ IMPROVEMENTS
 - Note private su Immobile
 - Proprietario inesistente e 1970 primo contatto è falso
 - Parenti tra persone
+- @ionic-native/whatsapp
+- Cache the images 
 
 - Deploy ed enjoy nuova versione
-
-- NATIVEAPPS ONLINE
 
 - WEBSITE
 
 - Classe Eenergetica Maiuscola
 - Spese Extra non previste
 - Rendita
+
+- NATIVEAPPS ONLINE
 
 - OPTIMAL ARCHITECTURE
 

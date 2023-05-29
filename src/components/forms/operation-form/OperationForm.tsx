@@ -65,7 +65,8 @@ const FormOperation: React.FC<{
 
     const [nameUpdated, isNameUpdated] = useState<boolean>(false);
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const { hasBeenClicked, setHasBeenClicked, releaseFocus } =
+        useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -158,10 +159,8 @@ const FormOperation: React.FC<{
     useEffect(() => {
         const isFormDisabled =
             (!props.operation &&
-                (!inputDescrizioneIsTouched ||
-                    inputDescrizioneIsInvalid ||
+                (inputDescrizioneIsInvalid ||
                     !inputDateValue ||
-                    !inputImportoIsTouched ||
                     inputImportoIsInvalid)) ||
             (props.operation &&
                 (!inputDateValue ||
@@ -169,13 +168,15 @@ const FormOperation: React.FC<{
                     !inputImportoValue));
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (!isFormDisabled && e.key === "Enter" && !isError) {
+            if (e.key === "Enter") {
                 setHasBeenClicked(true);
-                if (nameUpdated) {
-                    hideAlert();
-                    props.backToList();
-                } else if (hasBeenClicked) {
-                    await eseguiForm();
+                if (!isFormDisabled && !isError) {
+                    if (nameUpdated) {
+                        hideAlert();
+                        props.backToList();
+                    } else if (hasBeenClicked) {
+                        await eseguiForm();
+                    }
                 }
             }
         };
@@ -190,6 +191,7 @@ const FormOperation: React.FC<{
         errorHandler,
         eseguiForm,
         setHasBeenClicked,
+        releaseFocus,
         hasBeenClicked,
         isError,
         props,

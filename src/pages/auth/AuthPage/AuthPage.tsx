@@ -34,9 +34,14 @@ const AuthPage: React.FC<{}> = () => {
 
     const [progress, setProgress] = useState<number>(1);
 
+    const [attempt, setAttempt] = useState<number>(1);
+
+    const increaseAttempt = () => setAttempt((prevAttempt) => ++prevAttempt);
+
     const { errorHandler, isError } = useErrorHandler();
 
-    const { hasBeenClicked, setHasBeenClicked } = useSingleClick();
+    const { hasBeenClicked, setHasBeenClicked, releaseFocus } =
+        useSingleClick();
 
     const [timeRemaining, setTimeRemaining] = useState<number>(120);
 
@@ -235,14 +240,23 @@ const AuthPage: React.FC<{}> = () => {
                 : submitForgotPasswordCall());
         } catch (e: any) {
             setShowLoading(false);
+            if (firstStepAccomplished) increaseAttempt();
             errorHandler(
                 e,
                 `${
                     mode === "login" ? "Login" : "Richiesta recupero password"
-                } non riuscita`
+                } non riuscita`,
+                attempt === 3
             );
         }
-    }, [errorHandler, mode, submitForgotPasswordCall, submitLoginCall]);
+    }, [
+        errorHandler,
+        mode,
+        submitForgotPasswordCall,
+        submitLoginCall,
+        firstStepAccomplished,
+        attempt,
+    ]);
 
     const onSubmitHandler = async (e: FormEvent) => {
         e.preventDefault();
@@ -251,13 +265,10 @@ const AuthPage: React.FC<{}> = () => {
 
     useEffect(() => {
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (e.key === "Enter" && !isError && !formIsInvalid()) {
+            if (e.key === "Enter") {
+                releaseFocus();
                 setHasBeenClicked(true);
-                if (
-                    hasBeenClicked ||
-                    (firstStepAccomplished &&
-                        inputCodeValue.trim().length === 6)
-                ) {
+                if (hasBeenClicked && !formIsInvalid() && !isError) {
                     await eseguiForm();
                 }
             }
@@ -270,8 +281,9 @@ const AuthPage: React.FC<{}> = () => {
     }, [
         eseguiForm,
         formIsInvalid,
-        hasBeenClicked,
+        releaseFocus,
         setHasBeenClicked,
+        hasBeenClicked,
         isError,
         firstStepAccomplished,
         inputCodeValue,
@@ -351,6 +363,17 @@ const AuthPage: React.FC<{}> = () => {
             {firstStepAccomplished && (
                 <div className={`centered vertical ${styles.progressDiv}`}>
                     <p className={`alignedCenter ${styles.timeSentence}`}>
+                        <em
+                            style={{
+                                color:
+                                    attempt === 1
+                                        ? "green"
+                                        : attempt === 2
+                                        ? "orange"
+                                        : "red",
+                            }}
+                        >{`Tentativo ${attempt} di 3`}</em>
+                        <br />
                         {`Tempo Rimanente:`}
                         <br />
                         {getTiming()}
