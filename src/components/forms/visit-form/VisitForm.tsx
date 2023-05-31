@@ -234,19 +234,20 @@ const FormVisit: React.FC<{
                 return null;
             }
         };
-        if (personaValue) {
+        if (personaValue && !visit?.id) {
             retrieveEvents(personaValue.id!);
         }
         return () => {
             mounted = false;
         };
-    }, [personaValue]);
+    }, [personaValue, visit]);
 
     const eseguiForm = useCallback(async () => {
         const mode = visit && visit.id ? "update" : "insert";
         dispatch(changeLoading(true));
         const quando =
             inputDateValue.split("T")[0] + "T" + inputTimeValue + ":00";
+
         const reqBody = {
             quando,
             idPersona: personaValue
@@ -263,6 +264,7 @@ const FormVisit: React.FC<{
             dove: inputDoveValue,
             note: inputNoteValue,
         };
+
         try {
             if (mode === "update") {
                 await axiosInstance.patch(`/visite/${visit!.id}`, reqBody);

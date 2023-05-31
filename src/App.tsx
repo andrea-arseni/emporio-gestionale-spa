@@ -243,16 +243,16 @@ export default App;
 - 3 tentativi e sei fuori - VINTO
 - Quando sei con il focus su descrizione immobile non considerare il doppio click - VINTO
 - Quando scade il token non fare "Errore nella lettura del token" fai la logout - VINTO
+- Se elimini l'immobile da un appuntamento deve eliminare l'immobile - VINTO
 
-IMPROVEMENTS 31/5/2023
+IMPROVEMENTS 1/6/2023
 
-- Se elimini il dove da un appuntamento deve mostrare l'indirizzo dell'immobile
 - Non si vedono immobili aprendo da persona
 - Così rimuove le proprietà da solo
+- Retrieve foto firmate oppure foto originali
 
 *****
 
-- Retrieve foto firmate oppure foto originali
 - Navigazione su singolo immobile rivista
 - Navigazione su singola persona rivista
 - Disattiva button su persona

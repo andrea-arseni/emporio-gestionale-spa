@@ -2,13 +2,13 @@ export const getLavoroTitleColor = (input: string) => {
     input = input.toLowerCase();
     switch (input) {
         case "a_aperto":
-            return "secondary";
+            return "light";
         case "b_aspetta":
-            return "warning";
+            return "tertiary";
         case "c_concluso":
-            return "dark";
+            return "primary";
         case "d_annullato":
-            return "danger";
+            return "dark";
         default:
             return "";
     }
@@ -26,7 +26,7 @@ export const getPersonaNameColor = (input: string) => {
         case "e_evita":
             return "danger";
         case "c_aspetta":
-            return "warning";
+            return "tertiary";
         default:
             return "";
     }
