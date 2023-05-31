@@ -1161,8 +1161,19 @@ const ImmobileForm: React.FC<{
     const ionSelectTipoContratto = useRef<HTMLIonSelectElement>(null);
     const ionSelectCauzione = useRef<HTMLIonSelectElement>(null);
 
-    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
-        useSingleClick();
+    const {
+        hasBeenClicked,
+        setHasBeenClicked,
+        closeIonSelects,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+    } = useSingleClick();
+
+    const touchDescrizioneHandler = () => {
+        inputDescrizioneTouchedHandler();
+        deactivateTextAreaFocus();
+    };
 
     useEffect(() => {
         const isFormInvalid =
@@ -1304,7 +1315,7 @@ const ImmobileForm: React.FC<{
         };
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (e.key === "Enter" && !isError) {
+            if (e.key === "Enter" && !isError && !isFocusOnTextArea) {
                 setHasBeenClicked(true);
                 closeIonSelects([
                     ionSelectTipologia,
@@ -1366,6 +1377,7 @@ const ImmobileForm: React.FC<{
         errorHandler,
         setHasBeenClicked,
         closeIonSelects,
+        isFocusOnTextArea,
         hasBeenClicked,
         isError,
         inputAltezzaValue,
@@ -1730,7 +1742,8 @@ const ImmobileForm: React.FC<{
                         title={`Descrizione ${getErrorDescrizione()}`}
                         inputValue={inputDescrizioneValue}
                         inputChangeHandler={inputDescrizioneChangedHandler}
-                        inputTouchHandler={inputDescrizioneTouchedHandler}
+                        inputTouchHandler={touchDescrizioneHandler}
+                        focusHandler={activateTextAreaFocus}
                         reset={inputDescrizioneReset}
                     />
                 </FormGroup>

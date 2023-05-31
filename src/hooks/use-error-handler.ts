@@ -2,6 +2,7 @@ import { useIonAlert } from "@ionic/react";
 import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch } from "../hooks";
 import { setError } from "../store/ui-slice";
+import { performLogout } from "../store/auth-thunk";
 
 const useErrorHandler = () => {
     const [isError, setIsError] = useState<boolean>(false);
@@ -33,9 +34,30 @@ const useErrorHandler = () => {
                     ? e.response.data
                     : null;
 
-            const subHeader = originalErrorMessage ? message : "";
+            if (
+                originalErrorMessage ===
+                "Errore nella lettura del token, procedura annullata."
+            ) {
+                reload = true;
+                dispatch(performLogout());
+            }
 
-            let text = originalErrorMessage ? originalErrorMessage : message;
+            const subHeader =
+                originalErrorMessage &&
+                originalErrorMessage ===
+                    "Errore nella lettura del token, procedura annullata."
+                    ? "Sessione di 90 giorni scaduta."
+                    : originalErrorMessage
+                    ? message
+                    : "";
+
+            let text =
+                originalErrorMessage ===
+                "Errore nella lettura del token, procedura annullata."
+                    ? "Rifare la login."
+                    : originalErrorMessage
+                    ? originalErrorMessage
+                    : message;
 
             const getButtons = () => {
                 let buttons = [
@@ -57,7 +79,7 @@ const useErrorHandler = () => {
                 backdropDismiss: true,
             });
         },
-        [presentAlert, resetError]
+        [presentAlert, resetError, dispatch]
     );
 
     useEffect(() => {

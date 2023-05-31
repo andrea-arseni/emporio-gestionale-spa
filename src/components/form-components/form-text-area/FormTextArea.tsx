@@ -1,6 +1,6 @@
 import { IonIcon, IonItem, IonLabel, IonNote, IonTextarea } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 const FormTextArea: React.FC<{
     title: string;
@@ -13,6 +13,7 @@ const FormTextArea: React.FC<{
     readonly?: boolean;
     rows?: number;
     autofocus?: boolean;
+    focusHandler?: () => void;
 }> = (props) => {
     const ref = useRef<HTMLIonTextareaElement>(null);
 
@@ -44,6 +45,7 @@ const FormTextArea: React.FC<{
                 value={props.inputValue}
                 onIonChange={props.inputChangeHandler}
                 onIonBlur={props.inputTouchHandler}
+                onFocus={props.focusHandler}
             ></IonTextarea>
             {props.inputIsInvalid && (
                 <IonNote color="danger">{props.errorMessage}</IonNote>

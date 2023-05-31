@@ -69,8 +69,14 @@ const EventoForm: React.FC<{
     const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
     const ionSelectOrario = useRef<HTMLIonSelectElement>(null);
 
-    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
-        useSingleClick();
+    const {
+        hasBeenClicked,
+        setHasBeenClicked,
+        closeIonSelects,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+    } = useSingleClick();
 
     const {
         datePickerIsOpen,
@@ -118,6 +124,11 @@ const EventoForm: React.FC<{
         inputIsInvalid: inputNoteIsInvalid,
         reset: inputNoteReset,
     } = useInput(() => true, eventDescription);
+
+    const touchDescrizioneHandler = () => {
+        inputNoteTouchedHandler();
+        deactivateTextAreaFocus();
+    };
 
     useEffect(() => {
         const timeOut = setTimeout(() => {
@@ -282,7 +293,12 @@ const EventoForm: React.FC<{
                     inputNoteValue.toString().trim().length === 0));
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (e.key === "Enter" && !isError && !isFormInvalid) {
+            if (
+                e.key === "Enter" &&
+                !isError &&
+                !isFormInvalid &&
+                !isFocusOnTextArea
+            ) {
                 setHasBeenClicked(true);
                 closeIonSelects([ionSelectStatus, ionSelectOrario]);
                 if (nameUpdated) {
@@ -303,6 +319,7 @@ const EventoForm: React.FC<{
         hideAlert,
         closeIonSelects,
         props,
+        isFocusOnTextArea,
         nameUpdated,
         getDescrizioneCompleta,
         immobileInteresse?.id,
@@ -450,7 +467,8 @@ const EventoForm: React.FC<{
                             inputValue={inputNoteValue}
                             inputIsInvalid={inputNoteIsInvalid}
                             inputChangeHandler={inputNoteChangedHandler}
-                            inputTouchHandler={inputNoteTouchedHandler}
+                            inputTouchHandler={touchDescrizioneHandler}
+                            focusHandler={activateTextAreaFocus}
                             errorMessage={"Input non valido"}
                             reset={inputNoteReset}
                         />
@@ -463,7 +481,8 @@ const EventoForm: React.FC<{
                         inputValue={inputNoteValue}
                         inputIsInvalid={inputNoteIsInvalid}
                         inputChangeHandler={inputNoteChangedHandler}
-                        inputTouchHandler={inputNoteTouchedHandler}
+                        inputTouchHandler={touchDescrizioneHandler}
+                        focusHandler={activateTextAreaFocus}
                         errorMessage={"Input non valido"}
                         reset={inputNoteReset}
                     />

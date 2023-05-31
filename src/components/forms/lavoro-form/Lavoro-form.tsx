@@ -27,8 +27,14 @@ const LavoroForm: React.FC<{
 
     const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
 
-    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
-        useSingleClick();
+    const {
+        hasBeenClicked,
+        setHasBeenClicked,
+        closeIonSelects,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+    } = useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -55,6 +61,11 @@ const LavoroForm: React.FC<{
         inputChangedHandler: inputDescrizioneChangedHandler,
         reset: inputDescrizioneReset,
     } = useInput(() => true);
+
+    const touchDescrizioneHandler = () => {
+        inputDescrizioneTouchedHandler();
+        deactivateTextAreaFocus();
+    };
 
     const [status, setStatus] = useState<lavoroType>(
         props.lavoro ? (props.lavoro.status as lavoroType) : "A_APERTO"
@@ -137,7 +148,12 @@ const LavoroForm: React.FC<{
                 status);
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (isFormValid && e.key === "Enter" && !isError) {
+            if (
+                isFormValid &&
+                e.key === "Enter" &&
+                !isError &&
+                !isFocusOnTextArea
+            ) {
                 setHasBeenClicked(true);
                 closeIonSelects([ionSelectStatus]);
                 if (nameUpdated) {
@@ -160,6 +176,7 @@ const LavoroForm: React.FC<{
         eseguiForm,
         setHasBeenClicked,
         closeIonSelects,
+        isFocusOnTextArea,
         hasBeenClicked,
         isError,
         props,
@@ -212,7 +229,8 @@ const LavoroForm: React.FC<{
                         inputValue={inputDescrizioneValue}
                         inputIsInvalid={inputDescrizioneIsInvalid}
                         inputChangeHandler={inputDescrizioneChangedHandler}
-                        inputTouchHandler={inputDescrizioneTouchedHandler}
+                        inputTouchHandler={touchDescrizioneHandler}
+                        focusHandler={activateTextAreaFocus}
                         errorMessage={"Input non valido"}
                         reset={inputDescrizioneReset}
                     />

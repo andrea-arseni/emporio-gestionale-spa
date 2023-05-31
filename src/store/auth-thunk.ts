@@ -64,6 +64,7 @@ export const performLogout = createAsyncThunk(
             localStorage.removeItem("authToken");
             localStorage.removeItem("userData");
             dispatch(logout());
+            await new Promise((r) => setTimeout(r, 5200));
             window.location.replace("/");
         }
     }

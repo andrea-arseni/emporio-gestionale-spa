@@ -32,7 +32,21 @@ const useSingleClick = () => {
         }
     }, []);
 
-    return { hasBeenClicked, setHasBeenClicked, closeIonSelects, releaseFocus };
+    const [isFocusOnTextArea, setIsFocusOnTextArea] = useState<boolean>(false);
+
+    const activateTextAreaFocus = () => setIsFocusOnTextArea(true);
+
+    const deactivateTextAreaFocus = () => setIsFocusOnTextArea(false);
+
+    return {
+        hasBeenClicked,
+        setHasBeenClicked,
+        closeIonSelects,
+        releaseFocus,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+    };
 };
 
 export default useSingleClick;

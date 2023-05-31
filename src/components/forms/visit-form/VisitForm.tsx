@@ -45,8 +45,14 @@ const FormVisit: React.FC<{
     const ionSelectAgente = useRef<HTMLIonSelectElement>(null);
     const ionSelectOrario = useRef<HTMLIonSelectElement>(null);
 
-    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
-        useSingleClick();
+    const {
+        hasBeenClicked,
+        setHasBeenClicked,
+        closeIonSelects,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+    } = useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -132,6 +138,11 @@ const FormVisit: React.FC<{
         inputTouchedHandler: inputNoteTouchedHandler,
         reset: inputNoteReset,
     } = useInput(() => true, visit && visit.note ? visit.note : null);
+
+    const noteTouchHandler = () => {
+        inputNoteTouchedHandler();
+        deactivateTextAreaFocus();
+    };
 
     const { list: immobileItemsList, closeItemsList: closeImmobileItemsList } =
         useList();
@@ -304,7 +315,8 @@ const FormVisit: React.FC<{
                 !props.readonly &&
                 !isFormDisabled &&
                 !isError &&
-                e.key === "Enter"
+                e.key === "Enter" &&
+                !isFocusOnTextArea
             ) {
                 setHasBeenClicked(true);
                 closeIonSelects([ionSelectAgente, ionSelectOrario]);
@@ -328,6 +340,7 @@ const FormVisit: React.FC<{
         closeTheJob,
         setHasBeenClicked,
         closeIonSelects,
+        isFocusOnTextArea,
         hasBeenClicked,
         isQuerySuccessfull,
         isError,
@@ -597,7 +610,8 @@ const FormVisit: React.FC<{
                         title={`Note`}
                         inputValue={inputNoteValue}
                         inputChangeHandler={inputNoteChangedHandler}
-                        inputTouchHandler={inputNoteTouchedHandler}
+                        inputTouchHandler={noteTouchHandler}
+                        focusHandler={activateTextAreaFocus}
                         reset={inputNoteReset}
                     />
                     {!props.readonly && (

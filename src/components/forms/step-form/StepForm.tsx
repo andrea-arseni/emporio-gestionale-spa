@@ -51,8 +51,14 @@ const StepForm: React.FC<{
 
     const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
 
-    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
-        useSingleClick();
+    const {
+        hasBeenClicked,
+        setHasBeenClicked,
+        closeIonSelects,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+    } = useSingleClick();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -65,6 +71,11 @@ const StepForm: React.FC<{
         inputChangedHandler: inputDescrizioneChangedHandler,
         reset: inputDescrizioneReset,
     } = useInput((el) => el.toString().length > 0, stepDescription);
+
+    const descrizioneTouchHandler = () => {
+        inputDescrizioneTouchedHandler();
+        deactivateTextAreaFocus();
+    };
 
     const [status, setStatus] = useState<lavoroType>(
         props.lavoro.status as lavoroType
@@ -134,7 +145,12 @@ const StepForm: React.FC<{
             (props.step && !inputDescrizioneIsInvalid);
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (isFormValid && !isError && e.key === "Enter") {
+            if (
+                isFormValid &&
+                !isFocusOnTextArea &&
+                !isError &&
+                e.key === "Enter"
+            ) {
                 setHasBeenClicked(true);
                 closeIonSelects([ionSelectStatus]);
                 if (querySuccessfull) {
@@ -157,6 +173,7 @@ const StepForm: React.FC<{
         eseguiForm,
         setHasBeenClicked,
         closeIonSelects,
+        isFocusOnTextArea,
         hasBeenClicked,
         isError,
         props,
@@ -200,7 +217,8 @@ const StepForm: React.FC<{
                     inputValue={inputDescrizioneValue}
                     inputIsInvalid={inputDescrizioneIsInvalid}
                     inputChangeHandler={inputDescrizioneChangedHandler}
-                    inputTouchHandler={inputDescrizioneTouchedHandler}
+                    inputTouchHandler={descrizioneTouchHandler}
+                    focusHandler={activateTextAreaFocus}
                     errorMessage={"Input non valido"}
                     reset={inputDescrizioneReset}
                     autofocus

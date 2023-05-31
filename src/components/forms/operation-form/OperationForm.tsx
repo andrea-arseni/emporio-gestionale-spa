@@ -65,8 +65,19 @@ const FormOperation: React.FC<{
 
     const [nameUpdated, isNameUpdated] = useState<boolean>(false);
 
-    const { hasBeenClicked, setHasBeenClicked, releaseFocus } =
-        useSingleClick();
+    const {
+        hasBeenClicked,
+        setHasBeenClicked,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+        releaseFocus,
+    } = useSingleClick();
+
+    const touchDescrizioneHandler = () => {
+        inputDescrizioneTouchedHandler();
+        deactivateTextAreaFocus();
+    };
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -168,7 +179,7 @@ const FormOperation: React.FC<{
                     !inputImportoValue));
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !isFocusOnTextArea) {
                 setHasBeenClicked(true);
                 if (!isFormDisabled && !isError) {
                     if (nameUpdated) {
@@ -192,6 +203,7 @@ const FormOperation: React.FC<{
         eseguiForm,
         setHasBeenClicked,
         releaseFocus,
+        isFocusOnTextArea,
         hasBeenClicked,
         isError,
         props,
@@ -244,7 +256,8 @@ const FormOperation: React.FC<{
                     inputValue={inputDescrizioneValue}
                     inputIsInvalid={inputDescrizioneIsInvalid}
                     inputChangeHandler={inputDescrizioneChangedHandler}
-                    inputTouchHandler={inputDescrizioneTouchedHandler}
+                    inputTouchHandler={touchDescrizioneHandler}
+                    focusHandler={activateTextAreaFocus}
                     errorMessage={"Input non valido"}
                     reset={inputDescrizioneReset}
                 />

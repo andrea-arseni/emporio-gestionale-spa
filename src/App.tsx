@@ -240,26 +240,26 @@ export default App;
 
 - Ogni volta che chiudi un form chiudi ogni possibile select - VINTO
 - applica un release focus serio - VINTO
+- 3 tentativi e sei fuori - VINTO
+- Quando sei con il focus su descrizione immobile non considerare il doppio click - VINTO
+- Quando scade il token non fare "Errore nella lettura del token" fai la logout - VINTO
 
-IMPROVEMENTS 29/5/2023
+IMPROVEMENTS 31/5/2023
 
-- 3 tentativi e sei fuori
-
-*****
-- Quando scade il token non fare "Errore nella lettura del token" fai la logout
 - Se elimini il dove da un appuntamento deve mostrare l'indirizzo dell'immobile
 - Non si vedono immobili aprendo da persona
 - Così rimuove le proprietà da solo
+
+*****
 
 - Retrieve foto firmate oppure foto originali
 - Navigazione su singolo immobile rivista
 - Navigazione su singola persona rivista
 - Disattiva button su persona
 - Note private su Immobile
-- Proprietario inesistente e 1970 primo contatto è falso
-- Parenti tra persone
-- @ionic-native/whatsapp
-- Cache the images 
+- Se trovi una persona già esistente e la vai a visitare proprietario inesistente e 1970 primo contatto è falso
+- Cookie on little images 
+- Parenti
 
 - Deploy ed enjoy nuova versione
 

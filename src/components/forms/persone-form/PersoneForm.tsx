@@ -57,8 +57,14 @@ const PersoneForm: React.FC<{
     const ionSelectStatus = useRef<HTMLIonSelectElement>(null);
     const ionSelectProvenienza = useRef<HTMLIonSelectElement>(null);
 
-    const { hasBeenClicked, setHasBeenClicked, closeIonSelects } =
-        useSingleClick();
+    const {
+        hasBeenClicked,
+        setHasBeenClicked,
+        closeIonSelects,
+        isFocusOnTextArea,
+        activateTextAreaFocus,
+        deactivateTextAreaFocus,
+    } = useSingleClick();
 
     const [choiceMode, setChoiceMode] = useState<
         "proprietà" | "locazione" | "interesse" | null
@@ -203,6 +209,11 @@ const PersoneForm: React.FC<{
         inputTouchedHandler: inputNoteTouchedHandler,
         reset: inputNoteReset,
     } = useInput(() => true);
+
+    const noteTouchHandler = () => {
+        inputNoteTouchedHandler();
+        deactivateTextAreaFocus();
+    };
 
     const getPhoneValue = useCallback(() => {
         let phoneValue: string = inputPhoneValue
@@ -361,7 +372,12 @@ const PersoneForm: React.FC<{
             inputStatusIsInvalid;
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (!isFormDisabled && !isError && e.key === "Enter") {
+            if (
+                !isFormDisabled &&
+                !isError &&
+                e.key === "Enter" &&
+                !isFocusOnTextArea
+            ) {
                 setHasBeenClicked(true);
                 closeIonSelects([ionSelectStatus, ionSelectProvenienza]);
                 if (isQuerySuccessfull) {
@@ -383,6 +399,7 @@ const PersoneForm: React.FC<{
         eseguiForm,
         setHasBeenClicked,
         closeIonSelects,
+        isFocusOnTextArea,
         hasBeenClicked,
         isError,
         immobileInteresse,
@@ -556,7 +573,8 @@ const PersoneForm: React.FC<{
                             title={"Note"}
                             inputValue={inputNoteValue}
                             inputChangeHandler={inputNoteChangedHandler}
-                            inputTouchHandler={inputNoteTouchedHandler}
+                            inputTouchHandler={noteTouchHandler}
+                            focusHandler={activateTextAreaFocus}
                             reset={inputNoteReset}
                         />
                     )}
