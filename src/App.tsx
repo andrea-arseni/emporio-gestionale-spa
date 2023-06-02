@@ -249,19 +249,18 @@ export default App;
 - Foto singola diretta, lista foto zip - VINTO
 - Retrieve foto firmate oppure foto originali anche per multiple - VINTO
 - Anche per IOS e anche per Android - VINTO
+- Disattiva button su persona - VINTO
 
 IMPROVEMENTS 1/6/2023
 
-- Disattiva button su persona
 - Note private su Immobile
-
 - Navigazione su singolo obiettivo rivista
-
 
 *****
 
-- Navigazione su singolo immobile rivista
-- Navigazione su singola persona rivista
+- Navigazione su singolo immobile rivista - 3
+- Navigazione su singola persona rivista - 4
+
 - Se trovi una persona già esistente e la vai a visitare proprietario inesistente e 1970 primo contatto è falso
 - Cookie on little images 
 - Parenti

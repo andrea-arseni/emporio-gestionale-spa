@@ -270,6 +270,13 @@ const ImmobileForm: React.FC<{
     );
 
     const {
+        inputValue: inputNotePrivateValue,
+        inputTouchedHandler: inputNotePrivateTouchedHandler,
+        inputChangedHandler: inputNotePrivateChangedHandler,
+        reset: inputNotePrivateReset,
+    } = useInput(() => true, props.immobile?.caratteristiche?.notePrivate);
+
+    const {
         inputValue: inputEsposizioneValue,
         inputChangedHandler: inputEsposizioneChangedHandler,
     } = useInput(
@@ -681,6 +688,7 @@ const ImmobileForm: React.FC<{
                 setProprietarioValue(res.data.proprietario);
                 setInquiliniValue(res.data.inquilini);
                 const caratteristiche = res.data.caratteristicheImmobile;
+
                 setShowLoading(false);
                 setIsCantina(
                     caratteristiche &&
@@ -710,6 +718,10 @@ const ImmobileForm: React.FC<{
                         caratteristiche.speseExtraNote &&
                         caratteristiche.speseExtraNote !==
                             "Spese Extra non previste"
+                );
+                inputNotePrivateChangedHandler(
+                    null,
+                    caratteristiche.notePrivate
                 );
                 inputDescrizioneChangedHandler(
                     null,
@@ -837,6 +849,7 @@ const ImmobileForm: React.FC<{
         inputTavernaChangedHandler,
         inputTipoContrattoChangedHandler,
         inputTotalePianiChangedHandler,
+        inputNotePrivateChangedHandler,
         caratteristicheFetched,
         setCaratteristicheFetched,
     ]);
@@ -1024,7 +1037,8 @@ const ImmobileForm: React.FC<{
             inputTipoContrattoValue,
             inputCauzioneValue,
             inputAltezzaValue,
-            inputTotalePianiValue
+            inputTotalePianiValue,
+            inputNotePrivateValue
         );
         setShowLoading(true);
         const reqBody = {
@@ -1175,6 +1189,11 @@ const ImmobileForm: React.FC<{
         deactivateTextAreaFocus();
     };
 
+    const touchNotePrivateHandler = () => {
+        inputNotePrivateTouchedHandler();
+        deactivateTextAreaFocus();
+    };
+
     useEffect(() => {
         const isFormInvalid =
             !inputTitleValue ||
@@ -1279,7 +1298,8 @@ const ImmobileForm: React.FC<{
                 inputTipoContrattoValue,
                 inputCauzioneValue,
                 inputAltezzaValue,
-                inputTotalePianiValue
+                inputTotalePianiValue,
+                inputNotePrivateValue
             );
             setShowLoading(true);
             const reqBody = {
@@ -1377,6 +1397,7 @@ const ImmobileForm: React.FC<{
         errorHandler,
         setHasBeenClicked,
         closeIonSelects,
+        inputNotePrivateValue,
         isFocusOnTextArea,
         hasBeenClicked,
         isError,
@@ -2062,10 +2083,18 @@ const ImmobileForm: React.FC<{
                         </>
                     )}
                 </FormGroup>
+                <FormGroup title="Note private - visibili solo a noi ">
+                    <TextArea
+                        title={`Note Private`}
+                        inputValue={inputNotePrivateValue}
+                        inputChangeHandler={inputNotePrivateChangedHandler}
+                        inputTouchHandler={touchNotePrivateHandler}
+                        focusHandler={activateTextAreaFocus}
+                        reset={inputNotePrivateReset}
+                    />
+                </FormGroup>
                 <ItemSelector
-                    titoloGruppo={`Proprietario ${
-                        proprietarioValue ? "presente" : "mancante"
-                    }`}
+                    titoloGruppo={`Proprietario`}
                     titoloBottone="Aggiungi Proprietario dalla Lista"
                     isItemPresent={!!proprietarioValue}
                     getItem={() => getPersone("proprietario")}

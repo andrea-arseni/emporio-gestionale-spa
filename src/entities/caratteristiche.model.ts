@@ -50,6 +50,7 @@ export class Caratteristiche {
         public tipoContratto: string | null,
         public cauzione: string | null,
         public altezza: string | null,
-        public totalePiani: number | null
+        public totalePiani: number | null,
+        public notePrivate: string | null
     ) {}
 }
