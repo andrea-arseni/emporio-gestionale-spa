@@ -264,6 +264,15 @@ const Selector: React.FC<{
         });
     };
 
+    const performUpdate = () => {
+        props.localQuery ? setUpdate() : dispatch(setUpdate());
+    };
+
+    const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        performUpdate();
+        event.detail.complete();
+    };
+
     const getEntities = () => {
         const performAction = () => {
             props.backToList!();
@@ -330,6 +339,7 @@ const Selector: React.FC<{
                         setShowLoading={setShowLoading}
                         closeItems={closeItemsList}
                         selectMode={!!props.selectMode}
+                        performUpdate={performUpdate}
                     />
                 );
             case "eventi":
@@ -393,11 +403,6 @@ const Selector: React.FC<{
         return isNativeApp && isPlatform("ios")
             ? styles.fiveOtherElementsIos
             : styles.fiveOtherElements;
-    };
-
-    const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
-        props.localQuery ? setUpdate() : dispatch(setUpdate());
-        event.detail.complete();
     };
 
     return (

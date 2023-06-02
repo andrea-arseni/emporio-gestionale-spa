@@ -5,6 +5,7 @@ import {
     IonNote,
     IonItemOptions,
     useIonAlert,
+    IonLoading,
 } from "@ionic/react";
 import {
     createOutline,
@@ -12,8 +13,9 @@ import {
     openOutline,
     personAddOutline,
     trashOutline,
+    trendingDownOutline,
 } from "ionicons/icons";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Entity } from "../../entities/entity";
 import styles from "./Lists.module.css";
 import { Persona } from "../../entities/persona.model";
@@ -27,6 +29,7 @@ import { useAppSelector } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { getDayName } from "../../utils/timeUtils";
 import useErrorHandler from "../../hooks/use-error-handler";
+import axiosInstance from "../../utils/axiosInstance";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -37,6 +40,7 @@ const ListPersone: React.FC<{
     setShowLoading: Dispatch<SetStateAction<boolean>>;
     closeItems: () => void;
     selectMode: boolean;
+    performUpdate: () => void;
 }> = (props) => {
     const navigate = useNavigate();
 
@@ -55,6 +59,25 @@ const ListPersone: React.FC<{
     const { selectEntity, entitySelected } = useSelection(
         props.setCurrentEntity
     );
+
+    const [showLoading, setShowLoading] = useState<boolean>(false);
+
+    const disattivaPersona = async (id: number) => {
+        // loading
+        setShowLoading(true);
+        try {
+            // query di update
+            await axiosInstance.patch(`persone/${id}`, {
+                status: "D_DISATTIVA",
+            });
+            props.performUpdate();
+            setShowLoading(false);
+        } catch (e) {
+            setShowLoading(false);
+            // error handling
+            errorHandler(e, "Disattivazione non riuscita");
+        }
+    };
 
     const getTelefono = (persona: Persona) => {
         if (!persona.telefono) return <p>{"Telefono mancante"}</p>;
@@ -166,10 +189,23 @@ const ListPersone: React.FC<{
 
     return (
         <>
+            <IonLoading cssClass="loader" isOpen={showLoading} />
+
             {props.persone.map((persona: Persona) => (
                 <IonItemSliding key={persona.id!} id={persona.id?.toString()}>
                     {getPersona(persona)}
                     <IonItemOptions side="end">
+                        {persona.status?.toLowerCase() !== "d_disattiva" && (
+                            <ItemOption
+                                handler={() => {
+                                    props.closeItems();
+                                    disattivaPersona(persona.id!);
+                                }}
+                                colorType={"dark"}
+                                icon={trendingDownOutline}
+                                title={"Disattiva"}
+                            />
+                        )}
                         {isNativeApp && (
                             <ItemOption
                                 handler={() => {
@@ -180,7 +216,7 @@ const ListPersone: React.FC<{
                                         errorHandler
                                     );
                                 }}
-                                colorType={"dark"}
+                                colorType={"tertiary"}
                                 icon={personAddOutline}
                                 title={"Rubrica"}
                             />
