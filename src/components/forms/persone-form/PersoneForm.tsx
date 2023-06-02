@@ -38,18 +38,20 @@ import useErrorHandler from "../../../hooks/use-error-handler";
 import useSingleClick from "../../../hooks/use-single-click";
 
 const PersoneForm: React.FC<{
-    persona: Persona | null;
+    persona: Persona;
     backToList: () => void;
     setCurrentPersona: Dispatch<SetStateAction<Entity | null>>;
 }> = (props) => {
+    const [persona] = useState<Persona | null>(props.persona);
+
+    const { isError, presentAlert, hideAlert, errorHandler } =
+        useErrorHandler();
+
     const navigate = useNavigate();
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-
-    const { isError, presentAlert, hideAlert, errorHandler } =
-        useErrorHandler();
 
     const [isQuerySuccessfull, setIsQuerySuccessfull] =
         useState<boolean>(false);
@@ -78,11 +80,7 @@ const PersoneForm: React.FC<{
 
     const [currentImmobile, setCurrentImmobile] = useState<Entity | null>(null);
 
-    const [listHouses, setListHouses] = useState<Immobile[]>(
-        props.persona && props.persona.immobili
-            ? (props.persona.immobili as Immobile[])
-            : []
-    );
+    const [listHouses, setListHouses] = useState<Immobile[]>([]);
 
     const deleteHouse = (
         id: number,
@@ -101,8 +99,8 @@ const PersoneForm: React.FC<{
     };
 
     const [immobileLocato, setImmobileLocato] = useState<Immobile | null>(
-        props.persona && props.persona.immobileInquilino
-            ? (props.persona.immobileInquilino as Immobile)
+        persona && persona.immobileInquilino
+            ? (persona.immobileInquilino as Immobile)
             : null
     );
 
@@ -146,7 +144,7 @@ const PersoneForm: React.FC<{
         reset: inputNameReset,
     } = useInput(
         (el) => el.toString().trim().length > 4,
-        props.persona ? props.persona.nome : undefined
+        persona ? persona.nome : undefined
     );
 
     const {
@@ -158,7 +156,7 @@ const PersoneForm: React.FC<{
         reset: inputPhoneReset,
     } = useInput(
         (el) => !el || el.toString().trim().length > 0,
-        props.persona ? props.persona.telefono : null
+        persona ? persona.telefono : null
     );
 
     const {
@@ -170,7 +168,7 @@ const PersoneForm: React.FC<{
         reset: inputEmailReset,
     } = useInput(
         (el) => !el || /.+@.+\..+/.test(el.toString()),
-        props.persona ? props.persona.email : null
+        persona ? persona.email : null
     );
 
     const {
@@ -179,7 +177,7 @@ const PersoneForm: React.FC<{
         inputTouchedHandler: inputRuoloTouchedHandler,
         inputChangedHandler: inputRuoloChangedHandler,
         reset: inputRuoloReset,
-    } = useInput(() => true, props.persona ? props.persona.ruolo : null);
+    } = useInput(() => true, persona ? persona.ruolo : null);
 
     const {
         inputValue: inputProvenienzaValue,
@@ -188,8 +186,8 @@ const PersoneForm: React.FC<{
         inputChangedHandler: inputProvenienzaChangedHandler,
     } = useInput(
         () => true,
-        props.persona && props.persona.provenienza
-            ? props.persona.provenienza.toLowerCase().replace("_", " ")
+        persona && persona.provenienza
+            ? persona.provenienza.toLowerCase().replace("_", " ")
             : null
     );
 
@@ -200,7 +198,7 @@ const PersoneForm: React.FC<{
         inputChangedHandler: inputStatusChangedHandler,
     } = useInput(
         (el) => el.toString().length > 0,
-        props.persona ? props.persona.status : null
+        persona ? persona.status : null
     );
 
     const {
@@ -209,6 +207,24 @@ const PersoneForm: React.FC<{
         inputTouchedHandler: inputNoteTouchedHandler,
         reset: inputNoteReset,
     } = useInput(() => true);
+
+    useEffect(() => {
+        const fetchPersona = async () => {
+            try {
+                const res = await axiosInstance.get(`/persone/${persona?.id!}`);
+                if (res && res.data) {
+                    if (res.data.immobili)
+                        setListHouses(res.data.immobili as Immobile[]);
+                    if (res.data.immobileInquilino)
+                        setImmobileLocato(res.data.immobileInquilino);
+                }
+            } catch (e) {
+                errorHandler(e, "Impossibile aprire la persona selezionata");
+            }
+        };
+
+        fetchPersona();
+    }, [persona, errorHandler]);
 
     const noteTouchHandler = () => {
         inputNoteTouchedHandler();
@@ -226,7 +242,7 @@ const PersoneForm: React.FC<{
     }, [inputPhoneValue]);
 
     const isFormInvalid =
-        (!props.persona &&
+        (!persona &&
             (!inputNameIsTouched ||
                 (!inputEmailIsTouched && !inputPhoneIsTouched))) ||
         (inputEmailValue.trim().length === 0 &&
@@ -240,11 +256,11 @@ const PersoneForm: React.FC<{
         inputStatusIsInvalid;
 
     const getSubmitText = () => {
-        if (!props.persona && !inputNameIsTouched) return "Nome obbligatorio";
+        if (!persona && !inputNameIsTouched) return "Nome obbligatorio";
         if (inputNameIsInvalid) return "Nome da correggere";
 
         if (
-            (!props.persona && !inputPhoneIsTouched && !inputEmailIsTouched) ||
+            (!persona && !inputPhoneIsTouched && !inputEmailIsTouched) ||
             (inputEmailValue.trim().length === 0 &&
                 (getPhoneValue() === null || getPhoneValue()!.length === 0))
         )
@@ -255,12 +271,12 @@ const PersoneForm: React.FC<{
         if (!inputProvenienzaValue) return "Provenienza obbligatoria";
         if (inputProvenienzaIsInvalid) return "Provenienza da correggere";
         if (inputStatusIsInvalid) return "Status da correggere";
-        return `${props.persona ? "Modifica" : "Aggiungi"} persona`;
+        return `${persona ? "Modifica" : "Aggiungi"} persona`;
     };
 
     const eseguiForm = useCallback(async () => {
         const reqBody = {
-            id: props.persona ? props.persona.id : null,
+            id: persona ? persona.id : null,
             nome: inputNameValue,
             telefono: getPhoneValue(),
             email: inputEmailValue.length > 0 ? inputEmailValue : null,
@@ -274,17 +290,14 @@ const PersoneForm: React.FC<{
         };
         setShowLoading(true);
         try {
-            props.persona
-                ? await axiosInstance.patch(
-                      `persone/${props.persona!.id}`,
-                      reqBody
-                  )
+            persona
+                ? await axiosInstance.patch(`persone/${persona!.id}`, reqBody)
                 : await axiosInstance.post(`persone`, reqBody);
             setShowLoading(false);
             setIsQuerySuccessfull(true);
             presentAlert({
                 header: "Ottimo",
-                subHeader: `Persona ${props.persona ? "modificata" : "creata"}`,
+                subHeader: `Persona ${persona ? "modificata" : "creata"}`,
                 buttons: [
                     {
                         text: "OK",
@@ -336,6 +349,7 @@ const PersoneForm: React.FC<{
         inputRuoloValue,
         inputStatusValue,
         listHouses,
+        persona,
         navigate,
         presentAlert,
         props,
@@ -358,7 +372,7 @@ const PersoneForm: React.FC<{
         };
 
         const isFormDisabled =
-            (!props.persona &&
+            (!persona &&
                 (!inputNameIsTouched ||
                     (!inputEmailIsTouched && !inputPhoneIsTouched))) ||
             (inputEmailValue.trim().length === 0 &&
@@ -399,6 +413,7 @@ const PersoneForm: React.FC<{
         eseguiForm,
         setHasBeenClicked,
         closeIonSelects,
+        persona,
         isFocusOnTextArea,
         hasBeenClicked,
         isError,
@@ -502,7 +517,7 @@ const PersoneForm: React.FC<{
                         errorMessage={"Email non valida"}
                         reset={inputEmailReset}
                     />
-                    {props.persona && (
+                    {persona && (
                         <IonItem>
                             <IonLabel
                                 position="floating"
@@ -568,7 +583,7 @@ const PersoneForm: React.FC<{
                         errorMessage={"Ruolo non valido"}
                         reset={inputRuoloReset}
                     />
-                    {!props.persona && (
+                    {!persona && (
                         <TextArea
                             title={"Note"}
                             inputValue={inputNoteValue}
@@ -579,7 +594,7 @@ const PersoneForm: React.FC<{
                         />
                     )}
                 </FormGroup>
-                {!props.persona && (
+                {!persona && (
                     <ItemSelector
                         titoloGruppo="Immobile d'Interesse"
                         titoloBottone="Aggiungi Casa d'Interesse"

@@ -244,19 +244,24 @@ export default App;
 - Quando sei con il focus su descrizione immobile non considerare il doppio click - VINTO
 - Quando scade il token non fare "Errore nella lettura del token" fai la logout - VINTO
 - Se elimini l'immobile da un appuntamento deve eliminare l'immobile - VINTO
+- Non si vedono immobili aprendo da persona - VINTO
+- Così rimuove le proprietà da solo - VINTO
+- Foto singola diretta, lista foto zip - VINTO
+- Retrieve foto firmate oppure foto originali anche per multiple - VINTO
+- Anche per IOS e anche per Android - VINTO
 
 IMPROVEMENTS 1/6/2023
 
-- Non si vedono immobili aprendo da persona
-- Così rimuove le proprietà da solo
-- Retrieve foto firmate oppure foto originali
+- Disattiva button su persona
+- Note private su Immobile
+
+- Navigazione su singolo obiettivo rivista
+
 
 *****
 
 - Navigazione su singolo immobile rivista
 - Navigazione su singola persona rivista
-- Disattiva button su persona
-- Note private su Immobile
 - Se trovi una persona già esistente e la vai a visitare proprietario inesistente e 1970 primo contatto è falso
 - Cookie on little images 
 - Parenti

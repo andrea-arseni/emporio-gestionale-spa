@@ -236,10 +236,10 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         );
     };
 
-    const fermaTutto = (mode: "scaricarle" | "condividerle") => {
+    const alertNotAllSelectedPhotoAreAvailable = () => {
         presentAlert({
             header: "Attenzione!",
-            subHeader: `Alcune delle foto selezionate non erano presenti, pertanto l'operazione è stata annullata. Aspetta che le foto che hai selezionato siano visibili prima di ${mode}`,
+            subHeader: `Alcune delle foto selezionate non erano presenti, pertanto l'operazione è stata annullata. Prova a uscire e poi tornare su questa pagina`,
             buttons: [
                 {
                     text: "OK",
@@ -249,30 +249,53 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
         });
     };
 
-    const condividiFotoSelezionate = () => {
-        // get all file of photo selected
+    const selezionaAzioneDaCompiereSulleFoto = (
+        tipoAzione: "condividi" | "scarica"
+    ) => {
         const photoSelected = getPhotoSelected();
         const areAllThere = photoSelected.every((el) => !!el.base64String);
         if (!areAllThere) {
-            fermaTutto("condividerle");
-        } else {
+            alertNotAllSelectedPhotoAreAvailable();
+            return;
+        }
+        if (tipoAzione === "condividi") {
             shareMultipleFiles(photoSelected, errorHandler);
+        } else if (tipoAzione === "scarica") {
+            selezionaTipoDiFoto(photoSelected);
         }
     };
 
-    const scaricaFotoSelezionate = () => {
-        const photoSelected = getPhotoSelected();
-        const areAllThere = photoSelected.every((el) => !!el.base64String);
-        if (!areAllThere) {
-            fermaTutto("scaricarle");
-        } else {
-            downloadMultipleFiles(
-                photoSelected,
-                dispatch,
-                immobileId,
-                errorHandler
-            );
-        }
+    const selezionaTipoDiFoto = (photoSelected: Documento[]) => {
+        presentAlert({
+            header: "Seleziona tipo foto",
+            message: "Che tipo di foto vuoi scaricare?",
+            buttons: [
+                {
+                    text: "Con il logo",
+                    handler: () => {
+                        downloadMultipleFiles(
+                            photoSelected,
+                            dispatch,
+                            immobileId,
+                            errorHandler,
+                            `SIGNED`
+                        );
+                    },
+                },
+                {
+                    text: "Originali",
+                    handler: () => {
+                        downloadMultipleFiles(
+                            photoSelected,
+                            dispatch,
+                            immobileId,
+                            errorHandler,
+                            `ORIGINAL`
+                        );
+                    },
+                },
+            ],
+        });
     };
 
     if (!immobile) return <IonLoading cssClass="loader" isOpen={loading} />;
@@ -343,7 +366,9 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                 <IonSegmentButton
                     disabled={isButtonDisabled}
                     value="download"
-                    onClick={() => scaricaFotoSelezionate()}
+                    onClick={() =>
+                        selezionaAzioneDaCompiereSulleFoto("scarica")
+                    }
                 >
                     <IonIcon icon={downloadOutline} />
                     <IonLabel>Scarica</IonLabel>
@@ -351,7 +376,9 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                 <IonSegmentButton
                     disabled={isButtonDisabled}
                     value="share"
-                    onClick={() => condividiFotoSelezionate()}
+                    onClick={() =>
+                        selezionaAzioneDaCompiereSulleFoto("condividi")
+                    }
                 >
                     <IonIcon icon={shareOutline} />
                     <IonLabel>Condividi</IonLabel>

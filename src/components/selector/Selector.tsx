@@ -190,6 +190,7 @@ const Selector: React.FC<{
             !filter.filter ||
             (filter.filter &&
                 (filter.value ||
+                    filter.value === "" ||
                     filter.max ||
                     filter.min ||
                     filter.startDate ||

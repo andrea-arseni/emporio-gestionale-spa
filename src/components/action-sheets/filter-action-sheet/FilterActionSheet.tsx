@@ -51,12 +51,13 @@ const FilterActionSheet: React.FC<{
 }> = (props) => {
     const dispatch = useAppDispatch();
 
-    const buttonHandler = (
+    const buttonHandler = async (
         filterMode: "default" | "numberFilter" | "stringFilter" | "dataFilter",
         filter: any,
         negativeForbidden?: boolean
     ) => {
         props.setShowFilterActionSheet(false);
+        await new Promise((r) => setTimeout(r, 200));
         props.setFilterMode(filterMode);
         props.localQuery
             ? props.setFilter(filter)
@@ -328,7 +329,7 @@ const FilterActionSheet: React.FC<{
                         handler: () => {
                             buttonHandler("default", {
                                 filter: "immobileInquilino",
-                                value: null,
+                                value: "",
                             });
                         },
                     },

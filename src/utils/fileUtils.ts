@@ -204,18 +204,37 @@ export const downloadMultipleFiles = async (
     documenti: Documento[],
     dispatch: any,
     immobileId: string,
-    errorHandler: any
+    errorHandler: any,
+    photoType: `SIGNED` | `ORIGINAL`
 ) => {
     if (isNativeApp) dispatch(changeLoading(true));
     if (isNativeApp && isPlatform("android")) {
         let error = null;
 
         for (let i = 0; i < documenti.length; i++) {
-            const blob = await getBlobFromBase64String(
-                documenti[i].base64String!
-            );
             const usedName = await getImageName(documenti[i].codiceBucket!);
 
+            let base64File = documenti[i].base64String!;
+
+            if (photoType === "ORIGINAL") {
+                try {
+                    const res = await axiosInstance.get(
+                        `/immobili/${immobileId}/files/${documenti[i].id}?photoType=${photoType}`
+                    );
+                    if (!res || !res.data || !res.data.byteArray)
+                        throw new Error("Lettura non riuscita");
+
+                    base64File = getBase64StringFromByteArray(
+                        res.data.byteArray,
+                        documenti[i].nome!
+                    );
+                } catch (e) {
+                    error = `'${usedName}' originale non disponibile, procedura interrotta`;
+                    break;
+                }
+            }
+
+            const blob = await getBlobFromBase64String(base64File);
             // 1. scrivi il file nella cache
             try {
                 await FilePlugin.writeFile(
@@ -261,33 +280,86 @@ export const downloadMultipleFiles = async (
         );
     } else if (isNativeApp && isPlatform("ios")) {
         try {
-            await SocialSharing.saveToPhotoAlbum(
-                documenti.map((el) => el.base64String!)
-            );
+            let listBase64Strings = documenti.map((el) => el.base64String!);
+
+            let error = null;
+
+            if (photoType === "ORIGINAL") {
+                listBase64Strings = [];
+                for (let i = 0; i < documenti.length; i++) {
+                    const usedName = await getImageName(
+                        documenti[i].codiceBucket!
+                    );
+
+                    try {
+                        const res = await axiosInstance.get(
+                            `/immobili/${immobileId}/files/${documenti[i].id}?photoType=${photoType}`
+                        );
+                        if (!res || !res.data || !res.data.byteArray)
+                            throw new Error("Lettura non riuscita");
+
+                        listBase64Strings.push(
+                            getBase64StringFromByteArray(
+                                res.data.byteArray,
+                                documenti[i].nome!
+                            )
+                        );
+                    } catch (e) {
+                        error = `'${usedName}' originale non disponibile, procedura interrotta`;
+                        break;
+                    }
+                }
+            }
+
+            await SocialSharing.saveToPhotoAlbum(listBase64Strings);
             dispatch(changeLoading(false));
             alert(
-                `Foto salvat${
-                    documenti.length === 1 ? "a" : "e"
-                } con successo in Galleria`
+                error
+                    ? error
+                    : `Foto salvat${
+                          documenti.length === 1 ? "a" : "e"
+                      } con successo in Galleria`
             );
         } catch (e: any) {
             dispatch(changeLoading(false));
             alert("Errore nel salvataggio delle foto, procedura annullata.");
         }
     } else {
-        try {
-            const reqBody = documenti.map((el) => el.id);
-            const res = await axiosInstance.post(
-                `/immobili/${immobileId}/files/zip`,
-                reqBody
-            );
-            FileSaver.saveAs(
-                `data:application/zip;base64,${res.data.byteArray}`,
-                `Lista foto`
-            );
-        } catch (e) {
-            errorHandler(e, "Salvataggio delle foto non riuscito");
-            return null;
+        if (documenti.length === 1) {
+            try {
+                let base64File = documenti[0].base64String!;
+                if (photoType === "ORIGINAL") {
+                    const res = await axiosInstance.get(
+                        `/immobili/${immobileId}/files/${documenti[0].id}?photoType=${photoType}`
+                    );
+                    if (!res || !res.data || !res.data.byteArray)
+                        throw new Error("Lettura non riuscita");
+
+                    base64File = getBase64StringFromByteArray(
+                        res.data.byteArray,
+                        documenti[0].nome!
+                    );
+                }
+                FileSaver.saveAs(base64File, documenti[0].nome! + ".jpg");
+            } catch (e) {
+                errorHandler(e, "Salvataggio foto non riuscita");
+                return null;
+            }
+        } else {
+            try {
+                const reqBody = documenti.map((el) => el.id);
+                const res = await axiosInstance.post(
+                    `/immobili/${immobileId}/files/zip?photoType=${photoType}`,
+                    reqBody
+                );
+                FileSaver.saveAs(
+                    `data:application/zip;base64,${res.data.byteArray}`,
+                    `Lista foto`
+                );
+            } catch (e) {
+                errorHandler(e, "Salvataggio delle foto non riuscito");
+                return null;
+            }
         }
     }
 };
