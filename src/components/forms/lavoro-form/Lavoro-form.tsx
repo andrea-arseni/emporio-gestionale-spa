@@ -16,11 +16,15 @@ import TextArea from "../../form-components/form-text-area/FormTextArea";
 import FormInput from "../../form-components/form-input/FormInput";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import useSingleClick from "../../../hooks/use-single-click";
+import { useAppDispatch } from "../../../hooks";
+import { setCurrentLavoro } from "../../../store/lavori-slice";
 
 const LavoroForm: React.FC<{
     lavoro: Lavoro | null;
     backToList: () => void;
 }> = (props) => {
+    const dispatch = useAppDispatch();
+
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const [nameUpdated, isNameUpdated] = useState<boolean>(false);
@@ -87,7 +91,7 @@ const LavoroForm: React.FC<{
         if (!props.lavoro && inputTitoloIsInvalid) return "Titolo invalido";
         if (!props.lavoro && !inputDescrizioneValue)
             return "Descrizione obbligatoria";
-        return `${props.lavoro ? "Modifica" : "Aggiungi"} Obiettivo`;
+        return `${props.lavoro ? "Modifica titolo" : "Aggiungi Obiettivo"} `;
     };
 
     const eseguiForm = useCallback(async () => {
@@ -98,12 +102,15 @@ const LavoroForm: React.FC<{
         };
         setShowLoading(true);
         try {
-            props.lavoro
+            const res = props.lavoro
                 ? await axiosInstance.patch(
                       `lavori/${props.lavoro!.id}`,
                       reqBody
                   )
                 : await axiosInstance.post(`lavori`, reqBody);
+
+            dispatch(setCurrentLavoro(res.data));
+
             setShowLoading(false);
             isNameUpdated(true);
             presentAlert({
@@ -125,6 +132,7 @@ const LavoroForm: React.FC<{
         inputDescrizioneValue,
         inputTitoloValue,
         presentAlert,
+        dispatch,
         props,
         status,
     ]);
@@ -135,6 +143,10 @@ const LavoroForm: React.FC<{
     };
 
     const changeLavoroType = (e: any) => setStatus(e.detail.value);
+
+    useEffect(() => {
+        console.log(nameUpdated);
+    }, [nameUpdated]);
 
     useEffect(() => {
         const isFormValid =
@@ -148,18 +160,13 @@ const LavoroForm: React.FC<{
                 status);
 
         const submitFormIfValid = async (e: KeyboardEvent) => {
-            if (
-                isFormValid &&
-                e.key === "Enter" &&
-                !isError &&
-                !isFocusOnTextArea
-            ) {
+            if (e.key === "Enter" && !isError && !isFocusOnTextArea) {
                 setHasBeenClicked(true);
                 closeIonSelects([ionSelectStatus]);
                 if (nameUpdated) {
                     hideAlert();
                     props.backToList();
-                } else if (hasBeenClicked) {
+                } else if (isFormValid && hasBeenClicked) {
                     await eseguiForm();
                 }
             }

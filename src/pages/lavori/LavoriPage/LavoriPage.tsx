@@ -1,20 +1,30 @@
 import { golfOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
 import LavoroForm from "../../../components/forms/lavoro-form/Lavoro-form";
 import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Lavoro } from "../../../entities/lavoro.model";
+import { useAppDispatch } from "../../../hooks";
+import { setCurrentLavoro } from "../../../store/lavori-slice";
 
 const LavoriPage: React.FC<{}> = () => {
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(setCurrentLavoro(null));
+    }, [dispatch]);
+
     const [mode, setMode] = useState<"list" | "form">("list");
 
-    const [currentLavoro, setCurrentLavoro] = useState<Entity | null>(null);
+    const [currentLavoro, setCurrentLocalLavoro] = useState<Entity | null>(
+        null
+    );
 
     const backToList = () => {
         setMode("list");
-        setCurrentLavoro(null);
+        setCurrentLocalLavoro(null);
     };
 
     return (
@@ -29,7 +39,7 @@ const LavoriPage: React.FC<{}> = () => {
                     <Selector
                         setMode={setMode}
                         entitiesType="lavori"
-                        setCurrentEntity={setCurrentLavoro}
+                        setCurrentEntity={setCurrentLocalLavoro}
                     />
                 </>
             )}

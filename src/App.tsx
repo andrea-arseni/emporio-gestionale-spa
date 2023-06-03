@@ -30,7 +30,7 @@ import AppuntamentiPage from "./pages/appuntamenti/AppuntamentiPage/Appuntamenti
 import ImmobiliPage from "./pages/immobili/ImmobiliPage/ImmobiliPage";
 import OperazioniPage from "./pages/operazioni/OperazioniPage/OperazioniPage";
 import LavoriPage from "./pages/lavori/LavoriPage/LavoriPage";
-import LavoriDataPage from "./pages/lavori/LavoriDataPage/LavoriDataPage";
+import StepsPage from "./pages/lavori/StepsPage/StepsPage";
 import PersonaPage from "./pages/persone/PersonaPage/PersonaPage";
 import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
 import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
@@ -51,6 +51,8 @@ import Contattaci from "./pages/contattaci/Contattaci";
 import Immobili from "./pages/immobili/Immobili/Immobili";
 import Immobile from "./pages/immobili/Immobile/Immobile";
 import Filtra from "./pages/immobili/FiltraPage/Filtra";
+import LavoroPage from "./pages/lavori/LavoriPage/LavoroPage";
+import LavoroFormPage from "./pages/lavori/LavoriPage/LavoroFormPage";
 
 setupIonicReact();
 
@@ -194,7 +196,19 @@ const App: React.FC = () => {
                         {token && (
                             <Route
                                 path="/obiettivi/:id"
-                                element={<LavoriDataPage />}
+                                element={<LavoroPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/obiettivi/:id/modifica"
+                                element={<LavoroFormPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/obiettivi/:id/storia"
+                                element={<StepsPage />}
                             />
                         )}
                         {token && isUserAdmin(userData) && (
@@ -250,17 +264,17 @@ export default App;
 - Retrieve foto firmate oppure foto originali anche per multiple - VINTO
 - Anche per IOS e anche per Android - VINTO
 - Disattiva button su persona - VINTO
+- Note private su Immobile - VINTO
+- Navigazione su singolo obiettivo rivista - VINTO
 
 IMPROVEMENTS 1/6/2023
-
-- Note private su Immobile
-- Navigazione su singolo obiettivo rivista
 
 *****
 
 - Navigazione su singolo immobile rivista - 3
 - Navigazione su singola persona rivista - 4
 
+- If focus on submit release focus
 - Se trovi una persona già esistente e la vai a visitare proprietario inesistente e 1970 primo contatto è falso
 - Cookie on little images 
 - Parenti

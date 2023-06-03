@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Filtro } from "../entities/filtro.model";
 import { queryData } from "../entities/queryData";
+import { Lavoro } from "../entities/lavoro.model";
 
 const INITIAL_QUERY_DATA: queryData = {
     filter: {
@@ -13,10 +14,12 @@ const INITIAL_QUERY_DATA: queryData = {
 
 interface lavoroState {
     queryData: queryData;
+    currentLavoro: Lavoro | null;
 }
 
 const initialState = {
     queryData: INITIAL_QUERY_DATA,
+    currentLavoro: null,
 } as lavoroState;
 
 const lavoroSlice = createSlice({
@@ -38,6 +41,9 @@ const lavoroSlice = createSlice({
         resetLavoriQueryData(state) {
             state.queryData = INITIAL_QUERY_DATA;
         },
+        setCurrentLavoro(state, action: PayloadAction<Lavoro | null>) {
+            state.currentLavoro = action.payload;
+        },
     },
 });
 
@@ -47,6 +53,7 @@ export const {
     setLavoriPaging,
     triggerLavoriUpdate,
     resetLavoriQueryData,
+    setCurrentLavoro,
 } = lavoroSlice.actions;
 
 export default lavoroSlice.reducer;

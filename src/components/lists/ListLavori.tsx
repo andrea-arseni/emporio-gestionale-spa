@@ -1,22 +1,14 @@
-import {
-    IonItemSliding,
-    IonItem,
-    IonLabel,
-    IonItemOptions,
-    IonText,
-} from "@ionic/react";
-import { createOutline, openOutline, trashOutline } from "ionicons/icons";
-import { Dispatch, SetStateAction } from "react";
+import { IonItem, IonLabel, IonText } from "@ionic/react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Entity } from "../../entities/entity";
 import useWindowSize from "../../hooks/use-size";
 import styles from "./Lists.module.css";
 import { Lavoro } from "../../entities/lavoro.model";
 import { getLavoroTitleColor } from "../../utils/statusHandler";
-import ItemOption from "./ItemOption";
-import { isUserAdmin } from "../../utils/userUtils";
-import { useAppSelector } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { getDayName } from "../../utils/timeUtils";
+import { useAppDispatch } from "../../hooks";
+import { setCurrentLavoro } from "../../store/lavori-slice";
 
 const ListLavori: React.FC<{
     lavori: Lavoro[];
@@ -30,10 +22,19 @@ const ListLavori: React.FC<{
 
     const [width] = useWindowSize();
 
-    const userData = useAppSelector((state) => state.auth.userData);
+    const dispatch = useAppDispatch();
 
-    const goToData = (id: number) => {
-        navigate(`/obiettivi/${id.toString()}`);
+    const [selected, setSelected] = useState<number>(0);
+
+    const handleClick = (id: number) => {
+        if (selected === id) {
+            dispatch(
+                setCurrentLavoro(props.lavori.filter((el) => el.id === id)[0])
+            );
+            navigate(`/obiettivi/${id.toString()}`);
+        } else {
+            setSelected(id);
+        }
     };
 
     const getData = (data: Date) => {
@@ -47,9 +48,17 @@ const ListLavori: React.FC<{
 
     return (
         <>
-            {props.lavori.map((lavoro: Lavoro) => (
-                <IonItemSliding key={lavoro.id!} id={lavoro.id?.toString()}>
-                    <IonItem detail color={getLavoroTitleColor(lavoro.status!)}>
+            {props.lavori.map(
+                (lavoro: Lavoro) => (
+                    <IonItem
+                        key={lavoro.id!}
+                        color={
+                            lavoro.id === selected
+                                ? "primary"
+                                : getLavoroTitleColor(lavoro.status!)
+                        }
+                        onClick={() => handleClick(lavoro.id!)}
+                    >
                         <IonLabel text-wrap>
                             <h2>{lavoro.titolo} </h2>
                             {getData(new Date(lavoro.data!))}
@@ -68,7 +77,8 @@ const ListLavori: React.FC<{
                             </IonText>
                         )}
                     </IonItem>
-                    <IonItemOptions side="end">
+                )
+                /*{ <IonItemOptions side="end">
                         <ItemOption
                             handler={() => goToData(lavoro.id!)}
                             colorType={"success"}
@@ -98,9 +108,9 @@ const ListLavori: React.FC<{
                                 title={"Elimina"}
                             />
                         )}
-                    </IonItemOptions>
-                </IonItemSliding>
-            ))}
+                    </IonItemOptions> }
+                </IonItemSliding>*/
+            )}
         </>
     );
 };

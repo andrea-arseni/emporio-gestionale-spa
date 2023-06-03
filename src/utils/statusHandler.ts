@@ -6,7 +6,7 @@ export const getLavoroTitleColor = (input: string) => {
         case "b_aspetta":
             return "tertiary";
         case "c_concluso":
-            return "primary";
+            return "secondary";
         case "d_annullato":
             return "dark";
         default:

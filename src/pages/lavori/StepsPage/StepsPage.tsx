@@ -101,6 +101,7 @@ const LavoriDataPage: React.FC<{}> = () => {
                             backToList
                         />
                     </div>
+
                     <div>
                         <StepForm
                             lavoro={currentLavoro as Lavoro}
