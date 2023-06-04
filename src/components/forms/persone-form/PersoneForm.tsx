@@ -7,15 +7,7 @@ import {
     IonSelect,
     IonSelectOption,
 } from "@ionic/react";
-import {
-    Dispatch,
-    FormEvent,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
 import { Persona } from "../../../entities/persona.model";
@@ -36,13 +28,16 @@ import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { useNavigate } from "react-router-dom";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import useSingleClick from "../../../hooks/use-single-click";
+import { useAppDispatch } from "../../../hooks";
+import { setPersona } from "../../../store/persona-slice";
 
 const PersoneForm: React.FC<{
-    persona: Persona;
+    persona: Persona | null;
     backToList: () => void;
-    setCurrentPersona: Dispatch<SetStateAction<Entity | null>>;
 }> = (props) => {
     const [persona] = useState<Persona | null>(props.persona);
+
+    const dispatch = useAppDispatch();
 
     const { isError, presentAlert, hideAlert, errorHandler } =
         useErrorHandler();
@@ -223,7 +218,7 @@ const PersoneForm: React.FC<{
             }
         };
 
-        fetchPersona();
+        if (persona) fetchPersona();
     }, [persona, errorHandler]);
 
     const noteTouchHandler = () => {
@@ -290,11 +285,12 @@ const PersoneForm: React.FC<{
         };
         setShowLoading(true);
         try {
-            persona
+            const res = persona
                 ? await axiosInstance.patch(`persone/${persona!.id}`, reqBody)
                 : await axiosInstance.post(`persone`, reqBody);
             setShowLoading(false);
             setIsQuerySuccessfull(true);
+            dispatch(setPersona(res.data));
             presentAlert({
                 header: "Ottimo",
                 subHeader: `Persona ${persona ? "modificata" : "creata"}`,
@@ -338,6 +334,7 @@ const PersoneForm: React.FC<{
             }
         }
     }, [
+        dispatch,
         errorHandler,
         getPhoneValue,
         immobileInteresse,

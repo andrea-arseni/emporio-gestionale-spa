@@ -1,5 +1,4 @@
 import { IonButton, IonIcon } from "@ionic/react";
-import styles from "./LavoroPage.module.css";
 import {
     backspaceOutline,
     createOutline,
@@ -29,18 +28,18 @@ const LavoroPage: React.FC<{}> = () => {
     const { deleteEntity } = useDeleteEntity();
 
     return (
-        <div className={styles.frame}>
-            <div className={styles.innerFrame}>
-                <h4 className={styles.titolo}>Titolo:</h4>
+        <div className="singlePageFrame">
+            <div className="singlePageInnerFrame">
+                <h4 className="singlePageTitolo">Titolo:</h4>
                 <h4> {lavoro?.titolo}</h4>
-                <h4 className={styles.titolo}>Status: </h4>
+                <h4 className="singlePageTitolo">Status: </h4>
                 <h4>{capitalize(getStatusText(lavoro?.status!))}</h4>
-                <p className={styles.titolo}>Ultimo aggiornamento:</p>
+                <p className="singlePageTitolo">Ultimo aggiornamento:</p>
                 <p> {lavoro?.data}</p>
                 <br />
                 <br />
                 <IonButton
-                    className={styles.generalButton}
+                    className="singlePageGeneralButton"
                     color="secondary"
                     expand="full"
                     mode="ios"
@@ -51,7 +50,7 @@ const LavoroPage: React.FC<{}> = () => {
                     Modifica titolo e/o status
                 </IonButton>
                 <IonButton
-                    className={styles.generalButton}
+                    className="singlePageGeneralButton"
                     color="tertiary"
                     expand="full"
                     mode="ios"
@@ -63,7 +62,7 @@ const LavoroPage: React.FC<{}> = () => {
                 </IonButton>
                 {isUserAdmin(userData) && (
                     <IonButton
-                        className={styles.generalButton}
+                        className="singlePageGeneralButton"
                         color="danger"
                         expand="full"
                         mode="ios"
@@ -80,7 +79,7 @@ const LavoroPage: React.FC<{}> = () => {
                     </IonButton>
                 )}
                 <IonButton
-                    className={styles.generalButton}
+                    className="singlePageGeneralButton"
                     color="medium"
                     expand="full"
                     mode="ios"

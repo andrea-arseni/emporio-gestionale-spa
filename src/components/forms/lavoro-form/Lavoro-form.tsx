@@ -145,10 +145,6 @@ const LavoroForm: React.FC<{
     const changeLavoroType = (e: any) => setStatus(e.detail.value);
 
     useEffect(() => {
-        console.log(nameUpdated);
-    }, [nameUpdated]);
-
-    useEffect(() => {
         const isFormValid =
             (props.lavoro &&
                 (inputTitoloValue !== props.lavoro.titolo ||

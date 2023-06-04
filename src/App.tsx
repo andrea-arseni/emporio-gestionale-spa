@@ -31,7 +31,7 @@ import ImmobiliPage from "./pages/immobili/ImmobiliPage/ImmobiliPage";
 import OperazioniPage from "./pages/operazioni/OperazioniPage/OperazioniPage";
 import LavoriPage from "./pages/lavori/LavoriPage/LavoriPage";
 import StepsPage from "./pages/lavori/StepsPage/StepsPage";
-import PersonaPage from "./pages/persone/PersonaPage/PersonaPage";
+import PersonePage from "./pages/persone/PersonePage/PersonePage";
 import DocumentiPage from "./pages/documenti/DocumentiPage/DocumentiPage";
 import PersonaFilePage from "./pages/persone/PersonaFilePage/PersonaFilePage";
 import ImmobiliFilesPage from "./pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
@@ -53,6 +53,8 @@ import Immobile from "./pages/immobili/Immobile/Immobile";
 import Filtra from "./pages/immobili/FiltraPage/Filtra";
 import LavoroPage from "./pages/lavori/LavoriPage/LavoroPage";
 import LavoroFormPage from "./pages/lavori/LavoriPage/LavoroFormPage";
+import PersonaPage from "./pages/persone/PersonePage/PersonaPage";
+import PersonaFormPage from "./pages/persone/PersonePage/PersonaFormPage";
 
 setupIonicReact();
 
@@ -170,12 +172,18 @@ const App: React.FC = () => {
                             />
                         )}
                         {token && (
-                            <Route path="/persone" element={<PersonaPage />} />
+                            <Route path="/persone" element={<PersonePage />} />
                         )}
                         {token && (
                             <Route
                                 path="/persone/:id"
-                                element={<PersonaPage specific />}
+                                element={<PersonaPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/persone/:id/modifica"
+                                element={<PersonaFormPage />}
                             />
                         )}
                         {token && (
@@ -271,10 +279,16 @@ IMPROVEMENTS 1/6/2023
 
 *****
 
-- Navigazione su singolo immobile rivista - 3
+- Test su computer
+
+- Bug selezione di lista persona
+- Case di proprietà e di locazione viste subito
+- Refresh single page lavoro
+- If focus on submit release focus
 - Navigazione su singola persona rivista - 4
 
-- If focus on submit release focus
+- Navigazione su singolo immobile rivista - 3
+
 - Se trovi una persona già esistente e la vai a visitare proprietario inesistente e 1970 primo contatto è falso
 - Cookie on little images 
 - Parenti

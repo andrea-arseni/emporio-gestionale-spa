@@ -146,6 +146,72 @@
     border-bottom: 1px solid lightgray;
 }
 
+.singlePageFrame {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+    padding: 10px 20px 20px 20px;
+}
+
+.singlePageInnerFrame {
+    width: 90%;
+    border: 1px solid gray;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+    padding: 10px 30px 30px 30px;
+}
+
+.singlePageInnerFrame * {
+    text-align: center;
+}
+
+.singlePageTitolo {
+    color: rgb(7, 110, 245);
+    position: relative;
+    top: 12px;
+}
+
+.singlePageDato {
+    color: rgb(45, 45, 45) !important;
+    font-style: italic;
+}
+
+.singlePageGeneralButton {
+    width: 80%;
+    border-radius: 6px;
+}
+
+@media (min-width: 700px) {
+    .singlePageGroup {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .singlePageTitolo {
+        top: 0px;
+    }
+    .singlePageDato {
+        padding-left: 10px;
+    }
+}
+
+@media (max-width: 450px) {
+    .singlePageGeneralButton {
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .singlePageInnerFrame {
+        width: 98%;
+    }
+}
+
 ion-grid,
 ion-row,
 ion-col {
