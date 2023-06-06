@@ -55,6 +55,8 @@ import LavoroPage from "./pages/lavori/LavoriPage/LavoroPage";
 import LavoroFormPage from "./pages/lavori/LavoriPage/LavoroFormPage";
 import PersonaPage from "./pages/persone/PersonePage/PersonaPage";
 import PersonaFormPage from "./pages/persone/PersonePage/PersonaFormPage";
+import ImmobilePage from "./pages/immobili/ImmobiliPage/ImmobilePage";
+import ImmobileFormPage from "./pages/immobili/ImmobiliPage/ImmobileFormPage";
 
 setupIonicReact();
 
@@ -156,7 +158,13 @@ const App: React.FC = () => {
                         {token && (
                             <Route
                                 path="/immobili/:id"
-                                element={<ImmobiliPage specific />}
+                                element={<ImmobilePage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/immobili/:id/modifica"
+                                element={<ImmobileFormPage />}
                             />
                         )}
                         {token && (
@@ -274,25 +282,19 @@ export default App;
 - Disattiva button su persona - VINTO
 - Note private su Immobile - VINTO
 - Navigazione su singolo obiettivo rivista - VINTO
+- Navigazione su singola persona rivista - VINTO
+- Navigazione su singolo immobile rivista - VINTO
 
-IMPROVEMENTS 1/6/2023
+IMPROVEMENTS 7/6/2023
 
-*****
-
-- Test su computer
-
-- Bug selezione di lista persona
-- Case di proprietà e di locazione viste subito
-- Refresh single page lavoro
+- Still bug on select
 - If focus on submit release focus
-- Navigazione su singola persona rivista - 4
 
-- Navigazione su singolo immobile rivista - 3
-
-- Se trovi una persona già esistente e la vai a visitare proprietario inesistente e 1970 primo contatto è falso
+- No more slides on all application
+- Carta visita piacevole, no form
+- WhatsApp API
 - Cookie on little images 
 - Parenti
-
 - Deploy ed enjoy nuova versione
 
 - WEBSITE

@@ -1,12 +1,5 @@
-import {
-    IonItem,
-    useIonAlert,
-    IonItemOptions,
-    IonItemSliding,
-} from "@ionic/react";
-import { closeOutline, openOutline, personAddOutline } from "ionicons/icons";
-import ItemOption from "../../lists/ItemOption";
-import styles from "./SecondaryItem.module.css";
+import { IonItem, useIonAlert, IonIcon } from "@ionic/react";
+import { closeCircleOutline } from "ionicons/icons";
 
 const SecondaryItem: React.FC<{
     deleteAction?: () => void;
@@ -28,67 +21,29 @@ const SecondaryItem: React.FC<{
                 },
                 {
                     text: "Annulla",
-                    handler: () => props.closeItems(),
+                    role: "cancel",
                 },
             ],
         });
     };
 
     return (
-        <IonItemSliding className={styles.item}>
-            <IonItem detail>{props.children}</IonItem>
-            <IonItemOptions side="end">
-                {props.addAction && (
-                    <ItemOption
-                        handler={() => props.addAction!()}
-                        colorType={"dark"}
-                        icon={personAddOutline}
-                        title={"Rubrica"}
-                    />
-                )}
-                {props.visualizeAction && (
-                    <ItemOption
-                        handler={() => props.visualizeAction!()}
-                        colorType={"primary"}
-                        icon={openOutline}
-                        title={"Apri"}
-                    />
-                )}
-                {props.deleteAction && (
-                    <ItemOption
-                        handler={() =>
-                            props.directDeleting
-                                ? props.deleteAction!()
-                                : alertDeleteEntity()
-                        }
-                        colorType={"danger"}
-                        icon={closeOutline}
-                        title={"Elimina"}
-                    />
-                )}
-            </IonItemOptions>
-        </IonItemSliding>
-    );
-
-    /* return (
         <IonItem>
             {props.children}
-            {props.visualizeAction && (
+            {props.deleteAction && (
                 <IonIcon
-                    slot="end"
-                    className={styles.icon}
-                    icon={openOutline}
-                    onClick={() => props.visualizeAction!()}
-                ></IonIcon>
+                    onClick={() =>
+                        props.directDeleting
+                            ? props.deleteAction!()
+                            : alertDeleteEntity()
+                    }
+                    color={"danger"}
+                    icon={closeCircleOutline}
+                    title={"Elimina"}
+                />
             )}
-            <IonIcon
-                slot="end"
-                className={styles.icon}
-                icon={closeOutline}
-                onClick={() => alertDeleteEntity()}
-            ></IonIcon>
         </IonItem>
-    ); */
+    );
 };
 
 export default SecondaryItem;

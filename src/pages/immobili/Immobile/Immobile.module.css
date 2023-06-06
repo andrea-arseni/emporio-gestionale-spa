@@ -87,7 +87,7 @@
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
     .mainData {
         flex-flow: column;
         justify-content: center;

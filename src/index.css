@@ -182,8 +182,24 @@
 }
 
 .singlePageGeneralButton {
-    width: 80%;
+    width: 100%;
     border-radius: 6px;
+}
+
+.singlePageItem {
+    margin-top: 20px;
+    border: 1px solid gray;
+    border-radius: 6px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+}
+
+.singlePageItem * {
+    margin: 6px;
+    padding: 0;
 }
 
 @media (min-width: 700px) {

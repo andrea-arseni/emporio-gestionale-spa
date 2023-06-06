@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../../hooks";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
 import useDeleteEntity from "../../../hooks/use-delete-entity";
 import { IonButton, IonIcon, IonLoading, useIonAlert } from "@ionic/react";
 import {
@@ -21,38 +21,99 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import { isNativeApp, saveContact } from "../../../utils/contactUtils";
+import { setPersona } from "../../../store/persona-slice";
+import { Immobile } from "../../../entities/immobile.model";
+import SinglePageItem from "../../../components/single-page-component/SinglePageItem";
+import { Evento } from "../../../entities/evento.model";
 
 const PersonaPage: React.FC<{}> = () => {
     const navigate = useNavigate();
 
-    const [showLoading, setShowLoading] = useState<boolean>(true);
+    const [clickBlocked, setClickBlocked] = useState<boolean>(true);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setShowLoading(false);
-        }, 1000);
-    }, []);
-
-    const persona = useAppSelector((state) => state.persona.persona);
-
-    const userData = useAppSelector((state) => state.auth.userData);
-
-    const navigateBack = () => navigate(-1);
-
-    const openHistory = () => navigate(`storia`);
-
-    const openFiles = () => navigate(`files`);
-
-    const openForm = () => navigate(`modifica`);
+    const [showLoading, setShowLoading] = useState<boolean>(false);
 
     const { errorHandler } = useErrorHandler();
 
     const [presentAlert] = useIonAlert();
 
-    const addPersonaToRubrica = () =>
+    const dispatch = useAppDispatch();
+
+    const persona = useAppSelector((state) => state.persona.persona);
+
+    const [immobileInteresse, setImmobileInteresse] = useState<Immobile | null>(
+        null
+    );
+
+    useEffect(() => {
+        const sortEventsByDate = (events: Evento[]) =>
+            events.sort(
+                (a, b) =>
+                    new Date(b.data!).getTime() - new Date(a.data!).getTime()
+            );
+
+        const getLastInterestedHouseEvent = (events: Evento[]) =>
+            events.find((el) => el.immobile);
+
+        const updatePersona = async () => {
+            try {
+                const res = await axiosInstance.get(`/persone/${persona?.id}`);
+                dispatch(setPersona(res.data));
+                const eventi = [...res.data.eventi];
+                sortEventsByDate(eventi);
+                const lastInterestedHouseEvent =
+                    getLastInterestedHouseEvent(eventi);
+                const lastInterestedHouse = lastInterestedHouseEvent
+                    ? lastInterestedHouseEvent.immobile
+                    : null;
+                if (lastInterestedHouse)
+                    setImmobileInteresse(lastInterestedHouse);
+            } catch (e) {
+                errorHandler(
+                    e,
+                    "Impossibile recuperare tutti i dati della persona, presente scheda solo parziale"
+                );
+            }
+        };
+
+        updatePersona();
+    }, [persona?.id, dispatch, errorHandler]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setClickBlocked(false);
+        }, 1000);
+    }, []);
+
+    const userData = useAppSelector((state) => state.auth.userData);
+
+    const navigateBack = () => {
+        if (clickBlocked) return;
+        navigate(-1);
+    };
+
+    const openHistory = () => {
+        if (clickBlocked) return;
+        navigate(`storia`);
+    };
+
+    const openFiles = () => {
+        if (clickBlocked) return;
+        navigate(`files`);
+    };
+
+    const openForm = () => {
+        if (clickBlocked) return;
+        navigate(`modifica`);
+    };
+
+    const addPersonaToRubrica = () => {
+        if (clickBlocked) return;
         saveContact(presentAlert, persona!, errorHandler);
+    };
 
     const disattivaPersona = async (id: number) => {
+        if (clickBlocked) return;
         // loading
         setShowLoading(true);
         try {
@@ -83,9 +144,11 @@ const PersonaPage: React.FC<{}> = () => {
                         .map((el) => capitalize(el))
                         .join(" ")}
                 </SinglePageData>
-                <SinglePageData chiave="Status">
-                    {capitalize(getStatusText(persona?.status!))}
-                </SinglePageData>
+                {persona?.status && (
+                    <SinglePageData chiave="Status">
+                        {capitalize(getStatusText(persona?.status!))}
+                    </SinglePageData>
+                )}
                 <SinglePageData chiave="Telefono">
                     {persona?.telefono && (
                         <a href={`tel:${persona.telefono}`}>
@@ -102,9 +165,11 @@ const PersonaPage: React.FC<{}> = () => {
                     )}
                     {!persona?.email && "Non presente"}
                 </SinglePageData>
-                <SinglePageData chiave="Ruolo">
-                    {persona?.ruolo ? persona.ruolo : "Non presente"}
-                </SinglePageData>
+                {persona?.ruolo && (
+                    <SinglePageData chiave="Ruolo">
+                        {persona?.ruolo ? persona.ruolo : "Non presente"}
+                    </SinglePageData>
+                )}
                 {persona?.data && (
                     <SinglePageData chiave="Ultimo contatto">
                         {getDayName(
@@ -113,13 +178,37 @@ const PersonaPage: React.FC<{}> = () => {
                         )}
                     </SinglePageData>
                 )}
+                {immobileInteresse && (
+                    <SinglePageItem
+                        titolo={`Interessato a un immobile`}
+                        type="immobili"
+                        entities={[immobileInteresse]}
+                    />
+                )}
+                {persona?.immobili && persona.immobili.length > 0 && (
+                    <SinglePageItem
+                        titolo={`Proprietario di ${
+                            persona.immobili.length
+                        } immobil${persona.immobili.length === 1 ? "e" : "i"}`}
+                        type="immobili"
+                        entities={(persona.immobili as Immobile[])
+                            .map((el) => el)
+                            .sort((a, b) => a.ref! - b.ref!)}
+                    />
+                )}
+                {persona?.immobileInquilino && (
+                    <SinglePageItem
+                        titolo={`Conduttore`}
+                        type="immobili"
+                        entities={[persona.immobileInquilino] as Immobile[]}
+                    />
+                )}
                 <br />
                 <br />
                 {isNativeApp && (
                     <IonButton
                         className="singlePageGeneralButton"
                         color="primary"
-                        expand="full"
                         mode="ios"
                         fill="solid"
                         onClick={addPersonaToRubrica}
@@ -128,13 +217,12 @@ const PersonaPage: React.FC<{}> = () => {
                             className="rightSpace"
                             icon={personAddOutline}
                         />
-                        Aggiungi a rubrica telefono
+                        Aggiungi a rubrica
                     </IonButton>
                 )}
                 <IonButton
                     className="singlePageGeneralButton"
                     color="secondary"
-                    expand="full"
                     mode="ios"
                     fill="solid"
                     onClick={openForm}
@@ -145,7 +233,6 @@ const PersonaPage: React.FC<{}> = () => {
                 <IonButton
                     className="singlePageGeneralButton"
                     color="tertiary"
-                    expand="full"
                     mode="ios"
                     fill="solid"
                     onClick={openHistory}
@@ -156,7 +243,6 @@ const PersonaPage: React.FC<{}> = () => {
                 <IonButton
                     className="singlePageGeneralButton"
                     color="success"
-                    expand="full"
                     mode="ios"
                     fill="solid"
                     onClick={openFiles}
@@ -168,7 +254,6 @@ const PersonaPage: React.FC<{}> = () => {
                     <IonButton
                         className="singlePageGeneralButton"
                         color="dark"
-                        expand="full"
                         mode="ios"
                         fill="solid"
                         onClick={() => disattivaPersona(persona!.id!)}
@@ -184,7 +269,6 @@ const PersonaPage: React.FC<{}> = () => {
                     <IonButton
                         className="singlePageGeneralButton"
                         color="danger"
-                        expand="full"
                         mode="ios"
                         fill="solid"
                         onClick={() =>
@@ -201,7 +285,6 @@ const PersonaPage: React.FC<{}> = () => {
                 <IonButton
                     className="singlePageGeneralButton"
                     color="medium"
-                    expand="full"
                     mode="ios"
                     fill="solid"
                     onClick={navigateBack}

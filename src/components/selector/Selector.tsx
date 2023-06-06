@@ -284,14 +284,7 @@ const Selector: React.FC<{
                 return (
                     <ListImmobili
                         immobili={entities as Immobile[]}
-                        setMode={props.setMode!}
-                        setCurrentEntity={props.setCurrentEntity!}
-                        deleteEntity={deleteEntity}
-                        showLoading={showLoading}
-                        setShowLoading={setShowLoading}
-                        closeItems={closeItemsList}
-                        selectMode={!!props.selectMode}
-                        public={props.public}
+                        setCurrentEntity={props.setCurrentEntity}
                     />
                 );
             case "operazioni":

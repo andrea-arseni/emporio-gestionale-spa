@@ -18,7 +18,9 @@ export const fetchImmobileById = createAsyncThunk(
         try {
             const res = await axiosInstance.get(`/immobili/${immobileId}`);
             dispatch(changeLoading(false));
-            dispatch(setImmobile(res.data));
+            const immobile = res.data;
+            immobile.caratteristiche = res.data.caratteristicheImmobile;
+            dispatch(setImmobile(immobile));
         } catch (e) {
             dispatch(changeLoading(false));
             dispatch(setError({ name: "fetchImmobileById", object: e }));

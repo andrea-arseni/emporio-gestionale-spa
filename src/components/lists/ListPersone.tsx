@@ -91,7 +91,17 @@ const ListPersone: React.FC<{
                             {persona.immobileInquilino && <p>{`Inquilino`}</p>}
                         </IonLabel>
                     )}
-                <IonNote slot="end" className={styles.note}>
+                <IonNote
+                    slot="end"
+                    className={styles.note}
+                    color={
+                        selected === persona.id ||
+                        persona.status === "E_EVITA" ||
+                        persona.status === "D_DISATTIVA"
+                            ? "light"
+                            : undefined
+                    }
+                >
                     {persona.status!.toUpperCase().split("_")[1]}
                     <br />
                     {persona.provenienza &&

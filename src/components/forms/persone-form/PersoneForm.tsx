@@ -320,8 +320,15 @@ const PersoneForm: React.FC<{
                     buttons: [
                         {
                             text: "Vai alla persona",
-                            handler: () =>
-                                navigateToSpecificItem("persone", id, navigate),
+                            handler: async () => {
+                                try {
+                                    const res = await axiosInstance.get(
+                                        `persone/${id}`
+                                    );
+                                    dispatch(setPersona(res.data));
+                                    navigate(id);
+                                } catch (e) {}
+                            },
                         },
                         {
                             text: "Chiudi",
@@ -450,27 +457,29 @@ const PersoneForm: React.FC<{
         } else if (mode === "locazione" && immobileLocato) {
             list = [immobileLocato];
         }
-        const renderList = list.map((el) => {
-            return (
-                <SecondaryItem
-                    key={el!.id}
-                    deleteAction={() => deleteHouse(el!.id!, mode)}
-                    visualizeAction={() =>
-                        navigateToSpecificItem(
-                            "immobili",
-                            el!.id!.toString(),
-                            navigate
-                        )
-                    }
-                    closeItems={closeItemsList}
-                >
-                    <IonLabel text-wrap>
-                        <h3>Riferimento {el!.ref}</h3>
-                        <p>{el!.titolo}</p>
-                    </IonLabel>
-                </SecondaryItem>
-            );
-        });
+        const renderList = list
+            .sort((a, b) => a.ref! - b.ref!)
+            .map((el) => {
+                return (
+                    <SecondaryItem
+                        key={el!.id}
+                        deleteAction={() => deleteHouse(el!.id!, mode)}
+                        visualizeAction={() =>
+                            navigateToSpecificItem(
+                                "immobili",
+                                el!.id!.toString(),
+                                navigate
+                            )
+                        }
+                        closeItems={closeItemsList}
+                    >
+                        <IonLabel text-wrap>
+                            <h3>Riferimento {el!.ref}</h3>
+                            <p>{el!.titolo}</p>
+                        </IonLabel>
+                    </SecondaryItem>
+                );
+            });
         return (
             <IonList style={{ padding: "0", margin: "0" }} ref={itemsList}>
                 {renderList}

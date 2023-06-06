@@ -26,6 +26,11 @@
     margin-bottom: 12px;
 }
 
+.selected,
+.selected * {
+    color: white !important;
+}
+
 .large {
     padding: 27px 0;
 }

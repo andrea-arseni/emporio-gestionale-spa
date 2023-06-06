@@ -11,6 +11,9 @@ import { capitalize } from "../../../utils/stringUtils";
 import { useNavigate } from "react-router-dom";
 import { isUserAdmin } from "../../../utils/userUtils";
 import useDeleteEntity from "../../../hooks/use-delete-entity";
+import SinglePageData from "../../../components/single-page-component/SinglePageData";
+import useWindowSize from "../../../hooks/use-size";
+import { getDayName } from "../../../utils/timeUtils";
 
 const LavoroPage: React.FC<{}> = () => {
     const navigate = useNavigate();
@@ -27,21 +30,31 @@ const LavoroPage: React.FC<{}> = () => {
 
     const { deleteEntity } = useDeleteEntity();
 
+    const [width] = useWindowSize();
+
     return (
         <div className="singlePageFrame">
             <div className="singlePageInnerFrame">
-                <h4 className="singlePageTitolo">Titolo:</h4>
-                <h4> {lavoro?.titolo}</h4>
-                <h4 className="singlePageTitolo">Status: </h4>
-                <h4>{capitalize(getStatusText(lavoro?.status!))}</h4>
-                <p className="singlePageTitolo">Ultimo aggiornamento:</p>
-                <p> {lavoro?.data}</p>
+                <SinglePageData chiave="Titolo">
+                    {lavoro?.titolo}
+                </SinglePageData>
+                <SinglePageData chiave="Status">
+                    {capitalize(getStatusText(lavoro?.status!))}
+                </SinglePageData>
+                {lavoro?.data && (
+                    <SinglePageData chiave="Ultimo aggiornamento">
+                        {getDayName(
+                            new Date(lavoro.data),
+                            width > 500 ? "long" : "short"
+                        )}
+                    </SinglePageData>
+                )}
+
                 <br />
                 <br />
                 <IonButton
                     className="singlePageGeneralButton"
                     color="secondary"
-                    expand="full"
                     mode="ios"
                     fill="solid"
                     onClick={openForm}
@@ -52,7 +65,6 @@ const LavoroPage: React.FC<{}> = () => {
                 <IonButton
                     className="singlePageGeneralButton"
                     color="tertiary"
-                    expand="full"
                     mode="ios"
                     fill="solid"
                     onClick={openHistory}
@@ -64,7 +76,6 @@ const LavoroPage: React.FC<{}> = () => {
                     <IonButton
                         className="singlePageGeneralButton"
                         color="danger"
-                        expand="full"
                         mode="ios"
                         fill="solid"
                         onClick={() =>
@@ -81,7 +92,6 @@ const LavoroPage: React.FC<{}> = () => {
                 <IonButton
                     className="singlePageGeneralButton"
                     color="medium"
-                    expand="full"
                     mode="ios"
                     fill="solid"
                     onClick={navigateBack}
