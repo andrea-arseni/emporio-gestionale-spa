@@ -16,11 +16,16 @@ import { fetchImmobileById } from "../../store/immobile-thunk";
 import { fetchPersonaById } from "../../store/persona.thunk";
 import LogsPage from "../immobili/LogsPage/LogsPage";
 import EventsPage from "../persone/EventsPage/EventsPage";
+import { closeIonSelect } from "../../utils/closeIonSelect";
 
 const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
     const location = useLocation();
 
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
 
     const id = location.pathname.split("/")[2];
 

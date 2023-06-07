@@ -34,8 +34,13 @@ import {
 } from "../../../utils/fileUtils";
 import styles from "./PersonaFilePage.module.css";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const PersonaFilePage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const location = useLocation();
 
     const navigate = useNavigate();

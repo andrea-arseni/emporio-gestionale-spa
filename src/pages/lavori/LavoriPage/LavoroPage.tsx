@@ -14,8 +14,14 @@ import useDeleteEntity from "../../../hooks/use-delete-entity";
 import SinglePageData from "../../../components/single-page-component/SinglePageData";
 import useWindowSize from "../../../hooks/use-size";
 import { getDayName } from "../../../utils/timeUtils";
+import { useEffect } from "react";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const LavoroPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const navigate = useNavigate();
 
     const lavoro = useAppSelector((state) => state.lavoro.currentLavoro);

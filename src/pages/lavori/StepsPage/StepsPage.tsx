@@ -12,8 +12,13 @@ import { Lavoro } from "../../../entities/lavoro.model";
 import { Step } from "../../../entities/step.model";
 import axiosInstance from "../../../utils/axiosInstance";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const LavoriDataPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const [showLoading, setShowLoading] = useState<boolean>(true);
 
     const location = useLocation();

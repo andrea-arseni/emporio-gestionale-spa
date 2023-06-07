@@ -1,13 +1,18 @@
 import { cardOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
 import FormOperation from "../../../components/forms/operation-form/OperationForm";
 import { Entity } from "../../../entities/entity";
 import { Operazione } from "../../../entities/operazione.model";
 import Selector from "../../../components/selector/Selector";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const OperazioniPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const [currentOperation, setCurrentOperation] = useState<Entity | null>(

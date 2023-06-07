@@ -1,16 +1,21 @@
 import { homeOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
 import ImmobileForm from "../../../components/forms/immobile-form/ImmobileForm";
 import Selector from "../../../components/selector/Selector";
 import { Entity } from "../../../entities/entity";
 import { Immobile } from "../../../entities/immobile.model";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const ImmobiliPage: React.FC<{}> = () => {
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const [currentImmobile, setCurrentImmobile] = useState<Entity | null>(null);
+
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
 
     const backToList = () => {
         setMode("list");

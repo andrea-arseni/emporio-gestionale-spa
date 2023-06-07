@@ -25,6 +25,7 @@ import { setPersona } from "../../../store/persona-slice";
 import { Immobile } from "../../../entities/immobile.model";
 import SinglePageItem from "../../../components/single-page-component/SinglePageItem";
 import { Evento } from "../../../entities/evento.model";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const PersonaPage: React.FC<{}> = () => {
     const navigate = useNavigate();
@@ -44,6 +45,10 @@ const PersonaPage: React.FC<{}> = () => {
     const [immobileInteresse, setImmobileInteresse] = useState<Immobile | null>(
         null
     );
+
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
 
     useEffect(() => {
         const sortEventsByDate = (events: Evento[]) =>

@@ -13,8 +13,13 @@ import axiosInstance from "../../../utils/axiosInstance";
 import axiosSecondaryApi from "../../../utils/axiosSecondaryApi";
 import styles from "./ReportsPage.module.css";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const ReportsPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const { errorHandler } = useErrorHandler();
 
     const [mode, setMode] = useState<"list" | "form">("list");

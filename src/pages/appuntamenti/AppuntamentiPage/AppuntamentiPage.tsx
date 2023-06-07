@@ -44,8 +44,13 @@ import FilterBar from "../../../components/bars/filter-bar/FilterBar";
 import { resetQueryDataUtils, setFilterUtils } from "../../../utils/queryUtils";
 import { Filtro } from "../../../entities/filtro.model";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const AppuntamentiPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const [presentAlert] = useIonAlert();
 
     const { errorHandler } = useErrorHandler();

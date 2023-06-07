@@ -3,8 +3,14 @@ import FormTitle from "../../../components/form-components/form-title/FormTitle"
 import LavoroForm from "../../../components/forms/lavoro-form/Lavoro-form";
 import { useAppSelector } from "../../../hooks";
 import { Lavoro } from "../../../entities/lavoro.model";
+import { useEffect } from "react";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const LavoroFormPage = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const currentLavoro = useAppSelector((state) => state.lavoro.currentLavoro);
 
     const navigate = useNavigate();

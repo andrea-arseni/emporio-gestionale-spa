@@ -8,8 +8,13 @@ import { Entity } from "../../../entities/entity";
 import { Lavoro } from "../../../entities/lavoro.model";
 import { useAppDispatch } from "../../../hooks";
 import { setCurrentLavoro } from "../../../store/lavori-slice";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const LavoriPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {

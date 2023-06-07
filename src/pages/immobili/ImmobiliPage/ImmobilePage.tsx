@@ -35,9 +35,14 @@ import FeaturesWrapper from "../../../components/features-wrapper/FeaturesWrappe
 import { capitalize, stringifyNumber } from "../../../utils/stringUtils";
 import axiosInstance from "../../../utils/axiosInstance";
 import { setImmobile } from "../../../store/immobile-slice";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const ImmobilePage: React.FC<{}> = () => {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
 
     const [clickBlocked, setClickBlocked] = useState<boolean>(true);
 

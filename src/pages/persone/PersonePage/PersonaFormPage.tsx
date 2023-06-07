@@ -3,8 +3,14 @@ import FormTitle from "../../../components/form-components/form-title/FormTitle"
 import { Persona } from "../../../entities/persona.model";
 import { useAppSelector } from "../../../hooks";
 import PersoneForm from "../../../components/forms/persone-form/PersoneForm";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
+import { useEffect } from "react";
 
 const PersonaFormPage = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const currentPersona = useAppSelector((state) => state.persona.persona);
 
     const navigate = useNavigate();

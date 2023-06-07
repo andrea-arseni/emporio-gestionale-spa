@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../hooks";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
 import ImmobileForm from "../../../components/forms/immobile-form/ImmobileForm";
+import { useEffect } from "react";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const ImmobileFormPage = () => {
     const currentImmobile = useAppSelector((state) => state.immobile.immobile);
@@ -9,6 +11,10 @@ const ImmobileFormPage = () => {
     const navigate = useNavigate();
 
     const backToList = () => navigate(-1);
+
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
 
     return (
         <>

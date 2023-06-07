@@ -16,8 +16,13 @@ import { useAppDispatch } from "../../../hooks";
 import { triggerDocumentiUpdate } from "../../../store/documenti-slice";
 import { submitFile } from "../../../utils/fileUtils";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const DocumentiPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const [mode, setMode] = useState<"list" | "form">("list");
 
     const [showLoading, setShowLoading] = useState<boolean>(false);

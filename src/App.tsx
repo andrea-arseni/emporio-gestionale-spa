@@ -284,18 +284,21 @@ export default App;
 - Navigazione su singolo obiettivo rivista - VINTO
 - Navigazione su singola persona rivista - VINTO
 - Navigazione su singolo immobile rivista - VINTO
+- Still bug on select - VINTO
 
 IMPROVEMENTS 7/6/2023
 
-- Still bug on select
 - If focus on submit release focus
 
 - No more slides on all application
 - Carta visita piacevole, no form
+
 - WhatsApp API
-- Cookie on little images 
+- Saving little images 
+
 - Parenti
-- Deploy ed enjoy nuova versione
+
+- ARRIVATO
 
 - WEBSITE
 
@@ -309,7 +312,6 @@ IMPROVEMENTS 7/6/2023
 
 - Reserved EC2 1 years
 - IAM Roles sul DB
-- Cloudfront Price Class 100
 
 - CURRICULUM AD ARIANNA
 - LINKEDIN 

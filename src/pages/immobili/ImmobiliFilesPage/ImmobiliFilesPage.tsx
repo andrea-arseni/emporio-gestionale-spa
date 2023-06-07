@@ -54,10 +54,15 @@ import {
 import { isUserAdmin } from "../../../utils/userUtils";
 import styles from "./ImmobiliFilesPage.module.css";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 export type fileMode = "files" | "foto" | "form" | "report";
 
 const ImmobiliFilesPage: React.FC<{}> = () => {
+    useEffect(() => {
+        closeIonSelect();
+    }, []);
+
     const location = useLocation();
 
     const userData = useAppSelector((state) => state.auth.userData);
