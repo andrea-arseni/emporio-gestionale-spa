@@ -618,6 +618,7 @@ const FormVisit: React.FC<{
                     />
                     {!props.readonly && (
                         <IonButton
+                            onKeyDown={(e) => e.preventDefault()}
                             expand="block"
                             disabled={isFormDisabled}
                             onClick={(e) => submitVisit(e)}

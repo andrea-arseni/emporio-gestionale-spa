@@ -2156,6 +2156,7 @@ const ImmobileForm: React.FC<{
                     multiple
                 />
                 <IonButton
+                    onKeyDown={(e) => e.preventDefault()}
                     expand="block"
                     disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}

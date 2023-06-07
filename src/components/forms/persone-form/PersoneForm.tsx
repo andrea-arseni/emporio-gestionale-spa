@@ -625,6 +625,7 @@ const PersoneForm: React.FC<{
                     openSelector={() => openModal("locazione")}
                 />
                 <IonButton
+                    onKeyDown={(e) => e.preventDefault()}
                     style={{ marginTop: "15px" }}
                     expand="block"
                     disabled={isFormInvalid}

@@ -139,6 +139,7 @@ const DocumentoForm: React.FC<{
                     reset={reset}
                 />
                 <IonButton
+                    onKeyDown={(e) => e.preventDefault()}
                     expand="block"
                     disabled={isFormInvalid}
                     onClick={(e) => submitForm(e)}

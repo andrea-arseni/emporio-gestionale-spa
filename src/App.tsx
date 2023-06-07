@@ -290,9 +290,8 @@ IMPROVEMENTS 7/6/2023
 
 - If focus on submit release focus
 
-- No more slides on all application
+- No more slides on all applications
 - Carta visita piacevole, no form
-
 - WhatsApp API
 - Saving little images 
 
@@ -302,7 +301,7 @@ IMPROVEMENTS 7/6/2023
 
 - WEBSITE
 
-- Classe Eenergetica Maiuscola
+- Classe Energetica Maiuscola
 - Spese Extra non previste
 - Rendita
 

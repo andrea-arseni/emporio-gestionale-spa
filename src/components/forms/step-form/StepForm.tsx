@@ -224,6 +224,7 @@ const StepForm: React.FC<{
                     autofocus
                 />
                 <IonButton
+                    onKeyDown={(e) => e.preventDefault()}
                     expand="block"
                     disabled={!isFormValid}
                     onClick={(e) => submitForm(e)}

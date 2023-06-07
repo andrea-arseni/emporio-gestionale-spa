@@ -262,6 +262,7 @@ const FormOperation: React.FC<{
                     reset={inputDescrizioneReset}
                 />
                 <IonButton
+                    onKeyDown={(e) => e.preventDefault()}
                     expand="full"
                     mode="ios"
                     color="primary"
