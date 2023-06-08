@@ -45,6 +45,7 @@ import { resetQueryDataUtils, setFilterUtils } from "../../../utils/queryUtils";
 import { Filtro } from "../../../entities/filtro.model";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import { closeIonSelect } from "../../../utils/closeIonSelect";
+import FormTitle from "../../../components/form-components/form-title/FormTitle";
 
 const AppuntamentiPage: React.FC<{}> = () => {
     useEffect(() => {
@@ -306,7 +307,16 @@ const AppuntamentiPage: React.FC<{}> = () => {
                 </div>
             )}
             {isFormActive && (
-                <FormVisit operationComplete={operationComplete} />
+                <>
+                    <FormTitle
+                        title={"Nuova Visita"}
+                        handler={() => {
+                            dispatch(backToList());
+                        }}
+                        backToList
+                    />
+                    <FormVisit operationComplete={operationComplete} />
+                </>
             )}
             {!isFormActive && (
                 <>

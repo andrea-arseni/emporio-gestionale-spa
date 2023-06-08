@@ -21,8 +21,6 @@ import useDateHandler from "../../../hooks/use-date-handler";
 import DatePicker from "../../date-picker/DatePicker";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { changeLoading } from "../../../store/ui-slice";
-import FormTitle from "../../form-components/form-title/FormTitle";
-import { backToList } from "../../../store/appuntamenti-slice";
 import { setModalOpened } from "../../../store/ui-slice";
 import { isNativeApp, saveContact } from "../../../utils/contactUtils";
 import styles from "./VisitForm.module.css";
@@ -31,6 +29,7 @@ import { navigateToSpecificItem } from "../../../utils/navUtils";
 import { Evento } from "../../../entities/evento.model";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import useSingleClick from "../../../hooks/use-single-click";
+import { setCurrentVisit } from "../../../store/appuntamenti-slice";
 
 const FormVisit: React.FC<{
     readonly?: boolean;
@@ -266,14 +265,18 @@ const FormVisit: React.FC<{
         };
 
         try {
+            let res = null;
             if (mode === "update") {
-                await axiosInstance.patch(`/visite/${visit!.id}`, reqBody);
+                res = await axiosInstance.patch(
+                    `/visite/${visit!.id}`,
+                    reqBody
+                );
             } else {
-                await axiosInstance.post("/visite", reqBody);
+                res = await axiosInstance.post("/visite", reqBody);
             }
             dispatch(changeLoading(false));
-
             setIsQuerySuccessfull(true);
+            dispatch(setCurrentVisit(res.data));
         } catch (error: any) {
             dispatch(changeLoading(false));
             errorHandler(
@@ -496,168 +499,154 @@ const FormVisit: React.FC<{
     );
 
     return (
-        <>
-            {!props.readonly && (
-                <FormTitle
-                    title={
-                        visit && visit.id ? "Modifica Visita" : "Nuova Visita"
-                    }
-                    handler={() => {
-                        dispatch(backToList());
-                        dispatch(setModalOpened(false));
-                    }}
-                    backToList
+        <form className="form">
+            <IonList className="list">
+                <ItemSelector
+                    strict={props.readonly}
+                    titoloGruppo={"Data della Visita"}
+                    titoloBottone={"Seleziona Data"}
+                    isItemPresent={!!inputDateValue}
+                    getItem={() => getDate()}
+                    openSelector={() => setDatePickerIsOpen(true)}
                 />
-            )}
-            <form className="form">
-                <IonList className="list">
-                    <ItemSelector
-                        strict={props.readonly}
-                        titoloGruppo={"Data della Visita"}
-                        titoloBottone={"Seleziona Data"}
-                        isItemPresent={!!inputDateValue}
-                        getItem={() => getDate()}
-                        openSelector={() => setDatePickerIsOpen(true)}
-                    />
-                    <div
-                        style={{
-                            borderRight: "1px solid gray",
-                            borderLeft: "1px solid gray",
-                        }}
-                    >
-                        {!props.readonly && (
-                            <FormSelect
-                                ref={ionSelectOrario}
-                                title="Orario della Visita"
-                                value={inputTimeValue}
-                                function={inputTimeChangedHandler}
-                                possibleValues={getPossibleTimeValues()}
-                            />
-                        )}
-                        {props.readonly && (
-                            <p
-                                className={styles.staticHours}
-                            >{`Orario della Visita: ${inputTimeValue}`}</p>
-                        )}
-                    </div>
-                    <ItemSelector
-                        strict={props.readonly}
-                        titoloGruppo="Persona"
-                        titoloBottone={
-                            props.readonly
-                                ? "Persona non presente"
-                                : "Aggiungi Persona"
-                        }
-                        isItemPresent={!!personaValue}
-                        getItem={() => getPersona()}
-                        openSelector={
-                            props.readonly
-                                ? () => {}
-                                : () => apriSelezione("persona")
-                        }
-                    />
-                    <ItemSelector
-                        strict={props.readonly}
-                        titoloGruppo="Immobile"
-                        titoloBottone={
-                            props.readonly
-                                ? "Immobile non presente"
-                                : "Aggiungi Immobile"
-                        }
-                        isItemPresent={!!immobileValue}
-                        getItem={() => getImmobile()}
-                        openSelector={
-                            props.readonly
-                                ? () => {}
-                                : () => apriSelezione("immobile")
-                        }
-                    />
-                    {possibleUsers.length > 0 && !props.readonly && (
+                <div
+                    style={{
+                        borderRight: "1px solid gray",
+                        borderLeft: "1px solid gray",
+                    }}
+                >
+                    {!props.readonly && (
                         <FormSelect
-                            ref={ionSelectAgente}
-                            title="Agente Incaricato"
-                            value={inputUserValue}
-                            function={inputUserChangedHandler}
-                            possibleValues={possibleUsers.map((el) => el.name!)}
+                            ref={ionSelectOrario}
+                            title="Orario della Visita"
+                            value={inputTimeValue}
+                            function={inputTimeChangedHandler}
+                            possibleValues={getPossibleTimeValues()}
                         />
                     )}
                     {props.readonly && (
-                        <FormInput
-                            readonly={props.readonly}
-                            title={"Agente Incaricato"}
-                            inputValue={
-                                inputUserValue ? inputUserValue : "Non indicato"
-                            }
-                            type={"text"}
-                            inputIsInvalid={inputUserIsInvalid}
-                            inputChangeHandler={inputUserChangedHandler}
-                            inputTouchHandler={inputUserTouchedHandler}
-                            errorMessage={""}
-                            reset={() => inputUserReset()}
-                        />
+                        <p
+                            className={styles.staticHours}
+                        >{`Orario della Visita: ${inputTimeValue}`}</p>
                     )}
-                    <FormInput
-                        readonly={props.readonly}
-                        title={"Dove"}
-                        inputValue={inputDoveValue}
-                        type={"text"}
-                        inputIsInvalid={inputDoveIsInvalid}
-                        inputChangeHandler={inputDoveChangedHandler}
-                        inputTouchHandler={inputDoveTouchedHandler}
-                        errorMessage={""}
-                        reset={() => inputDoveReset()}
-                    />
-                    <TextArea
-                        readonly={props.readonly}
-                        title={`Note`}
-                        inputValue={inputNoteValue}
-                        inputChangeHandler={inputNoteChangedHandler}
-                        inputTouchHandler={noteTouchHandler}
-                        focusHandler={activateTextAreaFocus}
-                        reset={inputNoteReset}
-                    />
-                    {!props.readonly && (
-                        <IonButton
-                            onKeyDown={(e) => e.preventDefault()}
-                            expand="block"
-                            disabled={isFormDisabled}
-                            onClick={(e) => submitVisit(e)}
-                        >
-                            {getSubmitText()}
-                        </IonButton>
-                    )}
-                </IonList>
-                <Modal
-                    setIsOpen={setModalIsOpen}
-                    isOpen={modalIsOpen}
-                    title={`Scegli ${modalContentType} della visita`}
-                    handler={() => setModalIsOpen(false)}
-                >
-                    {modalContentType && (
-                        <Selector
-                            entitiesType={
-                                modalContentType === "persona"
-                                    ? "persone"
-                                    : "immobili"
-                            }
-                            setCurrentEntity={setCurrentEntity}
-                            selectMode
-                            localQuery
-                        />
-                    )}
-                </Modal>
-                {datePickerIsOpen && (
-                    <DatePicker
-                        closePicker={() => setDatePickerIsOpen(false)}
-                        minValue={new Date().toISOString()}
-                        maxValue="2040-05-31T23:59:59"
-                        changeHandler={inputDateChangedHandler}
-                        value={inputDateValue}
-                        sundayDisabled
+                </div>
+                <ItemSelector
+                    strict={props.readonly}
+                    titoloGruppo="Persona"
+                    titoloBottone={
+                        props.readonly
+                            ? "Persona non presente"
+                            : "Aggiungi Persona"
+                    }
+                    isItemPresent={!!personaValue}
+                    getItem={() => getPersona()}
+                    openSelector={
+                        props.readonly
+                            ? () => {}
+                            : () => apriSelezione("persona")
+                    }
+                />
+                <ItemSelector
+                    strict={props.readonly}
+                    titoloGruppo="Immobile"
+                    titoloBottone={
+                        props.readonly
+                            ? "Immobile non presente"
+                            : "Aggiungi Immobile"
+                    }
+                    isItemPresent={!!immobileValue}
+                    getItem={() => getImmobile()}
+                    openSelector={
+                        props.readonly
+                            ? () => {}
+                            : () => apriSelezione("immobile")
+                    }
+                />
+                {possibleUsers.length > 0 && !props.readonly && (
+                    <FormSelect
+                        ref={ionSelectAgente}
+                        title="Agente Incaricato"
+                        value={inputUserValue}
+                        function={inputUserChangedHandler}
+                        possibleValues={possibleUsers.map((el) => el.name!)}
                     />
                 )}
-            </form>
-        </>
+                {props.readonly && (
+                    <FormInput
+                        readonly={props.readonly}
+                        title={"Agente Incaricato"}
+                        inputValue={
+                            inputUserValue ? inputUserValue : "Non indicato"
+                        }
+                        type={"text"}
+                        inputIsInvalid={inputUserIsInvalid}
+                        inputChangeHandler={inputUserChangedHandler}
+                        inputTouchHandler={inputUserTouchedHandler}
+                        errorMessage={""}
+                        reset={() => inputUserReset()}
+                    />
+                )}
+                <FormInput
+                    readonly={props.readonly}
+                    title={"Dove"}
+                    inputValue={inputDoveValue}
+                    type={"text"}
+                    inputIsInvalid={inputDoveIsInvalid}
+                    inputChangeHandler={inputDoveChangedHandler}
+                    inputTouchHandler={inputDoveTouchedHandler}
+                    errorMessage={""}
+                    reset={() => inputDoveReset()}
+                />
+                <TextArea
+                    readonly={props.readonly}
+                    title={`Note`}
+                    inputValue={inputNoteValue}
+                    inputChangeHandler={inputNoteChangedHandler}
+                    inputTouchHandler={noteTouchHandler}
+                    focusHandler={activateTextAreaFocus}
+                    reset={inputNoteReset}
+                />
+                {!props.readonly && (
+                    <IonButton
+                        onKeyDown={(e) => e.preventDefault()}
+                        expand="block"
+                        disabled={isFormDisabled}
+                        onClick={(e) => submitVisit(e)}
+                    >
+                        {getSubmitText()}
+                    </IonButton>
+                )}
+            </IonList>
+            <Modal
+                setIsOpen={setModalIsOpen}
+                isOpen={modalIsOpen}
+                title={`Scegli ${modalContentType} della visita`}
+                handler={() => setModalIsOpen(false)}
+            >
+                {modalContentType && (
+                    <Selector
+                        entitiesType={
+                            modalContentType === "persona"
+                                ? "persone"
+                                : "immobili"
+                        }
+                        setCurrentEntity={setCurrentEntity}
+                        selectMode
+                        localQuery
+                    />
+                )}
+            </Modal>
+            {datePickerIsOpen && (
+                <DatePicker
+                    closePicker={() => setDatePickerIsOpen(false)}
+                    minValue={new Date().toISOString()}
+                    maxValue="2040-05-31T23:59:59"
+                    changeHandler={inputDateChangedHandler}
+                    value={inputDateValue}
+                    sundayDisabled
+                />
+            )}
+        </form>
     );
 };
 

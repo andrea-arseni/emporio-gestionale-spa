@@ -428,6 +428,7 @@ const AuthPage: React.FC<{}> = () => {
                         </IonButton>
                     )}
                     <IonButton
+                        onKeyDown={(e) => e.preventDefault()}
                         disabled={formIsInvalid()}
                         className={`${styles.button} ${styles.mainButton}`}
                         mode="ios"

@@ -57,6 +57,8 @@ import PersonaPage from "./pages/persone/PersonePage/PersonaPage";
 import PersonaFormPage from "./pages/persone/PersonePage/PersonaFormPage";
 import ImmobilePage from "./pages/immobili/ImmobiliPage/ImmobilePage";
 import ImmobileFormPage from "./pages/immobili/ImmobiliPage/ImmobileFormPage";
+import Appuntamento from "./pages/appuntamenti/Appuntamento";
+import AppuntamentoFormPage from "./pages/appuntamenti/AppuntamentoFormPage";
 
 setupIonicReact();
 
@@ -147,6 +149,18 @@ const App: React.FC = () => {
                             <Route
                                 path="/appuntamenti"
                                 element={<AppuntamentiPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/appuntamenti/:id"
+                                element={<Appuntamento />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/appuntamenti/:id/modifica"
+                                element={<AppuntamentoFormPage />}
                             />
                         )}
                         {token && (
@@ -285,16 +299,14 @@ export default App;
 - Navigazione su singola persona rivista - VINTO
 - Navigazione su singolo immobile rivista - VINTO
 - Still bug on select - VINTO
+- If focus on submit release focus - VINTO
+- Carta visita piacevole, no form - VINTO
 
 IMPROVEMENTS 7/6/2023
 
-- If focus on submit release focus
-
 - No more slides on all applications
-- Carta visita piacevole, no form
 - WhatsApp API
 - Saving little images 
-
 - Parenti
 
 - ARRIVATO

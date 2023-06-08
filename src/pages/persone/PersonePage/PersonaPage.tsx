@@ -146,7 +146,7 @@ const PersonaPage: React.FC<{}> = () => {
                 <SinglePageData chiave="Nome">
                     {persona?.nome
                         ?.split(" ")
-                        .map((el) => capitalize(el))
+                        .map((el: string) => capitalize(el))
                         .join(" ")}
                 </SinglePageData>
                 {persona?.status && (

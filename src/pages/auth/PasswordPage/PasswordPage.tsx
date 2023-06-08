@@ -222,6 +222,7 @@ const PasswordPage: React.FC<{}> = () => {
                         mode="ios"
                         color="primary"
                         type="submit"
+                        onKeyDown={(e) => e.preventDefault()}
                     >
                         {!formIsInvalid &&
                         inputConfirmPasswordValue !== inputPasswordValue

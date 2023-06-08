@@ -1,30 +1,11 @@
-import {
-    IonModal,
-    IonContent,
-    IonIcon,
-    IonLabel,
-    IonSegment,
-    IonSegmentButton,
-    IonButton,
-    isPlatform,
-} from "@ionic/react";
-import {
-    createOutline,
-    trashBinOutline,
-    chatboxEllipsesOutline,
-} from "ionicons/icons";
+import { IonModal, IonContent, IonButton, isPlatform } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
-import { setFormActive } from "../../../store/appuntamenti-slice";
-import { alertEliminaVisita } from "../../../store/appuntamenti-thunk";
 import { setError, setModalOpened } from "../../../store/ui-slice";
 import { getConfermaVisitaMessage } from "../../../utils/messageUtils";
-import { isUserAdmin } from "../../../utils/userUtils";
 import FormTextArea from "../../form-components/form-text-area/FormTextArea";
 import FormTitle from "../../form-components/form-title/FormTitle";
-import FormVisit from "../../forms/visit-form/VisitForm";
-import { isPast } from "../../../utils/timeUtils";
 import { isNativeApp } from "../../../utils/contactUtils";
 import styles from "./CalendarModal.module.css";
 import {
@@ -33,6 +14,8 @@ import {
     shareObject,
 } from "../../../utils/shareUtils";
 import useErrorHandler from "../../../hooks/use-error-handler";
+import { useNavigate } from "react-router-dom";
+import Appuntamento from "../../../pages/appuntamenti/Appuntamento";
 
 const CalendarModal: React.FC<{}> = () => {
     const modalIsOpen = useAppSelector((state) => state.ui.isModalOpened);
@@ -40,6 +23,8 @@ const CalendarModal: React.FC<{}> = () => {
     const visit = useAppSelector((state) => state.appuntamenti.currentVisit);
 
     const dispatch = useAppDispatch();
+
+    const navigate = useNavigate();
 
     const { presentAlert, errorHandler } = useErrorHandler();
 
@@ -102,8 +87,14 @@ const CalendarModal: React.FC<{}> = () => {
     const modificaVisita = () => {
         dispatch(setModalOpened(false));
         setTimeout(() => {
-            dispatch(setFormActive(true));
+            navigate(`/appuntamenti/${visit?.id}/modifica`);
         }, 300);
+    };
+
+    const modalActions = {
+        modificaVisita,
+        confermaVisita,
+        smontaModale,
     };
 
     return (
@@ -121,40 +112,9 @@ const CalendarModal: React.FC<{}> = () => {
                         title={"Dettagli Visita"}
                         handler={() => dispatch(setModalOpened(false))}
                     />
-                    <div style={{ paddingTop: "20px", paddingBottom: "60px" }}>
-                        <FormVisit readonly />
+                    <div style={{ paddingTop: "50px" }}>
+                        <Appuntamento modalActions={modalActions} />
                     </div>
-                    <IonSegment mode="ios">
-                        {visit && !isPast(new Date(visit.quando!)) && (
-                            <IonSegmentButton
-                                value="conferma"
-                                onClick={confermaVisita}
-                            >
-                                <IonIcon icon={chatboxEllipsesOutline} />
-                                <IonLabel>Conferma</IonLabel>
-                            </IonSegmentButton>
-                        )}
-                        <IonSegmentButton
-                            value="modifica"
-                            onClick={modificaVisita}
-                        >
-                            <IonIcon icon={createOutline} />
-                            <IonLabel>Modifica</IonLabel>
-                        </IonSegmentButton>
-                        {isUserAdmin(userData) && (
-                            <IonSegmentButton
-                                value="elimina"
-                                onClick={() =>
-                                    dispatch(
-                                        alertEliminaVisita({ presentAlert })
-                                    )
-                                }
-                            >
-                                <IonIcon icon={trashBinOutline} />
-                                <IonLabel>Elimina</IonLabel>
-                            </IonSegmentButton>
-                        )}
-                    </IonSegment>
                 </IonContent>
             )}
 
