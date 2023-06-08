@@ -7,9 +7,10 @@ import { capitalize } from "../../utils/stringUtils";
 import Card from "../card/Card";
 import styles from "./Lists.module.css";
 import { getDayName } from "../../utils/timeUtils";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { setCurrentVisit } from "../../store/appuntamenti-slice";
 import { useNavigate } from "react-router-dom";
+import useUpAndDown from "../../hooks/use-up-and-down";
 
 const ListVisits: React.FC<{
     visits: Visit[];
@@ -24,6 +25,13 @@ const ListVisits: React.FC<{
     const navigate = useNavigate();
 
     const [selected, setSelected] = useState<number>(0);
+
+    const defineSelected = useCallback(
+        (newId: number) => setSelected(newId),
+        []
+    );
+
+    useUpAndDown(props.visits, selected, defineSelected);
 
     const handleClick = (id: number) => {
         if (selected !== id) {

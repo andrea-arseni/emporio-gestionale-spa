@@ -6,6 +6,7 @@ import { useAppDispatch } from "../../hooks";
 import { setImmobile } from "../../store/immobile-slice";
 import { setPersona } from "../../store/persona-slice";
 import { capitalize } from "../../utils/stringUtils";
+import { setModalOpened } from "../../store/ui-slice";
 
 const SinglePageItem: React.FC<{
     titolo: string;
@@ -17,12 +18,15 @@ const SinglePageItem: React.FC<{
     const dispatch = useAppDispatch();
 
     const goToEntity = (el: Immobile | Persona) => {
+        dispatch(setModalOpened(false));
         dispatch(
             props.type === "immobili"
                 ? setImmobile(el as Immobile)
                 : setPersona(el as Persona)
         );
-        navigate(`/${props.type}/${el.id}`);
+        setTimeout(() => {
+            navigate(`/${props.type}/${el.id}`);
+        }, 300);
     };
 
     const getItemText = (el: Immobile | Persona) => {

@@ -1,5 +1,11 @@
 import { IonItem, IonLabel, IonNote } from "@ionic/react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import { Entity } from "../../entities/entity";
 import styles from "./Lists.module.css";
 import { Persona } from "../../entities/persona.model";
@@ -9,6 +15,7 @@ import { useAppDispatch } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { getDayName } from "../../utils/timeUtils";
 import { setPersona } from "../../store/persona-slice";
+import useUpAndDown from "../../hooks/use-up-and-down";
 
 const ListPersone: React.FC<{
     persone: Persona[];
@@ -25,6 +32,13 @@ const ListPersone: React.FC<{
     }, [dispatch]);
 
     const [selected, setSelected] = useState<number>(0);
+
+    const defineSelected = useCallback(
+        (newId: number) => setSelected(newId),
+        []
+    );
+
+    useUpAndDown(props.persone, selected, defineSelected);
 
     const handleClick = (id: number) => {
         if (selected !== id) {

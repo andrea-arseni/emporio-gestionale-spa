@@ -1,5 +1,11 @@
 import { IonItem, IonLabel, IonNote } from "@ionic/react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import { Entity } from "../../entities/entity";
 import { Immobile } from "../../entities/immobile.model";
 import useWindowSize from "../../hooks/use-size";
@@ -10,6 +16,7 @@ import FileSpecialiList from "../file-speciali-list/FileSpecialiList";
 import { useAppDispatch } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { setImmobile } from "../../store/immobile-slice";
+import useUpAndDown from "../../hooks/use-up-and-down";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
@@ -26,6 +33,13 @@ const ListImmobili: React.FC<{
     }, [dispatch]);
 
     const [selected, setSelected] = useState<number>(0);
+
+    const defineSelected = useCallback(
+        (newId: number) => setSelected(newId),
+        []
+    );
+
+    useUpAndDown(props.immobili, selected, defineSelected);
 
     const handleClick = (id: number) => {
         if (selected !== id) {

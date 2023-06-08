@@ -305,6 +305,7 @@ export default App;
 IMPROVEMENTS 7/6/2023
 
 - No more slides on all applications
+- Up and down on my body
 - WhatsApp API
 - Saving little images 
 - Parenti
