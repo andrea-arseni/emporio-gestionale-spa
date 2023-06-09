@@ -263,6 +263,17 @@ const ImmobilePage: React.FC<{}> = () => {
                             features={caratteristiche.locazione}
                         ></FeaturesWrapper>
                     )}
+                {immobile &&
+                    immobile.caratteristiche &&
+                    immobile.caratteristiche.notePrivate && (
+                        <FeaturesWrapper title="Note Private">
+                            <div className={styles.descrizione}>
+                                {elaborateDescrizione(
+                                    immobile.caratteristiche.notePrivate
+                                )}
+                            </div>
+                        </FeaturesWrapper>
+                    )}
                 {immobile?.proprietario && (
                     <SinglePageItem
                         titolo={`Proprietario`}

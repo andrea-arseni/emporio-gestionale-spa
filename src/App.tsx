@@ -311,7 +311,11 @@ export default App;
 
 IMPROVEMENTS 7/6/2023
 
-- No more slides on all applications
+- Posto auto coperto
+- Presente
+
+- No more slides on all applications - step - docs - reports 
+- Bug double visits submitting - se aggiungi uno dice visita modificata, l'altro visita aggiunta
 - Up and down on my body
 
 - WhatsApp API
