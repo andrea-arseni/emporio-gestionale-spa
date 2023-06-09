@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import { isNativeApp, saveContact } from "../../../utils/contactUtils";
-import { setPersona } from "../../../store/persona-slice";
+import { setPersona, setPersonaStoriaType } from "../../../store/persona-slice";
 import { Immobile } from "../../../entities/immobile.model";
 import SinglePageItem from "../../../components/single-page-component/SinglePageItem";
 import { Evento } from "../../../entities/evento.model";
@@ -48,7 +48,8 @@ const PersonaPage: React.FC<{}> = () => {
 
     useEffect(() => {
         closeIonSelect();
-    }, []);
+        dispatch(setPersonaStoriaType("eventi"));
+    }, [dispatch]);
 
     useEffect(() => {
         const sortEventsByDate = (events: Evento[]) =>

@@ -1,6 +1,6 @@
 import { IonIcon, IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
 import { bookOutline, newspaperOutline, peopleOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import RiepilogoBar from "../../components/bars/riepilogo-bar/RiepilogoBar";
 import StaticBar from "../../components/bars/static-bar/StaticBar";
@@ -17,6 +17,8 @@ import { fetchPersonaById } from "../../store/persona.thunk";
 import LogsPage from "../immobili/LogsPage/LogsPage";
 import EventsPage from "../persone/EventsPage/EventsPage";
 import { closeIonSelect } from "../../utils/closeIonSelect";
+import { setImmobileStoriaType } from "../../store/immobile-slice";
+import { setPersonaStoriaType } from "../../store/persona-slice";
 
 const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
     const location = useLocation();
@@ -29,7 +31,11 @@ const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
 
     const id = location.pathname.split("/")[2];
 
-    const [mode, setMode] = useState<"eventi" | "visite">("eventi");
+    const mode = useAppSelector((state) =>
+        props.type === "immobile"
+            ? state.immobile.storiaType
+            : state.persona.storiaType
+    );
 
     const currentEntity = useAppSelector((state) =>
         props.type === "immobile"
@@ -101,14 +107,26 @@ const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
             <IonSegment mode="ios" value={mode}>
                 <IonSegmentButton
                     value="eventi"
-                    onClick={() => setMode("eventi")}
+                    onClick={() =>
+                        dispatch(
+                            props.type === "immobile"
+                                ? setImmobileStoriaType("eventi")
+                                : setPersonaStoriaType("eventi")
+                        )
+                    }
                 >
                     <IonIcon icon={newspaperOutline} />
                     <IonLabel>Eventi</IonLabel>
                 </IonSegmentButton>
                 <IonSegmentButton
                     value="visite"
-                    onClick={() => setMode("visite")}
+                    onClick={() =>
+                        dispatch(
+                            props.type === "immobile"
+                                ? setImmobileStoriaType("visite")
+                                : setPersonaStoriaType("visite")
+                        )
+                    }
                 >
                     <IonIcon icon={peopleOutline} />
                     <IonLabel>Visite</IonLabel>

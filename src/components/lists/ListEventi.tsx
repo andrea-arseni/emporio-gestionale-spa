@@ -1,140 +1,40 @@
-import {
-    IonItemSliding,
-    IonItem,
-    IonLabel,
-    IonItemOptions,
-    useIonAlert,
-} from "@ionic/react";
-import {
-    createOutline,
-    pencilOutline,
-    personAddOutline,
-    trashOutline,
-} from "ionicons/icons";
-import { Dispatch, SetStateAction, useState } from "react";
-import { Entity } from "../../entities/entity";
+import { IonItem, IonLabel } from "@ionic/react";
+import { useCallback, useEffect, useState } from "react";
 import { Evento } from "../../entities/evento.model";
-import useInput from "../../hooks/use-input";
 import { getDateAndTime } from "../../utils/timeUtils";
-import ItemOption from "./ItemOption";
-import { getInterestMessage } from "../../utils/messageUtils";
-import { useAppSelector } from "../../hooks";
-import { Immobile } from "../../entities/immobile.model";
-import { isNativeApp, saveContact } from "../../utils/contactUtils";
-import ModalMessage from "../modal/modal-message/ModalMessage";
-import { isUserAdmin } from "../../utils/userUtils";
-import {
-    NOT_SHAREABLE_MSG,
-    isSharingAvailable,
-    shareObject,
-} from "../../utils/shareUtils";
-import axiosInstance from "../../utils/axiosInstance";
-import useErrorHandler from "../../hooks/use-error-handler";
+import { useAppDispatch } from "../../hooks";
+import useUpAndDown from "../../hooks/use-up-and-down";
+import { setEvento } from "../../store/persona-slice";
+import { useNavigate } from "react-router-dom";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
-    setCurrentEntity: Dispatch<SetStateAction<Entity | null>>;
-    setMode: Dispatch<SetStateAction<"list" | "form">>;
-    deleteEntity: (type: string, id: string, message?: string) => void;
-    showLoading: boolean;
-    setShowLoading: Dispatch<SetStateAction<boolean>>;
-    closeItems: () => void;
-    backToList: () => void;
 }> = (props) => {
-    const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
 
-    const persona = useAppSelector((state) => state.persona.persona);
+    const navigate = useNavigate();
 
-    const [currentImmobile, setCurrentImmobile] = useState<Immobile | null>(
-        null
+    useEffect(() => {
+        dispatch(setEvento(null));
+    }, [dispatch]);
+
+    const [selected, setSelected] = useState<number>(0);
+
+    const defineSelected = useCallback(
+        (newId: number) => setSelected(newId),
+        []
     );
 
-    const { errorHandler } = useErrorHandler();
+    useUpAndDown(props.eventi, selected, defineSelected);
 
-    const [presentAlert] = useIonAlert();
-
-    const userData = useAppSelector((state) => state.auth.userData);
-
-    const aggiornaPersona = async (id: number) => {
-        const reqBody = {
-            descrizione: "Scritto messaggio. Richiama lei.",
-            statusPersona: "B_RICHIAMA_LEI",
-        };
-        try {
-            await axiosInstance.post(`/persone/${id}/eventi`, reqBody);
-            props.backToList();
-        } catch (e) {
-            alert("Aggiornamento non riuscito");
-        }
-    };
-
-    const produceUrl = () =>
-        currentImmobile
-            ? process.env.REACT_APP_PUBLIC_WEBSITE_URL! + currentImmobile!.id!
-            : undefined;
-
-    const sendInterestMessage = async () => {
-        if (!isSharingAvailable()) {
-            errorHandler(null, NOT_SHAREABLE_MSG);
+    const handleClick = (id: number) => {
+        if (selected !== id) {
+            setSelected(id);
             return;
         }
 
-        try {
-            await shareObject(inputNoteValue, produceUrl(), "Conferma Visita");
-            setModalIsOpen(false);
-            // modale con domanda se aggiornare stato della persona
-            await presentAlert({
-                header: "Condivisione riuscita",
-                message: `Aggiornare stato di ${persona?.nome}?`,
-                buttons: [
-                    {
-                        text: "Sì",
-                        // sì call con messaggio "Scritto messaggio. Richiama lei" e status
-                        handler: () => aggiornaPersona(persona!.id!),
-                    },
-                    {
-                        text: "No",
-                        role: "cancel",
-                    },
-                ],
-            });
-        } catch (error: any) {
-            if (
-                error &&
-                error.message !== "Abort due to cancellation of share."
-            )
-                errorHandler(null, `Condivisione testo non riuscita.`);
-        }
-    };
-
-    const {
-        inputValue: inputNoteValue,
-        inputTouchedHandler: inputNoteTouchedHandler,
-        inputChangedHandler: inputNoteChangedHandler,
-        inputIsInvalid: inputNoteIsInvalid,
-    } = useInput(() => true, "");
-
-    const apriModale = (immobile: Immobile) => {
-        setCurrentImmobile(immobile);
-        inputNoteChangedHandler(
-            null,
-            getInterestMessage(persona!, immobile, userData!)
-        );
-        setModalIsOpen(true);
-        props.closeItems();
-    };
-
-    const getColor = (evento: Evento) => {
-        let matchFound: boolean = false;
-        const paroleChiave = [
-            "Visita modificata: ora fissata il",
-            "Visita annullata",
-            "Visita fissata il ",
-        ];
-        paroleChiave.forEach((el) => {
-            if (evento.descrizione?.includes(el)) matchFound = true;
-        });
-        return matchFound ? "tertiary" : undefined;
+        dispatch(setEvento(props.eventi.filter((el) => el.id === id)[0]));
+        navigate(`${id.toString()}`);
     };
 
     const getDescrizione = (evento: Evento) => {
@@ -164,88 +64,38 @@ const ListEventi: React.FC<{
         <>
             {props.eventi.map((evento: Evento) => {
                 return (
-                    <IonItemSliding key={evento.id!} id={evento.id?.toString()}>
-                        <IonItem detail color={getColor(evento)}>
-                            <IonLabel text-wrap>
-                                <p>{`${getDateAndTime(evento.data!)} ${
-                                    evento.user && evento.user.name
-                                        ? `inserito da ${evento.user.name}`
-                                        : ""
-                                }`}</p>
-                                {getDescrizione(evento)}
-                                {evento.immobile && (
-                                    <>
-                                        <p
-                                            style={{
-                                                color: "var(--ion-color-primary)",
-                                            }}
-                                        >{`Interessato al Ref. ${evento.immobile.ref}: ${evento.immobile.titolo}`}</p>
-                                        <p>{`${evento.immobile.indirizzo} (${evento.immobile.comune})`}</p>
-                                    </>
-                                )}
-                            </IonLabel>
-                        </IonItem>
-                        <IonItemOptions side="end">
-                            {isNativeApp && (
-                                <ItemOption
-                                    handler={() => {
-                                        props.closeItems();
-                                        saveContact(
-                                            presentAlert,
-                                            persona!,
-                                            errorHandler
-                                        );
-                                    }}
-                                    colorType={"dark"}
-                                    icon={personAddOutline}
-                                    title={"Rubrica"}
-                                />
-                            )}
+                    <IonItem
+                        key={evento.id}
+                        color={selected === evento.id ? "primary" : "light"}
+                        onClick={() => handleClick(evento.id!)}
+                    >
+                        <IonLabel
+                            text-wrap
+                            color={selected === evento.id ? "light" : "dark"}
+                        >
+                            <p>{`${getDateAndTime(evento.data!)} ${
+                                evento.user && evento.user.name
+                                    ? `inserito da ${evento.user.name}`
+                                    : ""
+                            }`}</p>
+                            {getDescrizione(evento)}
                             {evento.immobile && (
-                                <ItemOption
-                                    handler={() => apriModale(evento.immobile!)}
-                                    colorType={"success"}
-                                    icon={pencilOutline}
-                                    title={"Scrivi"}
-                                />
+                                <>
+                                    <p
+                                        style={{
+                                            color:
+                                                selected !== evento.id
+                                                    ? "var(--ion-color-primary)"
+                                                    : undefined,
+                                        }}
+                                    >{`Interessato al Ref. ${evento.immobile.ref}: ${evento.immobile.titolo}`}</p>
+                                    <p>{`${evento.immobile.indirizzo} (${evento.immobile.comune})`}</p>
+                                </>
                             )}
-                            <ItemOption
-                                handler={() => {
-                                    props.setCurrentEntity(evento);
-                                    props.setMode("form");
-                                }}
-                                colorType={"light"}
-                                icon={createOutline}
-                                title={"Modifica"}
-                            />
-                            {isUserAdmin(userData) && (
-                                <ItemOption
-                                    handler={() =>
-                                        props.deleteEntity(
-                                            "eventi",
-                                            evento.id!.toString(),
-                                            `Hai selezionato la cancellazione dell'evento. Si tratta di un processo irreversibile. Lo status della persona non verrà modificato.`
-                                        )
-                                    }
-                                    colorType={"danger"}
-                                    icon={trashOutline}
-                                    title={"Elimina"}
-                                />
-                            )}
-                        </IonItemOptions>
-                    </IonItemSliding>
+                        </IonLabel>
+                    </IonItem>
                 );
             })}
-            <ModalMessage
-                url={produceUrl()}
-                modalIsOpen={modalIsOpen}
-                setModalIsOpen={setModalIsOpen}
-                handler={sendInterestMessage}
-                inputValue={inputNoteValue}
-                inputTouchedHandler={inputNoteTouchedHandler}
-                inputChangedHandler={inputNoteChangedHandler}
-                inputIsInvalid={inputNoteIsInvalid}
-            />
         </>
     );
 };

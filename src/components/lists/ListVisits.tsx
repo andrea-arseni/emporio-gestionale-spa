@@ -31,7 +31,7 @@ const ListVisits: React.FC<{
         []
     );
 
-    useUpAndDown(props.visits, selected, defineSelected);
+    useUpAndDown(props.visits, selected, defineSelected, list);
 
     const handleClick = (id: number) => {
         if (selected !== id) {

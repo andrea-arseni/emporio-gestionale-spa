@@ -34,15 +34,21 @@ import {
 import FeaturesWrapper from "../../../components/features-wrapper/FeaturesWrapper";
 import { capitalize, stringifyNumber } from "../../../utils/stringUtils";
 import axiosInstance from "../../../utils/axiosInstance";
-import { setImmobile } from "../../../store/immobile-slice";
+import {
+    setImmobile,
+    setImmobileStoriaType,
+} from "../../../store/immobile-slice";
 import { closeIonSelect } from "../../../utils/closeIonSelect";
 
 const ImmobilePage: React.FC<{}> = () => {
     const navigate = useNavigate();
 
+    const dispatch = useAppDispatch();
+
     useEffect(() => {
         closeIonSelect();
-    }, []);
+        dispatch(setImmobileStoriaType("eventi"));
+    }, [dispatch]);
 
     const [clickBlocked, setClickBlocked] = useState<boolean>(true);
 
@@ -51,8 +57,6 @@ const ImmobilePage: React.FC<{}> = () => {
     const { errorHandler } = useErrorHandler();
 
     const [presentAlert] = useIonAlert();
-
-    const dispatch = useAppDispatch();
 
     const immobile = useAppSelector((state) => state.immobile.immobile);
 

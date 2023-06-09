@@ -4,24 +4,24 @@ import NewEntityBar from "../../../components/bars/new-entity-bar/NewEntityBar";
 import FormTitle from "../../../components/form-components/form-title/FormTitle";
 import EventoForm from "../../../components/forms/evento-form/EventoForm";
 import Selector from "../../../components/selector/Selector";
-import { Entity } from "../../../entities/entity";
 import { Evento } from "../../../entities/evento.model";
 import { Persona } from "../../../entities/persona.model";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { fetchPersonaById } from "../../../store/persona.thunk";
+import { setEvento } from "../../../store/persona-slice";
 
 const EventsPage: React.FC<{ id: string }> = (props) => {
     const currentPersona = useAppSelector((state) => state.persona.persona);
+
+    const currentEvent = useAppSelector((state) => state.persona.evento);
 
     const dispatch = useAppDispatch();
 
     const [mode, setMode] = useState<"list" | "form">("list");
 
-    const [currentEvent, setCurrentEvent] = useState<Entity | null>(null);
-
     const backToList = () => {
         setMode("list");
-        setCurrentEvent(null);
+        dispatch(setEvento(null));
         dispatch(fetchPersonaById(+props.id));
     };
 
@@ -39,8 +39,6 @@ const EventsPage: React.FC<{ id: string }> = (props) => {
                         localQuery
                         setMode={setMode}
                         entitiesType="eventi"
-                        setCurrentEntity={setCurrentEvent}
-                        backToList={backToList}
                         baseUrl={`/persone/${currentPersona.id}/eventi`}
                     />
                 </>
@@ -49,11 +47,7 @@ const EventsPage: React.FC<{ id: string }> = (props) => {
                 <>
                     <div>
                         <FormTitle
-                            title={
-                                currentEvent?.id
-                                    ? "Modifica Evento"
-                                    : "Aggiorna Persona"
-                            }
+                            title={"Aggiorna Persona"}
                             handler={backToList}
                             backToList
                         />

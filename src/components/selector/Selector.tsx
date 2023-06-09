@@ -274,11 +274,6 @@ const Selector: React.FC<{
     };
 
     const getEntities = () => {
-        const performAction = () => {
-            props.backToList!();
-            setUpdate(++update);
-        };
-
         switch (props.entitiesType) {
             case "immobili":
                 return (
@@ -320,18 +315,7 @@ const Selector: React.FC<{
                     />
                 );
             case "eventi":
-                return (
-                    <ListEventi
-                        eventi={entities as Evento[]}
-                        setMode={props.setMode!}
-                        setCurrentEntity={props.setCurrentEntity!}
-                        deleteEntity={deleteEntity}
-                        showLoading={showLoading}
-                        setShowLoading={setShowLoading}
-                        closeItems={closeItemsList}
-                        backToList={performAction}
-                    />
-                );
+                return <ListEventi eventi={entities as Evento[]} />;
             case "documenti":
                 return (
                     <ListDocumenti

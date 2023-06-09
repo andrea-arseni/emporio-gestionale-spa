@@ -202,6 +202,11 @@
     padding: 0;
 }
 
+.formTextArea {
+    width: 100%;
+    border-radius: 10px;
+}
+
 @media (min-width: 700px) {
     .singlePageGroup {
         display: flex;

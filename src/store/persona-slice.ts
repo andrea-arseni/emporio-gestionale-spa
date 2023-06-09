@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Filtro } from "../entities/filtro.model";
 import { Persona } from "../entities/persona.model";
 import { queryData } from "../entities/queryData";
+import { Evento } from "../entities/evento.model";
 
 const INITIAL_QUERY_DATA: queryData = {
     filter: {
@@ -13,11 +14,15 @@ const INITIAL_QUERY_DATA: queryData = {
 };
 interface PersonaState {
     persona: Persona | null;
+    evento: Evento | null;
+    storiaType: "eventi" | "visite";
     queryData: queryData;
 }
 
 const initialState = {
     persona: null,
+    evento: null,
+    storiaType: "eventi",
     queryData: INITIAL_QUERY_DATA,
 } as PersonaState;
 
@@ -27,6 +32,15 @@ const PersonaSlice = createSlice({
     reducers: {
         setPersona(state, action: PayloadAction<Persona | null>) {
             state.persona = action.payload;
+        },
+        setEvento(state, action: PayloadAction<Evento | null>) {
+            state.evento = action.payload;
+        },
+        setPersonaStoriaType(
+            state,
+            action: PayloadAction<"eventi" | "visite">
+        ) {
+            state.storiaType = action.payload;
         },
         setPersoneFilter(state, action: PayloadAction<Filtro>) {
             state.queryData.filter = action.payload;
@@ -51,7 +65,9 @@ export const {
     setPersoneFilter,
     setPersoneSorting,
     setPersonePaging,
+    setPersonaStoriaType,
     triggerPersoneUpdate,
     resetPersoneQueryData,
+    setEvento,
 } = PersonaSlice.actions;
 export default PersonaSlice.reducer;

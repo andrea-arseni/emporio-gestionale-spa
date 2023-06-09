@@ -3,10 +3,10 @@ import { closeOutline } from "ionicons/icons";
 import React, { useEffect, useRef } from "react";
 
 const FormTextArea: React.FC<{
-    title: string;
     inputValue: string;
     inputChangeHandler: (e: any) => void;
     inputTouchHandler: () => void;
+    title?: string;
     reset?: () => void;
     inputIsInvalid?: boolean;
     errorMessage?: string;
@@ -29,13 +29,15 @@ const FormTextArea: React.FC<{
     }, [props.autofocus]);
 
     return (
-        <IonItem>
-            <IonLabel
-                color={props.inputIsInvalid ? "danger" : undefined}
-                position="floating"
-            >
-                {props.title}
-            </IonLabel>
+        <IonItem className="formTextArea">
+            {props.title && (
+                <IonLabel
+                    color={props.inputIsInvalid ? "danger" : undefined}
+                    position="floating"
+                >
+                    {props.title}
+                </IonLabel>
+            )}
             <IonTextarea
                 ref={ref}
                 readonly={props.readonly}

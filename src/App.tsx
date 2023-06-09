@@ -59,6 +59,7 @@ import ImmobilePage from "./pages/immobili/ImmobiliPage/ImmobilePage";
 import ImmobileFormPage from "./pages/immobili/ImmobiliPage/ImmobileFormPage";
 import Appuntamento from "./pages/appuntamenti/Appuntamento";
 import AppuntamentoFormPage from "./pages/appuntamenti/AppuntamentoFormPage";
+import EventPage from "./pages/persone/EventsPage/EventPage";
 
 setupIonicReact();
 
@@ -216,6 +217,12 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route
+                                path="/persone/:id/storia/:idEvento"
+                                element={<EventPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
                                 path="/persone/:id/files"
                                 element={<PersonaFilePage />}
                             />
@@ -306,6 +313,7 @@ IMPROVEMENTS 7/6/2023
 
 - No more slides on all applications
 - Up and down on my body
+
 - WhatsApp API
 - Saving little images 
 - Parenti

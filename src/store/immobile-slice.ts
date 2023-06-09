@@ -16,6 +16,7 @@ const INITIAL_QUERY_DATA: queryData = {
 
 interface ImmobileState {
     immobile: Immobile | null;
+    storiaType: "eventi" | "visite";
     queryData: queryData;
     isSelectionModeAllowed: boolean;
     isSelectionModeActivated: boolean;
@@ -24,6 +25,7 @@ interface ImmobileState {
 
 const initialState = {
     immobile: null,
+    storiaType: "eventi",
     queryData: INITIAL_QUERY_DATA,
     isSelectionModeAllowed: true,
     isSelectionModeActivated: false,
@@ -39,6 +41,12 @@ const immobileSlice = createSlice({
         },
         setImmobiliSorting(state, action: PayloadAction<string>) {
             state.queryData.sort = action.payload;
+        },
+        setImmobileStoriaType(
+            state,
+            action: PayloadAction<"eventi" | "visite">
+        ) {
+            state.storiaType = action.payload;
         },
         setImmobiliPaging(state, action: PayloadAction<number>) {
             state.queryData.page = action.payload;
@@ -184,6 +192,7 @@ const immobileSlice = createSlice({
 });
 
 export const {
+    setImmobileStoriaType,
     resetImmobiliQueryData,
     setImmobiliFilter,
     setImmobiliSorting,
