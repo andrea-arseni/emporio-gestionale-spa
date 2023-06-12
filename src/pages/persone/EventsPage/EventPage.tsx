@@ -273,8 +273,6 @@ const EventPage: React.FC<{}> = () => {
             />
         </div>
     );
-    // nel caso immobile scrivi per interessamento
-    // cancella evento
 };
 
 export default EventPage;

@@ -9,6 +9,9 @@ export class Documento {
         public codiceBucket: string | null,
         public immobile?: Immobile,
         public persona?: Persona,
-        public base64String?: string
+        public base64String?: string,
+        public tipoFile?: string,
+        public contentSize?: string,
+        public dataCreazione?: Date
     ) {}
 }

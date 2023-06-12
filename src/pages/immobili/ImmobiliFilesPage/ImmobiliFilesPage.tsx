@@ -440,14 +440,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     {!isSelectingDates && mode === "foto" && <ImmobiliPhotos />}
                     {!isSelectingDates && mode === "report" && (
                         <IonList ref={list} className={styles.list}>
-                            <ListDocumenti
-                                documenti={reports}
-                                setCurrentEntity={setCurrentDocumento}
-                                deleteEntity={deleteEntity}
-                                setShowLoading={setShowLoading}
-                                baseUrl={`/immobili/${immobileId}/files`}
-                                closeItems={closeItemsList}
-                            />
+                            <ListDocumenti documenti={reports} />
 
                             {reports.length === 0 && (
                                 <Card

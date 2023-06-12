@@ -66,7 +66,7 @@ const PersonaFilePage: React.FC<{}> = () => {
 
     const [update, setUpdate] = useState<number>(0);
 
-    const { list, closeItemsList } = useList();
+    const { list } = useList();
 
     const { errorHandler } = useErrorHandler();
 
@@ -109,45 +109,10 @@ const PersonaFilePage: React.FC<{}> = () => {
         inputFileRef.current.click();
     };
 
-    const confirmDeleteEntity = async (id: string) => {
-        const url = `/persone/${personaId}/files/${id}`;
-        try {
-            setShowLoading(true);
-            await axiosInstance.delete(url);
-            setShowLoading(false);
-            setUpdate((oldNumber) => ++oldNumber);
-        } catch (e) {
-            setShowLoading(false);
-            closeItemsList();
-            errorHandler(e, "Eliminazione non riuscita");
-        }
-    };
-
-    const deleteEntity = (entityName: string, id: string, message?: string) => {
-        presentAlert({
-            header: "Attenzione!",
-            subHeader: message ? message : "La cancellazione è irreversibile.",
-            buttons: [
-                {
-                    text: "Conferma",
-                    handler: () => confirmDeleteEntity(id),
-                },
-                {
-                    text: "Indietro",
-                    handler: () => closeItemsList(),
-                },
-            ],
-        });
-    };
-
     const getItem = (input: fileSpeciale) => {
         return (
             <ListDocumenti
                 documenti={getFileSpeciale(persona!.files!, input)}
-                deleteEntity={deleteEntity}
-                setShowLoading={setShowLoading}
-                baseUrl={`/persone/${personaId}/files`}
-                closeItems={closeItemsList}
             />
         );
     };
@@ -242,12 +207,6 @@ const PersonaFilePage: React.FC<{}> = () => {
                                             persona.files,
                                             "persona"
                                         )}
-                                        setMode={setMode}
-                                        setCurrentEntity={setCurrentDocumento}
-                                        setShowLoading={setShowLoading}
-                                        baseUrl={`/persone/${personaId}/files`}
-                                        closeItems={closeItemsList}
-                                        deleteEntity={deleteEntity}
                                     />
                                 )}
                             {(!persona ||

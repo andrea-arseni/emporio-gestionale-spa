@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Filtro } from "../entities/filtro.model";
 import { queryData } from "../entities/queryData";
+import { Step } from "../entities/step.model";
 
 const INITIAL_QUERY_DATA: queryData = {
     filter: {
@@ -13,10 +14,12 @@ const INITIAL_QUERY_DATA: queryData = {
 
 interface stepState {
     queryData: queryData;
+    currentStep: Step | null;
 }
 
 const initialState = {
     queryData: INITIAL_QUERY_DATA,
+    currentStep: null,
 } as stepState;
 
 const stepSlice = createSlice({
@@ -38,6 +41,9 @@ const stepSlice = createSlice({
         resetStepsQueryData(state) {
             state.queryData = INITIAL_QUERY_DATA;
         },
+        setCurrentStep(state, action: PayloadAction<Step | null>) {
+            state.currentStep = action.payload;
+        },
     },
 });
 
@@ -47,6 +53,7 @@ export const {
     setStepsPaging,
     triggerStepsUpdate,
     resetStepsQueryData,
+    setCurrentStep,
 } = stepSlice.actions;
 
 export default stepSlice.reducer;

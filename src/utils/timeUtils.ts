@@ -81,7 +81,10 @@ const completeWeek = (
 export const getCorrectDate = (input: Date) =>
     new Date(input.getTime() - input.getTimezoneOffset() * 60000);
 
-export const getDayName = (input: Date, mode: "short" | "long" = "short") => {
+export const getDayName = (
+    input: Date,
+    mode: "short" | "medium" | "long" = "short"
+) => {
     input = getCorrectDate(input);
     let output = "";
     if (mode === "long")

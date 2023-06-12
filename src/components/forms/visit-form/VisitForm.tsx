@@ -150,22 +150,6 @@ const FormVisit: React.FC<{
         useList();
 
     useEffect(() => {
-        if (isQuerySuccessfull) {
-            presentAlert({
-                header: "Ottimo!",
-                message:
-                    visit && visit.id ? `Visita modificata` : `Visita aggiunta`,
-                buttons: [
-                    {
-                        text: "Ok",
-                        handler: closeTheJob,
-                    },
-                ],
-            });
-        }
-    }, [isQuerySuccessfull, presentAlert, closeTheJob, visit]);
-
-    useEffect(() => {
         const closeModal = () => {
             setModalIsOpen(false);
             setModalContentType(null);
@@ -277,6 +261,18 @@ const FormVisit: React.FC<{
             dispatch(changeLoading(false));
             setIsQuerySuccessfull(true);
             dispatch(setCurrentVisit(res.data));
+
+            presentAlert({
+                header: "Ottimo!",
+                message:
+                    visit && visit.id ? `Visita modificata` : `Visita aggiunta`,
+                buttons: [
+                    {
+                        text: "Ok",
+                        handler: closeTheJob,
+                    },
+                ],
+            });
         } catch (error: any) {
             dispatch(changeLoading(false));
             errorHandler(
@@ -289,6 +285,8 @@ const FormVisit: React.FC<{
     }, [
         dispatch,
         errorHandler,
+        closeTheJob,
+        presentAlert,
         immobileValue,
         inputDateValue,
         inputDoveValue,

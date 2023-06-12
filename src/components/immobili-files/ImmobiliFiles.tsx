@@ -50,10 +50,6 @@ export default React.forwardRef<
             return (
                 <ListDocumenti
                     documenti={getFileSpeciale(props.files, input)}
-                    deleteEntity={props.deleteEntity}
-                    setShowLoading={props.setShowLoading}
-                    baseUrl={`/immobili/${props.immobileId}/files`}
-                    closeItems={props.closeItemsList}
                 />
             );
         };
@@ -153,12 +149,6 @@ export default React.forwardRef<
                                 "immobile"
                             ) as Documento[]
                         }
-                        setMode={props.setMode}
-                        setCurrentEntity={props.setCurrentDocumento}
-                        deleteEntity={props.deleteEntity}
-                        setShowLoading={props.setShowLoading}
-                        baseUrl={`/immobili/${props.immobileId}/files`}
-                        closeItems={props.closeItemsList}
                     />
                 </FormGroup>
                 {props.files.length === 0 && (

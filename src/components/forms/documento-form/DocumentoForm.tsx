@@ -146,6 +146,13 @@ const DocumentoForm: React.FC<{
                 >
                     Rinomina File
                 </IonButton>
+                <IonButton
+                    color="medium"
+                    expand="block"
+                    onClick={props.backToList}
+                >
+                    Indietro
+                </IonButton>
             </IonList>
         </form>
     );

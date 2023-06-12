@@ -1,27 +1,34 @@
-import {
-    IonItemSliding,
-    IonItem,
-    IonLabel,
-    IonItemOptions,
-} from "@ionic/react";
-import { createOutline, trashOutline } from "ionicons/icons";
-import { Dispatch, SetStateAction } from "react";
-import { Entity } from "../../entities/entity";
+import { IonItem, IonLabel } from "@ionic/react";
 import { Step } from "../../entities/step.model";
-import { useAppSelector } from "../../hooks";
+import { useAppDispatch } from "../../hooks";
 import { getDateAndTime } from "../../utils/timeUtils";
-import { isUserAdmin } from "../../utils/userUtils";
-import ItemOption from "./ItemOption";
+import { useEffect, useState } from "react";
+import { setCurrentStep } from "../../store/steps-slice";
+import { useNavigate } from "react-router-dom";
 
 const ListSteps: React.FC<{
     steps: Step[];
-    setCurrentEntity: Dispatch<SetStateAction<Entity | null>>;
-    setMode: Dispatch<SetStateAction<"list" | "form">>;
-    deleteEntity: (type: string, id: string, message?: string) => void;
-    showLoading: boolean;
-    setShowLoading: Dispatch<SetStateAction<boolean>>;
 }> = (props) => {
-    const userData = useAppSelector((state) => state.auth.userData);
+    const dispatch = useAppDispatch();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        dispatch(setCurrentStep(null));
+    }, [dispatch]);
+
+    const [selected, setSelected] = useState<number>(0);
+
+    const handleClick = (id: number) => {
+        if (selected === id) {
+            dispatch(
+                setCurrentStep(props.steps.filter((el) => el.id === id)[0])
+            );
+            navigate(`${id}`);
+        } else {
+            setSelected(id);
+        }
+    };
 
     const getDescrizione = (step: Step) => {
         if (step.descrizione && step.descrizione.includes("***")) {
@@ -41,40 +48,20 @@ const ListSteps: React.FC<{
         <>
             {props.steps.map((step: Step) => {
                 return (
-                    <IonItemSliding key={step.id!} id={step.id?.toString()}>
-                        <IonItem detail>
-                            <IonLabel text-wrap>
-                                <p>{getDateAndTime(step.data!)}</p>
-                                {getDescrizione(step)}
-                                <p>{step.user?.name}</p>
-                            </IonLabel>
-                        </IonItem>
-                        <IonItemOptions side="end">
-                            <ItemOption
-                                handler={() => {
-                                    props.setCurrentEntity(step);
-                                    props.setMode("form");
-                                }}
-                                colorType={"light"}
-                                icon={createOutline}
-                                title={"Modifica"}
-                            />
-                            {isUserAdmin(userData) && (
-                                <ItemOption
-                                    handler={() => {
-                                        props.deleteEntity(
-                                            "steps",
-                                            step.id!.toString(),
-                                            `Hai selezionato la cancellazione dello step. Si tratta di un processo irreversibile. Lo status del lavoro non verrà modificato.`
-                                        );
-                                    }}
-                                    colorType={"danger"}
-                                    icon={trashOutline}
-                                    title={"Elimina"}
-                                />
-                            )}
-                        </IonItemOptions>
-                    </IonItemSliding>
+                    <IonItem
+                        onClick={() => handleClick(step.id!)}
+                        key={step.id!}
+                        color={step.id === selected ? "primary" : "light"}
+                    >
+                        <IonLabel
+                            color={step.id === selected ? "light" : "dark"}
+                            text-wrap
+                        >
+                            <p>{getDateAndTime(step.data!)}</p>
+                            {getDescrizione(step)}
+                            <p>{step.user?.name}</p>
+                        </IonLabel>
+                    </IonItem>
                 );
             })}
         </>

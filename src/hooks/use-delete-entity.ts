@@ -14,14 +14,14 @@ const useDeleteEntity = () => {
 
     const [presentAlert] = useIonAlert();
 
-    const deleteEntity = (entityName: string, id: string) => {
+    const deleteEntity = (baseUrl: string, id: string) => {
         presentAlert({
             header: "Attenzione!",
             subHeader: "La cancellazione è irreversibile. Sei sicuro?",
             buttons: [
                 {
                     text: "Conferma",
-                    handler: () => confirmDeleteEntity(entityName, id),
+                    handler: () => confirmDeleteEntity(baseUrl, id),
                 },
                 {
                     text: "Indietro",
@@ -31,13 +31,13 @@ const useDeleteEntity = () => {
         });
     };
 
-    const confirmDeleteEntity = async (entityName: string, id: string) => {
+    const confirmDeleteEntity = async (baseUrl: string, id: string) => {
         dispatch(changeLoading(true));
-        await new Promise((r) => setTimeout(r, 400));
-        let url = entityName + "/" + id;
+        let url = baseUrl + "/" + id;
         try {
             await axiosInstance.delete(url);
             dispatch(changeLoading(false));
+            await new Promise((r) => setTimeout(r, 400));
             navigate(-1);
         } catch (e) {
             dispatch(changeLoading(false));

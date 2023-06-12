@@ -187,16 +187,14 @@ export const salvaDocumentoInAndroid = async (nome: string, blob: Blob) => {
     }, 120000);
 };
 
-export const downloadFile = async (byteArray: string, documento: Documento) => {
-    const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
-    const blob = await getBlobFromBase64String(base64File);
-    documento.base64String = base64File;
+export const downloadFile = async (documento: Documento) => {
+    const blob = await getBlobFromBase64String(documento.base64String!);
     if (isNativeApp && isPlatform("ios")) {
         salvaDocumentoInIos(documento, blob);
     } else if (isNativeApp && isPlatform("android")) {
         await salvaDocumentoInAndroid(documento.nome!, blob);
     } else {
-        FileSaver.saveAs(base64File, documento.nome!);
+        FileSaver.saveAs(documento.base64String!, documento.nome!);
     }
 };
 
@@ -364,9 +362,8 @@ export const downloadMultipleFiles = async (
     }
 };
 
-export const openFile = async (byteArray: string, documento: Documento) => {
-    const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
-    const blob = await getBlobFromBase64String(base64File);
+export const openFile = async (documento: Documento) => {
+    const blob = await getBlobFromBase64String(documento.base64String!);
     const url = URL.createObjectURL(blob);
     if (isNativeApp) {
         try {
@@ -447,24 +444,19 @@ export const getFileObjectFromBase64String = async (
     return file;
 };
 
-export const shareFile = async (
-    byteArray: string,
-    documento: Documento,
-    errorHandler: any
-) => {
+export const shareFile = async (documento: Documento, errorHandler: any) => {
     if (!isSharingAvailable()) {
         //setIsError(true);
         errorHandler(null, NOT_SHAREABLE_MSG);
         return;
     }
-    const base64File = getBase64StringFromByteArray(byteArray, documento.nome!);
-    const blob = await getBlobFromBase64String(base64File);
+    const blob = await getBlobFromBase64String(documento.base64String!);
     const file = new File([blob], documento.nome!, { type: blob.type });
     if (!checkSpecificFileShareability(errorHandler, file)) return;
     try {
         if (isNativeApp) {
             const options: SocialSharingOptions = {
-                files: [base64File],
+                files: [documento.base64String!],
             };
             await SocialSharing.shareWithOptions(options);
         } else {
@@ -480,7 +472,7 @@ export const shareFile = async (
 export const getFileNameWithoutExtension = (nome: string) => {
     const parti = nome.split(".");
     if (parti.length > 1) parti.pop();
-    const output = parti.join(".").split("-").join(" ");
+    const output = parti.join(".").split("-").join(" ").split("_").join(" ");
     return capitalize(output);
 };
 

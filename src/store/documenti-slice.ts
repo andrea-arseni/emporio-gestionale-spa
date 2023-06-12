@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Filtro } from "../entities/filtro.model";
 import { queryData } from "../entities/queryData";
+import { Documento } from "../entities/documento.model";
 
 const INITIAL_QUERY_DATA: queryData = {
     filter: {
@@ -13,10 +14,12 @@ const INITIAL_QUERY_DATA: queryData = {
 
 interface DocumentoState {
     queryData: queryData;
+    currentDocumento: Documento | null;
 }
 
 const initialState = {
     queryData: INITIAL_QUERY_DATA,
+    currentDocumento: null,
 } as DocumentoState;
 
 const documentoSlice = createSlice({
@@ -38,6 +41,9 @@ const documentoSlice = createSlice({
         resetDocumentiQueryData(state) {
             state.queryData = INITIAL_QUERY_DATA;
         },
+        setCurrentDocumento(state, action: PayloadAction<Documento | null>) {
+            state.currentDocumento = action.payload;
+        },
     },
 });
 
@@ -47,6 +53,7 @@ export const {
     setDocumentiPaging,
     triggerDocumentiUpdate,
     resetDocumentiQueryData,
+    setCurrentDocumento,
 } = documentoSlice.actions;
 
 export default documentoSlice.reducer;

@@ -297,16 +297,7 @@ const Selector: React.FC<{
             case "lavori":
                 return <ListLavori lavori={entities as Lavoro[]} />;
             case "steps":
-                return (
-                    <ListSteps
-                        steps={entities as Step[]}
-                        setMode={props.setMode!}
-                        setCurrentEntity={props.setCurrentEntity!}
-                        deleteEntity={deleteEntity}
-                        showLoading={showLoading}
-                        setShowLoading={setShowLoading}
-                    />
-                );
+                return <ListSteps steps={entities as Step[]} />;
             case "persone":
                 return (
                     <ListPersone
@@ -317,17 +308,7 @@ const Selector: React.FC<{
             case "eventi":
                 return <ListEventi eventi={entities as Evento[]} />;
             case "documenti":
-                return (
-                    <ListDocumenti
-                        documenti={entities as Documento[]}
-                        setMode={props.setMode!}
-                        setCurrentEntity={props.setCurrentEntity!}
-                        deleteEntity={deleteEntity}
-                        setShowLoading={setShowLoading}
-                        baseUrl="/documenti"
-                        closeItems={closeItemsList}
-                    />
-                );
+                return <ListDocumenti documenti={entities as Documento[]} />;
             case "visite":
                 return (
                     <ListVisits

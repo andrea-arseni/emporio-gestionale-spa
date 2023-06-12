@@ -1,2 +1,0 @@
-/*! For license information please see 1770.cee1fe59.chunk.js.LICENSE.txt */
-"use strict";(self.webpackChunkemporiocasegestionale=self.webpackChunkemporiocasegestionale||[]).push([[1770],{1770:function(e,n,s){s.r(n),s.d(n,{g:function(){return i}});var i=s(8266).i}}]);

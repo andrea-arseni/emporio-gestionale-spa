@@ -60,6 +60,9 @@ import ImmobileFormPage from "./pages/immobili/ImmobiliPage/ImmobileFormPage";
 import Appuntamento from "./pages/appuntamenti/Appuntamento";
 import AppuntamentoFormPage from "./pages/appuntamenti/AppuntamentoFormPage";
 import EventPage from "./pages/persone/EventsPage/EventPage";
+import StepPage from "./pages/lavori/StepsPage/StepPage";
+import DocumentoPage from "./pages/documenti/DocumentoPage";
+import DocumentoFormPage from "./pages/documenti/DocumentoFormPage";
 
 setupIonicReact();
 
@@ -190,6 +193,18 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route
+                                path="/immobili/:idImmobile/files/:id"
+                                element={<DocumentoPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/immobili/:idImmobile/files/:id/modifica"
+                                element={<DocumentoFormPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
                                 path="/immobili/:id/storia"
                                 element={<StoriaPage type="immobile" />}
                             />
@@ -228,6 +243,18 @@ const App: React.FC = () => {
                             />
                         )}
                         {token && (
+                            <Route
+                                path="/persone/:idPersona/files/:id"
+                                element={<DocumentoPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/persone/:idPersona/files/:id/modifica"
+                                element={<DocumentoFormPage />}
+                            />
+                        )}
+                        {token && (
                             <Route path="/obiettivi" element={<LavoriPage />} />
                         )}
                         {token && (
@@ -248,6 +275,12 @@ const App: React.FC = () => {
                                 element={<StepsPage />}
                             />
                         )}
+                        {token && (
+                            <Route
+                                path="/obiettivi/:idLavoro/storia/:idStep"
+                                element={<StepPage />}
+                            />
+                        )}
                         {token && isUserAdmin(userData) && (
                             <Route
                                 path="/operazioni"
@@ -262,6 +295,30 @@ const App: React.FC = () => {
                         )}
                         {token && (
                             <Route path="/reports" element={<ReportsPage />} />
+                        )}
+                        {token && (
+                            <Route
+                                path="/documenti/:id"
+                                element={<DocumentoPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/reports/:id"
+                                element={<DocumentoPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/documenti/:id/modifica"
+                                element={<DocumentoFormPage />}
+                            />
+                        )}
+                        {token && (
+                            <Route
+                                path="/reports/:id/modifica"
+                                element={<DocumentoFormPage />}
+                            />
                         )}
                         <Route
                             path="/*"
@@ -308,21 +365,18 @@ export default App;
 - Still bug on select - VINTO
 - If focus on submit release focus - VINTO
 - Carta visita piacevole, no form - VINTO
+- No more slides on all applications - VINTO
 
-IMPROVEMENTS 7/6/2023
+IMPROVEMENTS 10/6/2023
 
-- Posto auto coperto
-- Presente
 
-- No more slides on all applications - step - docs - reports 
-- Bug double visits submitting - se aggiungi uno dice visita modificata, l'altro visita aggiunta
-- Up and down on my body
-
+- Up and down on my body + arrow + click
 - WhatsApp API
 - Saving little images 
+- List persone interessate
 - Parenti
 
-- ARRIVATO
+- ARRIVATO ALLA VERSIONE 1.6
 
 - WEBSITE
 

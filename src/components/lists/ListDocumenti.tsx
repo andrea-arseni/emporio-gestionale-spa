@@ -1,29 +1,9 @@
-import {
-    IonItem,
-    IonLabel,
-    IonItemSliding,
-    IonItemOptions,
-    IonThumbnail,
-    isPlatform,
-} from "@ionic/react";
-import {
-    downloadOutline,
-    createOutline,
-    trashOutline,
-    shareOutline,
-    checkmarkCircleOutline,
-    openOutline,
-} from "ionicons/icons";
-import { Dispatch, SetStateAction, useState } from "react";
+import { IonItem, IonLabel, IonThumbnail } from "@ionic/react";
 import { Documento } from "../../entities/documento.model";
-import { Entity } from "../../entities/entity";
 import {
-    downloadFile,
     getFileNameWithoutExtension,
     getFileType,
     getReportName,
-    openFile,
-    shareFile,
 } from "../../utils/fileUtils";
 import styles from "./Lists.module.css";
 import word from "../../assets/word.png";
@@ -32,31 +12,43 @@ import text from "../../assets/txt.png";
 import image from "../../assets/image.png";
 import pdf from "../../assets/pdf.png";
 import report from "../../assets/report.png";
-import axiosInstance from "../../utils/axiosInstance";
-import ItemOption from "./ItemOption";
-import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
-import { isUserAdmin } from "../../utils/userUtils";
-import { useAppSelector } from "../../hooks";
-import { isNativeApp } from "../../utils/contactUtils";
-import useErrorHandler from "../../hooks/use-error-handler";
+import { useAppDispatch } from "../../hooks";
+import { useCallback, useEffect, useState } from "react";
+import { setCurrentDocumento } from "../../store/documenti-slice";
+import { useNavigate } from "react-router-dom";
+import useUpAndDown from "../../hooks/use-up-and-down";
 
 const ListDocumenti: React.FC<{
     documenti: Documento[];
-    setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
-    setMode?:
-        | Dispatch<SetStateAction<"list" | "form">>
-        | Dispatch<SetStateAction<fileMode>>;
-    deleteEntity: (type: string, id: string, message?: string) => void;
-    setShowLoading: Dispatch<SetStateAction<boolean>>;
-    baseUrl: string;
-    closeItems: () => void;
 }> = (props) => {
-    const { errorHandler } = useErrorHandler();
+    const dispatch = useAppDispatch();
 
-    const [currentFile, setCurrentFile] = useState<{
-        documento: Documento;
-        byteArray: string;
-    } | null>(null);
+    useEffect(() => {
+        dispatch(setCurrentDocumento(null));
+    }, [dispatch]);
+
+    const navigate = useNavigate();
+
+    const [selected, setSelected] = useState<number>(0);
+
+    const defineSelected = useCallback(
+        (newId: number) => setSelected(newId),
+        []
+    );
+
+    useUpAndDown(props.documenti, selected, defineSelected);
+
+    const handleClick = (id: number) => {
+        if (selected !== id) {
+            setSelected(id);
+            return;
+        }
+
+        dispatch(
+            setCurrentDocumento(props.documenti.filter((el) => el.id === id)[0])
+        );
+        navigate(`${id.toString()}`);
+    };
 
     const getThumbnail = (
         type: "report" | "image" | "word" | "excel" | "pdf" | "text" | "error"
@@ -69,69 +61,24 @@ const ListDocumenti: React.FC<{
         if (type === "word") return word;
     };
 
-    const selectFile = async (id: number) => {
-        const url = `${props.baseUrl}/${id}`;
-        props.setShowLoading(true);
-        try {
-            const res = await axiosInstance.get(url);
-            props.setShowLoading(false);
-            setCurrentFile({
-                documento: res.data.file,
-                byteArray: res.data.byteArray,
-            });
-            return res.data;
-        } catch (e) {
-            props.setShowLoading(false);
-            errorHandler(e, "Download del file non riuscito");
-        }
-    };
-
-    const isFileSelected = (id: number) =>
-        currentFile &&
-        currentFile.documento &&
-        currentFile.documento.id &&
-        currentFile.documento.id === id;
-
-    const getFileAndOpen = async (documento: Documento) => {
-        if (isFileSelected(documento.id!)) {
-            props.closeItems();
-            openFile(currentFile!.byteArray, currentFile!.documento);
-        } else {
-            const res = await selectFile(documento.id!);
-            props.closeItems();
-            openFile(res.byteArray, res.file);
-        }
-    };
-
-    const getFileAndDownload = async (documento: Documento) => {
-        if (isFileSelected(documento.id!)) {
-            props.closeItems();
-            downloadFile(currentFile!.byteArray, currentFile!.documento);
-        } else {
-            const res = await selectFile(documento.id!);
-            props.closeItems();
-            downloadFile(res.byteArray, res.file);
-        }
-    };
-
-    const shareThisFile = () => {
-        props.closeItems();
-        shareFile(currentFile!.byteArray, currentFile!.documento, errorHandler);
-    };
-
-    const userData = useAppSelector((state) => state.auth.userData);
-
     const getDocumento = (documento: Documento) => {
         const type =
             documento.tipologia === "REPORT"
                 ? "report"
                 : getFileType(documento.nome!);
         return (
-            <IonItem key={documento.id} detail>
+            <IonItem
+                key={documento.id}
+                onClick={() => handleClick(documento.id!)}
+                color={documento?.id === selected ? "primary" : "light"}
+            >
                 <IonThumbnail slot="start" className={styles.border}>
                     <img alt={type} src={getThumbnail(type)} />
                 </IonThumbnail>
-                <IonLabel text-wrap>
+                <IonLabel
+                    color={documento?.id === selected ? "light" : "dark"}
+                    text-wrap
+                >
                     <h2>
                         {`${
                             documento.tipologia === "REPORT"
@@ -140,7 +87,15 @@ const ListDocumenti: React.FC<{
                         }`}
                     </h2>
                     {documento.tipologia === "REPORT" && (
-                        <p style={{ color: "#1361f3", fontWeight: "bold" }}>
+                        <p
+                            style={{
+                                color:
+                                    documento?.id === selected
+                                        ? "white"
+                                        : "#1361f3",
+                                fontWeight: "bold",
+                            }}
+                        >
                             {getReportName(documento.nome!)}
                         </p>
                     )}
@@ -151,85 +106,9 @@ const ListDocumenti: React.FC<{
 
     return (
         <>
-            {props.documenti.map((documento: Documento) => (
-                <IonItemSliding
-                    key={documento.id!}
-                    id={documento.id?.toString()}
-                >
-                    {getDocumento(documento)}
-                    <IonItemOptions side="end">
-                        {(isNativeApp ||
-                            getFileType(documento.nome!) === "image" ||
-                            getFileType(documento.nome!) === "pdf" ||
-                            getFileType(documento.nome!) === "text") &&
-                            !isPlatform("mobileweb") && (
-                                <ItemOption
-                                    handler={() => getFileAndOpen(documento)}
-                                    colorType={"dark"}
-                                    icon={openOutline}
-                                    title={"Leggi"}
-                                />
-                            )}
-                        <ItemOption
-                            handler={() => getFileAndDownload(documento)}
-                            colorType={"primary"}
-                            icon={downloadOutline}
-                            title={
-                                isPlatform("mobileweb") ? "Leggi" : "Scarica"
-                            }
-                        />
-                        <ItemOption
-                            handler={() =>
-                                isFileSelected(documento.id!)
-                                    ? shareThisFile()
-                                    : selectFile(documento.id!)
-                            }
-                            colorType={
-                                isFileSelected(documento.id!)
-                                    ? "success"
-                                    : "tertiary"
-                            }
-                            icon={
-                                isFileSelected(documento.id!)
-                                    ? shareOutline
-                                    : checkmarkCircleOutline
-                            }
-                            title={
-                                isFileSelected(documento.id!)
-                                    ? "Condividi"
-                                    : "Seleziona"
-                            }
-                        />
-                        {props.setCurrentEntity &&
-                            props.setMode &&
-                            isUserAdmin(userData) && (
-                                <ItemOption
-                                    handler={() => {
-                                        props.setCurrentEntity!(documento);
-                                        props.setMode!("form");
-                                    }}
-                                    colorType={"light"}
-                                    icon={createOutline}
-                                    title={"Rinomina"}
-                                />
-                            )}
-                        {isUserAdmin(userData) && (
-                            <ItemOption
-                                handler={() =>
-                                    props.deleteEntity(
-                                        "documenti",
-                                        documento.id!.toString(),
-                                        `Hai selezionato la cancellazione del documento selezionato. Si tratta di un processo irreversibile.`
-                                    )
-                                }
-                                colorType={"danger"}
-                                icon={trashOutline}
-                                title={"Elimina"}
-                            />
-                        )}
-                    </IonItemOptions>
-                </IonItemSliding>
-            ))}
+            {props.documenti.map((documento: Documento) =>
+                getDocumento(documento)
+            )}
         </>
     );
 };

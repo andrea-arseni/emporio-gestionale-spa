@@ -24,7 +24,7 @@ const ReportsPage: React.FC<{}> = () => {
 
     const [mode, setMode] = useState<"list" | "form">("list");
 
-    const { list, closeItemsList } = useList();
+    const { list } = useList();
 
     const [reports, setReports] = useState<Documento[]>([]);
 
@@ -59,36 +59,6 @@ const ReportsPage: React.FC<{}> = () => {
             mounted = false;
         };
     }, [year, presentAlert, update, errorHandler]);
-
-    const confirmDeleteEntity = async (id: string) => {
-        const url = `/documenti/${id}`;
-        try {
-            setShowLoading(true);
-            await axiosInstance.delete(url);
-            setShowLoading(false);
-            setUpdate((oldNumber) => ++oldNumber);
-        } catch (e) {
-            setShowLoading(false);
-            errorHandler(e, "Eliminazione non riuscita");
-        }
-    };
-
-    const deleteEntity = (id: string, message?: string) => {
-        presentAlert({
-            header: "Attenzione!",
-            subHeader: message ? message : "La cancellazione è irreversibile.",
-            buttons: [
-                {
-                    text: "Conferma",
-                    handler: () => confirmDeleteEntity(id),
-                },
-                {
-                    text: "Indietro",
-                    handler: () => closeItemsList(),
-                },
-            ],
-        });
-    };
 
     const creaReport = async (input: any) => {
         const url = `/report`;
@@ -126,13 +96,7 @@ const ReportsPage: React.FC<{}> = () => {
                             titolo={year.toString()}
                         />
                         <IonList ref={list} className={styles.list}>
-                            <ListDocumenti
-                                documenti={reports}
-                                deleteEntity={deleteEntity}
-                                setShowLoading={setShowLoading}
-                                baseUrl={`/documenti`}
-                                closeItems={closeItemsList}
-                            />
+                            <ListDocumenti documenti={reports} />
                             {reports.length === 0 && (
                                 <Card
                                     subTitle={`Questo immobile non ha report associati`}
