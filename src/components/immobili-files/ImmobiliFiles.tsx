@@ -1,5 +1,5 @@
 import { IonList, isPlatform } from "@ionic/react";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { Documento } from "../../entities/documento.model";
 import { Entity } from "../../entities/entity";
 import { fileMode } from "../../pages/immobili/ImmobiliFilesPage/ImmobiliFilesPage";
@@ -15,6 +15,10 @@ import FormGroup from "../form-components/form-group/FormGroup";
 import ItemSelector from "../form-components/item-selector/ItemSelector";
 import ListDocumenti from "../lists/ListDocumenti";
 import styles from "./ImmobiliFiles.module.css";
+import DocumentoItem from "../documento/DocumentoItem";
+import { setCurrentDocumento } from "../../store/documenti-slice";
+import { useAppDispatch } from "../../hooks";
+import { useNavigate } from "react-router-dom";
 
 export default React.forwardRef<
     {
@@ -46,10 +50,38 @@ export default React.forwardRef<
         },
         ref: any
     ) => {
+        const dispatch = useAppDispatch();
+
+        const navigate = useNavigate();
+
+        const [selected, setSelected] = useState<number>(0);
+
+        const selectItem = useCallback(
+            (id: number) => {
+                dispatch(
+                    setCurrentDocumento(
+                        props.files.filter((el) => el.id === id)[0]
+                    )
+                );
+                navigate(`${id.toString()}`);
+            },
+            [dispatch, navigate, props.files]
+        );
+
+        const handleClick = (id: number) => {
+            if (selected !== id) {
+                setSelected(id);
+                return;
+            }
+            selectItem(id);
+        };
+
         const getItem = (input: fileSpeciale) => {
             return (
-                <ListDocumenti
-                    documenti={getFileSpeciale(props.files, input)}
+                <DocumentoItem
+                    documento={getFileSpeciale(props.files, input)[0]}
+                    selected={selected}
+                    handleClick={handleClick}
                 />
             );
         };
@@ -143,6 +175,7 @@ export default React.forwardRef<
                     }`}
                 >
                     <ListDocumenti
+                        blockUpAndDown
                         documenti={
                             getFilesNonSpeciali(
                                 props.files,

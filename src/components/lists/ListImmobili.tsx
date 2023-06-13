@@ -17,11 +17,14 @@ import { useAppDispatch } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { setImmobile } from "../../store/immobile-slice";
 import useUpAndDown from "../../hooks/use-up-and-down";
+import useNavigateToItem from "../../hooks/use-navigate-to-item";
+import React from "react";
 
 const ListImmobili: React.FC<{
     immobili: Immobile[];
     setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
-}> = (props) => {
+    ref?: any;
+}> = React.forwardRef((props, ref: any) => {
     const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
@@ -39,7 +42,19 @@ const ListImmobili: React.FC<{
         []
     );
 
-    useUpAndDown(props.immobili, selected, defineSelected);
+    useUpAndDown(props.immobili, selected, defineSelected, ref);
+
+    const selectItem = useCallback(
+        (id: number) => {
+            dispatch(
+                setImmobile(props.immobili.filter((el) => el.id === id)[0])
+            );
+            navigate(`/immobili/${id.toString()}`);
+        },
+        [dispatch, navigate, props.immobili]
+    );
+
+    useNavigateToItem(selected, selectItem);
 
     const handleClick = (id: number) => {
         if (selected !== id) {
@@ -133,6 +148,6 @@ const ListImmobili: React.FC<{
     return (
         <>{props.immobili.map((immobile: Immobile) => getImmobile(immobile))}</>
     );
-};
+});
 
 export default ListImmobili;

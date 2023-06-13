@@ -16,11 +16,14 @@ import { useNavigate } from "react-router-dom";
 import { getDayName } from "../../utils/timeUtils";
 import { setPersona } from "../../store/persona-slice";
 import useUpAndDown from "../../hooks/use-up-and-down";
+import useNavigateToItem from "../../hooks/use-navigate-to-item";
+import React from "react";
 
 const ListPersone: React.FC<{
     persone: Persona[];
     setCurrentEntity?: Dispatch<SetStateAction<Entity | null>>;
-}> = (props) => {
+    ref?: any;
+}> = React.forwardRef((props, ref: any) => {
     const navigate = useNavigate();
 
     const [width] = useWindowSize();
@@ -38,7 +41,17 @@ const ListPersone: React.FC<{
         []
     );
 
-    useUpAndDown(props.persone, selected, defineSelected);
+    useUpAndDown(props.persone, selected, defineSelected, ref);
+
+    const selectItem = useCallback(
+        (id: number) => {
+            dispatch(setPersona(props.persone.filter((el) => el.id === id)[0]));
+            navigate(`${id.toString()}`);
+        },
+        [dispatch, navigate, props.persone]
+    );
+
+    useNavigateToItem(selected, selectItem);
 
     const handleClick = (id: number) => {
         if (selected !== id) {
@@ -126,6 +139,6 @@ const ListPersone: React.FC<{
     };
 
     return <>{props.persone.map((persona: Persona) => getPersona(persona))}</>;
-};
+});
 
 export default ListPersone;

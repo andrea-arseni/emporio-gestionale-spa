@@ -278,6 +278,7 @@ const Selector: React.FC<{
             case "immobili":
                 return (
                     <ListImmobili
+                        ref={list}
                         immobili={entities as Immobile[]}
                         setCurrentEntity={props.setCurrentEntity}
                     />
@@ -293,22 +294,28 @@ const Selector: React.FC<{
                     />
                 );
             case "logs":
-                return <ListLogs logs={entities as Log[]} />;
+                return <ListLogs ref={list} logs={entities as Log[]} />;
             case "lavori":
-                return <ListLavori lavori={entities as Lavoro[]} />;
+                return <ListLavori ref={list} lavori={entities as Lavoro[]} />;
             case "steps":
-                return <ListSteps steps={entities as Step[]} />;
+                return <ListSteps ref={list} steps={entities as Step[]} />;
             case "persone":
                 return (
                     <ListPersone
+                        ref={list}
                         persone={entities as Persona[]}
                         setCurrentEntity={props.setCurrentEntity}
                     />
                 );
             case "eventi":
-                return <ListEventi eventi={entities as Evento[]} />;
+                return <ListEventi ref={list} eventi={entities as Evento[]} />;
             case "documenti":
-                return <ListDocumenti documenti={entities as Documento[]} />;
+                return (
+                    <ListDocumenti
+                        ref={list}
+                        documenti={entities as Documento[]}
+                    />
+                );
             case "visite":
                 return (
                     <ListVisits

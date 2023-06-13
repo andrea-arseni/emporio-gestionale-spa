@@ -6,10 +6,13 @@ import { useAppDispatch } from "../../hooks";
 import useUpAndDown from "../../hooks/use-up-and-down";
 import { setEvento } from "../../store/persona-slice";
 import { useNavigate } from "react-router-dom";
+import useNavigateToItem from "../../hooks/use-navigate-to-item";
+import React from "react";
 
 const ListEventi: React.FC<{
     eventi: Evento[];
-}> = (props) => {
+    ref?: any;
+}> = React.forwardRef((props, ref: any) => {
     const dispatch = useAppDispatch();
 
     const navigate = useNavigate();
@@ -25,7 +28,17 @@ const ListEventi: React.FC<{
         []
     );
 
-    useUpAndDown(props.eventi, selected, defineSelected);
+    useUpAndDown(props.eventi, selected, defineSelected, ref);
+
+    const selectItem = useCallback(
+        (id: number) => {
+            dispatch(setEvento(props.eventi.filter((el) => el.id === id)[0]));
+            navigate(`${id.toString()}`);
+        },
+        [dispatch, navigate, props.eventi]
+    );
+
+    useNavigateToItem(selected, selectItem);
 
     const handleClick = (id: number) => {
         if (selected !== id) {
@@ -98,6 +111,6 @@ const ListEventi: React.FC<{
             })}
         </>
     );
-};
+});
 
 export default ListEventi;

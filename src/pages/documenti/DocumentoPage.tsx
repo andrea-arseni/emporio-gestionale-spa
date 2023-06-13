@@ -57,7 +57,9 @@ const DocumentoPage: React.FC<{}> = () => {
     useEffect(() => {
         const selectFile = async () => {
             try {
-                const res = await axiosInstance.get(location.pathname);
+                const res = await axiosInstance.get(
+                    location.pathname.replace("reports", "documenti")
+                );
                 if (res.data && res.data.file) {
                     const documento = new Documento(
                         res.data.file.id,

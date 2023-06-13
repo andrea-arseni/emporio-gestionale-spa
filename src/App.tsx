@@ -370,7 +370,7 @@ export default App;
 IMPROVEMENTS 10/6/2023
 
 
-- Up and down on my body + arrow + click
+- Up and down on my body + arrow + click + SCROLL
 - WhatsApp API
 - Saving little images 
 - List persone interessate

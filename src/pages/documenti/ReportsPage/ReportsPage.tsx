@@ -96,7 +96,7 @@ const ReportsPage: React.FC<{}> = () => {
                             titolo={year.toString()}
                         />
                         <IonList ref={list} className={styles.list}>
-                            <ListDocumenti documenti={reports} />
+                            <ListDocumenti ref={list} documenti={reports} />
                             {reports.length === 0 && (
                                 <Card
                                     subTitle={`Questo immobile non ha report associati`}

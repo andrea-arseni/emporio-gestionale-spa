@@ -8,7 +8,7 @@ import {
     useIonAlert,
 } from "@ionic/react";
 import { documentsSharp } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import RiepilogoBar from "../../../components/bars/riepilogo-bar/RiepilogoBar";
@@ -35,6 +35,9 @@ import {
 import styles from "./PersonaFilePage.module.css";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import { closeIonSelect } from "../../../utils/closeIonSelect";
+import DocumentoItem from "../../../components/documento/DocumentoItem";
+import { useAppDispatch } from "../../../hooks";
+import { setCurrentDocumento as setDocumento } from "../../../store/documenti-slice";
 
 const PersonaFilePage: React.FC<{}> = () => {
     useEffect(() => {
@@ -109,10 +112,34 @@ const PersonaFilePage: React.FC<{}> = () => {
         inputFileRef.current.click();
     };
 
+    const dispatch = useAppDispatch();
+
+    const [selected, setSelected] = useState<number>(0);
+
+    const selectItem = useCallback(
+        (id: number) => {
+            dispatch(
+                setDocumento(persona!.files!.filter((el) => el.id === id)[0])
+            );
+            navigate(`${id.toString()}`);
+        },
+        [dispatch, navigate, persona]
+    );
+
+    const handleClick = (id: number) => {
+        if (selected !== id) {
+            setSelected(id);
+            return;
+        }
+        selectItem(id);
+    };
+
     const getItem = (input: fileSpeciale) => {
         return (
-            <ListDocumenti
-                documenti={getFileSpeciale(persona!.files!, input)}
+            <DocumentoItem
+                documento={getFileSpeciale(persona!.files!, input)[0]}
+                handleClick={handleClick}
+                selected={selected}
             />
         );
     };

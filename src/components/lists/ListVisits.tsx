@@ -11,6 +11,7 @@ import { useCallback, useState } from "react";
 import { setCurrentVisit } from "../../store/appuntamenti-slice";
 import { useNavigate } from "react-router-dom";
 import useUpAndDown from "../../hooks/use-up-and-down";
+import useNavigateToItem from "../../hooks/use-navigate-to-item";
 
 const ListVisits: React.FC<{
     visits: Visit[];
@@ -32,6 +33,18 @@ const ListVisits: React.FC<{
     );
 
     useUpAndDown(props.visits, selected, defineSelected, list);
+
+    const selectItem = useCallback(
+        (id: number) => {
+            dispatch(
+                setCurrentVisit(props.visits.filter((el) => el.id === id)[0])
+            );
+            navigate(`/appuntamenti/${id.toString()}`);
+        },
+        [dispatch, navigate, props.visits]
+    );
+
+    useNavigateToItem(selected, selectItem);
 
     const handleClick = (id: number) => {
         if (selected !== id) {

@@ -1,5 +1,5 @@
 import { IonItem, IonLabel, IonText } from "@ionic/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import useWindowSize from "../../hooks/use-size";
 import styles from "./Lists.module.css";
 import { Lavoro } from "../../entities/lavoro.model";
@@ -8,10 +8,15 @@ import { useNavigate } from "react-router-dom";
 import { getDayName } from "../../utils/timeUtils";
 import { useAppDispatch } from "../../hooks";
 import { setCurrentLavoro } from "../../store/lavori-slice";
+import useUpAndDown from "../../hooks/use-up-and-down";
+import useNavigateToItem from "../../hooks/use-navigate-to-item";
+import React from "react";
 
 const ListLavori: React.FC<{
     lavori: Lavoro[];
-}> = (props) => {
+
+    ref?: any;
+}> = React.forwardRef((props, ref: any) => {
     const navigate = useNavigate();
 
     const [width] = useWindowSize();
@@ -19,6 +24,25 @@ const ListLavori: React.FC<{
     const dispatch = useAppDispatch();
 
     const [selected, setSelected] = useState<number>(0);
+
+    const defineSelected = useCallback(
+        (newId: number) => setSelected(newId),
+        []
+    );
+
+    useUpAndDown(props.lavori, selected, defineSelected, ref);
+
+    const selectItem = useCallback(
+        (id: number) => {
+            dispatch(
+                setCurrentLavoro(props.lavori.filter((el) => el.id === id)[0])
+            );
+            navigate(`${id.toString()}`);
+        },
+        [dispatch, navigate, props.lavori]
+    );
+
+    useNavigateToItem(selected, selectItem);
 
     const handleClick = (id: number) => {
         if (selected === id) {
@@ -71,6 +95,6 @@ const ListLavori: React.FC<{
             ))}
         </>
     );
-};
+});
 
 export default ListLavori;

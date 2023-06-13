@@ -472,7 +472,7 @@ export const shareFile = async (documento: Documento, errorHandler: any) => {
 export const getFileNameWithoutExtension = (nome: string) => {
     const parti = nome.split(".");
     if (parti.length > 1) parti.pop();
-    const output = parti.join(".").split("-").join(" ").split("_").join(" ");
+    const output = parti.join(".").split("-").join(" ");
     return capitalize(output);
 };
 
