@@ -656,10 +656,10 @@ const convertHeichToJpeg = async (
 const convertFileToBlob = async (file: File) =>
     new Blob([new Uint8Array(await file.arrayBuffer())], { type: file.type });
 
-const getFileFromBlob = (blob: Blob, name: string, extension: string) =>
+export const getFileFromBlob = (blob: Blob, name: string, extension: string) =>
     new File([blob], getFileNameWithoutExtension(name) + "." + extension);
 
-const getBlobFromBase64String = async (base64String: string) =>
+export const getBlobFromBase64String = async (base64String: string) =>
     await (await fetch(base64String)).blob();
 
 const resizeImage = (file: File) =>

@@ -55,6 +55,8 @@ import { isUserAdmin } from "../../../utils/userUtils";
 import styles from "./ImmobiliFilesPage.module.css";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import { closeIonSelect } from "../../../utils/closeIonSelect";
+import { isNativeApp } from "../../../utils/contactUtils";
+import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
 
 export type fileMode = "files" | "foto" | "form" | "report";
 
@@ -176,6 +178,27 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
     };
 
     const eliminaFotoSelezionate = async (index: number) => {
+        if (index === 0) {
+            // per ogni id
+            immobile?.files?.forEach(async (element) => {
+                // check if foto selezionata e nome = 1
+                if (
+                    listIdPhotoSelected.includes(element.id!) &&
+                    element.nome === "1"
+                ) {
+                    if (isNativeApp) {
+                        await NativeStorage.remove(
+                            `immobile/${immobileId}/avatar`
+                        );
+                    } else {
+                        localStorage.removeItem(
+                            `immobile/${immobileId}/avatar`
+                        );
+                    }
+                }
+            });
+        }
+
         dispatch(changeLoading(true));
         if (index === listIdPhotoSelected!.length) {
             confermaCancellazioneAvvenuta();

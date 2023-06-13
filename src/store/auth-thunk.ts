@@ -16,6 +16,15 @@ export const performAutoLogin = createAsyncThunk(
                 token: token ? token : null,
                 userData: userData ? userData : null,
             };
+
+            const keys = Object.keys(NativeStorage);
+
+            keys.forEach((key) => {
+                if (key.startsWith("immobile")) {
+                    NativeStorage.remove(key);
+                }
+            });
+
             dispatch(login(loginData));
         } else {
             const token = localStorage.getItem("authToken");
@@ -26,6 +35,15 @@ export const performAutoLogin = createAsyncThunk(
                 token,
                 userData,
             };
+
+            const keys = Object.keys(localStorage);
+
+            keys.forEach((key) => {
+                if (key.startsWith("immobile")) {
+                    delete localStorage[key];
+                }
+            });
+
             dispatch(login(loginData));
         }
     }

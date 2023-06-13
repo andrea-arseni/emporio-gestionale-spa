@@ -137,7 +137,8 @@ const ImmobiliPhoto: React.FC<{
                 dispatch(
                     swapPhotoPositions({
                         url: `/immobili/${idImmobile}/files/${item.id}`,
-                        name: foto.nome!,
+                        firstName: foto.nome!,
+                        secondName: item.name!,
                     })
                 );
         },

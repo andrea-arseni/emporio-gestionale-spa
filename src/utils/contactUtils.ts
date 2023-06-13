@@ -1,6 +1,7 @@
 import { Contact, Contacts, ContactType } from "@capacitor-community/contacts";
 import { Persona } from "../entities/persona.model";
 import { isPlatform } from "@ionic/react";
+//import { AppLauncher } from "@capacitor/app-launcher";
 
 const askContactPermission = async (presentAlert: any) => {
     const permissionStatus = await Contacts.getPermissions();
@@ -108,6 +109,16 @@ export const saveContact = async (
             image: undefined,
         });
         if (isPlatform("android")) return;
+        /*  const res = await AppLauncher.canOpenUrl({ url: "whatsapp://" });
+        await AppLauncher.openUrl({
+            url: `whatsapp://send?phone=${
+                persona.telefono
+            }&text=Contact: ${getStringIfRelevant(
+                givenName
+            )} ${getStringIfRelevant(middleName)} ${getStringIfRelevant(
+                familyName
+            )}`,
+        }); */
         presentAlert({
             header: "Ottimo",
             message: `Contatto salvato con successo.`,

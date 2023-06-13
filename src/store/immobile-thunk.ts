@@ -10,6 +10,8 @@ import {
     updateReports,
 } from "./immobile-slice";
 import { changeLoading, setError } from "./ui-slice";
+import { isNativeApp } from "../utils/contactUtils";
+import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
 
 export const fetchImmobileById = createAsyncThunk(
     "immobileDaId",
@@ -86,11 +88,11 @@ export const fetchFileById = createAsyncThunk(
         try {
             fetchFile(url, dispatch, id);
         } catch (e: any) {
-            await new Promise((r) => setTimeout(r, 2000));
+            await new Promise((r) => setTimeout(r, 1500));
             try {
                 fetchFile(url, dispatch, id);
             } catch (e) {
-                await new Promise((r) => setTimeout(r, 2000));
+                await new Promise((r) => setTimeout(r, 3000));
                 try {
                     fetchFile(url, dispatch, id);
                 } catch (e) {
@@ -103,15 +105,26 @@ export const fetchFileById = createAsyncThunk(
 
 export const swapPhotoPositions = createAsyncThunk(
     "swapPhotoPositions",
-    async (input: { url: string; name: string }, { dispatch }) => {
+    async (
+        input: { url: string; firstName: string; secondName: string },
+        { dispatch }
+    ) => {
         dispatch(changeLoading(true));
         try {
             await axiosInstance.patch(input.url, {
-                name: input.name,
+                name: input.firstName,
             });
             dispatch(changeLoading(false));
+            if (input.firstName === "1" || input.secondName === "1") {
+                const immobileId = input.url.split("/")[2];
+                if (isNativeApp) {
+                    await NativeStorage.remove(`immobile/${immobileId}/avatar`);
+                } else {
+                    localStorage.removeItem(`immobile/${immobileId}/avatar`);
+                }
+            }
             const idFile = input.url.split("/").pop()!;
-            dispatch(swapPhotos({ idFile, nuovoNome: input.name }));
+            dispatch(swapPhotos({ idFile, nuovoNome: input.firstName }));
         } catch (e) {
             dispatch(changeLoading(false));
             dispatch(setError({ name: "swapPhotoPositions", object: e }));
@@ -125,6 +138,11 @@ export const performRipristinaImmobile = createAsyncThunk(
         dispatch(changeLoading(true));
         try {
             await axiosInstance.patch(`/immobili/${id}/files/ripristina`, {});
+            if (isNativeApp) {
+                await NativeStorage.remove(`immobile/${id}/avatar`);
+            } else {
+                localStorage.removeItem(`immobile/${id}/avatar`);
+            }
             dispatch(changeLoading(false));
             dispatch(ripristinaImmobile());
         } catch (e) {

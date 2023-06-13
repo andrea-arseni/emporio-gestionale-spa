@@ -366,25 +366,21 @@ export default App;
 - If focus on submit release focus - VINTO
 - Carta visita piacevole, no form - VINTO
 - No more slides on all applications - VINTO
+- Saving little images - VINTO
 
 IMPROVEMENTS 10/6/2023
 
-
-- Up and down on my body + arrow + click + SCROLL
 - WhatsApp API
-- Saving little images 
 - List persone interessate
 - Parenti
 
-- ARRIVATO ALLA VERSIONE 1.6
+- NATIVEAPPS ONLINE
 
 - WEBSITE
 
 - Classe Energetica Maiuscola
 - Spese Extra non previste
 - Rendita
-
-- NATIVEAPPS ONLINE
 
 - OPTIMAL ARCHITECTURE
 
