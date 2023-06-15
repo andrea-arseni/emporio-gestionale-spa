@@ -156,19 +156,25 @@ const Selector: React.FC<{
                 res = `${res}&min=${filter.min}`;
             if (filter.max || filter.max === 0)
                 res = `${res}&max=${filter.max}`;
-            if (filter.value) res = `${res}&value=${filter.value}`;
+            if (filter.value) {
+                let value = filter.value;
+                if (filter.filter === "telefono") {
+                    value = filter.value!.replace(/\s/g, "").replace(/\//g, "");
+                }
+                res = `${res}&value=${value}`;
+            }
+
             return res;
         };
 
         const fetchEntities = async () => {
             try {
                 setShowLoading(true);
-                const url = `${
+                let url = `${
                     props.baseUrl ? props.baseUrl : props.entitiesType
                 }${
                     props.baseUrl && props.baseUrl.includes("?") ? "&" : "?"
                 }page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
-
                 const res = await axiosInstance.get(url);
                 if (!mounted) return;
                 setShowLoading(false);

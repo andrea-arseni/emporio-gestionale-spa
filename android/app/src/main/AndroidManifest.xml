@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="it.emporiocase.nativeapp">
 
-    
+    <queries>
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+    </queries>
 
     <application
         android:allowBackup="true"

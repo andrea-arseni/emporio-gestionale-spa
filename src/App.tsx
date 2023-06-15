@@ -370,7 +370,7 @@ export default App;
 
 IMPROVEMENTS 10/6/2023
 
-- WhatsApp API
+- WhatsApp API 
 - List persone interessate
 - Parenti
 
