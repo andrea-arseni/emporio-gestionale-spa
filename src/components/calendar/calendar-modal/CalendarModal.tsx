@@ -1,4 +1,10 @@
-import { IonModal, IonContent, IonButton, isPlatform } from "@ionic/react";
+import {
+    IonModal,
+    IonContent,
+    IonButton,
+    isPlatform,
+    IonIcon,
+} from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks";
 import useInput from "../../../hooks/use-input";
@@ -16,6 +22,13 @@ import {
 import useErrorHandler from "../../../hooks/use-error-handler";
 import { useNavigate } from "react-router-dom";
 import Appuntamento from "../../../pages/appuntamenti/Appuntamento";
+import {
+    arrowBackCircleOutline,
+    attachOutline,
+    logoWhatsapp,
+    shareOutline,
+} from "ionicons/icons";
+import useWhatsApp from "../../../hooks/use-whatsapp";
 
 const CalendarModal: React.FC<{}> = () => {
     const modalIsOpen = useAppSelector((state) => state.ui.isModalOpened);
@@ -77,6 +90,11 @@ const CalendarModal: React.FC<{}> = () => {
 
     const error: any = useAppSelector((state) => state.ui.error);
 
+    const { whatsAppAvailable, sendWhatsapp } = useWhatsApp(
+        visit?.persona?.telefono!,
+        inputNoteValue
+    );
+
     useEffect(() => {
         if (error && error.name === "eliminaVisita") {
             dispatch(setError(null));
@@ -120,40 +138,81 @@ const CalendarModal: React.FC<{}> = () => {
 
             {modalMode === "message" && (
                 <IonContent>
-                    <FormTextArea
-                        title="Descrizione"
-                        inputValue={inputNoteValue}
-                        inputIsInvalid={inputNoteIsInvalid}
-                        inputChangeHandler={inputNoteChangedHandler}
-                        inputTouchHandler={inputNoteTouchedHandler}
-                        errorMessage={"Input non valido"}
-                        rows={12}
-                    />
-                    <IonButton expand="full" onClick={condividiConferma}>
-                        Invia Messaggio
-                    </IonButton>
-                    {isUrlAvailable && !urlAdded && (
-                        <IonButton
-                            expand="full"
-                            color="dark"
-                            onClick={() => {
-                                inputNoteChangedHandler(
-                                    null,
-                                    inputNoteValue + " " + produceUrl()
-                                );
-                                setUrlAdded(true);
-                            }}
-                        >
-                            Aggiungi link al testo
-                        </IonButton>
-                    )}
-                    <IonButton
-                        color="light"
-                        expand="full"
-                        onClick={() => setModalMode("visit")}
-                    >
-                        Annulla
-                    </IonButton>
+                    <div className="singlePageFrame">
+                        <div className="singlePageInnerFrame">
+                            <h5>Messaggio</h5>
+                            <FormTextArea
+                                inputValue={inputNoteValue}
+                                inputIsInvalid={inputNoteIsInvalid}
+                                inputChangeHandler={inputNoteChangedHandler}
+                                inputTouchHandler={inputNoteTouchedHandler}
+                                errorMessage={"Input non valido"}
+                                rows={12}
+                            />
+                            <IonButton
+                                className="singlePageGeneralButton"
+                                color="primary"
+                                mode="ios"
+                                fill="solid"
+                                onClick={condividiConferma}
+                            >
+                                <IonIcon
+                                    className="rightSpace"
+                                    icon={shareOutline}
+                                />
+                                Invia Messaggio
+                            </IonButton>
+                            {whatsAppAvailable && visit?.persona?.telefono && (
+                                <IonButton
+                                    className="singlePageGeneralButton"
+                                    color="success"
+                                    mode="ios"
+                                    fill="solid"
+                                    onClick={sendWhatsapp}
+                                >
+                                    <IonIcon
+                                        className="rightSpace"
+                                        icon={logoWhatsapp}
+                                    />
+                                    Invia su WhatsApp
+                                </IonButton>
+                            )}
+                            {isUrlAvailable && !urlAdded && (
+                                <IonButton
+                                    className="singlePageGeneralButton"
+                                    color="dark"
+                                    mode="ios"
+                                    fill="solid"
+                                    onClick={() => {
+                                        inputNoteChangedHandler(
+                                            null,
+                                            inputNoteValue + " " + produceUrl()
+                                        );
+                                        setUrlAdded(true);
+                                    }}
+                                >
+                                    <IonIcon
+                                        className="rightSpace"
+                                        icon={attachOutline}
+                                    />
+                                    Aggiungi link al testo
+                                </IonButton>
+                            )}
+                            <IonButton
+                                className="singlePageGeneralButton"
+                                mode="ios"
+                                fill="solid"
+                                color="medium"
+                                onClick={() => setModalMode("visit")}
+                            >
+                                <IonIcon
+                                    className="rightSpace"
+                                    icon={arrowBackCircleOutline}
+                                />
+                                Annulla
+                            </IonButton>
+                        </div>
+                    </div>
                 </IonContent>
             )}
         </IonModal>

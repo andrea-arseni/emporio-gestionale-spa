@@ -24,7 +24,8 @@ import {
     setListIdPhotoSelected,
 } from "../../store/immobile-slice";
 import useErrorHandler from "../../hooks/use-error-handler";
-import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import localforage from "localforage";
 
 const ImmobiliPhotos: React.FC<{}> = () => {
     const { errorHandler } = useErrorHandler();
@@ -73,9 +74,14 @@ const ImmobiliPhotos: React.FC<{}> = () => {
                 { tipologia, colore: Math.random() > 0.5 ? "blue" : "red" }
             );
             if (isNativeApp) {
-                await NativeStorage.remove(`immobile/${immobileId}/avatar`);
+                await Filesystem.deleteFile({
+                    directory: Directory.Cache,
+                    path: `/immobile/${immobileId}/avatar.jpg`,
+                });
             } else {
-                localStorage.removeItem(`immobile/${immobileId}/avatar`);
+                await localforage.removeItem(
+                    `/immobile/${immobileId}/avatar.jpg`
+                );
             }
             setTimeout(() => {
                 dispatch(fetchFotoFirmata(immobile!.id!));

@@ -10,9 +10,10 @@ import {
     getFileFromBlob,
 } from "../../utils/fileUtils";
 import { Documento } from "../../entities/documento.model";
-import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
 import { isNativeApp } from "../../utils/contactUtils";
 import Resizer from "react-image-file-resizer";
+import localForage from "localforage";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
 const ImmobileThumbnail: React.FC<{
     immobile: Immobile;
@@ -55,13 +56,21 @@ const ImmobileThumbnail: React.FC<{
 
         const retrieveImageFromStorage = async () => {
             if (isNativeApp) {
-                return await NativeStorage.getItem(
-                    `immobile/${props.immobile.id}/avatar`
-                );
+                try {
+                    const readFileResult = await Filesystem.readFile({
+                        path: `/immobile/${props.immobile.id}/avatar.jpg`,
+                        directory: Directory.Cache,
+                        encoding: Encoding.UTF8,
+                    });
+                    return readFileResult.data;
+                } catch (e) {
+                    return null;
+                }
             } else {
-                return localStorage.getItem(
-                    `immobile/${props.immobile.id}/avatar`
+                const base64String: string | null = await localForage.getItem(
+                    `/immobile/${props.immobile.id}/avatar.jpg`
                 );
+                return base64String;
             }
         };
 
@@ -69,8 +78,8 @@ const ImmobileThumbnail: React.FC<{
             new Promise((resolve) =>
                 Resizer.imageFileResizer(
                     file,
-                    100,
-                    100,
+                    300,
+                    300,
                     "JPEG",
                     100,
                     0,
@@ -98,7 +107,7 @@ const ImmobileThumbnail: React.FC<{
                 if (!mounted) return;
                 setFotoFetched(true);
 
-                const base64String = getBase64StringFromByteArray(
+                let base64String = getBase64StringFromByteArray(
                     res.data.byteArray,
                     primaFoto!.codiceBucket!
                 );
@@ -108,22 +117,28 @@ const ImmobileThumbnail: React.FC<{
 
                 const blob = await getBlobFromBase64String(base64String);
 
-                const file = getFileFromBlob(blob, "what", "jpg");
+                const file: File | string = getFileFromBlob(
+                    blob!,
+                    "what",
+                    "jpg"
+                );
 
-                const resizedFileBase64String = (await resizeImage(
-                    file
-                )) as string;
+                if (!isNativeApp)
+                    base64String = (await resizeImage(file!)) as string;
 
                 //save to Storage
                 if (isNativeApp) {
-                    await NativeStorage.setItem(
-                        `immobile/${props.immobile.id}/avatar`,
-                        resizedFileBase64String
-                    );
+                    await Filesystem.writeFile({
+                        path: `/immobile/${props.immobile.id}/avatar.jpg`,
+                        data: base64String!,
+                        directory: Directory.Cache,
+                        encoding: Encoding.UTF8,
+                        recursive: true,
+                    });
                 } else {
-                    localStorage.setItem(
-                        `immobile/${props.immobile.id}/avatar`,
-                        resizedFileBase64String
+                    await localForage.setItem(
+                        `/immobile/${props.immobile.id}/avatar.jpg`,
+                        base64String
                     );
                 }
             } catch (e) {
@@ -149,7 +164,7 @@ const ImmobileThumbnail: React.FC<{
                             ? styles.active
                             : styles.inactive
                     }`}
-                    alt="Foto non disponibile"
+                    alt=""
                     src={primaFoto ? primaFoto!.base64String : notAvailable}
                 />
             )}

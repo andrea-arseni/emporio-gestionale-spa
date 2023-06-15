@@ -56,7 +56,8 @@ import styles from "./ImmobiliFilesPage.module.css";
 import useErrorHandler from "../../../hooks/use-error-handler";
 import { closeIonSelect } from "../../../utils/closeIonSelect";
 import { isNativeApp } from "../../../utils/contactUtils";
-import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
+import localforage from "localforage";
+import { Directory, Filesystem } from "@capacitor/filesystem";
 
 export type fileMode = "files" | "foto" | "form" | "report";
 
@@ -187,12 +188,13 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     element.nome === "1"
                 ) {
                     if (isNativeApp) {
-                        await NativeStorage.remove(
-                            `immobile/${immobileId}/avatar`
-                        );
+                        await Filesystem.deleteFile({
+                            directory: Directory.Cache,
+                            path: `/immobile/${immobileId}/avatar.jpg`,
+                        });
                     } else {
-                        localStorage.removeItem(
-                            `immobile/${immobileId}/avatar`
+                        await localforage.removeItem(
+                            `/immobile/${immobileId}/avatar.jpg`
                         );
                     }
                 }

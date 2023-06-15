@@ -2,10 +2,35 @@ import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isNativeApp } from "../utils/contactUtils";
 import { login, logout, loginData } from "./auth-slice";
+import localforage from "localforage";
+import { Directory, Filesystem } from "@capacitor/filesystem";
+
+const eraseImageStorage = async () => {
+    if (isNativeApp) {
+        await Filesystem.rmdir({
+            path: "/",
+            directory: Directory.Cache,
+            recursive: true,
+        });
+        return;
+    }
+
+    const keys = await localforage.keys();
+
+    const removalPromises: Promise<any>[] = [];
+    keys.forEach((key: string) => {
+        if (key.startsWith("immobile")) {
+            removalPromises.push(localforage.removeItem(key));
+        }
+    });
+    Promise.all(removalPromises);
+};
 
 export const performAutoLogin = createAsyncThunk(
     "autoLogin",
     async (_, { dispatch }) => {
+        eraseImageStorage();
+
         if (isNativeApp) {
             const token = await NativeStorage.getItem("authToken");
             const userDataStringified = await NativeStorage.getItem("userData");
@@ -16,15 +41,6 @@ export const performAutoLogin = createAsyncThunk(
                 token: token ? token : null,
                 userData: userData ? userData : null,
             };
-
-            const keys = Object.keys(NativeStorage);
-
-            keys.forEach((key) => {
-                if (key.startsWith("immobile")) {
-                    NativeStorage.remove(key);
-                }
-            });
-
             dispatch(login(loginData));
         } else {
             const token = localStorage.getItem("authToken");
@@ -35,15 +51,6 @@ export const performAutoLogin = createAsyncThunk(
                 token,
                 userData,
             };
-
-            const keys = Object.keys(localStorage);
-
-            keys.forEach((key) => {
-                if (key.startsWith("immobile")) {
-                    delete localStorage[key];
-                }
-            });
-
             dispatch(login(loginData));
         }
     }
@@ -52,6 +59,7 @@ export const performAutoLogin = createAsyncThunk(
 export const performLogin = createAsyncThunk(
     "login",
     async (loginData: loginData, { dispatch }) => {
+        eraseImageStorage();
         if (isNativeApp) {
             await NativeStorage.setItem("authToken", loginData.token);
             await NativeStorage.setItem(
@@ -73,6 +81,7 @@ export const performLogin = createAsyncThunk(
 export const performLogout = createAsyncThunk(
     "logout",
     async (_, { dispatch }) => {
+        eraseImageStorage();
         if (isNativeApp) {
             await NativeStorage.remove("authToken");
             await NativeStorage.remove("userData");

@@ -11,7 +11,8 @@ import {
 } from "./immobile-slice";
 import { changeLoading, setError } from "./ui-slice";
 import { isNativeApp } from "../utils/contactUtils";
-import { NativeStorage } from "@awesome-cordova-plugins/native-storage";
+import localforage from "localforage";
+import { Directory, Filesystem } from "@capacitor/filesystem";
 
 export const fetchImmobileById = createAsyncThunk(
     "immobileDaId",
@@ -118,9 +119,14 @@ export const swapPhotoPositions = createAsyncThunk(
             if (input.firstName === "1" || input.secondName === "1") {
                 const immobileId = input.url.split("/")[2];
                 if (isNativeApp) {
-                    await NativeStorage.remove(`immobile/${immobileId}/avatar`);
+                    await Filesystem.deleteFile({
+                        directory: Directory.Cache,
+                        path: `/immobile/${immobileId}/avatar.jpg`,
+                    });
                 } else {
-                    localStorage.removeItem(`immobile/${immobileId}/avatar`);
+                    await localforage.removeItem(
+                        `/immobile/${immobileId}/avatar.jpg`
+                    );
                 }
             }
             const idFile = input.url.split("/").pop()!;
@@ -139,9 +145,12 @@ export const performRipristinaImmobile = createAsyncThunk(
         try {
             await axiosInstance.patch(`/immobili/${id}/files/ripristina`, {});
             if (isNativeApp) {
-                await NativeStorage.remove(`immobile/${id}/avatar`);
+                await Filesystem.deleteFile({
+                    directory: Directory.Cache,
+                    path: `/immobile/${id}/avatar.jpg`,
+                });
             } else {
-                localStorage.removeItem(`immobile/${id}/avatar`);
+                await localforage.removeItem(`/immobile/${id}/avatar.jpg`);
             }
             dispatch(changeLoading(false));
             dispatch(ripristinaImmobile());

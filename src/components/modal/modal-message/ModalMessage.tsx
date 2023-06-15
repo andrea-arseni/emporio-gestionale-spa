@@ -1,7 +1,15 @@
-import { IonButton } from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import FormTextArea from "../../form-components/form-text-area/FormTextArea";
 import Modal from "../Modal";
+import {
+    arrowBackCircleOutline,
+    attachOutline,
+    logoWhatsapp,
+    shareOutline,
+} from "ionicons/icons";
+import useWhatsApp from "../../../hooks/use-whatsapp";
+import { useAppSelector } from "../../../hooks";
 
 const ModalMessage: React.FC<{
     url: string | undefined;
@@ -15,9 +23,16 @@ const ModalMessage: React.FC<{
 }> = (props) => {
     const [urlAdded, setUrlAdded] = useState<boolean>(false);
 
+    const persona = useAppSelector((state) => state.persona.persona);
+
     useEffect(() => {
         if (!props.modalIsOpen) setUrlAdded(false);
     }, [props.modalIsOpen]);
+
+    const { whatsAppAvailable, sendWhatsapp } = useWhatsApp(
+        persona?.telefono!,
+        props.inputValue
+    );
 
     return (
         <Modal
@@ -26,40 +41,80 @@ const ModalMessage: React.FC<{
             title={`Definisci il testo da scrivere`}
             handler={() => props.setModalIsOpen(false)}
         >
-            <FormTextArea
-                title="Descrizione"
-                inputValue={props.inputValue}
-                inputIsInvalid={props.inputIsInvalid}
-                inputChangeHandler={props.inputChangedHandler}
-                inputTouchHandler={props.inputTouchedHandler}
-                errorMessage={"Input non valido"}
-                rows={12}
-            />
-            <IonButton expand="full" onClick={props.handler}>
-                Invia Messaggio
-            </IonButton>
-            {!urlAdded && props.url && (
-                <IonButton
-                    expand="full"
-                    color="dark"
-                    onClick={() => {
-                        props.inputChangedHandler(
-                            null,
-                            props.inputValue + " " + props.url
-                        );
-                        setUrlAdded(true);
-                    }}
-                >
-                    Aggiungi link al testo
-                </IonButton>
-            )}
-            <IonButton
-                color="light"
-                expand="full"
-                onClick={() => props.setModalIsOpen(false)}
-            >
-                Annulla
-            </IonButton>
+            <div className="singlePageFrame">
+                <div className="singlePageInnerFrame">
+                    <h5 style={{ color: "black" }}>Messaggio</h5>
+                    <FormTextArea
+                        inputValue={props.inputValue}
+                        inputIsInvalid={props.inputIsInvalid}
+                        inputChangeHandler={props.inputChangedHandler}
+                        inputTouchHandler={props.inputTouchedHandler}
+                        errorMessage={"Input non valido"}
+                        rows={12}
+                    />
+
+                    <IonButton
+                        className="singlePageGeneralButton"
+                        color="primary"
+                        mode="ios"
+                        fill="solid"
+                        onClick={props.handler}
+                    >
+                        <IonIcon className="rightSpace" icon={shareOutline} />
+                        Invia Messaggio
+                    </IonButton>
+
+                    {whatsAppAvailable && (
+                        <IonButton
+                            className="singlePageGeneralButton"
+                            color="success"
+                            mode="ios"
+                            fill="solid"
+                            onClick={sendWhatsapp}
+                        >
+                            <IonIcon
+                                className="rightSpace"
+                                icon={logoWhatsapp}
+                            />
+                            Invia su WhatsApp
+                        </IonButton>
+                    )}
+                    {!urlAdded && props.url && (
+                        <IonButton
+                            className="singlePageGeneralButton"
+                            mode="ios"
+                            fill="solid"
+                            color="dark"
+                            onClick={() => {
+                                props.inputChangedHandler(
+                                    null,
+                                    props.inputValue + " " + props.url
+                                );
+                                setUrlAdded(true);
+                            }}
+                        >
+                            <IonIcon
+                                className="rightSpace"
+                                icon={attachOutline}
+                            />
+                            Aggiungi link al testo
+                        </IonButton>
+                    )}
+                    <IonButton
+                        className="singlePageGeneralButton"
+                        mode="ios"
+                        fill="solid"
+                        color="medium"
+                        onClick={() => props.setModalIsOpen(false)}
+                    >
+                        <IonIcon
+                            className="rightSpace"
+                            icon={arrowBackCircleOutline}
+                        />
+                        Annulla
+                    </IonButton>
+                </div>
+            </div>
         </Modal>
     );
 };

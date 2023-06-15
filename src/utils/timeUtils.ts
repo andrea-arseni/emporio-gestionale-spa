@@ -83,12 +83,17 @@ export const getCorrectDate = (input: Date) =>
 
 export const getDayName = (
     input: Date,
-    mode: "short" | "medium" | "long" = "short"
+    mode: "short" | "medium" | "long" | "week" = "short"
 ) => {
     input = getCorrectDate(input);
     let output = "";
     if (mode === "long")
         output = output + GIORNI_DELLA_SETTIMANA[input.getDay()] + " ";
+    if (mode === "week")
+        output =
+            output +
+            GIORNI_DELLA_SETTIMANA[input.getDay()].substring(0, 4) +
+            ". ";
     return (
         output +
         `${input.getDate()}${
@@ -96,7 +101,7 @@ export const getDayName = (
                 ? `/${input.getMonth() + 1}/`
                 : ` ${MONTH_OF_THE_YEAR[input.getMonth()]} `
         }${
-            mode === "short"
+            mode === "short" || mode === "week"
                 ? input.getFullYear().toString().substring(2)
                 : input.getFullYear()
         }`

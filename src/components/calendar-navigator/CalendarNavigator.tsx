@@ -15,7 +15,7 @@ const CalendarNavigator: React.FC<{
         if (mode === "day")
             return getDayName(
                 props.currentDay,
-                widthScreen > 385 ? "long" : "short"
+                widthScreen > 385 ? "long" : "week"
             );
         const week = setWeek(props.currentDay);
         return `Da ${getDayName(week[0].date, "long")} a ${getDayName(

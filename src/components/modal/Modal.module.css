@@ -1,8 +1,9 @@
 .content {
     position: relative;
     top: 45px;
-    overflow: hidden;
+    overflow: scroll;
     height: 100%;
+    padding-bottom: 50px;
 }
 
 .iosModal {
