@@ -3,6 +3,9 @@
     top: 45px;
     overflow: scroll;
     height: 100%;
+}
+
+.paddingBottom {
     padding-bottom: 50px;
 }
 

@@ -67,8 +67,8 @@ const Selector: React.FC<{
     selectMode?: boolean;
     public?: boolean;
     localQuery?: boolean;
-    specific?: boolean;
     backToList?: () => void;
+    noFilter?: boolean;
 }> = (props) => {
     let { filter, sort, page, update } = useAppSelector((state: RootState) =>
         getQueryDataUtils(state, props.entitiesType)
@@ -175,10 +175,11 @@ const Selector: React.FC<{
                 }${
                     props.baseUrl && props.baseUrl.includes("?") ? "&" : "?"
                 }page=${page}${filter.filter ? getFilter() : ""}&sort=${sort}`;
+
                 const res = await axiosInstance.get(url);
                 if (!mounted) return;
                 setShowLoading(false);
-                setEntities(props.specific ? [res.data] : res.data.data);
+                setEntities(res.data.data);
                 setNumberOfResults(res.data.numberOfResults);
                 if (props.entitiesType === "operazioni")
                     setSumOfOperations(res.data.sum);
@@ -217,7 +218,6 @@ const Selector: React.FC<{
         sort,
         update,
         props.baseUrl,
-        props.specific,
     ]);
 
     const eraseFilter = () => {
@@ -238,9 +238,7 @@ const Selector: React.FC<{
         try {
             setShowLoading(true);
 
-            await axiosInstance.delete(
-                props.specific && props.baseUrl ? props.baseUrl : url
-            );
+            await axiosInstance.delete(props.baseUrl ? props.baseUrl : url);
             setEntities((prevEntities) =>
                 prevEntities.filter((el) => el.id?.toString() !== id)
             );
@@ -336,7 +334,8 @@ const Selector: React.FC<{
     const getListHeight: any = () => {
         if (
             props.entitiesType === "logs" ||
-            (props.entitiesType === "visite" && props.baseUrl?.includes("?"))
+            (props.entitiesType === "visite" && props.baseUrl?.includes("?")) ||
+            props.noFilter
         )
             return isNativeApp && isPlatform("ios")
                 ? styles.sixOtherElementsIos
@@ -426,7 +425,7 @@ const Selector: React.FC<{
                         mode="ios"
                         color="primary"
                         fill="clear"
-                        disabled={entities.length === 1 || props.specific}
+                        disabled={entities.length === 1 || props.noFilter}
                         onClick={() => setShowFilterActionSheet(true)}
                     >
                         <IonIcon icon={filterOutline} />
@@ -442,7 +441,7 @@ const Selector: React.FC<{
                     mode="ios"
                     fill="clear"
                     color="dark"
-                    disabled={entities.length === 1 || props.specific}
+                    disabled={entities.length === 1}
                     onClick={() => setShowSortingActionSheet(true)}
                 >
                     <IonIcon icon={layersOutline} />
@@ -483,6 +482,7 @@ const Selector: React.FC<{
                     lifted={
                         props.entitiesType === "eventi" ||
                         props.entitiesType === "logs" ||
+                        props.noFilter ||
                         !!(props.baseUrl && props.baseUrl.includes("?"))
                     }
                 />
@@ -499,6 +499,7 @@ const Selector: React.FC<{
                 public={props.public}
             />
             <SortActionSheet
+                noFilter
                 localQuery={props.localQuery}
                 setSorting={setSort}
                 setPaging={setPage}

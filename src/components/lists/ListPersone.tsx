@@ -94,7 +94,7 @@ const ListPersone: React.FC<{
             <IonItem
                 key={persona.id}
                 color={
-                    selected === persona.id
+                    selected === persona.id || !persona.status
                         ? "primary"
                         : getPersonaNameColor(persona.status!.toLowerCase())
                 }
@@ -104,7 +104,7 @@ const ListPersone: React.FC<{
                     <h2>{persona.nome} </h2>
                     {getTelefono(persona)}
                     {getEmail(persona)}
-                    {getData(new Date(persona.data!))}
+                    {persona.data ? getData(new Date(persona.data)) : ""}
                 </IonLabel>
                 {width > 500 &&
                     (persona.ruolo ||
@@ -129,7 +129,8 @@ const ListPersone: React.FC<{
                             : undefined
                     }
                 >
-                    {persona.status!.toUpperCase().split("_")[1]}
+                    {persona.status &&
+                        persona.status!.toUpperCase().split("_")[1]}
                     <br />
                     {persona.provenienza &&
                         persona.provenienza.toUpperCase().replace("_", " ")}

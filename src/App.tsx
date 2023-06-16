@@ -367,11 +367,11 @@ export default App;
 - Carta visita piacevole, no form - VINTO
 - No more slides on all applications - VINTO
 - Saving little images - VINTO
+- WhatsApp API - VINTO
+- List persone interessate - VINTO
 
 IMPROVEMENTS 10/6/2023
 
-- WhatsApp API 
-- List persone interessate
 - Parenti
 
 - NATIVEAPPS ONLINE

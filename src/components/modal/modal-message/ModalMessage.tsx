@@ -40,6 +40,7 @@ const ModalMessage: React.FC<{
             isOpen={props.modalIsOpen}
             title={`Definisci il testo da scrivere`}
             handler={() => props.setModalIsOpen(false)}
+            paddingBottom
         >
             <div className="singlePageFrame">
                 <div className="singlePageInnerFrame">

@@ -25,6 +25,7 @@ const SortActionSheet: React.FC<{
     setPaging: any;
     public?: boolean;
     localQuery?: boolean;
+    noFilter?: boolean;
 }> = (props) => {
     const dispatch = useAppDispatch();
 
@@ -38,6 +39,7 @@ const SortActionSheet: React.FC<{
     };
 
     const getSortingTemporale = (nameParam?: string) => {
+        if (props.noFilter) return [];
         return [
             {
                 text: "Dal più vecchio al più recente",

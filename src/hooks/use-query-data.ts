@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { entitiesType } from "../entities/entity";
 import { Filtro } from "../entities/filtro.model";
 
 const useQueryData = (entitiesType: entitiesType) => {
-    const getInitialSorting = () => {
+    const getInitialSorting = useCallback(() => {
         switch (entitiesType) {
             case "lavori":
                 return "status";
@@ -18,9 +18,13 @@ const useQueryData = (entitiesType: entitiesType) => {
             default:
                 return "data";
         }
-    };
+    }, [entitiesType]);
 
-    const [localSort, localSetSort] = useState<string>(getInitialSorting());
+    const [localSort, localSetSort] = useState<string>("");
+
+    useEffect(() => {
+        localSetSort(getInitialSorting());
+    }, [getInitialSorting]);
 
     const [localFilter, localSetFilter] = useState<Filtro>({
         filter: undefined,

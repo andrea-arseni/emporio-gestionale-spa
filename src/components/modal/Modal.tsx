@@ -9,6 +9,7 @@ const Modal: React.FC<{
     handler: () => void;
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
+    paddingBottom?: boolean;
 }> = (props) => {
     return (
         <IonModal
@@ -23,7 +24,13 @@ const Modal: React.FC<{
                 title={props.title}
                 handler={props.handler}
             />
-            <div className={styles.content}>{props.children}</div>
+            <div
+                className={`${styles.content} ${
+                    props.paddingBottom ? styles.paddingBottom : ""
+                }`}
+            >
+                {props.children}
+            </div>
         </IonModal>
     );
 };

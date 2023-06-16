@@ -37,8 +37,6 @@ const useWhatsApp = (telefono: string, inputValue: string) => {
     const [whatsAppAvailable, setWhatsAppAvailable] = useState<boolean>(false);
 
     useEffect(() => {
-        console.log("Sono qui nel calendar modale");
-
         const checkWhatsAppAvailability = async () => {
             const isAvailable = await isWhatsAppAvailable();
             setWhatsAppAvailable(isAvailable);

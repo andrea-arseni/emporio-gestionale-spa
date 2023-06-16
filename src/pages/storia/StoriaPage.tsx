@@ -1,5 +1,10 @@
 import { IonIcon, IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
-import { bookOutline, newspaperOutline, peopleOutline } from "ionicons/icons";
+import {
+    bookOutline,
+    callOutline,
+    newspaperOutline,
+    peopleOutline,
+} from "ionicons/icons";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import RiepilogoBar from "../../components/bars/riepilogo-bar/RiepilogoBar";
@@ -97,11 +102,24 @@ const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
         </>
     );
 
+    const getListaPersoneInteressate = () => (
+        <Selector
+            localQuery
+            noFilter
+            entitiesType="persone"
+            baseUrl={`/immobili/${id}/persone-interessate`}
+        />
+    );
+
     return (
         <>
             <>
                 {getIntestazione()}
-                {mode === "eventi" ? getEventsContent() : getVisitContent()}
+                {mode === "interessati"
+                    ? getListaPersoneInteressate()
+                    : mode === "eventi"
+                    ? getEventsContent()
+                    : getVisitContent()}
             </>
 
             <IonSegment mode="ios" value={mode}>
@@ -131,6 +149,17 @@ const StoriaPage: React.FC<{ type: "immobile" | "persona" }> = (props) => {
                     <IonIcon icon={peopleOutline} />
                     <IonLabel>Visite</IonLabel>
                 </IonSegmentButton>
+                {props.type === "immobile" && (
+                    <IonSegmentButton
+                        value="interessati"
+                        onClick={() =>
+                            dispatch(setImmobileStoriaType("interessati"))
+                        }
+                    >
+                        <IonIcon icon={callOutline} />
+                        <IonLabel>Interessati</IonLabel>
+                    </IonSegmentButton>
+                )}
             </IonSegment>
         </>
     );

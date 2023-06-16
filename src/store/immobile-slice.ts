@@ -16,7 +16,7 @@ const INITIAL_QUERY_DATA: queryData = {
 
 interface ImmobileState {
     immobile: Immobile | null;
-    storiaType: "eventi" | "visite";
+    storiaType: "eventi" | "visite" | "interessati";
     queryData: queryData;
     isSelectionModeAllowed: boolean;
     isSelectionModeActivated: boolean;
@@ -44,7 +44,7 @@ const immobileSlice = createSlice({
         },
         setImmobileStoriaType(
             state,
-            action: PayloadAction<"eventi" | "visite">
+            action: PayloadAction<"eventi" | "visite" | "interessati">
         ) {
             state.storiaType = action.payload;
         },
