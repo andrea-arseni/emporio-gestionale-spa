@@ -3,6 +3,7 @@ import axiosInstance from "../utils/axiosInstance";
 import {
     addSignedPhoto,
     blockPhoto,
+    resetMovingPhotos,
     ripristinaImmobile,
     setImmobile,
     setPhoto,
@@ -118,18 +119,21 @@ export const swapPhotoPositions = createAsyncThunk(
             dispatch(changeLoading(false));
             if (input.firstName === "1" || input.secondName === "1") {
                 const immobileId = input.url.split("/")[2];
-                if (isNativeApp) {
-                    await Filesystem.deleteFile({
-                        directory: Directory.Cache,
-                        path: `/immobile/${immobileId}/avatar.jpg`,
-                    });
-                } else {
-                    await localforage.removeItem(
-                        `/immobile/${immobileId}/avatar.jpg`
-                    );
-                }
+                try {
+                    if (isNativeApp) {
+                        await Filesystem.deleteFile({
+                            directory: Directory.Cache,
+                            path: `/immobile/${immobileId}/avatar.jpg`,
+                        });
+                    } else {
+                        await localforage.removeItem(
+                            `/immobile/${immobileId}/avatar.jpg`
+                        );
+                    }
+                } catch (e) {}
             }
             const idFile = input.url.split("/").pop()!;
+            dispatch(resetMovingPhotos());
             dispatch(swapPhotos({ idFile, nuovoNome: input.firstName }));
         } catch (e) {
             dispatch(changeLoading(false));
@@ -144,14 +148,16 @@ export const performRipristinaImmobile = createAsyncThunk(
         dispatch(changeLoading(true));
         try {
             await axiosInstance.patch(`/immobili/${id}/files/ripristina`, {});
-            if (isNativeApp) {
-                await Filesystem.deleteFile({
-                    directory: Directory.Cache,
-                    path: `/immobile/${id}/avatar.jpg`,
-                });
-            } else {
-                await localforage.removeItem(`/immobile/${id}/avatar.jpg`);
-            }
+            try {
+                if (isNativeApp) {
+                    await Filesystem.deleteFile({
+                        directory: Directory.Cache,
+                        path: `/immobile/${id}/avatar.jpg`,
+                    });
+                } else {
+                    await localforage.removeItem(`/immobile/${id}/avatar.jpg`);
+                }
+            } catch (e) {}
             dispatch(changeLoading(false));
             dispatch(ripristinaImmobile());
         } catch (e) {

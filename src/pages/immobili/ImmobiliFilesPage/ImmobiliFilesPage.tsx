@@ -33,6 +33,7 @@ import { useAppDispatch, useAppSelector } from "../../../hooks";
 import useList from "../../../hooks/use-list";
 import {
     deleteFile,
+    resetMovingPhotos,
     setIsSelectionModeActivated,
     setListIdPhotoSelected,
 } from "../../../store/immobile-slice";
@@ -101,6 +102,7 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
 
     useEffect(() => {
         dispatch(setIsSelectionModeActivated(false));
+        dispatch(resetMovingPhotos());
     }, [dispatch]);
 
     const loading = useAppSelector((state) => state.ui.isLoading);
@@ -187,16 +189,18 @@ const ImmobiliFilesPage: React.FC<{}> = () => {
                     listIdPhotoSelected.includes(element.id!) &&
                     element.nome === "1"
                 ) {
-                    if (isNativeApp) {
-                        await Filesystem.deleteFile({
-                            directory: Directory.Cache,
-                            path: `/immobile/${immobileId}/avatar.jpg`,
-                        });
-                    } else {
-                        await localforage.removeItem(
-                            `/immobile/${immobileId}/avatar.jpg`
-                        );
-                    }
+                    try {
+                        if (isNativeApp) {
+                            await Filesystem.deleteFile({
+                                directory: Directory.Cache,
+                                path: `/immobile/${immobileId}/avatar.jpg`,
+                            });
+                        } else {
+                            await localforage.removeItem(
+                                `/immobile/${immobileId}/avatar.jpg`
+                            );
+                        }
+                    } catch (e) {}
                 }
             });
         }

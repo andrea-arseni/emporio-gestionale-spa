@@ -9,7 +9,7 @@ const useWhatsApp = (telefono: string, inputValue: string) => {
         const formattedPhoneNumber = telefono.replace(/[^+\d]/g, "");
         const encodedMessage = encodeURIComponent(inputValue);
         try {
-            await new Promise((r) => setTimeout(r, 1000));
+            await new Promise((r) => setTimeout(r, 400));
             await AppLauncher.openUrl({
                 url: `https://api.whatsapp.com/send?phone=${formattedPhoneNumber}&text=${encodedMessage}`,
             });

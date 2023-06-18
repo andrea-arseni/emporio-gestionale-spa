@@ -18,14 +18,21 @@ const FormTextArea: React.FC<{
     const ref = useRef<HTMLIonTextareaElement>(null);
 
     useEffect(() => {
+        let mounted = true;
+
         const focus = async () => {
             await new Promise((r) => setTimeout(r, 300));
+            if (!mounted) return;
             ref.current!.setFocus();
         };
 
         if (props.autofocus) {
             focus();
         }
+
+        return () => {
+            mounted = false;
+        };
     }, [props.autofocus]);
 
     return (

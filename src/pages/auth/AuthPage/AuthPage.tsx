@@ -109,18 +109,20 @@ const AuthPage: React.FC<{}> = () => {
     }, [firstStepAccomplished]);
 
     useEffect(() => {
+        let timeout: NodeJS.Timeout | null = null;
+
         const setFocusOnUser = async () => {
-            await new Promise((r) => setTimeout(r, 300));
+            timeout = await new Promise((r) => setTimeout(r, 300));
             inputUserRef.current?.setFocus();
         };
 
         const setFocusOnCode = async () => {
-            await new Promise((r) => setTimeout(r, 300));
+            timeout = await new Promise((r) => setTimeout(r, 300));
             inputCodeRef.current?.setFocus();
         };
 
         const setFocusOnEmail = async () => {
-            await new Promise((r) => setTimeout(r, 300));
+            timeout = await new Promise((r) => setTimeout(r, 300));
             inputEmailRef.current?.setFocus();
         };
 
@@ -131,6 +133,10 @@ const AuthPage: React.FC<{}> = () => {
         } else {
             setFocusOnEmail();
         }
+
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
     }, [firstStepAccomplished, mode]);
 
     const [showLoading, setShowLoading] = useState<boolean>(false);

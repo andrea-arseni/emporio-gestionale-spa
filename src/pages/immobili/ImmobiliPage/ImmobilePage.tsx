@@ -67,9 +67,13 @@ const ImmobilePage: React.FC<{}> = () => {
     }, [dispatch, id]);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeout: NodeJS.Timeout = setTimeout(() => {
             setClickBlocked(false);
         }, 1000);
+
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
     }, []);
 
     const userData = useAppSelector((state) => state.auth.userData);

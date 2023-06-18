@@ -39,9 +39,13 @@ const EventPage: React.FC<{}> = () => {
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeout: NodeJS.Timeout = setTimeout(() => {
             setClickBlocked(false);
         }, 1000);
+
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
     }, []);
 
     let eventDescription =

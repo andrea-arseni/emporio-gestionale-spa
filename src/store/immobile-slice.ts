@@ -21,6 +21,7 @@ interface ImmobileState {
     isSelectionModeAllowed: boolean;
     isSelectionModeActivated: boolean;
     listIdPhotoSelected: number[];
+    startingPhotoId: number;
 }
 
 const initialState = {
@@ -30,6 +31,7 @@ const initialState = {
     isSelectionModeAllowed: true,
     isSelectionModeActivated: false,
     listIdPhotoSelected: [],
+    startingPhotoId: 0,
 } as ImmobileState;
 
 const immobileSlice = createSlice({
@@ -188,10 +190,18 @@ const immobileSlice = createSlice({
                 (el) => el !== action.payload
             );
         },
+        resetMovingPhotos(state) {
+            state.startingPhotoId = 0;
+        },
+        startMovingPhoto(state, action: PayloadAction<number>) {
+            state.startingPhotoId = action.payload;
+        },
     },
 });
 
 export const {
+    resetMovingPhotos,
+    startMovingPhoto,
     setImmobileStoriaType,
     resetImmobiliQueryData,
     setImmobiliFilter,

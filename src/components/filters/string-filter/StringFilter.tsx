@@ -38,11 +38,17 @@ const StringFilter: React.FC<{
     const inputRef = useRef<HTMLIonInputElement>(null);
 
     useEffect(() => {
+        let mounted = true;
         const focus = async () => {
             await new Promise((r) => setTimeout(r, 300));
+            if (!mounted) return;
             inputRef.current!.setFocus();
         };
         focus();
+
+        return () => {
+            mounted = false;
+        };
     }, [inputRef]);
 
     useEffect(() => {

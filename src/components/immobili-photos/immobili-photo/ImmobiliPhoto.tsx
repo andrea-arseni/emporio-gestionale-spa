@@ -10,15 +10,16 @@ import {
     arrowUndoOutline,
     checkmarkSharp,
 } from "ionicons/icons";
-import { useEffect, useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
+import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import notAvailable from "../../../assets/notAvailable.png";
 import {
     deselectPhoto,
     erasePhoto,
+    resetMovingPhotos,
     selectPhoto,
     setIsSelectionModeAllowed,
+    startMovingPhoto,
 } from "../../../store/immobile-slice";
 import {
     fetchFileById,
@@ -31,9 +32,9 @@ import useErrorHandler from "../../../hooks/use-error-handler";
 const ImmobiliPhoto: React.FC<{
     id: number;
 }> = (props) => {
-    const [presentAlert] = useIonAlert();
-
     const { errorHandler } = useErrorHandler();
+
+    const [presentAlert] = useIonAlert();
 
     const dispatch = useAppDispatch();
 
@@ -41,7 +42,13 @@ const ImmobiliPhoto: React.FC<{
         (state) => state.immobile.isSelectionModeActivated
     );
 
-    const idImmobile = useAppSelector((state) => state.immobile.immobile?.id);
+    const immobile = useAppSelector((state) => state.immobile.immobile);
+
+    const foto = immobile?.files?.find((el) => el.id === props.id)!;
+
+    const fotoInMovimento = useAppSelector(
+        (state) => state.immobile.startingPhotoId
+    );
 
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
@@ -50,11 +57,6 @@ const ImmobiliPhoto: React.FC<{
     );
 
     const [isRotating, setIsRotating] = useState<boolean>(false);
-
-    const foto = useAppSelector(
-        (state) =>
-            state.immobile.immobile?.files?.find((el) => el.id === props.id)!
-    );
 
     const isSelected = useAppSelector((state) =>
         state.immobile.listIdPhotoSelected.find((id) => props.id === id)
@@ -74,7 +76,7 @@ const ImmobiliPhoto: React.FC<{
             setShowLoading(true);
             try {
                 const reqBody = { rotating: +rotatingSense! };
-                const url = `/immobili/${idImmobile}/files/${props.id}`;
+                const url = `/immobili/${immobile?.id}/files/${props.id}`;
                 await axiosSecondaryApi.patch(url, reqBody);
                 if (!mounted) return;
                 setRotatingSense(null);
@@ -84,7 +86,7 @@ const ImmobiliPhoto: React.FC<{
                     setIsRotating(false);
                     dispatch(
                         fetchFileById(
-                            `/immobili/${idImmobile}/files/${props.id}`
+                            `/immobili/${immobile?.id}/files/${props.id}`
                         )
                     );
                     dispatch(setIsSelectionModeAllowed(true));
@@ -111,52 +113,113 @@ const ImmobiliPhoto: React.FC<{
         props.id,
         dispatch,
         errorHandler,
-        idImmobile,
+        immobile?.id,
     ]);
 
-    const [, dragRef] = useDrag({
-        type: "photo",
-        item: { id: props.id, name: foto.nome },
-    });
+    const [startingTouchTime, setStartingTouchTime] = useState<number>(0);
+    const [endingTouchTime, setEndingTouchTime] = useState<number>(0);
 
-    const [{ isOver }, dropRef] = useDrop({
-        accept: "photo",
-        drop: (item: { id: number; name: string }) => {
-            if (foto.nome === "0" || item.name === "0") {
-                presentAlert({
-                    header: "Scambio non permesso",
-                    message: `Non è possibile spostare una foto con la scritta.`,
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: () => {},
-                        },
-                    ],
-                });
-            } else if (item.id !== foto.id)
+    const rifiutaSpostamento = useCallback(() => {
+        presentAlert({
+            header: "Scambio non permesso",
+            message: `Non è possibile spostare una foto con la scritta.`,
+            buttons: [
+                {
+                    text: "OK",
+                    role: "cancel",
+                },
+            ],
+        });
+    }, [presentAlert]);
+
+    useEffect(() => {
+        const howManyMilliSeconds = endingTouchTime - startingTouchTime;
+        const itHasBeenASecond = howManyMilliSeconds > 800;
+        if (itHasBeenASecond) {
+            setStartingTouchTime(0);
+            setEndingTouchTime(0);
+
+            if (foto.nome === "0") {
+                rifiutaSpostamento();
+                return;
+            }
+
+            if (!fotoInMovimento) {
+                dispatch(startMovingPhoto(foto.id!));
+            } else {
                 dispatch(
                     swapPhotoPositions({
-                        url: `/immobili/${idImmobile}/files/${item.id}`,
-                        firstName: foto.nome!,
-                        secondName: item.name!,
+                        url: `/immobili/${immobile?.id}/files/${fotoInMovimento}`,
+                        firstName: foto!.nome!,
+                        secondName: immobile?.files?.find(
+                            (el) => el.id === fotoInMovimento
+                        )?.nome!,
                     })
                 );
-        },
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-        }),
-    });
+            }
+        }
+    }, [
+        startingTouchTime,
+        endingTouchTime,
+        foto,
+        immobile,
+        fotoInMovimento,
+        dispatch,
+        rifiutaSpostamento,
+    ]);
+
+    const inizializzaMovimento = () => setStartingTouchTime(Date.now());
+
+    const resetMovimento = () => setEndingTouchTime(Date.now());
+
+    const gestisciFotoInSostituzione = () => {
+        if (foto.nome === "0") {
+            rifiutaSpostamento();
+            return;
+        }
+        dispatch(startMovingPhoto(foto.id!));
+    };
+
+    const sostituisciFoto = () => {
+        if (
+            foto.id === fotoInMovimento ||
+            fotoInMovimento === 0 ||
+            foto.id === 0
+        ) {
+            dispatch(resetMovingPhotos());
+            return;
+        }
+        if (foto.nome === "0") {
+            rifiutaSpostamento();
+            return;
+        }
+        dispatch(
+            swapPhotoPositions({
+                url: `/immobili/${immobile?.id}/files/${fotoInMovimento}`,
+                firstName: foto!.nome!,
+                secondName: immobile?.files?.find(
+                    (el) => el.id === fotoInMovimento
+                )?.nome!,
+            })
+        );
+    };
 
     return (
         <div
-            className={`${styles.frame} centered ${isOver ? styles.over : ""}`}
-            ref={!isSelectionModeActivated ? dropRef : undefined}
+            className={`${styles.frame} centered ${
+                fotoInMovimento === foto.id ? styles.over : ""
+            }`}
         >
             {showLoading && <IonSpinner color="primary"></IonSpinner>}
             {!showLoading && (
                 <>
                     <img
-                        ref={dragRef}
+                        onTouchStart={inizializzaMovimento}
+                        onTouchCancel={resetMovimento}
+                        onTouchEnd={resetMovimento}
+                        onDragEnter={gestisciFotoInSostituzione}
+                        onDragEnd={sostituisciFoto}
+                        draggable
                         onClick={() =>
                             !isSelectionModeActivated
                                 ? null
@@ -179,6 +242,7 @@ const ImmobiliPhoto: React.FC<{
                         alt="Immagine non disponibile 😱😱😱"
                     />
                     {!isSelectionModeActivated &&
+                        !fotoInMovimento &&
                         foto.nome !== "0" &&
                         foto.base64String !== "blockPhoto" && (
                             <>

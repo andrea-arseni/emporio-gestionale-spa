@@ -369,8 +369,9 @@ export default App;
 - Saving little images - VINTO
 - WhatsApp API - VINTO
 - List persone interessate - VINTO
+- Scambio posizioni in tutti gli ambienti - VINTO
 
-IMPROVEMENTS 10/6/2023
+IMPROVEMENTS 18/6/2023
 
 - Parenti
 

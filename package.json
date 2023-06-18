@@ -49,8 +49,6 @@
         "localforage": "^1.10.0",
         "node": "^18.14.0",
         "react": "^17.0.1",
-        "react-dnd": "^15.1.2",
-        "react-dnd-html5-backend": "^16.0.1",
         "react-dom": "^17.0.1",
         "react-image-file-resizer": "^0.4.8",
         "react-redux": "^8.0.4",

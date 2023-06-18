@@ -25,9 +25,13 @@ const StepPage: React.FC<{}> = () => {
     const [clickBlocked, setClickBlocked] = useState<boolean>(true);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeout: NodeJS.Timeout = setTimeout(() => {
             setClickBlocked(false);
         }, 1000);
+
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
     }, []);
 
     let eventDescription =

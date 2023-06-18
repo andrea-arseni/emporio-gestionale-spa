@@ -8,8 +8,6 @@ import {
     isPlatform,
 } from "@ionic/react";
 import { useEffect } from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import Card from "../card/Card";
 import ImmobiliPhoto from "./immobili-photo/ImmobiliPhoto";
 import styles from "./ImmobiliPhotos.module.css";
@@ -20,6 +18,7 @@ import { changeLoading } from "../../store/ui-slice";
 import { fetchFileById, fetchFotoFirmata } from "../../store/immobile-thunk";
 import { isNativeApp } from "../../utils/contactUtils";
 import {
+    resetMovingPhotos,
     setIsSelectionModeActivated,
     setListIdPhotoSelected,
 } from "../../store/immobile-slice";
@@ -42,11 +41,15 @@ const ImmobiliPhotos: React.FC<{}> = () => {
         (state) => state.immobile.isSelectionModeActivated
     );
 
-    const foto = useAppSelector((state) =>
-        state.immobile.immobile?.files
-            ?.filter((el) => el.tipologia === "FOTO")
-            .sort((a, b) => +a.nome! - +b.nome!)
+    const fotoInMovimento = useAppSelector(
+        (state) => state.immobile.startingPhotoId
     );
+
+    const foto = immobile?.files
+        ?.filter((el) => el.tipologia === "FOTO")
+        .sort((a, b) => +a.nome! - +b.nome!);
+
+    console.log(foto);
 
     const immobileId = immobile ? immobile.id : 0;
 
@@ -73,20 +76,23 @@ const ImmobiliPhotos: React.FC<{}> = () => {
                 `/immobili/${immobile!.id}/concluso`,
                 { tipologia, colore: Math.random() > 0.5 ? "blue" : "red" }
             );
-            if (isNativeApp) {
-                await Filesystem.deleteFile({
-                    directory: Directory.Cache,
-                    path: `/immobile/${immobileId}/avatar.jpg`,
-                });
-            } else {
-                await localforage.removeItem(
-                    `/immobile/${immobileId}/avatar.jpg`
-                );
-            }
+            try {
+                if (isNativeApp) {
+                    await Filesystem.deleteFile({
+                        directory: Directory.Cache,
+                        path: `/immobile/${immobileId}/avatar.jpg`,
+                    });
+                } else {
+                    await localforage.removeItem(
+                        `/immobile/${immobileId}/avatar.jpg`
+                    );
+                }
+            } catch (e) {}
             setTimeout(() => {
                 dispatch(fetchFotoFirmata(immobile!.id!));
             }, 500);
         } catch (e) {
+            console.log(e);
             dispatch(changeLoading(false));
             errorHandler(e, "Procedura non riuscita");
         }
@@ -155,6 +161,7 @@ const ImmobiliPhotos: React.FC<{}> = () => {
                     fill="solid"
                     style={{ margin: 0 }}
                     onClick={dichiaraConcluso}
+                    disabled={!!fotoInMovimento}
                 >
                     <IonIcon icon={ribbonOutline} />
                     <IonLabel style={{ paddingLeft: "16px" }}>
@@ -168,14 +175,18 @@ const ImmobiliPhotos: React.FC<{}> = () => {
                         <button
                             className={`${styles.fabButton} ${styles.selectionButton}`}
                             onClick={() => {
-                                dispatch(
-                                    setIsSelectionModeActivated(
-                                        !isSelectionModeActivated
-                                    )
-                                );
+                                fotoInMovimento
+                                    ? dispatch(resetMovingPhotos())
+                                    : dispatch(
+                                          setIsSelectionModeActivated(
+                                              !isSelectionModeActivated
+                                          )
+                                      );
                             }}
                         >
-                            {isSelectionModeActivated ? "ANNULLA" : "SELEZIONA"}
+                            {fotoInMovimento || isSelectionModeActivated
+                                ? "ANNULLA"
+                                : "SELEZIONA"}
                         </button>
                     )}
                     {isSelectionModeAllowed &&
@@ -188,9 +199,7 @@ const ImmobiliPhotos: React.FC<{}> = () => {
                                 SELEZIONA TUTTE
                             </button>
                         )}
-                    <DndProvider backend={HTML5Backend}>
-                        {getPhotoCards()}
-                    </DndProvider>
+                    {getPhotoCards()}
                 </IonRow>
             </IonGrid>
         </div>

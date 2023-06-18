@@ -15,15 +15,7 @@ const eraseImageStorage = async () => {
         return;
     }
 
-    const keys = await localforage.keys();
-
-    const removalPromises: Promise<any>[] = [];
-    keys.forEach((key: string) => {
-        if (key.startsWith("immobile")) {
-            removalPromises.push(localforage.removeItem(key));
-        }
-    });
-    Promise.all(removalPromises);
+    localforage.clear();
 };
 
 export const performAutoLogin = createAsyncThunk(

@@ -86,9 +86,13 @@ const PersonaPage: React.FC<{}> = () => {
     }, [persona?.id, dispatch, errorHandler]);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeout: NodeJS.Timeout = setTimeout(() => {
             setClickBlocked(false);
         }, 1000);
+
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
     }, []);
 
     const userData = useAppSelector((state) => state.auth.userData);
