@@ -5,7 +5,6 @@ const SecondaryItem: React.FC<{
     deleteAction?: () => void;
     visualizeAction?: () => void;
     addAction?: () => void;
-    closeItems: () => void;
     directDeleting?: boolean;
 }> = (props) => {
     const [presentAlert] = useIonAlert();

@@ -370,10 +370,12 @@ export default App;
 - WhatsApp API - VINTO
 - List persone interessate - VINTO
 - Scambio posizioni in tutti gli ambienti - VINTO
+- Parenti - VINTO
 
 IMPROVEMENTS 18/6/2023
 
-- Parenti
+- Link mai doppio, se è stato aggiunto non riaggiungerlo
+- Nuove persone e persone provenienti da Immobile Form devono avere status attivo
 
 - NATIVEAPPS ONLINE
 
@@ -381,6 +383,7 @@ IMPROVEMENTS 18/6/2023
 
 - Classe Energetica Maiuscola
 - Spese Extra non previste
+- Spese riscaldamento null
 - Rendita
 
 - OPTIMAL ARCHITECTURE

@@ -143,11 +143,9 @@ const FormVisit: React.FC<{
         deactivateTextAreaFocus();
     };
 
-    const { list: immobileItemsList, closeItemsList: closeImmobileItemsList } =
-        useList();
+    const { list: immobileItemsList } = useList();
 
-    const { list: personeItemsList, closeItemsList: closePersoneItemsList } =
-        useList();
+    const { list: personeItemsList } = useList();
 
     useEffect(() => {
         const closeModal = () => {
@@ -414,7 +412,6 @@ const FormVisit: React.FC<{
                             ? undefined
                             : () => setImmobileValue(null)
                     }
-                    closeItems={closeImmobileItemsList}
                 >
                     {immobileData}
                 </SecondaryItem>
@@ -470,7 +467,6 @@ const FormVisit: React.FC<{
                                   )
                             : undefined
                     }
-                    closeItems={closePersoneItemsList}
                     deleteAction={
                         props.readonly ? undefined : () => setPersonaValue(null)
                     }

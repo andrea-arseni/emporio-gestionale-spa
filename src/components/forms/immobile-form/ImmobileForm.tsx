@@ -1123,10 +1123,7 @@ const ImmobileForm: React.FC<{
         setModalIsOpen(true);
     };
 
-    const {
-        list: listSecondaryItems,
-        closeItemsList: closeSecondaryItemsList,
-    } = useList();
+    const { list: listSecondaryItems } = useList();
 
     useEffect(() => {
         if (!newProprietarioPartOpened) {
@@ -1483,7 +1480,6 @@ const ImmobileForm: React.FC<{
         }
         const renderList = list.map((el) => (
             <SecondaryItem
-                closeItems={closeSecondaryItemsList}
                 key={el!.id}
                 deleteAction={() => {
                     deletePersona(el!.id!, type);

@@ -11,6 +11,7 @@ export class Persona {
         public ruolo: string | null,
         public immobili: Immobile[] | number[] | null,
         public immobileInquilino: Immobile | number | null,
+        public amici: Persona[] | number[] | null,
         public eventi: Evento[] | null,
         public files: Documento[] | null,
         public provenienza: string | null,

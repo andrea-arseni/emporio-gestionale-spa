@@ -43,8 +43,8 @@ const ItemSelector: React.FC<{
                 props.strict
                     ? ""
                     : props.isItemPresent
-                    ? "presente"
-                    : "mancante"
+                    ? `present${props.multiple ? "i" : "e"}`
+                    : `mancant${props.multiple ? "i" : "e"}`
             }`}
         >
             {bloccoItem}

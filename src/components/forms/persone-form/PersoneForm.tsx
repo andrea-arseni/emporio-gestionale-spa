@@ -64,10 +64,12 @@ const PersoneForm: React.FC<{
     } = useSingleClick();
 
     const [choiceMode, setChoiceMode] = useState<
-        "proprietà" | "locazione" | "interesse" | null
+        "proprietà" | "locazione" | "interesse" | "amico" | null
     >(null);
 
-    const openModal = (type: "proprietà" | "locazione" | "interesse") => {
+    const openModal = (
+        type: "proprietà" | "locazione" | "interesse" | "amico"
+    ) => {
         setChoiceMode(type);
         setCurrentImmobile(null);
         setModalIsOpen(true);
@@ -75,7 +77,11 @@ const PersoneForm: React.FC<{
 
     const [currentImmobile, setCurrentImmobile] = useState<Entity | null>(null);
 
+    const [currentAmico, setCurrentAmico] = useState<Entity | null>(null);
+
     const [listHouses, setListHouses] = useState<Immobile[]>([]);
+
+    const [listAmici, setListAmici] = useState<Persona[]>([]);
 
     const deleteHouse = (
         id: number,
@@ -91,6 +97,13 @@ const PersoneForm: React.FC<{
         } else {
             setImmobileInteresse(null);
         }
+    };
+
+    const deleteAmico = (id: number) => {
+        setCurrentAmico(null);
+        setListAmici((prevList) => {
+            return prevList.filter((el) => el.id! !== id);
+        });
     };
 
     const [immobileLocato, setImmobileLocato] = useState<Immobile | null>(
@@ -129,6 +142,26 @@ const PersoneForm: React.FC<{
 
         return () => clearTimeout(timeOut);
     }, [currentImmobile, choiceMode, listHouses]);
+
+    useEffect(() => {
+        const addAmico = (amico: Persona) => {
+            if (persona && amico.id === persona.id) return;
+            const itemAlreadyPresent = listAmici.find(
+                (el) => el.id === amico.id
+            );
+            if (!itemAlreadyPresent)
+                setListAmici((prevList) => {
+                    return [...prevList, amico];
+                });
+        };
+
+        const timeOut = setTimeout(() => {
+            if (currentAmico) addAmico(currentAmico as Persona);
+            setModalIsOpen(false);
+        }, 300);
+
+        return () => clearTimeout(timeOut);
+    }, [currentAmico, listAmici, persona]);
 
     const {
         inputValue: inputNameValue,
@@ -212,6 +245,9 @@ const PersoneForm: React.FC<{
                         setListHouses(res.data.immobili as Immobile[]);
                     if (res.data.immobileInquilino)
                         setImmobileLocato(res.data.immobileInquilino);
+                    if (res.data.amici) {
+                        setListAmici(res.data.amici);
+                    }
                 }
             } catch (e) {
                 errorHandler(e, "Impossibile aprire la persona selezionata");
@@ -282,6 +318,7 @@ const PersoneForm: React.FC<{
             note: inputNoteValue,
             provenienza: inputProvenienzaValue.split(" ").join("_"),
             status: inputStatusValue,
+            amici: listAmici.map((el) => el.id),
         };
         setShowLoading(true);
         try {
@@ -353,6 +390,7 @@ const PersoneForm: React.FC<{
         inputRuoloValue,
         inputStatusValue,
         listHouses,
+        listAmici,
         persona,
         navigate,
         presentAlert,
@@ -446,7 +484,7 @@ const PersoneForm: React.FC<{
         props,
     ]);
 
-    const { list: itemsList, closeItemsList } = useList();
+    const { list: itemsList } = useList();
 
     const getImmobili = (mode: "proprietà" | "locazione" | "interesse") => {
         let list: Immobile[] = [];
@@ -471,7 +509,6 @@ const PersoneForm: React.FC<{
                                 navigate
                             )
                         }
-                        closeItems={closeItemsList}
                     >
                         <IonLabel text-wrap>
                             <h3>Riferimento {el!.ref}</h3>
@@ -480,6 +517,38 @@ const PersoneForm: React.FC<{
                     </SecondaryItem>
                 );
             });
+        return (
+            <IonList style={{ padding: "0", margin: "0" }} ref={itemsList}>
+                {renderList}
+            </IonList>
+        );
+    };
+
+    const getAmici = () => {
+        const renderList = listAmici.sort().map((el) => {
+            return (
+                <SecondaryItem
+                    key={el!.id}
+                    deleteAction={() => deleteAmico(el!.id!)}
+                    visualizeAction={() =>
+                        navigateToSpecificItem(
+                            "persone",
+                            el!.id!.toString(),
+                            navigate
+                        )
+                    }
+                >
+                    <IonLabel text-wrap>
+                        <h3>
+                            {el!.nome
+                                ?.split(" ")
+                                .map((el) => capitalize(el))
+                                .join(" ")}
+                        </h3>
+                    </IonLabel>
+                </SecondaryItem>
+            );
+        });
         return (
             <IonList style={{ padding: "0", margin: "0" }} ref={itemsList}>
                 {renderList}
@@ -624,6 +693,19 @@ const PersoneForm: React.FC<{
                     getItem={() => getImmobili("locazione")}
                     openSelector={() => openModal("locazione")}
                 />
+                {/*  
+                - Devi avere un Item che indica il gruppo di persone amici
+                - Ogni persona amica deve avere la possibilità di cancellare
+                - Deve esserci la possibilità di cancellare altre persone
+                */}
+                <ItemSelector
+                    titoloGruppo="Persone amiche"
+                    titoloBottone="Aggiungi Amico"
+                    isItemPresent={!!listAmici}
+                    getItem={() => getAmici()}
+                    openSelector={() => openModal("amico")}
+                    multiple
+                />
                 <IonButton
                     onKeyDown={(e) => e.preventDefault()}
                     style={{ marginTop: "15px" }}
@@ -637,12 +719,22 @@ const PersoneForm: React.FC<{
             <Modal
                 setIsOpen={setModalIsOpen}
                 isOpen={modalIsOpen}
-                title={`Scegli immobile di ${choiceMode}`}
+                title={
+                    choiceMode === "amico"
+                        ? `Seleziona amico`
+                        : `Scegli immobile di ${choiceMode}`
+                }
                 handler={() => setModalIsOpen(false)}
             >
                 <Selector
-                    entitiesType="immobili"
-                    setCurrentEntity={setCurrentImmobile}
+                    entitiesType={
+                        choiceMode === "amico" ? "persone" : "immobili"
+                    }
+                    setCurrentEntity={
+                        choiceMode === "amico"
+                            ? setCurrentAmico
+                            : setCurrentImmobile
+                    }
                     selectMode
                     localQuery
                 />

@@ -26,6 +26,7 @@ import { Immobile } from "../../../entities/immobile.model";
 import SinglePageItem from "../../../components/single-page-component/SinglePageItem";
 import { Evento } from "../../../entities/evento.model";
 import { closeIonSelect } from "../../../utils/closeIonSelect";
+import { Persona } from "../../../entities/persona.model";
 
 const PersonaPage: React.FC<{}> = () => {
     const navigate = useNavigate();
@@ -211,6 +212,13 @@ const PersonaPage: React.FC<{}> = () => {
                         titolo={`Conduttore`}
                         type="immobili"
                         entities={[persona.immobileInquilino] as Immobile[]}
+                    />
+                )}
+                {persona?.amici && (
+                    <SinglePageItem
+                        titolo={`Amici`}
+                        type="persone"
+                        entities={persona.amici as Persona[]}
                     />
                 )}
                 <br />
