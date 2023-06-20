@@ -346,37 +346,6 @@ export default App;
 
 /*
 
-- Ogni volta che chiudi un form chiudi ogni possibile select - VINTO
-- applica un release focus serio - VINTO
-- 3 tentativi e sei fuori - VINTO
-- Quando sei con il focus su descrizione immobile non considerare il doppio click - VINTO
-- Quando scade il token non fare "Errore nella lettura del token" fai la logout - VINTO
-- Se elimini l'immobile da un appuntamento deve eliminare l'immobile - VINTO
-- Non si vedono immobili aprendo da persona - VINTO
-- Così rimuove le proprietà da solo - VINTO
-- Foto singola diretta, lista foto zip - VINTO
-- Retrieve foto firmate oppure foto originali anche per multiple - VINTO
-- Anche per IOS e anche per Android - VINTO
-- Disattiva button su persona - VINTO
-- Note private su Immobile - VINTO
-- Navigazione su singolo obiettivo rivista - VINTO
-- Navigazione su singola persona rivista - VINTO
-- Navigazione su singolo immobile rivista - VINTO
-- Still bug on select - VINTO
-- If focus on submit release focus - VINTO
-- Carta visita piacevole, no form - VINTO
-- No more slides on all applications - VINTO
-- Saving little images - VINTO
-- WhatsApp API - VINTO
-- List persone interessate - VINTO
-- Scambio posizioni in tutti gli ambienti - VINTO
-- Parenti - VINTO
-
-IMPROVEMENTS 18/6/2023
-
-- Link mai doppio, se è stato aggiunto non riaggiungerlo
-- Nuove persone e persone provenienti da Immobile Form devono avere status attivo
-
 - NATIVEAPPS ONLINE
 
 - WEBSITE

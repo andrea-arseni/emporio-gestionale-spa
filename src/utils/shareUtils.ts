@@ -6,6 +6,13 @@ export const shareObject = async (
     url: string | undefined,
     subject: string
 ) => {
+    const words: string[] = message.split(" ");
+
+    if (words[words.length - 1].startsWith("https://www.emporio-case.com")) {
+        url = words.pop();
+        message = words.join(" ");
+    }
+
     if (isNativeApp) {
         await SocialSharing.shareWithOptions({
             message,

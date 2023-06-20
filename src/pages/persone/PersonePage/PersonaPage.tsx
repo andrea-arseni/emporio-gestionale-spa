@@ -43,6 +43,10 @@ const PersonaPage: React.FC<{}> = () => {
 
     const persona = useAppSelector((state) => state.persona.persona);
 
+    useEffect(() => {
+        console.log(persona);
+    }, [persona]);
+
     const [immobileInteresse, setImmobileInteresse] = useState<Immobile | null>(
         null
     );
